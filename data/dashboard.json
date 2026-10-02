@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-02T11:31:37+00:00",
+  "updatedAt": "2026-10-02T11:32:56+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 주식 화면은 페이지가 열린 동안 60초마다 실시간 시세를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -179,7 +179,7 @@
       "relevance": 2
     },
     {
-      "title": "김현 의원 'AI·데이터 혁신 3법' 국회 본회의 통과 - 신아일보",
+      "title": "김현 의원 'AI·데이터 혁신 3법' 국회 본회의 통과 - shinailbo.co.kr",
       "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBxNWtWa2stRXByUk95RzlxZFJIcFZvVFMzMWRvTThGdlZYbXlJNTVnU3phb1ZYTWpBMjIyS2c3WnpXd3NkbGJhZjFFcmRlR28wYV9jOHhaU0FlbXdpS1JmWnd4T1dXOFpVbHp3QWZDVXA?oc=5",
       "published": "Thu, 01 Oct 2026 23:47:39 GMT",
       "source": "AI 개발 신기술",
@@ -260,7 +260,7 @@
       "relevance": 1
     },
     {
-      "title": "전북도, AI·자율주행·로봇 기반 농업전환 이끈다 - nongupin.co.kr",
+      "title": "전북도, AI·자율주행·로봇 기반 농업전환 이끈다 - 농업인신문",
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5BV19OSkNoMDk2WWlKb0pBUjFEUnhPM29aNjNvU2lCOEd4VUhSRnVPQlMtV3VvajZmRlNhbjFSWF85VWktdmRXUEdIdHhLU2hIeEVaMXo4Vk9vTndUQzJHM2UzWTB5WjQ1eHhXcw?oc=5",
       "published": "Fri, 02 Oct 2026 04:19:37 GMT",
       "source": "AI 개발 신기술",
@@ -273,15 +273,6 @@
       "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5",
       "published": "Fri, 02 Oct 2026 01:44:00 GMT",
       "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
-      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
-      "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -314,7 +305,16 @@
       "relevance": 0
     },
     {
-      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - koreastocknews.com",
+      "title": "신입 개발자 연봉, 얼마 받고 싶어요? - 잡플래닛",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1LQ0kzVVRuTmYzdWpZSjhHdjRTWVR5YU5FY1lZbHRjNXhZZTZ0VkZMc1hFUUZrLWxoOUZZMndwSWtGeWFBSUp0bDVobXNJX3NPYUpNWDl6ZzFvZw?oc=5",
+      "published": "Fri, 02 Oct 2026 08:42:02 GMT",
+      "source": "백엔드 서버 개발자 채용",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
       "source": "게임 산업 신작 실적 한국",
@@ -332,7 +332,7 @@
       "relevance": 0
     },
     {
-      "title": "[산업소식] 웹젠, 하반기 채용 연계형 인턴 모집..13개 직무 선발 - 4th.kr",
+      "title": "[산업소식] 웹젠, 하반기 채용 연계형 인턴 모집..13개 직무 선발 - 포쓰저널",
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1XNkNPajU3R2xEY2xucXpCMUw4UUwtWC10OS1OLVM5Nks5ellIMmo0TDVWSWtiU094aVhrdTRvNmltTWpkUEVIeTkwMVZxWC0xd3hyalVSVXBVQ1ZqbHB6Z3pzYVA?oc=5",
       "published": "Fri, 02 Oct 2026 02:36:07 GMT",
       "source": "게임 개발자 채용",
