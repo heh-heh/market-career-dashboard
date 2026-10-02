@@ -6,7 +6,7 @@
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#182447,#080d18 45%);color:var(--text);font-family:system-ui,"Noto Sans KR",sans-serif}.app{max-width:1180px;margin:auto;padding:24px 16px 50px}
 header{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:20px}h1{margin:0;font-size:30px}.sub,.muted{color:var(--muted)}.date{text-align:right;font-size:12px;color:var(--muted)}
 nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px solid var(--line);background:#0e1627;color:var(--muted);padding:11px 15px;border-radius:11px;cursor:pointer;white-space:nowrap}button.active{background:var(--accent);color:white}
-.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.card{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:17px}.label{font-size:12px;color:var(--muted)}.big{font-size:24px;font-weight:800;margin:7px 0}.up{color:var(--up)}.down{color:var(--down)}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.stock-click{cursor:pointer}.stock-click:hover{background:#18233b}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}.modal.open{display:flex;align-items:center;justify-content:center}.modal-box{width:100%;max-width:760px;max-height:calc(100dvh - 24px);overflow-y:auto;background:#111a2c;border:1px solid var(--line);border-radius:18px;padding:18px;position:relative}.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:start}.modal-close{font-size:20px;padding:5px 10px}.forecast{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.forecast-card{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:15px}.forecast-price{font-size:20px;font-weight:800;margin:8px 0}.mini{font-size:12px;color:var(--muted);line-height:1.7}@media(max-width:600px){.forecast{grid-template-columns:1fr}.modal{padding:8px}.modal-box{max-height:calc(100dvh - 16px);padding:15px;border-radius:14px}.modal-head h2{font-size:20px;margin:5px 0}.modal-close{min-width:44px;min-height:44px}.forecast-price{font-size:18px}}.item h3{font-size:14px;margin:0 0 6px}.item p{font-size:13px;line-height:1.65;color:#c6d0e4;margin:0}.tag{display:inline-block;background:#202c49;border-radius:999px;padding:5px 8px;font-size:11px;margin:4px}.chart-card{margin-top:14px}.price-chart{margin-top:10px}.price-chart svg{width:100%;height:250px;display:block;background:#0b1322;border-radius:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:7 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:9 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;color:#91a0bb}.chart-empty{padding:30px;text-align:center;color:#91a0bb}.signal{background:#0d1627;border-left:3px solid var(--accent);padding:14px;border-radius:9px;line-height:1.7;color:#cbd5e9}.notice{margin-top:22px;font-size:11px;line-height:1.6;color:var(--muted)}.section-title{margin:20px 0 10px;font-size:15px}.live{font-size:11px;color:var(--up);margin-left:6px}
+.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.card{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:17px}.label{font-size:12px;color:var(--muted)}.big{font-size:24px;font-weight:800;margin:7px 0}.up{color:var(--up)}.down{color:var(--down)}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.stock-click{cursor:pointer}.stock-click:hover{background:#18233b}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}.modal.open{display:flex;align-items:center;justify-content:center}.modal-box{width:100%;max-width:760px;max-height:calc(100dvh - 24px);overflow-y:auto;background:#111a2c;border:1px solid var(--line);border-radius:18px;padding:18px;position:relative}.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:start}.modal-close{font-size:20px;padding:5px 10px}.forecast{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.forecast-card{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:15px}.forecast-price{font-size:20px;font-weight:800;margin:8px 0}.mini{font-size:12px;color:var(--muted);line-height:1.7}@media(max-width:600px){.forecast{grid-template-columns:1fr}.modal{padding:8px}.modal-box{max-height:calc(100dvh - 16px);padding:15px;border-radius:14px}.modal-head h2{font-size:20px;margin:5px 0}.modal-close{min-width:44px;min-height:44px}.forecast-price{font-size:18px}}.item h3{font-size:14px;margin:0 0 6px}.item p{font-size:13px;line-height:1.65;color:#c6d0e4;margin:0}.tag{display:inline-block;background:#202c49;border-radius:999px;padding:5px 8px;font-size:11px;margin:4px}.chart-card{margin-top:14px}.chart-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}.chart-change{margin-left:10px;font-weight:700}.chart-ranges{display:flex;gap:5px}.chart-range{padding:7px 10px;font-size:11px}.chart-range.selected{background:var(--accent);color:#fff}.chart-stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-size:12px;color:var(--muted)}.price-chart.detailed{margin-top:6px}.price-chart.detailed svg{height:390px;background:#0b1322;border-radius:12px}.chart-axis{fill:#91a0bb;font-size:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:8 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:10 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;font-size:11px;color:#91a0bb}@media(max-width:600px){.chart-toolbar{align-items:flex-start;flex-direction:column}.chart-ranges{width:100%}.chart-range{flex:1}.price-chart.detailed svg{height:300px}.chart-axis{font-size:10px}.chart-stats{gap:10px}}.price-chart{margin-top:10px}.price-chart svg{width:100%;height:250px;display:block;background:#0b1322;border-radius:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:7 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:9 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;color:#91a0bb}.chart-empty{padding:30px;text-align:center;color:#91a0bb}.signal{background:#0d1627;border-left:3px solid var(--accent);padding:14px;border-radius:9px;line-height:1.7;color:#cbd5e9}.notice{margin-top:22px;font-size:11px;line-height:1.6;color:var(--muted)}.section-title{margin:20px 0 10px;font-size:15px}.live{font-size:11px;color:var(--up);margin-left:6px}
 @media(max-width:800px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}header{align-items:start;flex-direction:column}.date{text-align:left}}@media(max-width:450px){h1{font-size:24px}.app{padding:18px 12px}}
 </style></head>
 <body><div class="app">
@@ -52,25 +52,43 @@ function findStock(symbol){return [...(cached?.stocks||[]),...(cached?.indices||
 function makeStockChart(s){
  const h=(s.history||[]).map(Number).filter(Number.isFinite);
  if(h.length<2)return '<div class="chart-empty">차트 데이터가 없습니다.</div>';
- const w=700,H=250,p=28;
- const f=s.forecast||{}, sh=f.short||{}, lo=f.long||{};
- const vals=[...h,sh.bull,sh.bear,lo.base].filter(Number.isFinite);
- const min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;
- const pts=h.map((v,i)=>[(i/(h.length-1))*w,(H-p)-((v-min)/range)*(H-p*2)]).map(a=>a.join(',')).join(' ');
- const last=h[h.length-1], lastY=(H-p)-((last-min)/range)*(H-p*2);
- const base=Number.isFinite(sh.base)?sh.base:last, bull=Number.isFinite(sh.bull)?sh.bull:last, bear=Number.isFinite(sh.bear)?sh.bear:last, long=Number.isFinite(lo.base)?lo.base:last;
- const fy=v=>(H-p)-((v-min)/range)*(H-p*2);
- const x1=w*0.72,x2=w*0.86,x3=w;
- return '<div class="price-chart"><svg viewBox="0 0 '+w+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+esc(s.name)+' 주가 흐름 및 전망 차트">'+
- '<line x1="'+p+'" y1="'+(H-p)+'" x2="'+w+'" y2="'+(H-p)+'" class="chart-grid"/>'+
- '<line x1="'+p+'" y1="'+p+'" x2="'+w+'" y2="'+p+'" class="chart-grid"/>'+
- '<polyline points="'+pts+'" class="chart-history"/>'+
- '<polyline points="'+(w*0.88)+','+lastY+' '+x3+','+fy(long)+'" class="chart-long"/>'+
- '<line x1="'+x1+'" y1="'+lastY+'" x2="'+x2+'" y2="'+fy(base)+'" class="chart-short"/>'+
- '<line x1="'+x2+'" y1="'+fy(base)+'" x2="'+x3+'" y2="'+fy(bull)+'" class="chart-bull"/>'+
- '<line x1="'+x2+'" y1="'+fy(base)+'" x2="'+x3+'" y2="'+fy(bear)+'" class="chart-bear"/>'+
- '<circle cx="'+w*0.88+'" cy="'+lastY+'" r="5" class="chart-dot"/>'+
- '</svg><div class="chart-legend"><span>실제 흐름</span><span>단기 기준</span><span>상승 시나리오</span><span>하락 시나리오</span><span>장기 기준</span></div></div>';
+ const f=s.forecast||{},sh=f.short||{},lo=f.long||{};
+ const w=900,H=390,pL=62,pR=18,pT=24,pB=42;
+ const unit=/^\\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol)?"pt":/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol)?"$":"₩";
+ const ranges=[{n:"1M",v:22},{n:"3M",v:63},{n:"1Y",v:h.length}];
+ const id="chart_"+String(s.symbol).replace(/[^a-zA-Z0-9]/g,"");
+ const all=[...h,sh.bull,sh.bear,lo.base].filter(Number.isFinite);
+ const min=Math.min(...all),max=Math.max(...all),pad=(max-min)*.08||1,yMin=min-pad,yMax=max+pad;
+ function makeRange(n){
+   const count=Math.min(n,h.length), data=h.slice(-count), vals=data;
+   const hi=Math.max(...vals),loV=Math.min(...vals),chg=data.length>1?(data[data.length-1]/data[0]-1)*100:0;
+   const pts=data.map((v,i)=>{const x=pL+(i/(data.length-1))*(w-pL-pR);const y=pT+(1-(v-yMin)/(yMax-yMin))*(H-pT-pB);return x+","+y}).join(" ");
+   const last=data[data.length-1],ly=pT+(1-(last-yMin)/(yMax-yMin))*(H-pT-pB);
+   const fy=v=>pT+(1-(v-yMin)/(yMax-yMin))*(H-pT-pB);
+   const xForecast=w-pR;
+   const base=Number.isFinite(sh.base)?sh.base:last,bull=Number.isFinite(sh.bull)?sh.bull:last,bear=Number.isFinite(sh.bear)?sh.bear:last,long=Number.isFinite(lo.base)?lo.base:last;
+   const fx0=pL+(data.length-1)/(data.length+8)*(w-pL-pR),fx1=pL+(data.length)/(data.length+8)*(w-pL-pR),fx2=pL+(data.length+4)/(data.length+8)*(w-pL-pR),fx3=w-pR;
+   const grid=[0,1,2,3,4].map(i=>{const y=pT+i*(H-pT-pB)/4;const val=yMax-i*(yMax-yMin)/4;return '<line x1="'+pL+'" y1="'+y+'" x2="'+w+'" y2="'+y+'" class="chart-grid"/><text x="'+(pL-8)+'" y="'+(y+4)+'" text-anchor="end" class="chart-axis">'+Number(val).toLocaleString(undefined,{maximumFractionDigits:2})+unit+'</text>'}).join("");
+   const labels=[0,Math.floor((data.length-1)/2),data.length-1].map((i,j)=>{const x=pL+(i/(data.length-1))*(w-pL-pR);return '<text x="'+x+'" y="'+(H-12)+'" text-anchor="'+(j===0?"start":j===2?"end":"middle")+'" class="chart-axis">'+(n===h.length?["1년 전","6개월 전","현재"][j]:j===0?"시작":j===1?"중간":"현재")+'</text>'}).join("");
+   return {data,hi,loV,chg,pts,ly,fy,base,bull,bear,long,fx0,fx1,fx2,fx3,grid,labels};
+ }
+ const d=makeRange(Math.min(22,h.length));
+ return '<div class="chart-toolbar"><div><b>가격 흐름</b><span class="chart-change '+(d.chg>=0?"up":"down")+'">'+(d.chg>=0?"+":"")+d.chg.toFixed(2)+'%</span></div><div class="chart-ranges">'+ranges.map(r=>'<button type="button" class="chart-range '+(r.v===Math.min(22,h.length)?"selected":"")+'" data-chart="'+id+'" data-range="'+r.v+'">'+r.n+'</button>').join("")+'</div></div>'+
+ '<div class="chart-stats"><span>고가 <b>'+formatPrice(s,d.hi)+'</b></span><span>저가 <b>'+formatPrice(s,d.loV)+'</b></span><span>현재 <b>'+formatPrice(s,s.price)+'</b></span></div>'+
+ '<div class="price-chart detailed"><svg id="'+id+'" viewBox="0 0 '+w+' '+H" role="img" aria-label="'+esc(s.name)+' 상세 주가 차트">'+d.grid+
+ '<polyline points="'+d.pts+'" class="chart-history"/>'+
+ '<line x1="'+d.fx0+'" y1="'+d.ly+'" x2="'+d.fx1+'" y2="'+d.fy(d.base)+'" class="chart-short"/>'+
+ '<line x1="'+d.fx1+'" y1="'+d.fy(d.base)+'" x2="'+d.fx2+'" y2="'+d.fy(d.bull)+'" class="chart-bull"/>'+
+ '<line x1="'+d.fx1+'" y1="'+d.fy(d.base)+'" x2="'+d.fx2+'" y2="'+d.fy(d.bear)+'" class="chart-bear"/>'+
+ '<line x1="'+d.fx2+'" y1="'+d.fy(d.base)+'" x2="'+d.fx3+'" y2="'+d.fy(d.long)+'" class="chart-long"/>'+
+ '<circle cx="'+(pL+(d.data.length-1)/(d.data.length-1)*(w-pL-pR))+'" cy="'+d.ly+'" r="6" class="chart-dot"/>'+d.labels+'</svg></div>'+
+ '<div class="chart-legend"><span>실제 가격</span><span>단기 기준</span><span>상승</span><span>하락</span><span>장기 기준</span></div>'+
+ '<p class="mini">단기/장기 점선은 확정 가격이 아니라 현재 추세와 변동성을 이용한 참고 시나리오입니다.</p>';
+}
+function bindChartRanges(){
+ document.querySelectorAll(".chart-range").forEach(btn=>btn.onclick=()=>{
+   const s=findStock(document.querySelector(".modal-box .muted")?.textContent||"");
+ });
 }
 function stockNews(s){
  const news=cached?.news||[];
