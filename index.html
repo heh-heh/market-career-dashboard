@@ -49,7 +49,8 @@ function stockRow(s){
 }
 function formatPrice(s,v){if(v==null)return "데이터 없음";const isUS=/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol);const isIndex=/^\\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol);return Number(v).toLocaleString(undefined,{maximumFractionDigits:2})+(isIndex?" pt":isUS?" $":" ₩")}
 function findStock(symbol){return [...(cached?.stocks||[]),...(cached?.indices||[])].find(x=>x.symbol===symbol)||null;}
-function makeStockChart(s){
+let currentStock=null;
+function makeStockChart(s,requested=22){
  const h=(s.history||[]).map(Number).filter(Number.isFinite);
  if(h.length<2)return '<div class="chart-empty">차트 데이터가 없습니다.</div>';
  const f=s.forecast||{},sh=f.short||{},lo=f.long||{};
@@ -72,8 +73,8 @@ function makeStockChart(s){
    const labels=[0,Math.floor((data.length-1)/2),data.length-1].map((i,j)=>{const x=pL+(i/(data.length-1))*(w-pL-pR);return '<text x="'+x+'" y="'+(H-12)+'" text-anchor="'+(j===0?"start":j===2?"end":"middle")+'" class="chart-axis">'+(n===h.length?["1년 전","6개월 전","현재"][j]:j===0?"시작":j===1?"중간":"현재")+'</text>'}).join("");
    return {data,hi,loV,chg,pts,ly,fy,base,bull,bear,long,fx0,fx1,fx2,fx3,grid,labels};
  }
- const d=makeRange(Math.min(22,h.length));
- return '<div class="chart-toolbar"><div><b>가격 흐름</b><span class="chart-change '+(d.chg>=0?"up":"down")+'">'+(d.chg>=0?"+":"")+d.chg.toFixed(2)+'%</span></div><div class="chart-ranges">'+ranges.map(r=>'<button type="button" class="chart-range '+(r.v===Math.min(22,h.length)?"selected":"")+'" data-chart="'+id+'" data-range="'+r.v+'">'+r.n+'</button>').join("")+'</div></div>'+
+ const d=makeRange(Math.min(requested,h.length));
+ return '<div class="chart-toolbar"><div><b>가격 흐름</b><span class="chart-change '+(d.chg>=0?"up":"down")+'">'+(d.chg>=0?"+":"")+d.chg.toFixed(2)+'%</span></div><div class="chart-ranges">'+ranges.map(r=>'<button type="button" class="chart-range '+(r.v===Math.min(22,h.length)?"selected":"")+'" onclick="setChartRange('${s.symbol}',${r.v})" data-chart="'+id+'" data-range="'+r.v+'">'+r.n+'</button>').join("")+'</div></div>'+
  '<div class="chart-stats"><span>고가 <b>'+formatPrice(s,d.hi)+'</b></span><span>저가 <b>'+formatPrice(s,d.loV)+'</b></span><span>현재 <b>'+formatPrice(s,s.price)+'</b></span></div>'+
  '<div class="price-chart detailed"><svg id="'+id+'" viewBox="0 0 '+w+' '+H" role="img" aria-label="'+esc(s.name)+' 상세 주가 차트">'+d.grid+
  '<polyline points="'+d.pts+'" class="chart-history"/>'+
@@ -100,17 +101,18 @@ function stockNews(s){
  return arr.slice(0,5);
 }
 function openStockBySymbol(symbol){const s=findStock(symbol);if(s)openStock(s)}
+function setChartRange(symbol,count){const s=findStock(symbol);if(!s)return;const el=document.getElementById("stockChartArea");if(el)el.innerHTML=makeStockChart(s,count)}
 function openStock(s){
  const f=s.forecast||{}, sh=f.short||{}, lo=f.long||{};
  const history=(s.history||[]).map(Number).filter(Number.isFinite);
  const recent=history.length?history[history.length-1]:s.price;
  document.getElementById("stockDetail").innerHTML='<div class="modal-head"><div><div class="label">주식 상세 분석</div><h2>'+esc(s.name)+'</h2><div class="muted">'+esc(s.symbol)+'</div></div><button class="modal-close" onclick="closeStock()">×</button></div>'+
  '<div class="card" style="margin-top:14px"><div class="label">최근 흐름</div><div class="big">'+formatPrice(s,s.price)+'</div><div class="'+cls(s.change)+'">'+(s.change>=0?"+":"")+Number(s.change||0).toFixed(2)+'%</div><p class="mini">최근 수집된 가격 흐름을 기준으로 분석합니다. 마지막 데이터: '+esc(cached?.updatedAt||"-")+'</p></div>'+
- '<div class="card chart-card"><div class="label">주가 차트 · 최근 흐름 + 전망</div>'+makeStockChart(s)+'</div>'+
+ '<div id="stockChartArea" class="card chart-card"><div class="label">주가 차트 · 최근 흐름 + 전망</div>'+makeStockChart(s)+'</div>'+
  '<div class="forecast"><div class="forecast-card"><div class="label">단기 전망 · 1~4주</div><div class="forecast-price">'+formatPrice(s,sh.base)+'</div><div class="'+(sh.trend==="하락"?"down":sh.trend==="상승"?"up":"muted")+'">추세: '+esc(sh.trend||"중립")+'</div><p class="mini">상승 시나리오: '+formatPrice(s,sh.bull)+'<br>하락 시나리오: '+formatPrice(s,sh.bear)+'</p></div><div class="forecast-card"><div class="label">장기 전망 · 6~12개월</div><div class="forecast-price">'+formatPrice(s,lo.base)+'</div><div class="'+(lo.trend==="하락"?"down":lo.trend==="상승"?"up":"muted")+'">추세: '+esc(lo.trend||"중립")+'</div><p class="mini">장기 추세는 최근 1년 가격 흐름을 이용한 참고 시나리오입니다.</p></div></div>'+
  '<div class="card" style="margin-top:14px"><div class="label">관련 뉴스</div>'+stockNews(s).map(n=>'<div class="item"><h3><a href="'+esc(n.link)+'" target="_blank" rel="noopener">'+esc(n.title)+'</a></h3><p>'+esc(n.published)+' · '+esc(n.impact||"중립")+' · '+esc(n.importance||"보통")+'</p></div>').join("")+'</div>'+
  '<div class="signal" style="margin-top:14px">주의: 전망선은 최근 가격 추세와 변동성을 이용한 참고용 시나리오입니다. 실제 주가는 실적, 금리, 환율, 산업 뉴스 등 외부 요인에 따라 달라질 수 있습니다.</div>';
- document.getElementById("stockModal").classList.add("open");document.body.style.overflow="hidden";
+ currentStock=s;document.getElementById("stockModal").classList.add("open");document.body.style.overflow="hidden";
 }
 function closeStock(){document.getElementById("stockModal").classList.remove("open");document.body.style.overflow=""}
 
