@@ -1,20 +1,20 @@
 {
-  "updatedAt": "2026-10-02T11:30:36+00:00",
-  "notice": "주가·지수: Yahoo Finance 참고 데이터. 주식 화면은 페이지가 열린 동안 60초마다 실시간 시세를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
+  "updatedAt": "2026-10-02T15:51:00+09:00",
+  "notice": "주가·지수는 참고용 데이터입니다. 미국 종목은 2026-10-01 정규장 종가, 한국 지수는 2026-10-02 장 마감 기준으로 확인했습니다. 자동 수집은 GitHub Actions가 매시간 갱신합니다.",
   "stocks": [
     {
       "symbol": "005930.KS",
       "name": "삼성전자",
       "category": "한국 반도체",
-      "price": 276000.0,
-      "change": 0.0,
+      "price": 276000,
+      "change": 0,
       "source": "Yahoo Finance"
     },
     {
       "symbol": "000660.KS",
       "name": "SK하이닉스",
       "category": "한국 반도체",
-      "price": 1841000.0,
+      "price": 1841000,
       "change": 0.436442989634479,
       "source": "Yahoo Finance"
     },
@@ -22,7 +22,7 @@
       "symbol": "042700.KS",
       "name": "한미반도체",
       "category": "한국 반도체",
-      "price": 272000.0,
+      "price": 272000,
       "change": 1.303538175046555,
       "source": "Yahoo Finance"
     },
@@ -30,7 +30,7 @@
       "symbol": "036570.KS",
       "name": "엔씨소프트",
       "category": "한국 게임",
-      "price": 241000.0,
+      "price": 241000,
       "change": 4.782608695652174,
       "source": "Yahoo Finance"
     },
@@ -38,49 +38,55 @@
       "symbol": "NVDA",
       "name": "NVIDIA",
       "category": "미국 반도체",
-      "price": 230.86000061035156,
-      "change": 1.0859075551783135,
-      "source": "Yahoo Finance"
+      "price": 230.86,
+      "change": 1.09,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "AMD",
       "name": "AMD",
       "category": "미국 반도체",
-      "price": 615.72998046875,
-      "change": 0.6489425002863393,
-      "source": "Yahoo Finance"
+      "price": 615.73,
+      "change": 0.65,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "INTC",
       "name": "Intel",
       "category": "미국 반도체",
-      "price": 120.0,
-      "change": -0.191302795069189,
-      "source": "Yahoo Finance"
+      "price": 120,
+      "change": -0.19,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "AVGO",
       "name": "Broadcom",
       "category": "미국 반도체",
-      "price": 343.6400146484375,
-      "change": -2.1498299326526005,
-      "source": "Yahoo Finance"
+      "price": 343.64,
+      "change": -2.15,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "MU",
       "name": "Micron",
       "category": "미국 반도체",
-      "price": 1097.3900146484375,
-      "change": 3.030675680523292,
-      "source": "Yahoo Finance"
+      "price": 1097.39,
+      "change": 3.03,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "TSM",
       "name": "TSMC",
       "category": "미국/글로벌 반도체",
-      "price": 459.20001220703125,
-      "change": 0.6598149344606934,
-      "source": "Yahoo Finance"
+      "price": 459.2,
+      "change": 0.66,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     }
   ],
   "indices": [
@@ -88,39 +94,43 @@
       "symbol": "^KS11",
       "name": "KOSPI",
       "category": "종합 지수",
-      "price": 7003.740234375,
-      "change": 0.46461784683055124,
-      "source": "Yahoo Finance"
+      "price": 7003.74,
+      "change": 0.46,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "^KQ11",
       "name": "KOSDAQ",
       "category": "종합 지수",
-      "price": 893.2899780273438,
-      "change": -0.11182055312817384,
-      "source": "Yahoo Finance"
+      "price": 893.29,
+      "change": -0.11,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "^IXIC",
       "name": "NASDAQ Composite",
       "category": "종합 지수",
-      "price": 26871.599609375,
-      "change": 0.039235466826071055,
-      "source": "Yahoo Finance"
+      "price": 26871.6,
+      "change": 0.04,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "^GSPC",
       "name": "S&P 500",
       "category": "종합 지수",
-      "price": 7666.4501953125,
-      "change": 0.19486477459283946,
-      "source": "Yahoo Finance"
+      "price": 7666.45,
+      "change": 0.2,
+      "source": "Web-verified close 2026-10-02",
+      "live": false
     },
     {
       "symbol": "^SOX",
       "name": "PHLX Semiconductor Index (SOX)",
       "category": "반도체 종합",
-      "price": 12829.0,
+      "price": 12829,
       "change": 1.586712411594231,
       "source": "Yahoo Finance"
     },
