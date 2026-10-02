@@ -50,41 +50,17 @@ function stockRow(s){
 function formatPrice(s,v){if(v==null)return "데이터 없음";const isUS=/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol);const isIndex=/^\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol);return Number(v).toLocaleString(undefined,{maximumFractionDigits:2})+(isIndex?" pt":isUS?" $":" ₩")}
 function findStock(symbol){return [...(cached?.stocks||[]),...(cached?.indices||[])].find(x=>x.symbol===symbol)||null;}
 let currentStock=null;
-function makeStockChart(s,requested=22){
- const h=(s.history||[]).map(Number).filter(Number.isFinite);
- if(h.length<2)return '<div class="chart-empty">차트 데이터가 없습니다.</div>';
- const f=s.forecast||{},sh=f.short||{},lo=f.long||{};
- const w=900,H=390,pL=62,pR=18,pT=24,pB=42;
- const unit=/^\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol)?"pt":/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol)?"$":"₩";
- const ranges=[{n:"1M",v:22},{n:"3M",v:63},{n:"1Y",v:h.length}];
- const id="chart_"+String(s.symbol).replace(/[^a-zA-Z0-9]/g,"");
- const all=[...h,sh.bull,sh.bear,lo.base].filter(Number.isFinite);
- const min=Math.min(...all),max=Math.max(...all),pad=(max-min)*.08||1,yMin=min-pad,yMax=max+pad;
- function makeRange(n){
-   const count=Math.min(n,h.length), data=h.slice(-count), vals=data;
-   const hi=Math.max(...vals),loV=Math.min(...vals),chg=data.length>1?(data[data.length-1]/data[0]-1)*100:0;
-   const pts=data.map((v,i)=>{const x=pL+(i/(data.length-1))*(w-pL-pR);const y=pT+(1-(v-yMin)/(yMax-yMin))*(H-pT-pB);return x+","+y}).join(" ");
-   const last=data[data.length-1],ly=pT+(1-(last-yMin)/(yMax-yMin))*(H-pT-pB);
-   const fy=v=>pT+(1-(v-yMin)/(yMax-yMin))*(H-pT-pB);
-   const xForecast=w-pR;
-   const base=Number.isFinite(sh.base)?sh.base:last,bull=Number.isFinite(sh.bull)?sh.bull:last,bear=Number.isFinite(sh.bear)?sh.bear:last,long=Number.isFinite(lo.base)?lo.base:last;
-   const fx0=pL+(data.length-1)/(data.length+8)*(w-pL-pR),fx1=pL+(data.length)/(data.length+8)*(w-pL-pR),fx2=pL+(data.length+4)/(data.length+8)*(w-pL-pR),fx3=w-pR;
-   const grid=[0,1,2,3,4].map(i=>{const y=pT+i*(H-pT-pB)/4;const val=yMax-i*(yMax-yMin)/4;return '<line x1="'+pL+'" y1="'+y+'" x2="'+w+'" y2="'+y+'" class="chart-grid"/><text x="'+(pL-8)+'" y="'+(y+4)+'" text-anchor="end" class="chart-axis">'+Number(val).toLocaleString(undefined,{maximumFractionDigits:2})+unit+'</text>'}).join("");
-   const labels=[0,Math.floor((data.length-1)/2),data.length-1].map((i,j)=>{const x=pL+(i/(data.length-1))*(w-pL-pR);return '<text x="'+x+'" y="'+(H-12)+'" text-anchor="'+(j===0?"start":j===2?"end":"middle")+'" class="chart-axis">'+(n===h.length?["1년 전","6개월 전","현재"][j]:j===0?"시작":j===1?"중간":"현재")+'</text>'}).join("");
-   return {data,hi,loV,chg,pts,ly,fy,base,bull,bear,long,fx0,fx1,fx2,fx3,grid,labels};
- }
- const d=makeRange(Math.min(requested,h.length));
- return '<div class="chart-toolbar"><div><b>가격 흐름</b><span class="chart-change '+(d.chg>=0?"up":"down")+'">'+(d.chg>=0?"+":"")+d.chg.toFixed(2)+'%</span></div><div class="chart-ranges">'+ranges.map(r=>'<button type="button" class="chart-range '+(r.v===Math.min(requested,h.length)?"selected":"")+'" data-chart-symbol="'+esc(s.symbol)+'" data-range="'+r.v+'">'+r.n+'</button>').join("")+'</div></div>'+
- '<div class="chart-stats"><span>고가 <b>'+formatPrice(s,d.hi)+'</b></span><span>저가 <b>'+formatPrice(s,d.loV)+'</b></span><span>현재 <b>'+formatPrice(s,s.price)+'</b></span></div>'+
- '<div class="price-chart detailed"><svg id="'+id+'" viewBox="0 0 '+w+' '+H+'" role="img" aria-label="'+esc(s.name)+' 상세 주가 차트">'+d.grid+
- '<polyline points="'+d.pts+'" class="chart-history"/>'+
- '<line x1="'+d.fx0+'" y1="'+d.ly+'" x2="'+d.fx1+'" y2="'+d.fy(d.base)+'" class="chart-short"/>'+
- '<line x1="'+d.fx1+'" y1="'+d.fy(d.base)+'" x2="'+d.fx2+'" y2="'+d.fy(d.bull)+'" class="chart-bull"/>'+
- '<line x1="'+d.fx1+'" y1="'+d.fy(d.base)+'" x2="'+d.fx2+'" y2="'+d.fy(d.bear)+'" class="chart-bear"/>'+
- '<line x1="'+d.fx2+'" y1="'+d.fy(d.base)+'" x2="'+d.fx3+'" y2="'+d.fy(d.long)+'" class="chart-long"/>'+
- '<circle cx="'+(pL+(d.data.length-1)/(d.data.length-1)*(w-pL-pR))+'" cy="'+d.ly+'" r="6" class="chart-dot"/>'+d.labels+'</svg></div>'+
- '<div class="chart-legend"><span>실제 가격</span><span>단기 기준</span><span>상승</span><span>하락</span><span>장기 기준</span></div>'+
- '<p class="mini">단기/장기 점선은 확정 가격이 아니라 현재 추세와 변동성을 이용한 참고 시나리오입니다.</p>';
+function makeStockChart(s,mode="1d"){
+ const d=(s.candles&&s.candles[mode]||[]).filter(x=>Number.isFinite(x.o)&&Number.isFinite(x.h)&&Number.isFinite(x.l)&&Number.isFinite(x.c));
+ if(d.length<2)return "<div class=\"chart-empty\">선택한 주기의 캔들 데이터가 없습니다.</div>";
+ const v=d.slice(-Math.min(d.length,mode==="1m"?390:mode==="5m"?400:mode==="1h"?500:252));
+ const hi=Math.max(...v.map(x=>x.h)),lo=Math.min(...v.map(x=>x.l)),pad=(hi-lo)*.06||1,yMax=hi+pad,yMin=Math.max(0,lo-pad);
+ const W=Math.max(1000,v.length*7+80),H=420,L=58,R=18,T=24,B=42,PW=W-L-R,PH=H-T-B,step=PW/v.length,body=Math.max(2,Math.min(8,step*.62));
+ const y=z=>T+(1-(z-yMin)/(yMax-yMin))*PH;
+ const bars=v.map((x,i)=>{const cx=L+i*step+step/2,top=y(Math.max(x.o,x.c)),bot=y(Math.min(x.o,x.c));return "<line x1=\""+cx+"\" y1=\""+y(x.h)+"\" x2=\""+cx+"\" y2=\""+y(x.l)+"\"/><rect x=\""+(cx-body/2)+"\" y=\""+Math.min(top,bot)+"\" width=\""+body+"\" height=\""+Math.max(1,bot-top)+"\" class=\""+(x.c>=x.o?"candle-up":"candle-down")+"\"/>"}).join("");
+ const last=v[v.length-1],chg=(last.c/v[0].o-1)*100;
+ const btn=[["1m","1분"],["5m","5분"],["1h","1시간"],["1d","일"]].map(x=>"<button type=\"button\" class=\"chart-range "+(mode===x[0]?"selected":"")+"\" data-chart-symbol=\""+esc(s.symbol)+"\" data-chart-mode=\""+x[0]+"\">"+x[1]+"</button>").join("");
+ return "<div class=\"chart-toolbar\"><div><b>"+(mode==="1m"?"1분봉 · 1일":mode==="5m"?"5분봉 · 5일":mode==="1h"?"1시간봉 · 1개월":"일봉 · 1년")+"</b><span class=\"chart-change "+(chg>=0?"up":"down")+"\">"+(chg>=0?"+":"")+chg.toFixed(2)+"%</span></div><div class=\"chart-ranges\">"+btn+"</div></div><div class=\"chart-stats\"><span>고가 <b>"+formatPrice(s,hi)+"</b></span><span>저가 <b>"+formatPrice(s,lo)+"</b></span><span>현재 <b>"+formatPrice(s,last.c)+"</b></span><span>캔들 <b>"+v.length+"개</b></span></div><div class=\"price-chart detailed\"><svg viewBox=\"0 0 "+W+" "+H+"\">"+bars+"</svg></div><p class=\"mini\">OHLC 캔들 데이터입니다.</p>";
 }
 function stockNews(s){
  const news=cached?.news||[];
@@ -96,11 +72,11 @@ function stockNews(s){
  return arr.slice(0,5);
 }
 function openStockBySymbol(symbol){const s=findStock(symbol);if(s)openStock(s)}
-function setChartRange(symbol,count){
+function setChartRange(symbol,mode){
  const s=findStock(symbol); if(!s)return;
  const el=document.getElementById("stockChartArea"); if(!el)return;
  const label=el.querySelector(".label")?.outerHTML||'<div class="label">주가 차트 · 최근 흐름 + 전망</div>';
- el.innerHTML=label+makeStockChart(s,count);
+ el.innerHTML=label+makeStockChart(s,mode);
 }
 document.addEventListener("click",e=>{
  const stock=e.target.closest(".stock-click[data-symbol]");
@@ -111,7 +87,7 @@ document.addEventListener("click",e=>{
  const b=e.target.closest(".chart-range[data-chart-symbol]");
  if(!b)return;
  e.preventDefault();
- setChartRange(b.dataset.chartSymbol,Number(b.dataset.range));
+ setChartRange(b.dataset.chartSymbol,b.dataset.chartMode||"1d");
 });
 function openStock(s){
  const f=s.forecast||{}, sh=f.short||{}, lo=f.long||{};
