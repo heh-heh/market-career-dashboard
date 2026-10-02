@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-02T11:40:55+00:00",
+  "updatedAt": "2026-10-02T11:42:24+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 주식 화면은 페이지가 열린 동안 60초마다 실시간 시세를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -1980,15 +1980,6 @@
       "relevance": 2
     },
     {
-      "title": "마이크론 실적 발표 임박…월가 매출 508억달러대 전망, HBM·D램이 가른다 - cbci.co.kr",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5XeUt4WVViMzJlcGc1V1doZWJlREN3emR6QXJkQW5GUllWU3FQb2xYU084RDc2QTR4bnN5a3ZkOTI2R2wxVWJGck92U1VWOF81Rl9SbndSQ3FydWtmXzNnTm5iQ3pzYUpN?oc=5",
-      "published": "Fri, 02 Oct 2026 09:27:19 GMT",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2
-    },
-    {
       "title": "마이크론 'AI 수요'에 분기 매출 615억달러 전망 - 세이프머니",
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5CNEk0bURfUGtKcENRUXVWZjFKck55X296U2Z4NkpXWW40SVRfM3ZpaHBYcXZfWW8yR3FWTi1QMHhuZ2ppbXQyUUdTbzF6WFpIanY3a2NWcHNRRm1aMnJaa2pWMDk1WjY2VVdvT0Vn?oc=5",
       "published": "Fri, 02 Oct 2026 08:56:04 GMT",
@@ -2025,15 +2016,6 @@
       "relevance": 1
     },
     {
-      "title": "게임 안팎의 설명이 일치하는지 확인할 사이트순위 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNamFlcmtMTTUzamg5MS1GeUtkVDhkT29xSVlDYVUxOWxmLU5Xb3MtaURMQUhldzl4OFJzTzZhbnFmUTRuaUF4S2RhZC1ZN29xVDJMS01CRFV4dTR1SnNTNU4tNU5yQ2hNYzhydDF4Y012cnIyWHVENFFQVlNkWVhVMDJoSGstR3BxRlVUNHAtZnRWVVdMSGFoREhMZlZBQ2xMX25TbTE2NEF3T1NtbDc0NktZYnM4M1p1ZEx3a0haMFZWZmU1VjFfa05CclVkUTZWeDBNSEpjZmZxNHpuNlBWMVZYQWVEbU1tRy1hUDBJUk5kbW8?oc=5",
-      "published": "Fri, 02 Oct 2026 08:35:54 GMT",
-      "source": "게임 개발자 채용",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
       "title": "취업 필수 스펙된 'AI'…정부·기업, 구직 청년 격차 줄인다 - MTN 머니투데이방송",
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1pZXFLRTQxdnRKYW1TOVlzSUUyZkhzWjg4MmJhUmg0eDJ4TVNIUFgxX01VQ2xCMVJHcmJpTTN2ckl1Q3pHMGk2NVJsWGxEZkN3ZGRLcmhiQy1RVnkzeVF2Z0FJUzg?oc=5",
       "published": "Fri, 02 Oct 2026 08:33:09 GMT",
@@ -2043,7 +2025,7 @@
       "relevance": 1
     },
     {
-      "title": "경운대, ‘2026 산학연협력EXPO’서 AI·항공모빌리티 혁신성과 전시 - news.unn.net",
+      "title": "경운대, ‘2026 산학연협력EXPO’서 AI·항공모빌리티 혁신성과 전시 - 한국대학신문",
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVZkdNMkxjamxJNlNoMnVNcThzX1dXWWVrWDhfU1BZcHMwMFc2UUVNejBTUEVRM190V1dnUGpaU0lpd2trSDBnaXhaZ1hjY2xRWEZwXzBtcFA2M2M4dlRZSXRTSmN5QQ?oc=5",
       "published": "Fri, 02 Oct 2026 08:21:57 GMT",
       "source": "AI 개발 신기술",
@@ -2079,6 +2061,15 @@
       "relevance": 1
     },
     {
+      "title": "AI 데이터센터 확대에 메모리 시장 긴장감 고조 - 제민일보",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBVSk5hS0ozUTgwaWRlRjhOTTdyTHFsYnV1Tzd1Q2t5U19sUm1xNVJVelloRlB4ZlFOZjlaWkRDWVMxS3pFQ1U0eEpYUzdobXZleGNfdEdMTjY5UVhCQllsMnlCSjRJOVk?oc=5",
+      "published": "Fri, 02 Oct 2026 05:23:36 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
       "title": "드림에이지, 게임사 본연 ‘코어’ 힘으로 글로벌 확장 가속 - 한국금융신문",
       "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9Fck5BVzRsWGJfb3Ayc0dnUUZNdW80Z21KMXhxRTJvVWR0SXN6aEx0UU8waHRKYjVTNUZIcFJzdFBNM1RWT3MxbmFiQ0hGa2dWbTZBX0pnZ2JIZUhXRy12am1LTnFONjJTeUdmQ1RSQnl0Qmdnd2NjRi1vMTU?oc=5",
       "published": "Fri, 02 Oct 2026 05:14:57 GMT",
@@ -2101,6 +2092,15 @@
       "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5",
       "published": "Fri, 02 Oct 2026 01:44:00 GMT",
       "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
+      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
+      "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -2133,7 +2133,7 @@
       "relevance": 0
     },
     {
-      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
+      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - koreastocknews.com",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
       "source": "게임 산업 신작 실적 한국",
