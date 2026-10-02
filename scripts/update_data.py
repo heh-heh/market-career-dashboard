@@ -2,14 +2,26 @@
 import json, urllib.request, urllib.parse, xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+import time
 
 OUT=Path("data/dashboard.json")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
-def get(url):
-    req=urllib.request.Request(url,headers={"User-Agent":"market-career-dashboard/1.0"})
-    with urllib.request.urlopen(req,timeout=20) as r:
-        return r.read()
+def get(url, attempts=3, timeout=12):
+    last=None
+    for n in range(attempts):
+        try:
+            req=urllib.request.Request(url,headers={
+                "User-Agent":"Mozilla/5.0 market-career-dashboard/1.1",
+                "Accept":"application/json,text/plain,*/*"
+            })
+            with urllib.request.urlopen(req,timeout=timeout) as r:
+                return r.read()
+        except Exception as e:
+            last=e
+            if n+1 < attempts:
+                time.sleep(1.2*(n+1))
+    raise last
 
 def quote_symbol(symbol):
     return urllib.parse.quote(symbol,safe="")
@@ -17,100 +29,255 @@ def quote_symbol(symbol):
 def chart_data(symbol, rng, interval):
     url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range={rng}&interval={interval}&includePrePost=false"
     try:
-        raw=json.loads(get(url)); res=raw["chart"]["result"][0]
+        raw=json.loads(get(url))
+        res=raw["chart"]["result"][0]
         q=res["indicators"]["quote"][0]
+        ts=res.get("timestamp",[])
+        opens=q.get("open",[]); highs=q.get("high",[])
+        lows=q.get("low",[]); closes=q.get("close",[])
+        vols=q.get("volume",[])
         out=[]
-        for i,ts in enumerate(res.get("timestamp",[])):
-            o,h,l,c=(q["open"][i],q["high"][i],q["low"][i],q["close"][i])
-            if None in (o,h,l,c): continue
-            out.append({"t":ts,"o":o,"h":h,"l":l,"c":c,"v":q.get("volume",[None])[i]})
+        for i,t in enumerate(ts):
+            if i>=len(opens) or i>=len(highs) or i>=len(lows) or i>=len(closes):
+                continue
+            o,h,l,c=opens[i],highs[i],lows[i],closes[i]
+            if None in (o,h,l,c):
+                continue
+            v=vols[i] if i<len(vols) else None
+            out.append({"t":t,"o":o,"h":h,"l":l,"c":c,"v":v})
         return out
     except Exception:
         return []
 
+try:
+    previous_data=json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
+except Exception:
+    previous_data={}
+
+previous_by_symbol={
+    x.get("symbol"):x
+    for x in previous_data.get("stocks",[])+previous_data.get("indices",[])
+    if x.get("symbol")
+}
+
 def stock(symbol,name,category):
+    previous=previous_by_symbol.get(symbol)
     daily=chart_data(symbol,"1y","1d")
-    url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range=1y&interval=1d"
+
+    if not daily and previous and previous.get("history"):
+        return {
+            **previous,
+            "name":name,
+            "category":category,
+            "source":"Yahoo Finance (cached fallback)",
+            "warning":"이번 수집에서 최신 가격 데이터를 받지 못해 직전 정상 데이터를 유지했습니다."
+        }
+
     try:
-        raw=json.loads(get(url)); res=raw["chart"]["result"][0]
-        q=res["indicators"]["quote"][0]; prices=[x for x in q["close"] if x is not None]
-        current=prices[-1]; prev=prices[-2] if len(prices)>1 else current
+        prices=[x["c"] for x in daily if x.get("c") is not None]
+        if len(prices)<2:
+            raise RuntimeError("daily price data unavailable")
+
+        current=prices[-1]
+        prev=prices[-2]
         short=prices[-20:] if len(prices)>=20 else prices
         long=prices[-120:] if len(prices)>=120 else prices
+
         def trend(arr):
             return (arr[-1]-arr[0])/arr[0] if len(arr)>1 and arr[0] else 0
-        st=trend(short); lt=trend(long)
+
+        st=trend(short)
+        lt=trend(long)
         rs=[(short[i]-short[i-1])/short[i-1] for i in range(1,len(short)) if short[i-1]]
         vol=(sum(r*r for r in rs)/len(rs))**0.5 if rs else 0
         short_base=current*(1+st*0.35)
         short_band=current*vol*2.0
         long_base=current*(1+lt*0.55)
-        return {"symbol":symbol,"name":name,"category":category,"price":current,"change":(current-prev)/prev*100 if prev else 0,
-                "source":"Yahoo Finance","history":prices[-252:],
-                "candles":{"1m":chart_data(symbol,"1d","1m"),"5m":chart_data(symbol,"5d","5m"),"1h":chart_data(symbol,"1mo","1h"),"1d":daily[-252:]},
-                "forecast":{"short":{"period":"단기 1~4주","base":short_base,"bull":short_base+short_band,"bear":max(0,short_base-short_band),
-                "trend":"상승" if st>0.03 else "하락" if st<-0.03 else "중립"},
-                "long":{"period":"장기 6~12개월","base":long_base,
-                "trend":"상승" if lt>0.08 else "하락" if lt<-0.08 else "중립"},
-                "method":"최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."}}
-    except Exception as e:
-        return {"symbol":symbol,"name":name,"category":category,"price":None,"change":None,"source":"unavailable","error":str(e)}
+
+        candles={
+            "1m":chart_data(symbol,"1d","1m"),
+            "5m":chart_data(symbol,"5d","5m"),
+            "1h":chart_data(symbol,"1mo","1h"),
+            "1d":daily[-252:]
+        }
+
+        if previous and previous.get("candles"):
+            for key in candles:
+                if not candles[key] and previous["candles"].get(key):
+                    candles[key]=previous["candles"][key]
+
+        return {
+            "symbol":symbol,
+            "name":name,
+            "category":category,
+            "price":current,
+            "change":(current-prev)/prev*100 if prev else 0,
+            "source":"Yahoo Finance",
+            "history":prices[-252:],
+            "candles":candles,
+            "forecast":{
+                "short":{
+                    "period":"단기 1~4주",
+                    "base":short_base,
+                    "bull":short_base+short_band,
+                    "bear":max(0,short_base-short_band),
+                    "trend":"상승" if st>0.03 else "하락" if st<-0.03 else "중립"
+                },
+                "long":{
+                    "period":"장기 6~12개월",
+                    "base":long_base,
+                    "trend":"상승" if lt>0.08 else "하락" if lt<-0.08 else "중립"
+                },
+                "method":"최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
+            }
+        }
+    except Exception:
+        if previous:
+            return {
+                **previous,
+                "name":name,
+                "category":category,
+                "source":"Yahoo Finance (cached fallback)",
+                "warning":"수집 오류로 직전 정상 데이터를 유지했습니다."
+            }
+        return {
+            "symbol":symbol,
+            "name":name,
+            "category":category,
+            "price":None,
+            "change":None,
+            "source":"unavailable"
+        }
 
 def classify(title):
     t=title.lower()
     pos=["상승","급등","호재","수주","증가","성장","개선","최대","돌파","투자","확대","흑자","출시"]
     neg=["하락","급락","악재","감소","적자","지연","축소","우려","규제","소송","철회"]
     rel=["반도체","hbm","ai","삼성","sk하이닉스","한미반도체","엔비디아","nvidia","amd","인텔","intel","마이크론","게임","엔씨","넥슨","크래프톤","서버","클라우드"]
-    p=sum(w in t for w in pos); n=sum(w in t for w in neg); r=sum(w in t for w in rel)
-    return {"impact":"긍정" if p>n else "부정" if n>p else "중립","importance":"높음" if r>=2 or abs(p-n)>=2 else "보통" if r else "낮음","relevance":r}
+    p=sum(w in t for w in pos)
+    n=sum(w in t for w in neg)
+    r=sum(w in t for w in rel)
+    return {
+        "impact":"긍정" if p>n else "부정" if n>p else "중립",
+        "importance":"높음" if r>=2 or abs(p-n)>=2 else "보통" if r else "낮음",
+        "relevance":r
+    }
 
 def rss(query,limit=6):
-    url="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":query+" when:1d","hl":"ko","gl":"KR","ceid":"KR:ko"})
+    url="https://news.google.com/rss/search?"+urllib.parse.urlencode({
+        "q":query+" when:1d",
+        "hl":"ko",
+        "gl":"KR",
+        "ceid":"KR:ko"
+    })
     out=[]
     try:
-        root=ET.fromstring(get(url)); cutoff=datetime.now(timezone.utc)-timedelta(days=2)
+        root=ET.fromstring(get(url))
+        cutoff=datetime.now(timezone.utc)-timedelta(days=2)
         for item in root.findall("./channel/item")[:limit]:
-            title=item.findtext("title",""); pub=item.findtext("pubDate","")
-            try: dt=datetime.strptime(pub,"%a, %d %b %Y %H:%M:%S %Z").replace(tzinfo=timezone.utc)
-            except Exception: dt=None
-            if dt and dt < cutoff: continue
-            out.append({"title":title,"link":item.findtext("link",""),"published":pub,"source":query,**classify(title)})
-    except Exception as e:
-        out.append({"title":"뉴스 수집 실패","link":"","published":"","source":str(e),"impact":"중립","importance":"낮음","relevance":0})
+            title=item.findtext("title","")
+            pub=item.findtext("pubDate","")
+            try:
+                dt=datetime.strptime(pub,"%a, %d %b %Y %H:%M:%S %Z").replace(tzinfo=timezone.utc)
+            except Exception:
+                dt=None
+            if dt and dt < cutoff:
+                continue
+            out.append({
+                "title":title,
+                "link":item.findtext("link",""),
+                "published":pub,
+                "source":query,
+                **classify(title)
+            })
+    except Exception:
+        pass
     return out
 
 now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 
 korea=[
- stock("005930.KS","삼성전자","한국 반도체"),stock("000660.KS","SK하이닉스","한국 반도체"),
- stock("042700.KS","한미반도체","한국 반도체"),stock("036570.KS","엔씨소프트","한국 게임")]
+    stock("005930.KS","삼성전자","한국 반도체"),
+    stock("000660.KS","SK하이닉스","한국 반도체"),
+    stock("042700.KS","한미반도체","한국 반도체"),
+    stock("036570.KS","엔씨소프트","한국 게임")
+]
+
 us=[
- stock("NVDA","NVIDIA","미국 반도체"),stock("AMD","AMD","미국 반도체"),stock("INTC","Intel","미국 반도체"),
- stock("AVGO","Broadcom","미국 반도체"),stock("MU","Micron","미국 반도체"),stock("TSM","TSMC","미국/글로벌 반도체")]
+    stock("NVDA","NVIDIA","미국 반도체"),
+    stock("AMD","AMD","미국 반도체"),
+    stock("INTC","Intel","미국 반도체"),
+    stock("AVGO","Broadcom","미국 반도체"),
+    stock("MU","Micron","미국 반도체"),
+    stock("TSM","TSMC","미국/글로벌 반도체")
+]
 
 indices=[
- stock("^KS11","KOSPI","종합 지수"),stock("^KQ11","KOSDAQ","종합 지수"),
- stock("^IXIC","NASDAQ Composite","종합 지수"),stock("^GSPC","S&P 500","종합 지수"),
- stock("^SOX","PHLX Semiconductor Index (SOX)","반도체 종합"),
- stock("SOXX","iShares Semiconductor ETF","반도체 ETF"),stock("SMH","VanEck Semiconductor ETF","반도체 ETF")]
+    stock("^KS11","KOSPI","종합 지수"),
+    stock("^KQ11","KOSDAQ","종합 지수"),
+    stock("^IXIC","NASDAQ Composite","종합 지수"),
+    stock("^GSPC","S&P 500","종합 지수"),
+    stock("^SOX","PHLX Semiconductor Index (SOX)","반도체 종합"),
+    stock("SOXX","iShares Semiconductor ETF","반도체 ETF"),
+    stock("SMH","VanEck Semiconductor ETF","반도체 ETF")
+]
 
 news=[]
-for q in ["반도체 AI HBM 한국 미국","NVIDIA AMD Intel semiconductor","게임 산업 신작 실적 한국","게임 개발자 채용","백엔드 서버 개발자 채용","AI 개발 신기술"]:
+for q in [
+    "반도체 AI HBM 한국 미국",
+    "NVIDIA AMD Intel semiconductor",
+    "게임 산업 신작 실적 한국",
+    "게임 개발자 채용",
+    "백엔드 서버 개발자 채용",
+    "AI 개발 신기술"
+]:
     news += rss(q,6)
-news=sorted(news,key=lambda x:(x.get("importance")=="높음",x.get("relevance",0),x.get("published","")),reverse=True)[:30]
+
+news=sorted(
+    news,
+    key=lambda x:(x.get("importance")=="높음",x.get("relevance",0),x.get("published","")),
+    reverse=True
+)[:30]
 
 data={
- "updatedAt":now,
- "notice":"주가·지수: Yahoo Finance 참고 데이터. 주식 화면은 페이지가 열린 동안 60초마다 실시간 시세를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
- "stocks":korea+us,"indices":indices,"news":news,
- "employment":[
-  {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
-  {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
-  {"title":"백엔드","skills":["REST API","DB","Docker","Cloud","테스트"]}],
- "trends":[
-  {"title":"생성형 AI","text":"코드 생성·리뷰·테스트·문서화 등 개발 파이프라인 보조"},
-  {"title":"AI Agent","text":"여러 단계의 개발 작업을 계획하고 도구를 호출하는 자동화"},
-  {"title":"온디바이스 AI","text":"기기에서 추론해 지연시간·비용·데이터 이동을 줄이는 방향"},
-  {"title":"게임 라이브서비스","text":"실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"}]}
-OUT.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding="utf-8")
-print(f"updated {OUT} at {now}")
+    "updatedAt":now,
+    "notice":"주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
+    "stocks":korea+us,
+    "indices":indices,
+    "news":news,
+    "employment":[
+        {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
+        {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
+        {"title":"백엔드","skills":["REST API","DB","Docker","Cloud","테스트"]}
+    ],
+    "trends":[
+        {"title":"생성형 AI","text":"코드 생성·리뷰·테스트·문서화 등 개발 파이프라인 보조"},
+        {"title":"AI Agent","text":"여러 단계의 개발 작업을 계획하고 도구를 호출하는 자동화"},
+        {"title":"온디바이스 AI","text":"기기에서 추론해 지연시간·비용·데이터 이동을 줄이는 방향"},
+        {"title":"게임 라이브서비스","text":"실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"}
+    ]
+}
+
+all_quotes=data["stocks"]+data["indices"]
+successful=[x for x in all_quotes if isinstance(x.get("price"),(int,float))]
+candle_ready=sum(
+    1 for x in all_quotes
+    if any(x.get("candles",{}).get(k) for k in ("1m","5m","1h","1d"))
+)
+
+if len(successful)<10:
+    raise RuntimeError(
+        f"data quality guard: only {len(successful)}/{len(all_quotes)} quotes available; refusing to overwrite dashboard.json"
+    )
+
+data["quality"]={
+    "quotes_ok":len(successful),
+    "quotes_total":len(all_quotes),
+    "candle_ready":candle_ready,
+    "generatedAt":now
+}
+
+tmp=OUT.with_suffix(".json.tmp")
+tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding="utf-8")
+tmp.replace(OUT)
+print(f"updated {OUT} at {now}; quotes={len(successful)}/{len(all_quotes)} candle_ready={candle_ready}")
