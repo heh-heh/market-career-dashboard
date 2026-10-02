@@ -126,7 +126,7 @@ function render(d){
  document.getElementById("etfs").innerHTML=indices.filter(x=>["SOXX","SMH"].includes(x.symbol)).map(stockRow).join("");
  document.getElementById("jobs").innerHTML=(d.employment||[]).map(j=>'<div class="item"><h3>'+esc(j.title)+'</h3><p>'+j.skills.map(esc).map(x=>'<span class="tag">'+x+'</span>').join("")+'</p></div>').join("");
  document.getElementById("trends").innerHTML=(d.trends||[]).map(t=>'<div class="item"><h3>'+esc(t.title)+'</h3><p>'+esc(t.text)+'</p></div>').join("");
- document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+esc(d.updatedAt||"-")+"</b><br>"+esc(d.notice||"");
+ document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+esc(d.updatedAt||"-")+"</b><br>시세 수집: <b>"+esc(d.quality?.quotes_ok??"-")+"/"+esc(d.quality?.quotes_total??"-")+"</b> · 캔들 준비: <b>"+esc(d.quality?.candle_ready??"-")+"</b><br>"+esc(d.notice||"");
  document.getElementById("notice").textContent=d.notice||"";
 }
 async function liveQuotes(){
