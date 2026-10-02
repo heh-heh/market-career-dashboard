@@ -101,7 +101,12 @@ function stockNews(s){
  return arr.slice(0,5);
 }
 function openStockBySymbol(symbol){const s=findStock(symbol);if(s)openStock(s)}
-function setChartRange(symbol,count){const s=findStock(symbol);if(!s)return;const el=document.getElementById("stockChartArea");if(el)el.innerHTML=makeStockChart(s,count)}
+function setChartRange(symbol,count){
+ const s=findStock(symbol); if(!s)return;
+ const el=document.getElementById("stockChartArea"); if(!el)return;
+ const label=el.querySelector(".label")?.outerHTML||'<div class="label">주가 차트 · 최근 흐름 + 전망</div>';
+ el.innerHTML=label+makeStockChart(s,count);
+}
 function openStock(s){
  const f=s.forecast||{}, sh=f.short||{}, lo=f.long||{};
  const history=(s.history||[]).map(Number).filter(Number.isFinite);
