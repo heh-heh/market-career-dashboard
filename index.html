@@ -40,14 +40,14 @@ async function loadData(){
 function stockRow(s){
  const isUS=/^(NVDA|AMD|INTC|AVGO|MU|TSM)$/.test(s.symbol);
  const isETF=/^(SOXX|SMH)$/.test(s.symbol);
- const isIndex=/^\\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol);
+ const isIndex=/^\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol);
  const unit=isIndex?" pt":(isUS||isETF?" $":" ₩");
  const price=s.price==null?"데이터 없음":Number(s.price).toLocaleString(undefined,{maximumFractionDigits:2})+unit;
  const change=s.change==null?"-":(s.change>=0?"+":"")+Number(s.change).toFixed(2)+"%";
  const live=s.live?" · 실시간":"";
  return '<div class="item stock-click" data-symbol="'+esc(s.symbol)+'" onclick="openStockBySymbol(this.dataset.symbol)"><h3>'+esc(s.name)+' <span class="'+cls(s.change)+'">'+change+'</span></h3><p>'+price+' · '+esc(s.symbol)+live+' · 클릭하여 상세분석</p></div>';
 }
-function formatPrice(s,v){if(v==null)return "데이터 없음";const isUS=/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol);const isIndex=/^\\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol);return Number(v).toLocaleString(undefined,{maximumFractionDigits:2})+(isIndex?" pt":isUS?" $":" ₩")}
+function formatPrice(s,v){if(v==null)return "데이터 없음";const isUS=/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol);const isIndex=/^\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol);return Number(v).toLocaleString(undefined,{maximumFractionDigits:2})+(isIndex?" pt":isUS?" $":" ₩")}
 function findStock(symbol){return [...(cached?.stocks||[]),...(cached?.indices||[])].find(x=>x.symbol===symbol)||null;}
 let currentStock=null;
 function makeStockChart(s,requested=22){
@@ -55,7 +55,7 @@ function makeStockChart(s,requested=22){
  if(h.length<2)return '<div class="chart-empty">차트 데이터가 없습니다.</div>';
  const f=s.forecast||{},sh=f.short||{},lo=f.long||{};
  const w=900,H=390,pL=62,pR=18,pT=24,pB=42;
- const unit=/^\\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol)?"pt":/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol)?"$":"₩";
+ const unit=/^\^(KS11|KQ11|IXIC|GSPC|SOX)$/.test(s.symbol)?"pt":/^(NVDA|AMD|INTC|AVGO|MU|TSM|SOXX|SMH)$/.test(s.symbol)?"$":"₩";
  const ranges=[{n:"1M",v:22},{n:"3M",v:63},{n:"1Y",v:h.length}];
  const id="chart_"+String(s.symbol).replace(/[^a-zA-Z0-9]/g,"");
  const all=[...h,sh.bull,sh.bear,lo.base].filter(Number.isFinite);
