@@ -27,7 +27,8 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <script>
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const cls=v=>v==null?"":v>=0?"up":"down";
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.view).classList.add("active");scrollTo({top:0,behavior:"smooth"})});
+function showView(id,button){document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));window.scrollTo(0,0)}
+document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b)});
 
 let cached;
 async function loadData(){
@@ -50,8 +51,8 @@ function render(d){
  document.getElementById("koreaStocks").innerHTML=d.stocks.filter(x=>x.category==="한국 반도체"||x.category==="한국 게임").map(stockRow).join("");
  document.getElementById("usStocks").innerHTML=d.stocks.filter(x=>x.category==="미국 반도체"||x.category==="미국/글로벌 반도체").map(stockRow).join("");
  document.getElementById("etfs").innerHTML=indices.filter(x=>["SOXX","SMH"].includes(x.symbol)).map(stockRow).join("");
- document.getElementById("jobs").innerHTML=d.employment.map(j=>'<div class="item"><h3>'+esc(j.title)+'</h3><p>'+j.skills.map(esc).map(x=>'<span class="tag">'+x+'</span>').join("")+'</p></div>').join("");
- document.getElementById("trends").innerHTML=d.trends.map(t=>'<div class="item"><h3>'+esc(t.title)+'</h3><p>'+esc(t.text)+'</p></div>').join("");
+ document.getElementById("jobs").innerHTML=(d.employment||[]).map(j=>'<div class="item"><h3>'+esc(j.title)+'</h3><p>'+j.skills.map(esc).map(x=>'<span class="tag">'+x+'</span>').join("")+'</p></div>').join("");
+ document.getElementById("trends").innerHTML=(d.trends||[]).map(t=>'<div class="item"><h3>'+esc(t.title)+'</h3><p>'+esc(t.text)+'</p></div>').join("");
  document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+esc(d.updatedAt||"-")+"</b><br>"+esc(d.notice||"");
  document.getElementById("notice").textContent=d.notice||"";
 }
