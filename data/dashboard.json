@@ -1,33 +1,85 @@
 {
   "updatedAt": "2026-10-02T11:16:16+00:00",
-  "notice": "주가 데이터는 Yahoo Finance 차트 엔드포인트에서 조회한 참고용 데이터이며, 뉴스는 Google News RSS 검색 결과의 링크/제목을 표시합니다. 각 제공자의 이용약관을 확인하세요.",
+  "notice": "주가·지수는 Yahoo Finance 참고 데이터입니다. 페이지가 열려 있으면 60초마다 시세를 재조회하며, 자동 수집 데이터는 GitHub Actions가 갱신합니다.",
   "stocks": [
     {
       "symbol": "005930.KS",
       "name": "삼성전자",
-      "price": 276000.0,
-      "change": 0.0,
-      "source": "Yahoo Finance"
+      "price": 276000,
+      "change": 0,
+      "source": "Yahoo Finance",
+      "category": "한국 반도체"
     },
     {
       "symbol": "000660.KS",
       "name": "SK하이닉스",
-      "price": 1841000.0,
+      "price": 1841000,
       "change": 0.436442989634479,
-      "source": "Yahoo Finance"
+      "source": "Yahoo Finance",
+      "category": "한국 반도체"
     },
     {
       "symbol": "042700.KS",
       "name": "한미반도체",
-      "price": 272000.0,
+      "price": 272000,
       "change": 1.303538175046555,
-      "source": "Yahoo Finance"
+      "source": "Yahoo Finance",
+      "category": "한국 반도체"
     },
     {
       "symbol": "036570.KS",
       "name": "엔씨소프트",
-      "price": 241000.0,
+      "price": 241000,
       "change": 4.782608695652174,
+      "source": "Yahoo Finance",
+      "category": "한국 게임"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "category": "미국 반도체",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "AMD",
+      "name": "AMD",
+      "category": "미국 반도체",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel",
+      "category": "미국 반도체",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "category": "미국 반도체",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "MU",
+      "name": "Micron",
+      "category": "미국 반도체",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "TSM",
+      "name": "TSMC",
+      "category": "미국/글로벌 반도체",
+      "price": null,
+      "change": null,
       "source": "Yahoo Finance"
     }
   ],
@@ -202,6 +254,64 @@
     {
       "title": "게임 라이브서비스",
       "text": "실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"
+    }
+  ],
+  "indices": [
+    {
+      "symbol": "^KS11",
+      "name": "KOSPI",
+      "category": "종합 지수",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^KQ11",
+      "name": "KOSDAQ",
+      "category": "종합 지수",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^IXIC",
+      "name": "NASDAQ Composite",
+      "category": "종합 지수",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^GSPC",
+      "name": "S&P 500",
+      "category": "종합 지수",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^SOX",
+      "name": "PHLX Semiconductor Index (SOX)",
+      "category": "반도체 종합",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "SOXX",
+      "name": "iShares Semiconductor ETF",
+      "category": "반도체 ETF",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "SMH",
+      "name": "VanEck Semiconductor ETF",
+      "category": "반도체 ETF",
+      "price": null,
+      "change": null,
+      "source": "Yahoo Finance"
     }
   ]
 }
