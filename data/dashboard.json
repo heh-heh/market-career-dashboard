@@ -1,8 +1,207 @@
 {
-  "updatedAt": "",
-  "notice": "데이터 업데이트 대기 중",
-  "stocks": [],
-  "news": [],
-  "employment": [],
-  "trends": []
+  "updatedAt": "2026-10-02T11:16:16+00:00",
+  "notice": "주가 데이터는 Yahoo Finance 차트 엔드포인트에서 조회한 참고용 데이터이며, 뉴스는 Google News RSS 검색 결과의 링크/제목을 표시합니다. 각 제공자의 이용약관을 확인하세요.",
+  "stocks": [
+    {
+      "symbol": "005930.KS",
+      "name": "삼성전자",
+      "price": 276000.0,
+      "change": 0.0,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "000660.KS",
+      "name": "SK하이닉스",
+      "price": 1841000.0,
+      "change": 0.436442989634479,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "042700.KS",
+      "name": "한미반도체",
+      "price": 272000.0,
+      "change": 1.303538175046555,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "036570.KS",
+      "name": "엔씨소프트",
+      "price": 241000.0,
+      "change": 4.782608695652174,
+      "source": "Yahoo Finance"
+    }
+  ],
+  "news": [
+    {
+      "title": "삼전·닉스, 이달 '국내 최대 반도체 전시회'서 격돌…\"차세대 HBM 기술 공개한다\" - 뉴시스",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9Xc195OENHdmdzNXRoM0JDNzJTLUppbkZETzBLdm41WE5EYUx1ZXNJaTBYdk1iMGE3bmd4X01XY1pVVEdxd2dGYktpWVRMblpETk5ZUkh5LXBGalBnakdBMEszTXJTN1lCSE5KUEFrNjE3Rk9PdnBIdNIBeEFVX3lxTE9Xc195OENHdmdzNXRoM0JDNzJTLUppbkZETzBLdm41WE5EYUx1ZXNJaTBYdk1iMGE3bmd4X01XY1pVVEdxd2dGYktpWVRMblpETk5ZUkh5LXBGalBnakdBMEszTXJTN1lCSE5KUEFrNjE3Rk9PdnBIdA?oc=5",
+      "published": "Wed, 30 Sep 2026 20:04:25 GMT",
+      "source": "반도체 AI HBM 한국"
+    },
+    {
+      "title": "모틀리풀이 꼽은 AI 반도체 5선 뒤에 놓인 한국 HBM의 무게 - 글로벌이코노믹",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNQUpibnhqMTZoNDlOaUNCTDYxYkdEYndWb1I3M1BJbHA5Tkc4VmkyazF4dDFYLVE3c18wVVJFek9BY2JEcUMwSlpERE5OczBuenYyQTl2Qkd3Z1FxaWxXQzBBcTlsMWQwQVd1SG82WnV3UElKT3RfXzJlYXNjM19WZFBqYUJiQ0JC?oc=5",
+      "published": "Fri, 25 Sep 2026 07:58:37 GMT",
+      "source": "반도체 AI HBM 한국"
+    },
+    {
+      "title": "한화운용, '코리아HBM반도체'·'AI반도체소부장액티브' ETF 상장 - 뉴스핌",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE81UG9BbFh0bHRORmktSXpXc09CSUxtcVBBWTJlTnkxbzNhajZKNGZ0VkVWeEY0TzhPYUdQVzZVRmQ0N196ZjI0dm10R3BSa3hKazhiVGh6dFIwYnlk?oc=5",
+      "published": "Tue, 15 Sep 2026 07:00:00 GMT",
+      "source": "반도체 AI HBM 한국"
+    },
+    {
+      "title": "[김정호의 AI시대 전략] HBM 이후, 한국 AI산업 성장은 ‘전력 반도체’에 달렸다 - chosun.com",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNdjIyQU9CWkl0UGM3OHBnbWNEdTJXdzJTbFFTTHBIX2JNN1lWbEVEN2xWNkE2QXdJUE16VVdkUV9qX3dRN2ZQdGpLSl9INW45NTlUTWJ3SUhjY1ZPeG94QjFwLVpoMjk2bThsUGlydXNUdF9uWGQyZlFSWFRlcXh0Q0NCWVA3Z3ZkU3ktZTFaYk0?oc=5",
+      "published": "Tue, 08 Sep 2026 07:00:00 GMT",
+      "source": "반도체 AI HBM 한국"
+    },
+    {
+      "title": "넥슨·크래프톤 또 날았다…게임업계 실적 양극화 - 연합뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1MU3B6c1R6XzhwMk9jeEh4VnZxU2MzeUlacm9UZEtock5rVGh0VmRiaTRCSllFZWZkZ29oQnozMEt3V1JyM0hlNFdMNlRUT2dkZEt6OFlfVTROS0nSAWBBVV95cUxPc2VyOUtZLTdVOEZ4Q3NHOXkxTFhmdU85ZmV3d0NVWGN4Ymg4emJyaGtIX3lvOHNTMk9nTWpXSE03R182QTNKYjZoZXM1Y0NJUzFNOEs2cEROWGFMMHZFd3c?oc=5",
+      "published": "Thu, 14 May 2026 07:00:00 GMT",
+      "source": "게임 산업 신작 실적 한국"
+    },
+    {
+      "title": "세계 4위 K게임 그늘… 새 간판 IP 세대교체 더디다 [韓콘텐츠 IP의 빈칸①] - IT조선",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE45QkprN0xNOWJ4MzBRcklsbVhxalRGcWJLWlZGVGl6cDJlWERXSjlObmNacHZodElqaEhrOUk0a3JFbm1veWhEbHNWSkFENlBpVHNheU4yN0p4R05JVnNaRUF6aHJEM3dyajJfY21sbkbSAXRBVV95cUxOd3Q5X2pCeThmYi1HY1VjQXd6Y3hURUZqUWdObmpDc3BKZXFQdC16QnlHNnhOVGtIMnlaZmkzZ0h5VUFhckVEOGtzUFVZZWtVSGtMRDdvQTVPbFdrckhLdVItdlVxWUlSYWkzaUJCakxmNzYzOQ?oc=5",
+      "published": "Sat, 05 Sep 2026 07:00:00 GMT",
+      "source": "게임 산업 신작 실적 한국"
+    },
+    {
+      "title": "게임사 실적 시즌 시작…하반기 승부처는 신작·글로벌 - 주간한국",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE41dktfZVExQWxRMDlMYVl1bVY0YnJKdElJUkZqaGFYQlJrUUhZTXptMFg3Wk16Q3ZXN3JmR1E5dFNoT0ZMcU1iTGFrNGdXU0tPeGtiNTJrdVpjcG81blRMOGRMNHRRUndqNUwtSndSUk_SAXRBVV95cUxOVmVkT0FMcUFkY09SdGJmcWxCamlVM1k1UnhVWEd5dzU5YU5pUmxxQVV2UVdsWDlFRktPRzYxcC1acGVQeVpaZlpyR1pOb1AxQVdSR0hXRklfX0dxejRPaXVCX2N2a29tTlloazUtcnAwVU9lUw?oc=5",
+      "published": "Thu, 06 Aug 2026 07:00:00 GMT",
+      "source": "게임 산업 신작 실적 한국"
+    },
+    {
+      "title": "'보릿고개' 게임업계, 하반기 신작 '승부수' 던진다 - 매일일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBVS1A0WXY5dTZxcWh6bGJqLU52ZlRRRXY5RnBLQ2ZiY1JQZ2tvRkF2T1VvSExuVkxFV1M5dngyNERFRkFZNVhLbE9kVDJJRTV5b0pRVUFIenIzTlMwbEE0YkZwX0w?oc=5",
+      "published": "Tue, 14 Jul 2026 07:00:00 GMT",
+      "source": "게임 산업 신작 실적 한국"
+    },
+    {
+      "title": "\"더 이상 코딩만 잘해선 안 된다\" … 게임사 채용도 'AI 네이티브' 시대 - 뉴데일리",
+      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNYjY1RE9vaVBibjM0V2xSbXhmM1ByTW9ucVNFMzdEeWh5WXRrWFpicUE3OGRRdDdYSmVwdUpFeTd6VVE1UjRCQVhwUGtiUDlCcmNsU1I5blJwRkpXZW1SNk9qRUN6RDl5V2NFZVBGZmdkczN2U3BIM05kQTgxQTRidNIBgAFBVV95cUxNYjY1RE9vaVBibjM0V2xSbXhmM1ByTW9ucVNFMzdEeWh5WXRrWFpicUE3OGRRdDdYSmVwdUpFeTd6VVE1UjRCQVhwUGtiUDlCcmNsU1I5blJwRkpXZW1SNk9qRUN6RDl5V2NFZVBGZmdkczN2U3BIM05kQTgxQTRidA?oc=5",
+      "published": "Tue, 29 Sep 2026 02:08:01 GMT",
+      "source": "게임 개발자 채용"
+    },
+    {
+      "title": "[청년, 출발선의 청구서③] 게임개발자 공고 26.4% 급감…AI시대, 달라진 취업 문턱 - 4th.kr",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBEUTItMEtIME9lNFdxWlcxbjlJeWsxUVZMazZvZkJ0a2Z2SjdOcmlMbFFQR3UxSURidUVIbnVoRzRmN1dJSE5YSURzdTd0anVvQ2w4VC10RUVTRDBNaEJvSU40WG8?oc=5",
+      "published": "Fri, 25 Sep 2026 20:05:00 GMT",
+      "source": "게임 개발자 채용"
+    },
+    {
+      "title": "게임업계 채용 급변…’대규모 개발자 공채’ 시대 저문다 By EBN - Investing.com 한국어",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1XOERrVTdsQ3NIbkFJckw0ZWlnQWlOUUtNMDdtcjZpYThDejVFcmppLVN6SnpGQzJvRU1uUHJ5blVLX3J4NFF4Q2VSeWkxbEZHZU5ka212dFk3aXdaRVZxaENocFp5amtxMG5pVW85cFY?oc=5",
+      "published": "Tue, 19 May 2026 07:00:00 GMT",
+      "source": "게임 개발자 채용"
+    },
+    {
+      "title": "넥슨, 코딩테스트 없애고 ‘AI 활용’ 도입…개발자 채용 변화 - thelec.kr",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE02NENUUGhIMFRZaFJ2X2czUTRqZVhqU0JXelB1eV9oRTVqeTFkMWJXNmhjR1lOaUxaQ200cndMYzRQNFc5SVFIUEo0LTVuSHdqYWdRYmg4TWN4Tm1feG5uNVFBcFlpZw?oc=5",
+      "published": "Thu, 03 Sep 2026 07:00:00 GMT",
+      "source": "게임 개발자 채용"
+    },
+    {
+      "title": "[취업뉴스] 상반기 개발자 채용 시장, 수요와 공급 모두 서버·백엔드 개발자에 집중 - 아웃소싱타임스",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE52X2FMOWVHUkRfT3NJbWdXa3J2TVI1b0cxazMtWXZ1dHlKREtZQ1k4X0xLaXM2OWtBVmFveXNTTkRnUzlZdmFHeW02dVBvMXl4eVFmcDZOUzlybDNsMW1qU0dSR2pPNkllb19lZVBaMWYyQQ?oc=5",
+      "published": "Wed, 27 Aug 2025 07:00:00 GMT",
+      "source": "백엔드 서버 개발자 채용"
+    },
+    {
+      "title": "올해 개발자 채용 시장 규모 전반적 감소…서버·백엔드 수요 여전 - 테크월드",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5kcm1SSXcyNGxOTWYwSEFIcnd3dl92ZUtJT1d4R1J3bFZjSVpsSGE0dkRkZlBMNlNZWnpaN01yNmJzNVN2ei03N2psd2UydG1telREcVFwbi1lQVVnMm8xOFd1UURGZHFB?oc=5",
+      "published": "Thu, 12 Sep 2024 07:00:00 GMT",
+      "source": "백엔드 서버 개발자 채용"
+    },
+    {
+      "title": "“올해 개발자 채용 시장 규모 감소”…서버·백엔드 수요만 여전 - 전자신문",
+      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFA4Z01zSjFhd2tCLUxmbnNJanZiR2lydHBkc2tidnZ1SHR5X29ycEhVZ0VNNThIakNoMU1pZHpNd3NIWWFzRllSM3pJMlBDZw?oc=5",
+      "published": "Thu, 12 Sep 2024 07:00:00 GMT",
+      "source": "백엔드 서버 개발자 채용"
+    },
+    {
+      "title": "사람인-점핏, 개발자 채용 시장 현황 발표…\"서버/백엔드 개발 공고·지원 가장 많아\" - 이투데이",
+      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBhazdWZnFobHowekdUeERpV25hVG9HeTFvLWVjOHV5OXhPUzFWQnltTmR0YVBYZHpxekk5aXZyMThsYVhzX083VTE5YnkxekNQUnNPQQ?oc=5",
+      "published": "Wed, 27 Aug 2025 07:00:00 GMT",
+      "source": "백엔드 서버 개발자 채용"
+    },
+    {
+      "title": "건설연, AI 기반 교량 안전성 실시간 진단기술 개발 - 사이언스타임즈",
+      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5",
+      "published": "Thu, 01 Oct 2026 22:04:50 GMT",
+      "source": "AI 개발 신기술"
+    },
+    {
+      "title": "시에라베이스, 스케일업 팁스 R&D사업 선정…시설점검 로봇 '완전 자동화' 박차 - 전자신문",
+      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9RUmYwZEl3VkdZOVl4VzhRVndDZjZBVldpTjdHdUl6VG9SbGNGNzRwaFR0TzlzenRvODJvUW11ZERWSU0zVTgxMlhQNU5kdw?oc=5",
+      "published": "Fri, 02 Oct 2026 07:25:03 GMT",
+      "source": "AI 개발 신기술"
+    },
+    {
+      "title": "[SDG 9] AI는 질주하는데 정부는 뒤처졌다…세계가 빠져든 ‘AI 정책 진공’ - SDG뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9RTnpHLUVXNDhEblVHRXRvb3ZYNTBqVXgtSVVON0VLWXBMNmREY3Y1U25VN2s3N3pfZDVxbXpxb3JsdlVkYm5tRnh6VHg1c21XSVZ2bmFIdmtLM0thSW9sRlo4SllReHfSAWtBVV95cUxNNng4Vzg4UFZ2Ri1lQ1dsTlNOcG40TUhPdVlCZGkxLWcxSjdiNVF6RDNxdXNRd1YzbU5NMnZPQmxpcXZYc2h5R0lHTUROTVd4T1NxN292dk51eGY2aUIwTWxkVk9hQlNacThKNA?oc=5",
+      "published": "Mon, 28 Sep 2026 02:50:02 GMT",
+      "source": "AI 개발 신기술"
+    },
+    {
+      "title": "“항암·탈모·AI 신기술 다 모였다” 국내 제약바이오 15개사 핵심 기술 공개 - 약업닷컴",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE55ZjlVZGNYbkl1NEJvaXZIaUNQT0p0a2hGTTBYR0ltSWF4ZUxXVmtqUktESG5KLWh6UGFMMWZrX1E5QUVlaTZRbUpLQUNLTkRUakVXRExSeEhhanJIMGF5dnhLcURGdw?oc=5",
+      "published": "Mon, 28 Sep 2026 21:04:49 GMT",
+      "source": "AI 개발 신기술"
+    }
+  ],
+  "employment": [
+    {
+      "title": "게임 클라이언트",
+      "skills": [
+        "C++",
+        "Unity",
+        "Unreal",
+        "자료구조/알고리즘",
+        "최적화"
+      ]
+    },
+    {
+      "title": "게임 서버",
+      "skills": [
+        "C++/Java/Python",
+        "REST API",
+        "DB",
+        "Redis",
+        "AWS",
+        "네트워크"
+      ]
+    },
+    {
+      "title": "백엔드",
+      "skills": [
+        "REST API",
+        "DB",
+        "Docker",
+        "Cloud",
+        "테스트"
+      ]
+    }
+  ],
+  "trends": [
+    {
+      "title": "생성형 AI",
+      "text": "코드 생성·리뷰·테스트·문서화 등 개발 파이프라인 보조"
+    },
+    {
+      "title": "AI Agent",
+      "text": "여러 단계의 개발 작업을 계획하고 도구를 호출하는 자동화"
+    },
+    {
+      "title": "온디바이스 AI",
+      "text": "기기에서 추론해 지연시간·비용·데이터 이동을 줄이는 방향"
+    },
+    {
+      "title": "게임 라이브서비스",
+      "text": "실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"
+    }
+  ]
 }
