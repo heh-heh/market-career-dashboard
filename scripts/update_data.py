@@ -15,12 +15,23 @@ def quote_symbol(symbol):
     return urllib.parse.quote(symbol,safe="")
 
 def stock(symbol,name,category):
-    url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range=5d&interval=1d"
+    url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range=90d&interval=1d"
     try:
         raw=json.loads(get(url)); res=raw["chart"]["result"][0]
         q=res["indicators"]["quote"][0]; prices=[x for x in q["close"] if x is not None]
         current=prices[-1]; prev=prices[-2] if len(prices)>1 else current
-        return {"symbol":symbol,"name":name,"category":category,"price":current,"change":(current-prev)/prev*100 if prev else 0,"source":"Yahoo Finance"}
+        recent=prices[-20:] if len(prices)>=20 else prices
+        returns=[(recent[i]-recent[i-1])/recent[i-1] for i in range(1,len(recent)) if recent[i-1]]
+        avg=sum(returns)/len(returns) if returns else 0
+        vol=(sum((r-avg)**2 for r in returns)/len(returns))**0.5 if returns else 0
+        trend=(recent[-1]-recent[0])/recent[0] if len(recent)>1 else 0
+        base=current*(1+trend/len(recent)*7)
+        band=current*vol*(7**0.5)
+        return {"symbol":symbol,"name":name,"category":category,"price":current,"change":(current-prev)/prev*100 if prev else 0,
+                "source":"Yahoo Finance","history":prices[-60:],
+                "forecast":{"horizon":"7거래일","base":base,"bull":base+band,"bear":max(0,base-band),
+                             "trend":"상승" if trend>0.02 else "하락" if trend<-0.02 else "중립",
+                             "volatility":vol*100}}
     except Exception as e:
         return {"symbol":symbol,"name":name,"category":category,"price":None,"change":None,"source":"unavailable","error":str(e)}
 
