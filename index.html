@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Market & Career Dashboard</title>
+<style>
+:root{--bg:#080d18;--panel:#111a2c;--line:#263553;--text:#eef3ff;--muted:#91a0bb;--accent:#7c8cff;--up:#43d17d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#182447,#080d18 45%);color:var(--text);font-family:system-ui,"Noto Sans KR",sans-serif}.app{max-width:1180px;margin:auto;padding:24px 16px 50px}
+header{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:20px}h1{margin:0;font-size:30px}.sub,.muted{color:var(--muted)}.date{text-align:right;font-size:12px;color:var(--muted)}
+nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px solid var(--line);background:#0e1627;color:var(--muted);padding:11px 15px;border-radius:11px;cursor:pointer;white-space:nowrap}button.active{background:var(--accent);color:white}
+.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.card{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:17px}.label{font-size:12px;color:var(--muted)}.big{font-size:24px;font-weight:800;margin:7px 0}.up{color:var(--up)}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.item h3{font-size:14px;margin:0 0 6px}.item p{font-size:13px;line-height:1.65;color:#c6d0e4;margin:0}.tag{display:inline-block;background:#202c49;border-radius:999px;padding:5px 8px;font-size:11px;margin:4px}.signal{background:#0d1627;border-left:3px solid var(--accent);padding:14px;border-radius:9px;line-height:1.7;color:#cbd5e9}.notice{margin-top:22px;font-size:11px;line-height:1.6;color:var(--muted)}
+@media(max-width:800px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}header{align-items:start;flex-direction:column}.date{text-align:left}}@media(max-width:450px){h1{font-size:24px}.app{padding:18px 12px}}
+</style></head>
+<body><div class="app">
+<header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
+<nav><button class="active" data-view="v0">종합</button><button class="" data-view="v1">주식</button><button class="" data-view="v2">취업시장</button><button class="" data-view="v3">개발 동향</button><button class="" data-view="v4">신기술 · IT</button></nav>
+<section id="v0" class="view active"><div class="cards">
+<div class="card"><div class="label">반도체</div><div class="big up">AI · HBM</div><div class="muted">메모리 수요와 데이터센터</div></div>
+<div class="card"><div class="label">게임</div><div class="big">신작 · 실적</div><div class="muted">타이틀별 차별화</div></div>
+<div class="card"><div class="label">취업시장</div><div class="big">실무형</div><div class="muted">프로젝트·문제해결</div></div>
+<div class="card"><div class="label">개발</div><div class="big">AI 활용</div><div class="muted">개발 파이프라인 편입</div></div>
+</div><div class="grid"><div class="card"><div class="label">오늘의 핵심</div><div class="signal">시장·취업·개발 정보를 한 화면에서 확인하고, 실제 데이터 연결을 전제로 확장하는 개인용 대시보드입니다.</div></div>
+<div class="card"><div class="label">다음 단계</div><div class="signal">주가 API, 뉴스, 채용 데이터를 JSON으로 자동 갱신하고 GitHub Actions로 Pages에 배포합니다.</div></div></div></section>
+<section id="v1" class="view"><div class="grid">
+<div class="card"><div class="label">반도체</div><div class="item"><h3>AI / HBM</h3><p>AI 데이터센터 투자와 고대역폭 메모리 수요를 핵심 지표로 추적합니다.</p></div><div class="item"><h3>체크 항목</h3><p>메모리 가격 · 실적 · CAPEX · 환율 · 장비 수요</p></div></div>
+<div class="card"><div class="label">게임주</div><div class="item"><h3>신작</h3><p>출시 일정, 흥행, 라이브서비스 성과와 실적을 함께 확인합니다.</p></div><div class="item"><h3>주의</h3><p>현재 화면의 숫자는 실시간 시세가 아닌 프로토타입입니다.</p></div></div></div></section>
+<section id="v2" class="view"><div class="grid"><div class="card"><div class="label">게임 클라이언트</div><div class="item"><h3>C++ / Unity / Unreal</h3><p>엔진 구조, 자료구조·알고리즘, 렌더링, 최적화, 네트워크 기초.</p></div><div class="item"><h3>포트폴리오</h3><p>기술 나열보다 실제 구현과 문제 해결 과정을 보여주는 방향.</p></div></div><div class="card"><div class="label">게임 서버</div><div class="item"><h3>Network / DB</h3><p>TCP/IP, HTTP, REST API, DB, Redis, 동시성과 서버 아키텍처.</p></div><div class="item"><h3>추천 연결</h3><p>게임 클라이언트 → 네트워크 → 서버 → DB까지 하나의 프로젝트로 구성.</p></div></div></div></section>
+<section id="v3" class="view"><div class="grid"><div class="card"><div class="label">게임 개발 동향</div><div class="item"><h3>생성형 AI</h3><p>코드 생성뿐 아니라 테스트, 문서화, 디버깅, 에셋 제작 보조로 확장.</p></div><div class="item"><h3>라이브서비스</h3><p>실시간 운영, 데이터 분석, A/B 테스트, 콘텐츠 배포 자동화가 중요합니다.</p></div></div><div class="card"><div class="label">기술 스택</div><span class="tag">C++</span><span class="tag">Unity</span><span class="tag">Unreal</span><span class="tag">Node.js</span><span class="tag">Docker</span><span class="tag">Redis</span><span class="tag">AWS</span><span class="tag">Git</span></div></div></section>
+<section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 레이더</div><div class="item"><h3>AI Agent</h3><p>여러 단계의 작업을 계획하고 실행하는 개발 보조 방식.</p></div><div class="item"><h3>On-device AI</h3><p>기기에서 AI를 처리해 지연시간과 서버 비용을 줄이는 방향.</p></div><div class="item"><h3>실시간 데이터</h3><p>게임 운영 데이터를 수집·분석해 서비스 의사결정에 활용.</p></div></div><div class="card"><div class="label">자동화 로드맵</div><div class="signal">외부 데이터 → GitHub Actions → JSON → GitHub Pages. 이후 차트, 검색, 날짜별 리포트, 분야별 필터를 추가할 수 있습니다.</div></div></div></section>
+<div class="notice">※ 현재 사이트의 시장 수치·내용은 프로토타입입니다. 실제 투자 판단용 데이터가 아니며, 다음 단계에서 신뢰 가능한 데이터 출처와 이용약관에 맞춰 자동 수집 기능을 연결합니다.</div>
+</div><script>document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.view).classList.add("active");scrollTo({top:0,behavior:"smooth"})});</script>
+</body></html>
