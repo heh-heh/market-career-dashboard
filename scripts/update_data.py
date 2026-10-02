@@ -29,6 +29,7 @@ def chart_data(symbol, rng, interval):
         return []
 
 def stock(symbol,name,category):
+    daily=chart_data(symbol,"1y","1d")
     url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range=1y&interval=1d"
     try:
         raw=json.loads(get(url)); res=raw["chart"]["result"][0]
