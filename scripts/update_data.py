@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, urllib.request, urllib.parse, xml.etree.ElementTree as ET
+import json, urllib.request, urllib.parse, xml.etree.ElementTree as ET, re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,28 +26,62 @@ def stock(symbol,name):
     except Exception as e:
         return {"symbol":symbol,"name":name,"price":None,"change":None,"source":"unavailable","error":str(e)}
 
+def classify_news(title):
+    t=title.lower()
+    positive_words=["상승","급등","호재","수주","증가","성장","개선","최대","돌파","투자","확대","흑자","출시"]
+    negative_words=["하락","급락","악재","감소","적자","지연","축소","우려","규제","소송","철회"]
+    market_words=["반도체","hbm","ai","삼성","sk하이닉스","한미반도체","게임","엔씨","넥슨","크래프톤","서버","클라우드"]
+    pos=sum(1 for w in positive_words if w in t)
+    neg=sum(1 for w in negative_words if w in t)
+    relevance=sum(1 for w in market_words if w in t)
+    if pos > neg:
+        impact="긍정"
+    elif neg > pos:
+        impact="부정"
+    else:
+        impact="중립"
+    importance="높음" if relevance >= 2 or abs(pos-neg) >= 2 else ("보통" if relevance else "낮음")
+    return {"impact":impact,"importance":importance,"relevance":relevance}
+
 def rss(query,limit=6):
     url="https://news.google.com/rss/search?"+urllib.parse.urlencode({"q":query,"hl":"ko","gl":"KR","ceid":"KR:ko"})
     out=[]
     try:
         root=ET.fromstring(get(url))
         for item in root.findall("./channel/item")[:limit]:
-            out.append({"title":item.findtext("title",""),"link":item.findtext("link",""),"published":item.findtext("pubDate",""),"source":query})
+            title=item.findtext("title","")
+            meta=classify_news(title)
+            out.append({
+                "title":title,
+                "link":item.findtext("link",""),
+                "published":item.findtext("pubDate",""),
+                "source":query,
+                **meta
+            })
     except Exception as e:
-        out.append({"title":"뉴스 수집 실패","link":"","published":"","source":str(e)})
+        out.append({"title":"뉴스 수집 실패","link":"","published":"","source":str(e),"impact":"중립","importance":"낮음","relevance":0})
     return out
 
 now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
-stocks=[stock("005930.KS","삼성전자"),stock("000660.KS","SK하이닉스"),stock("042700.KS","한미반도체"),stock("036570.KS","엔씨소프트")]
+stocks=[
+    stock("005930.KS","삼성전자"),
+    stock("000660.KS","SK하이닉스"),
+    stock("042700.KS","한미반도체"),
+    stock("036570.KS","엔씨소프트")
+]
+
 news=[]
 for q in ["반도체 AI HBM 한국","게임 산업 신작 실적 한국","게임 개발자 채용","백엔드 서버 개발자 채용","AI 개발 신기술"]:
     news += rss(q,4)
 
+# 중요도와 최신성 중심으로 주요 뉴스를 우선 배치
+news=sorted(news,key=lambda x:(x.get("importance")=="높음",x.get("relevance",0),x.get("published","")),reverse=True)[:20]
+
 data={
  "updatedAt":now,
- "notice":"주가 데이터는 Yahoo Finance 차트 엔드포인트에서 조회한 참고용 데이터이며, 뉴스는 Google News RSS 검색 결과의 링크/제목을 표시합니다. 각 제공자의 이용약관을 확인하세요.",
+ "notice":"주가 데이터는 Yahoo Finance 차트 엔드포인트에서 조회한 참고용 데이터이며, 뉴스는 Google News RSS 검색 결과입니다. 뉴스 영향 분류는 키워드 기반 참고용 분석이며 투자 판단의 근거가 아닙니다.",
  "stocks":stocks,
- "news":news[:20],
+ "news":news,
  "employment":[
   {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
   {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
