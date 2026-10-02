@@ -22,3 +22,6 @@
 
 ## 배포
 `main` 브랜치에 push하면 GitHub Actions가 GitHub Pages에 배포합니다.
+
+
+- 주식 상세 차트: OHLC 캔들 및 1분·5분·1시간·일봉 조회를 지원합니다.
