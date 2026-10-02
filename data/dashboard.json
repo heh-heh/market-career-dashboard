@@ -1,208 +1,362 @@
 {
-  "updatedAt": "2026-10-02T11:16:16+00:00",
-  "notice": "주가·지수는 Yahoo Finance 참고 데이터입니다. 페이지가 열려 있으면 60초마다 시세를 재조회하며, 자동 수집 데이터는 GitHub Actions가 갱신합니다.",
+  "updatedAt": "2026-10-02T11:30:36+00:00",
+  "notice": "주가·지수: Yahoo Finance 참고 데이터. 주식 화면은 페이지가 열린 동안 60초마다 실시간 시세를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
       "symbol": "005930.KS",
       "name": "삼성전자",
-      "price": 276000,
-      "change": 0,
-      "source": "Yahoo Finance",
-      "category": "한국 반도체"
+      "category": "한국 반도체",
+      "price": 276000.0,
+      "change": 0.0,
+      "source": "Yahoo Finance"
     },
     {
       "symbol": "000660.KS",
       "name": "SK하이닉스",
-      "price": 1841000,
+      "category": "한국 반도체",
+      "price": 1841000.0,
       "change": 0.436442989634479,
-      "source": "Yahoo Finance",
-      "category": "한국 반도체"
+      "source": "Yahoo Finance"
     },
     {
       "symbol": "042700.KS",
       "name": "한미반도체",
-      "price": 272000,
+      "category": "한국 반도체",
+      "price": 272000.0,
       "change": 1.303538175046555,
-      "source": "Yahoo Finance",
-      "category": "한국 반도체"
+      "source": "Yahoo Finance"
     },
     {
       "symbol": "036570.KS",
       "name": "엔씨소프트",
-      "price": 241000,
+      "category": "한국 게임",
+      "price": 241000.0,
       "change": 4.782608695652174,
-      "source": "Yahoo Finance",
-      "category": "한국 게임"
+      "source": "Yahoo Finance"
     },
     {
       "symbol": "NVDA",
       "name": "NVIDIA",
       "category": "미국 반도체",
-      "price": null,
-      "change": null,
+      "price": 230.86000061035156,
+      "change": 1.0859075551783135,
       "source": "Yahoo Finance"
     },
     {
       "symbol": "AMD",
       "name": "AMD",
       "category": "미국 반도체",
-      "price": null,
-      "change": null,
+      "price": 615.72998046875,
+      "change": 0.6489425002863393,
       "source": "Yahoo Finance"
     },
     {
       "symbol": "INTC",
       "name": "Intel",
       "category": "미국 반도체",
-      "price": null,
-      "change": null,
+      "price": 120.0,
+      "change": -0.191302795069189,
       "source": "Yahoo Finance"
     },
     {
       "symbol": "AVGO",
       "name": "Broadcom",
       "category": "미국 반도체",
-      "price": null,
-      "change": null,
+      "price": 343.6400146484375,
+      "change": -2.1498299326526005,
       "source": "Yahoo Finance"
     },
     {
       "symbol": "MU",
       "name": "Micron",
       "category": "미국 반도체",
-      "price": null,
-      "change": null,
+      "price": 1097.3900146484375,
+      "change": 3.030675680523292,
       "source": "Yahoo Finance"
     },
     {
       "symbol": "TSM",
       "name": "TSMC",
       "category": "미국/글로벌 반도체",
-      "price": null,
-      "change": null,
+      "price": 459.20001220703125,
+      "change": 0.6598149344606934,
+      "source": "Yahoo Finance"
+    }
+  ],
+  "indices": [
+    {
+      "symbol": "^KS11",
+      "name": "KOSPI",
+      "category": "종합 지수",
+      "price": 7003.740234375,
+      "change": 0.46461784683055124,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^KQ11",
+      "name": "KOSDAQ",
+      "category": "종합 지수",
+      "price": 893.2899780273438,
+      "change": -0.11182055312817384,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^IXIC",
+      "name": "NASDAQ Composite",
+      "category": "종합 지수",
+      "price": 26871.599609375,
+      "change": 0.039235466826071055,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^GSPC",
+      "name": "S&P 500",
+      "category": "종합 지수",
+      "price": 7666.4501953125,
+      "change": 0.19486477459283946,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "^SOX",
+      "name": "PHLX Semiconductor Index (SOX)",
+      "category": "반도체 종합",
+      "price": 12829.0,
+      "change": 1.586712411594231,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "SOXX",
+      "name": "iShares Semiconductor ETF",
+      "category": "반도체 ETF",
+      "price": 576.3300170898438,
+      "change": 1.3523498598952106,
+      "source": "Yahoo Finance"
+    },
+    {
+      "symbol": "SMH",
+      "name": "VanEck Semiconductor ETF",
+      "category": "반도체 ETF",
+      "price": 617.8099975585938,
+      "change": 1.446633425056445,
       "source": "Yahoo Finance"
     }
   ],
   "news": [
     {
-      "title": "삼전·닉스, 이달 '국내 최대 반도체 전시회'서 격돌…\"차세대 HBM 기술 공개한다\" - 뉴시스",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9Xc195OENHdmdzNXRoM0JDNzJTLUppbkZETzBLdm41WE5EYUx1ZXNJaTBYdk1iMGE3bmd4X01XY1pVVEdxd2dGYktpWVRMblpETk5ZUkh5LXBGalBnakdBMEszTXJTN1lCSE5KUEFrNjE3Rk9PdnBIdNIBeEFVX3lxTE9Xc195OENHdmdzNXRoM0JDNzJTLUppbkZETzBLdm41WE5EYUx1ZXNJaTBYdk1iMGE3bmd4X01XY1pVVEdxd2dGYktpWVRMblpETk5ZUkh5LXBGalBnakdBMEszTXJTN1lCSE5KUEFrNjE3Rk9PdnBIdA?oc=5",
-      "published": "Wed, 30 Sep 2026 20:04:25 GMT",
-      "source": "반도체 AI HBM 한국"
+      "title": "AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디? - Benzinga",
+      "link": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5",
+      "published": "Fri, 02 Oct 2026 04:53:37 GMT",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 3
     },
     {
-      "title": "모틀리풀이 꼽은 AI 반도체 5선 뒤에 놓인 한국 HBM의 무게 - 글로벌이코노믹",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNQUpibnhqMTZoNDlOaUNCTDYxYkdEYndWb1I3M1BJbHA5Tkc4VmkyazF4dDFYLVE3c18wVVJFek9BY2JEcUMwSlpERE5OczBuenYyQTl2Qkd3Z1FxaWxXQzBBcTlsMWQwQVd1SG82WnV3UElKT3RfXzJlYXNjM19WZFBqYUJiQ0JC?oc=5",
-      "published": "Fri, 25 Sep 2026 07:58:37 GMT",
-      "source": "반도체 AI HBM 한국"
+      "title": "[인문자의 피지컬 AI 이야기 | 인간.문화.자연] AI의 심장은 반도체지만, 피는 전기다 - 아주경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFB4RUk3YU5kMWFkdVJabDBwdEhjOWU4MG5KbVRIMTNhazRrMTNKeENBeWV1LXJhMFAxc2xNNzkydFRhMVBTMkc0Y1JmdWg2di1MWnJORjJOOGgtQdIBWEFVX3lxTE90Q3JvY21xenhYVGl4VjFGeTFtS21ISmZsd2VqLW0xODQ3ZmRMak54Y2tUWXNBZlNjUjBOLW9oSWJIcHlBTE1YWmlCajlTU3pyaXBwandkVUg?oc=5",
+      "published": "Fri, 02 Oct 2026 11:00:43 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
     },
     {
-      "title": "한화운용, '코리아HBM반도체'·'AI반도체소부장액티브' ETF 상장 - 뉴스핌",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE81UG9BbFh0bHRORmktSXpXc09CSUxtcVBBWTJlTnkxbzNhajZKNGZ0VkVWeEY0TzhPYUdQVzZVRmQ0N196ZjI0dm10R3BSa3hKazhiVGh6dFIwYnlk?oc=5",
-      "published": "Tue, 15 Sep 2026 07:00:00 GMT",
-      "source": "반도체 AI HBM 한국"
+      "title": "마이크론 실적 발표 임박…월가 매출 508억달러대 전망, HBM·D램이 가른다 - cbci.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5XeUt4WVViMzJlcGc1V1doZWJlREN3emR6QXJkQW5GUllWU3FQb2xYU084RDc2QTR4bnN5a3ZkOTI2R2wxVWJGck92U1VWOF81Rl9SbndSQ3FydWtmXzNnTm5iQ3pzYUpN?oc=5",
+      "published": "Fri, 02 Oct 2026 09:27:19 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
     },
     {
-      "title": "[김정호의 AI시대 전략] HBM 이후, 한국 AI산업 성장은 ‘전력 반도체’에 달렸다 - chosun.com",
-      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNdjIyQU9CWkl0UGM3OHBnbWNEdTJXdzJTbFFTTHBIX2JNN1lWbEVEN2xWNkE2QXdJUE16VVdkUV9qX3dRN2ZQdGpLSl9INW45NTlUTWJ3SUhjY1ZPeG94QjFwLVpoMjk2bThsUGlydXNUdF9uWGQyZlFSWFRlcXh0Q0NCWVA3Z3ZkU3ktZTFaYk0?oc=5",
-      "published": "Tue, 08 Sep 2026 07:00:00 GMT",
-      "source": "반도체 AI HBM 한국"
+      "title": "마이크론 'AI 수요'에 분기 매출 615억달러 전망 - 세이프머니",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5CNEk0bURfUGtKcENRUXVWZjFKck55X296U2Z4NkpXWW40SVRfM3ZpaHBYcXZfWW8yR3FWTi1QMHhuZ2ppbXQyUUdTbzF6WFpIanY3a2NWcHNRRm1aMnJaa2pWMDk1WjY2VVdvT0Vn?oc=5",
+      "published": "Fri, 02 Oct 2026 08:56:04 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
     },
     {
-      "title": "넥슨·크래프톤 또 날았다…게임업계 실적 양극화 - 연합뉴스",
-      "link": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1MU3B6c1R6XzhwMk9jeEh4VnZxU2MzeUlacm9UZEtock5rVGh0VmRiaTRCSllFZWZkZ29oQnozMEt3V1JyM0hlNFdMNlRUT2dkZEt6OFlfVTROS0nSAWBBVV95cUxPc2VyOUtZLTdVOEZ4Q3NHOXkxTFhmdU85ZmV3d0NVWGN4Ymg4emJyaGtIX3lvOHNTMk9nTWpXSE03R182QTNKYjZoZXM1Y0NJUzFNOEs2cEROWGFMMHZFd3c?oc=5",
-      "published": "Thu, 14 May 2026 07:00:00 GMT",
-      "source": "게임 산업 신작 실적 한국"
+      "title": "HBM 다음은 eSSD…AI 메모리 투자 전쟁 속 솔리다임 '성장 방정식' 주목 - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiRkFVX3lxTFBXc2Z2akRab0MyQWQxYWktQlJaVUZmM2lYeEpMeEg0ZHJ5V2VNRExXRG5aWlhyVUQ1dWY2TUZicXFyT1FqYXc?oc=5",
+      "published": "Fri, 02 Oct 2026 00:30:56 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2
     },
     {
-      "title": "세계 4위 K게임 그늘… 새 간판 IP 세대교체 더디다 [韓콘텐츠 IP의 빈칸①] - IT조선",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE45QkprN0xNOWJ4MzBRcklsbVhxalRGcWJLWlZGVGl6cDJlWERXSjlObmNacHZodElqaEhrOUk0a3JFbm1veWhEbHNWSkFENlBpVHNheU4yN0p4R05JVnNaRUF6aHJEM3dyajJfY21sbkbSAXRBVV95cUxOd3Q5X2pCeThmYi1HY1VjQXd6Y3hURUZqUWdObmpDc3BKZXFQdC16QnlHNnhOVGtIMnlaZmkzZ0h5VUFhckVEOGtzUFVZZWtVSGtMRDdvQTVPbFdrckhLdVItdlVxWUlSYWkzaUJCakxmNzYzOQ?oc=5",
-      "published": "Sat, 05 Sep 2026 07:00:00 GMT",
-      "source": "게임 산업 신작 실적 한국"
-    },
-    {
-      "title": "게임사 실적 시즌 시작…하반기 승부처는 신작·글로벌 - 주간한국",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE41dktfZVExQWxRMDlMYVl1bVY0YnJKdElJUkZqaGFYQlJrUUhZTXptMFg3Wk16Q3ZXN3JmR1E5dFNoT0ZMcU1iTGFrNGdXU0tPeGtiNTJrdVpjcG81blRMOGRMNHRRUndqNUwtSndSUk_SAXRBVV95cUxOVmVkT0FMcUFkY09SdGJmcWxCamlVM1k1UnhVWEd5dzU5YU5pUmxxQVV2UVdsWDlFRktPRzYxcC1acGVQeVpaZlpyR1pOb1AxQVdSR0hXRklfX0dxejRPaXVCX2N2a29tTlloazUtcnAwVU9lUw?oc=5",
-      "published": "Thu, 06 Aug 2026 07:00:00 GMT",
-      "source": "게임 산업 신작 실적 한국"
-    },
-    {
-      "title": "'보릿고개' 게임업계, 하반기 신작 '승부수' 던진다 - 매일일보",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBVS1A0WXY5dTZxcWh6bGJqLU52ZlRRRXY5RnBLQ2ZiY1JQZ2tvRkF2T1VvSExuVkxFV1M5dngyNERFRkFZNVhLbE9kVDJJRTV5b0pRVUFIenIzTlMwbEE0YkZwX0w?oc=5",
-      "published": "Tue, 14 Jul 2026 07:00:00 GMT",
-      "source": "게임 산업 신작 실적 한국"
-    },
-    {
-      "title": "\"더 이상 코딩만 잘해선 안 된다\" … 게임사 채용도 'AI 네이티브' 시대 - 뉴데일리",
-      "link": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNYjY1RE9vaVBibjM0V2xSbXhmM1ByTW9ucVNFMzdEeWh5WXRrWFpicUE3OGRRdDdYSmVwdUpFeTd6VVE1UjRCQVhwUGtiUDlCcmNsU1I5blJwRkpXZW1SNk9qRUN6RDl5V2NFZVBGZmdkczN2U3BIM05kQTgxQTRidNIBgAFBVV95cUxNYjY1RE9vaVBibjM0V2xSbXhmM1ByTW9ucVNFMzdEeWh5WXRrWFpicUE3OGRRdDdYSmVwdUpFeTd6VVE1UjRCQVhwUGtiUDlCcmNsU1I5blJwRkpXZW1SNk9qRUN6RDl5V2NFZVBGZmdkczN2U3BIM05kQTgxQTRidA?oc=5",
-      "published": "Tue, 29 Sep 2026 02:08:01 GMT",
-      "source": "게임 개발자 채용"
-    },
-    {
-      "title": "[청년, 출발선의 청구서③] 게임개발자 공고 26.4% 급감…AI시대, 달라진 취업 문턱 - 4th.kr",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBEUTItMEtIME9lNFdxWlcxbjlJeWsxUVZMazZvZkJ0a2Z2SjdOcmlMbFFQR3UxSURidUVIbnVoRzRmN1dJSE5YSURzdTd0anVvQ2w4VC10RUVTRDBNaEJvSU40WG8?oc=5",
-      "published": "Fri, 25 Sep 2026 20:05:00 GMT",
-      "source": "게임 개발자 채용"
-    },
-    {
-      "title": "게임업계 채용 급변…’대규모 개발자 공채’ 시대 저문다 By EBN - Investing.com 한국어",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1XOERrVTdsQ3NIbkFJckw0ZWlnQWlOUUtNMDdtcjZpYThDejVFcmppLVN6SnpGQzJvRU1uUHJ5blVLX3J4NFF4Q2VSeWkxbEZHZU5ka212dFk3aXdaRVZxaENocFp5amtxMG5pVW85cFY?oc=5",
-      "published": "Tue, 19 May 2026 07:00:00 GMT",
-      "source": "게임 개발자 채용"
-    },
-    {
-      "title": "넥슨, 코딩테스트 없애고 ‘AI 활용’ 도입…개발자 채용 변화 - thelec.kr",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE02NENUUGhIMFRZaFJ2X2czUTRqZVhqU0JXelB1eV9oRTVqeTFkMWJXNmhjR1lOaUxaQ200cndMYzRQNFc5SVFIUEo0LTVuSHdqYWdRYmg4TWN4Tm1feG5uNVFBcFlpZw?oc=5",
-      "published": "Thu, 03 Sep 2026 07:00:00 GMT",
-      "source": "게임 개발자 채용"
-    },
-    {
-      "title": "[취업뉴스] 상반기 개발자 채용 시장, 수요와 공급 모두 서버·백엔드 개발자에 집중 - 아웃소싱타임스",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE52X2FMOWVHUkRfT3NJbWdXa3J2TVI1b0cxazMtWXZ1dHlKREtZQ1k4X0xLaXM2OWtBVmFveXNTTkRnUzlZdmFHeW02dVBvMXl4eVFmcDZOUzlybDNsMW1qU0dSR2pPNkllb19lZVBaMWYyQQ?oc=5",
-      "published": "Wed, 27 Aug 2025 07:00:00 GMT",
-      "source": "백엔드 서버 개발자 채용"
-    },
-    {
-      "title": "올해 개발자 채용 시장 규모 전반적 감소…서버·백엔드 수요 여전 - 테크월드",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5kcm1SSXcyNGxOTWYwSEFIcnd3dl92ZUtJT1d4R1J3bFZjSVpsSGE0dkRkZlBMNlNZWnpaN01yNmJzNVN2ei03N2psd2UydG1telREcVFwbi1lQVVnMm8xOFd1UURGZHFB?oc=5",
-      "published": "Thu, 12 Sep 2024 07:00:00 GMT",
-      "source": "백엔드 서버 개발자 채용"
-    },
-    {
-      "title": "“올해 개발자 채용 시장 규모 감소”…서버·백엔드 수요만 여전 - 전자신문",
-      "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFA4Z01zSjFhd2tCLUxmbnNJanZiR2lydHBkc2tidnZ1SHR5X29ycEhVZ0VNNThIakNoMU1pZHpNd3NIWWFzRllSM3pJMlBDZw?oc=5",
-      "published": "Thu, 12 Sep 2024 07:00:00 GMT",
-      "source": "백엔드 서버 개발자 채용"
-    },
-    {
-      "title": "사람인-점핏, 개발자 채용 시장 현황 발표…\"서버/백엔드 개발 공고·지원 가장 많아\" - 이투데이",
-      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBhazdWZnFobHowekdUeERpV25hVG9HeTFvLWVjOHV5OXhPUzFWQnltTmR0YVBYZHpxekk5aXZyMThsYVhzX083VTE5YnkxekNQUnNPQQ?oc=5",
-      "published": "Wed, 27 Aug 2025 07:00:00 GMT",
-      "source": "백엔드 서버 개발자 채용"
+      "title": "김현 의원 'AI·데이터 혁신 3법' 국회 본회의 통과 - 신아일보",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBxNWtWa2stRXByUk95RzlxZFJIcFZvVFMzMWRvTThGdlZYbXlJNTVnU3phb1ZYTWpBMjIyS2c3WnpXd3NkbGJhZjFFcmRlR28wYV9jOHhaU0FlbXdpS1JmWnd4T1dXOFpVbHp3QWZDVXA?oc=5",
+      "published": "Thu, 01 Oct 2026 23:47:39 GMT",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
     },
     {
       "title": "건설연, AI 기반 교량 안전성 실시간 진단기술 개발 - 사이언스타임즈",
       "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5",
       "published": "Thu, 01 Oct 2026 22:04:50 GMT",
-      "source": "AI 개발 신기술"
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "게임 안팎의 설명이 일치하는지 확인할 사이트순위 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNamFlcmtMTTUzamg5MS1GeUtkVDhkT29xSVlDYVUxOWxmLU5Xb3MtaURMQUhldzl4OFJzTzZhbnFmUTRuaUF4S2RhZC1ZN29xVDJMS01CRFV4dTR1SnNTNU4tNU5yQ2hNYzhydDF4Y012cnIyWHVENFFQVlNkWVhVMDJoSGstR3BxRlVUNHAtZnRWVVdMSGFoREhMZlZBQ2xMX25TbTE2NEF3T1NtbDc0NktZYnM4M1p1ZEx3a0haMFZWZmU1VjFfa05CclVkUTZWeDBNSEpjZmZxNHpuNlBWMVZYQWVEbU1tRy1hUDBJUk5kbW8?oc=5",
+      "published": "Fri, 02 Oct 2026 08:35:54 GMT",
+      "source": "게임 개발자 채용",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "취업 필수 스펙된 'AI'…정부·기업, 구직 청년 격차 줄인다 - MTN 머니투데이방송",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1pZXFLRTQxdnRKYW1TOVlzSUUyZkhzWjg4MmJhUmg0eDJ4TVNIUFgxX01VQ2xCMVJHcmJpTTN2ckl1Q3pHMGk2NVJsWGxEZkN3ZGRLcmhiQy1RVnkzeVF2Z0FJUzg?oc=5",
+      "published": "Fri, 02 Oct 2026 08:33:09 GMT",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "경운대, ‘2026 산학연협력EXPO’서 AI·항공모빌리티 혁신성과 전시 - news.unn.net",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVZkdNMkxjamxJNlNoMnVNcThzX1dXWWVrWDhfU1BZcHMwMFc2UUVNejBTUEVRM190V1dnUGpaU0lpd2trSDBnaXhaZ1hjY2xRWEZwXzBtcFA2M2M4dlRZSXRTSmN5QQ?oc=5",
+      "published": "Fri, 02 Oct 2026 08:21:57 GMT",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "[미국 ETF 히든 챔피언] (56) 에이전틱 AI 시대 CPU 수혜 펀드는 - 뉴스핌",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE93ekI0NXg2c185Z01BSXhMSUZlMlU3RHhZVFktMzlTWUx2Tm11eUFGbHhsZjY4UkJBMkxXQXl2azJ3VmQwYncyV1N3N2xHUHQtTFR6NUtmUHJCQUFv?oc=5",
+      "published": "Fri, 02 Oct 2026 07:06:00 GMT",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "[G-STAR 2026] \"K-게임, 국경·플랫폼 넘어 문화 스펙트럼 확장 시험대\" - 파이낸셜포스트",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBIN20zTHdqT1dNSlhqVU01N1FxMjdNS0dBYnBTSGQ5Ym9pajhPWW9ZQmdDQWNwM21WbGpJZlVHUjRORWppdVI4cmxyakN1WjZxcUpsSzNfbV82eVc4UUp2Y1BLYzFwQXpBMWxpYW11X1d6bV8z?oc=5",
+      "published": "Fri, 02 Oct 2026 05:49:41 GMT",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "AI 사용료, “역사상 어떤 기술보다 빠르게 하락” - 애플경제",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9FNGMwVXZ0ZENrbGNtYjdUNXpWRnNhTzU3TUNEdGN3el9MR3REVUcxMEdCa0RoaVZpampLQ0t4YlMyMkhMa0g1dUZxd291T0N1ZXlvOXBObnpISGFxeU9UdWEyOGVLNWFUak9abDBXMVc?oc=5",
+      "published": "Fri, 02 Oct 2026 05:46:32 GMT",
+      "source": "AI 개발 신기술",
+      "impact": "부정",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "드림에이지, 게임사 본연 ‘코어’ 힘으로 글로벌 확장 가속 - 한국금융신문",
+      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9Fck5BVzRsWGJfb3Ayc0dnUUZNdW80Z21KMXhxRTJvVWR0SXN6aEx0UU8waHRKYjVTNUZIcFJzdFBNM1RWT3MxbmFiQ0hGa2dWbTZBX0pnZ2JIZUhXRy12am1LTnFONjJTeUdmQ1RSQnl0Qmdnd2NjRi1vMTU?oc=5",
+      "published": "Fri, 02 Oct 2026 05:14:57 GMT",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "전북도, AI·자율주행·로봇 기반 농업전환 이끈다 - nongupin.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5BV19OSkNoMDk2WWlKb0pBUjFEUnhPM29aNjNvU2lCOEd4VUhSRnVPQlMtV3VvajZmRlNhbjFSWF85VWktdmRXUEdIdHhLU2hIeEVaMXo4Vk9vTndUQzJHM2UzWTB5WjQ1eHhXcw?oc=5",
+      "published": "Fri, 02 Oct 2026 04:19:37 GMT",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - 프리미엄콘텐츠",
+      "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5",
+      "published": "Fri, 02 Oct 2026 01:44:00 GMT",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로 - 코리아리포트",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5",
+      "published": "Fri, 02 Oct 2026 01:02:34 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
+      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "이반토니 도박 : 위험 피하기와 보호 조치 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5",
+      "published": "Thu, 01 Oct 2026 20:51:58 GMT",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "[긴 글] 마르크스주의 관점에서 본 인공지능 - 노동자 연대",
+      "link": "https://news.google.com/rss/articles/CBMiREFVX3lxTFB5bjFVdjNQaGZVdnVjZmVhZ0xxTlpWTzJ1R2x3b2pVYkNmZlhiM3VtWjJ6dzNRS0Z3czZHY1NYdTdpVVBp?oc=5",
+      "published": "Fri, 02 Oct 2026 09:29:46 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
+      "published": "Fri, 02 Oct 2026 07:45:02 GMT",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
     },
     {
       "title": "시에라베이스, 스케일업 팁스 R&D사업 선정…시설점검 로봇 '완전 자동화' 박차 - 전자신문",
       "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9RUmYwZEl3VkdZOVl4VzhRVndDZjZBVldpTjdHdUl6VG9SbGNGNzRwaFR0TzlzenRvODJvUW11ZERWSU0zVTgxMlhQNU5kdw?oc=5",
       "published": "Fri, 02 Oct 2026 07:25:03 GMT",
-      "source": "AI 개발 신기술"
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
     },
     {
-      "title": "[SDG 9] AI는 질주하는데 정부는 뒤처졌다…세계가 빠져든 ‘AI 정책 진공’ - SDG뉴스",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9RTnpHLUVXNDhEblVHRXRvb3ZYNTBqVXgtSVVON0VLWXBMNmREY3Y1U25VN2s3N3pfZDVxbXpxb3JsdlVkYm5tRnh6VHg1c21XSVZ2bmFIdmtLM0thSW9sRlo4SllReHfSAWtBVV95cUxNNng4Vzg4UFZ2Ri1lQ1dsTlNOcG40TUhPdVlCZGkxLWcxSjdiNVF6RDNxdXNRd1YzbU5NMnZPQmxpcXZYc2h5R0lHTUROTVd4T1NxN292dk51eGY2aUIwTWxkVk9hQlNacThKNA?oc=5",
-      "published": "Mon, 28 Sep 2026 02:50:02 GMT",
-      "source": "AI 개발 신기술"
+      "title": "[산업소식] 웹젠, 하반기 채용 연계형 인턴 모집..13개 직무 선발 - 포쓰저널",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1XNkNPajU3R2xEY2xucXpCMUw4UUwtWC10OS1OLVM5Nks5ellIMmo0TDVWSWtiU094aVhrdTRvNmltTWpkUEVIeTkwMVZxWC0xd3hyalVSVXBVQ1ZqbHB6Z3pzYVA?oc=5",
+      "published": "Fri, 02 Oct 2026 02:36:07 GMT",
+      "source": "게임 개발자 채용",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
     },
     {
-      "title": "“항암·탈모·AI 신기술 다 모였다” 국내 제약바이오 15개사 핵심 기술 공개 - 약업닷컴",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE55ZjlVZGNYbkl1NEJvaXZIaUNQT0p0a2hGTTBYR0ltSWF4ZUxXVmtqUktESG5KLWh6UGFMMWZrX1E5QUVlaTZRbUpLQUNLTkRUakVXRExSeEhhanJIMGF5dnhLcURGdw?oc=5",
-      "published": "Mon, 28 Sep 2026 21:04:49 GMT",
-      "source": "AI 개발 신기술"
+      "title": "[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기 - 뉴스핌",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5",
+      "published": "Fri, 02 Oct 2026 00:31:00 GMT",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
     }
   ],
   "employment": [
@@ -254,64 +408,6 @@
     {
       "title": "게임 라이브서비스",
       "text": "실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"
-    }
-  ],
-  "indices": [
-    {
-      "symbol": "^KS11",
-      "name": "KOSPI",
-      "category": "종합 지수",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
-    },
-    {
-      "symbol": "^KQ11",
-      "name": "KOSDAQ",
-      "category": "종합 지수",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
-    },
-    {
-      "symbol": "^IXIC",
-      "name": "NASDAQ Composite",
-      "category": "종합 지수",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
-    },
-    {
-      "symbol": "^GSPC",
-      "name": "S&P 500",
-      "category": "종합 지수",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
-    },
-    {
-      "symbol": "^SOX",
-      "name": "PHLX Semiconductor Index (SOX)",
-      "category": "반도체 종합",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
-    },
-    {
-      "symbol": "SOXX",
-      "name": "iShares Semiconductor ETF",
-      "category": "반도체 ETF",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
-    },
-    {
-      "symbol": "SMH",
-      "name": "VanEck Semiconductor ETF",
-      "category": "반도체 ETF",
-      "price": null,
-      "change": null,
-      "source": "Yahoo Finance"
     }
   ]
 }
