@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-02T11:58:10+00:00",
+  "updatedAt": "2026-10-02T11:58:42+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -36097,7 +36097,7 @@
             "o": 229.9499969482422,
             "h": 230.0,
             "l": 228.86500549316406,
-            "c": 229.1649932861328,
+            "c": 228.9199981689453,
             "v": 5395341
           },
           {
@@ -36106,7 +36106,7 @@
             "h": 229.1999969482422,
             "l": 228.4600067138672,
             "c": 228.8144073486328,
-            "v": 889575
+            "v": 679502
           },
           {
             "t": 1790861520,
@@ -39224,9 +39224,9 @@
         "5m": [
           {
             "t": 1790343000,
-            "o": 225.14999389648438,
+            "o": 225.25,
             "h": 226.74000549316406,
-            "l": 224.66000366210938,
+            "l": 225.0,
             "c": 226.56500244140625,
             "v": 7302367
           },
@@ -39248,7 +39248,7 @@
           },
           {
             "t": 1790343900,
-            "o": 225.03500366210938,
+            "o": 225.0,
             "h": 225.3300018310547,
             "l": 224.86000061035156,
             "c": 224.92999267578125,
@@ -39872,7 +39872,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.2100067138672,
+            "o": 232.1999969482422,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -40472,9 +40472,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.9949951171875,
+            "o": 230.875,
             "h": 232.82000732421875,
-            "l": 230.47999572753906,
+            "l": 230.83999633789062,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42858,7 +42858,7 @@
           },
           {
             "t": 1789565400,
-            "o": 214.13999938964844,
+            "o": 213.72000122070312,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43194,7 +43194,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.11599731445312,
+            "o": 222.64999389648438,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43250,7 +43250,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.14999389648438,
+            "o": 225.25,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43362,7 +43362,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.9949951171875,
+            "o": 230.875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -48958,7 +48958,7 @@
         "5m": [
           {
             "t": 1790343000,
-            "o": 635.0679931640625,
+            "o": 634.610107421875,
             "h": 638.0,
             "l": 631.2100219726562,
             "c": 636.0999755859375,
@@ -49583,7 +49583,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 628.7650146484375,
+            "h": 629.5,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -50206,8 +50206,8 @@
           },
           {
             "t": 1790688600,
-            "o": 616.9600219726562,
-            "h": 617.5700073242188,
+            "o": 614.0,
+            "h": 615.0598754882812,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52928,9 +52928,9 @@
           },
           {
             "t": 1790256600,
-            "o": 600.7550048828125,
+            "o": 605.344970703125,
             "h": 624.8400268554688,
-            "l": 599.3499755859375,
+            "l": 604.35400390625,
             "c": 617.25,
             "v": 8101441
           },
@@ -52984,7 +52984,7 @@
           },
           {
             "t": 1790343000,
-            "o": 635.0679931640625,
+            "o": 634.610107421875,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -53041,7 +53041,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 628.7650146484375,
+            "h": 629.5,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53096,7 +53096,7 @@
           },
           {
             "t": 1790688600,
-            "o": 616.9600219726562,
+            "o": 614.0,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59940,7 +59940,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.86000061035156,
+            "o": 116.25,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62382,9 +62382,9 @@
           },
           {
             "t": 1789651800,
-            "o": 104.77999877929688,
+            "o": 105.75,
             "h": 109.83999633789062,
-            "l": 104.69999694824219,
+            "l": 104.87030029296875,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62662,9 +62662,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.61000061035156,
+            "o": 120.01000213623047,
             "h": 125.91999816894531,
-            "l": 119.55000305175781,
+            "l": 119.94999694824219,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62830,7 +62830,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.86000061035156,
+            "o": 116.25,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -65299,7 +65299,7 @@
             "o": 351.94000244140625,
             "h": 353.54998779296875,
             "l": 351.6400146484375,
-            "c": 352.80999755859375,
+            "c": 352.31500244140625,
             "v": 1090864
           },
           {
@@ -65308,7 +65308,7 @@
             "h": 353.18450927734375,
             "l": 352.1499938964844,
             "c": 353.07000732421875,
-            "v": 84891
+            "v": 71021
           },
           {
             "t": 1790861520,
@@ -69674,9 +69674,9 @@
           },
           {
             "t": 1790688600,
-            "o": 357.0799865722656,
+            "o": 358.92999267578125,
             "h": 361.260009765625,
-            "l": 355.9775085449219,
+            "l": 357.4100036621094,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72116,9 +72116,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.07000732421875,
+            "o": 346.30999755859375,
             "h": 349.94000244140625,
-            "l": 345.30999755859375,
+            "l": 346.1597900390625,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72564,7 +72564,7 @@
           },
           {
             "t": 1790688600,
-            "o": 357.0799865722656,
+            "o": 358.92999267578125,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -75033,8 +75033,8 @@
             "o": 1054.3399658203125,
             "h": 1063.2999267578125,
             "l": 1044.01123046875,
-            "c": 1055.7049560546875,
-            "v": 3147894
+            "c": 1055.0,
+            "v": 3147877
           },
           {
             "t": 1790861460,
@@ -75042,7 +75042,7 @@
             "h": 1066.8499755859375,
             "l": 1055.1099853515625,
             "c": 1066.769775390625,
-            "v": 622503
+            "v": 622640
           },
           {
             "t": 1790861520,
@@ -81514,7 +81514,7 @@
           },
           {
             "t": 1788960600,
-            "o": 999.3499755859375,
+            "o": 1003.1777954101562,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81850,9 +81850,9 @@
           },
           {
             "t": 1789651800,
-            "o": 954.9979858398438,
+            "o": 961.3300170898438,
             "h": 986.2000122070312,
-            "l": 953.5,
+            "l": 961.1303100585938,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -84767,7 +84767,7 @@
             "o": 457.2650146484375,
             "h": 457.8179931640625,
             "l": 455.0799865722656,
-            "c": 455.54998779296875,
+            "c": 455.2699890136719,
             "v": 450413
           },
           {
@@ -84776,7 +84776,7 @@
             "h": 455.8598937988281,
             "l": 453.46099853515625,
             "c": 453.8699951171875,
-            "v": 530132
+            "v": 79719
           },
           {
             "t": 1790861520,
@@ -135622,7 +135622,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12585.8232421875,
+            "l": 12584.86328125,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -145356,7 +145356,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9099731445312,
+            "l": 566.9000244140625,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -145978,8 +145978,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.8699951171875,
-            "h": 570.4299926757812,
+            "o": 569.0700073242188,
+            "h": 569.6950073242188,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -148700,7 +148700,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.9650268554688,
+            "o": 554.8300170898438,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -148868,7 +148868,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.8699951171875,
+            "o": 569.0700073242188,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -160825,11 +160825,20 @@
       "relevance": 2
     },
     {
-      "title": "마이크론 'AI 수요'에 분기 매출 615억달러 전망 - 세이프머니",
+      "title": "마이크론 'AI 수요'에 분기 매출 615억달러 전망 - safemoney.co.kr",
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5CNEk0bURfUGtKcENRUXVWZjFKck55X296U2Z4NkpXWW40SVRfM3ZpaHBYcXZfWW8yR3FWTi1QMHhuZ2ppbXQyUUdTbzF6WFpIanY3a2NWcHNRRm1aMnJaa2pWMDk1WjY2VVdvT0Vn?oc=5",
       "published": "Fri, 02 Oct 2026 08:56:04 GMT",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
+    },
+    {
+      "title": "AI 메모리 투자전쟁, HBM서 eSSD로…솔리다임 다음 수는 - ebn.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5oaHRNMDVBMDdYRndKYkhvZEtHNVozeEhRR3JJSXBlTXdBUnhhbThoci11YXdNVjk4eW5UbUdDU3hob2FSLVBKVy1IVk5pVmZtZXV3NWJZZnB5RFFuRHFfMEpMZm12RG1I?oc=5",
+      "published": "Fri, 02 Oct 2026 05:26:15 GMT",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "긍정",
       "importance": "높음",
       "relevance": 2
     },
@@ -160870,9 +160879,18 @@
       "relevance": 1
     },
     {
-      "title": "경운대, ‘2026 산학연협력EXPO’서 AI·항공모빌리티 혁신성과 전시 - 한국대학신문",
+      "title": "경운대, ‘2026 산학연협력EXPO’서 AI·항공모빌리티 혁신성과 전시 - news.unn.net",
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVZkdNMkxjamxJNlNoMnVNcThzX1dXWWVrWDhfU1BZcHMwMFc2UUVNejBTUEVRM190V1dnUGpaU0lpd2trSDBnaXhaZ1hjY2xRWEZwXzBtcFA2M2M4dlRZSXRTSmN5QQ?oc=5",
       "published": "Fri, 02 Oct 2026 08:21:57 GMT",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "김현 의원, ‘AI·데이터 혁신 3법’ 국회 본회의 통과 - didimkorea.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1DazV6UVg2U0dUWUw5NkFWTXFJX1kyNkdiLXVCeVFRRUNqX2dBZGp5bHBPdkNCenlPUUxGOFViQ3ZkOTNWSDZ6dzNYUTFkcHM?oc=5",
+      "published": "Fri, 02 Oct 2026 07:18:49 GMT",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
@@ -160906,15 +160924,6 @@
       "relevance": 1
     },
     {
-      "title": "AI 데이터센터 확대에 메모리 시장 긴장감 고조 - 제민일보",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBVSk5hS0ozUTgwaWRlRjhOTTdyTHFsYnV1Tzd1Q2t5U19sUm1xNVJVelloRlB4ZlFOZjlaWkRDWVMxS3pFQ1U0eEpYUzdobXZleGNfdEdMTjY5UVhCQllsMnlCSjRJOVk?oc=5",
-      "published": "Fri, 02 Oct 2026 05:23:36 GMT",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
       "title": "드림에이지, 게임사 본연 ‘코어’ 힘으로 글로벌 확장 가속 - 한국금융신문",
       "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9Fck5BVzRsWGJfb3Ayc0dnUUZNdW80Z21KMXhxRTJvVWR0SXN6aEx0UU8waHRKYjVTNUZIcFJzdFBNM1RWT3MxbmFiQ0hGa2dWbTZBX0pnZ2JIZUhXRy12am1LTnFONjJTeUdmQ1RSQnl0Qmdnd2NjRi1vMTU?oc=5",
       "published": "Fri, 02 Oct 2026 05:14:57 GMT",
@@ -160942,15 +160951,6 @@
       "relevance": 1
     },
     {
-      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
-      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
-      "source": "NVIDIA AMD Intel semiconductor",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
       "title": "이반토니 도박 : 위험 피하기와 보호 조치 - Calgary Roughnecks",
       "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5",
       "published": "Thu, 01 Oct 2026 20:51:58 GMT",
@@ -160960,7 +160960,7 @@
       "relevance": 0
     },
     {
-      "title": "[긴 글] 마르크스주의 관점에서 본 인공지능 - 노동자 연대",
+      "title": "[긴 글] 마르크스주의 관점에서 본 인공지능 - ws.or.kr",
       "link": "https://news.google.com/rss/articles/CBMiREFVX3lxTFB5bjFVdjNQaGZVdnVjZmVhZ0xxTlpWTzJ1R2x3b2pVYkNmZlhiM3VtWjJ6dzNRS0Z3czZHY1NYdTdpVVBp?oc=5",
       "published": "Fri, 02 Oct 2026 09:29:46 GMT",
       "source": "반도체 AI HBM 한국 미국",
@@ -160978,19 +160978,10 @@
       "relevance": 0
     },
     {
-      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - koreastocknews.com",
+      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
       "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "모바일 이용 전 알아둘 마카오 카지노 근처 호텔 화면 비율 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxPM3NjeGd5a21DWDR4ci1zLUd5a29ncm5BZnllVHNIU0R6MkhIUHpYbDMzR0FUVVhVQ2ZJVEFUMC1IQ1ItdU9ZdDI0TExZWG5LQjJXR1o0T2wtc2FGNUI3MjNWbFZaMkhjSHFrbXdwM3lCdUR3Nkx1ejBCWDRYT0xJT3N1aUg5VlJXYmY3eUFkd2hJTFlMZy1uNll0Rl9pS2E2TTJFYUllY2xfcHBDYzgzNVd4SlE?oc=5",
-      "published": "Fri, 02 Oct 2026 05:31:49 GMT",
-      "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
@@ -161069,6 +161060,6 @@
     "quotes_ok": 17,
     "quotes_total": 17,
     "candle_ready": 17,
-    "generatedAt": "2026-10-02T11:58:10+00:00"
+    "generatedAt": "2026-10-02T11:58:42+00:00"
   }
 }
