@@ -31,7 +31,7 @@ def stock(symbol,name,category):
         short_band=current*vol*2.0
         long_base=current*(1+lt*0.55)
         return {"symbol":symbol,"name":name,"category":category,"price":current,"change":(current-prev)/prev*100 if prev else 0,
-                "source":"Yahoo Finance","history":prices[-90:],
+                "source":"Yahoo Finance","history":prices[-252:],
                 "forecast":{"short":{"period":"단기 1~4주","base":short_base,"bull":short_base+short_band,"bear":max(0,short_base-short_band),
                 "trend":"상승" if st>0.03 else "하락" if st<-0.03 else "중립"},
                 "long":{"period":"장기 6~12개월","base":long_base,
