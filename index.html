@@ -38,7 +38,10 @@ async function loadData(){
  }catch(e){document.getElementById("status").textContent="데이터를 불러오지 못했습니다.";}
 }
 function stockRow(s){
- return '<div class="item"><h3>'+esc(s.name)+' <span class="'+cls(s.change)+'">'+(s.change==null?"-":(s.change>=0?"+":"")+Number(s.change).toFixed(2)+"%")+'</span></h3><p>'+(s.price==null?"시세 조회 실패":Number(s.price).toLocaleString(undefined,{maximumFractionDigits:2}))+' · '+esc(s.symbol)+'</p></div>';
+ const price=s.price==null?"데이터 없음":Number(s.price).toLocaleString(undefined,{maximumFractionDigits:2});
+ const change=s.change==null?"-":(s.change>=0?"+":"")+Number(s.change).toFixed(2)+"%";
+ const live=s.live?" · 실시간":"";
+ return '<div class="item"><h3>'+esc(s.name)+' <span class="'+cls(s.change)+'">'+change+'</span></h3><p>'+price+' · '+esc(s.symbol)+live+'</p></div>';
 }
 function render(d){
  document.getElementById("summary").innerHTML=d.stocks.slice(0,4).map(s=>'<div class="card"><div class="label">'+esc(s.name)+'</div><div class="big">'+(s.price==null?"-":Number(s.price).toLocaleString())+'</div><div class="'+cls(s.change)+'">'+(s.change==null?"데이터 없음":(s.change>=0?"+":"")+Number(s.change).toFixed(2)+"%")+'</div></div>').join("");
