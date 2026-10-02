@@ -74,7 +74,7 @@ function makeStockChart(s,requested=22){
    return {data,hi,loV,chg,pts,ly,fy,base,bull,bear,long,fx0,fx1,fx2,fx3,grid,labels};
  }
  const d=makeRange(Math.min(requested,h.length));
- return '<div class="chart-toolbar"><div><b>가격 흐름</b><span class="chart-change '+(d.chg>=0?"up":"down")+'">'+(d.chg>=0?"+":"")+d.chg.toFixed(2)+'%</span></div><div class="chart-ranges">'+ranges.map(r=>'<button type="button" class="chart-range '+(r.v===Math.min(22,h.length)?"selected":"")+'" onclick="setChartRange('${s.symbol}',${r.v})" data-chart="'+id+'" data-range="'+r.v+'">'+r.n+'</button>').join("")+'</div></div>'+
+ return '<div class="chart-toolbar"><div><b>가격 흐름</b><span class="chart-change '+(d.chg>=0?"up":"down")+'">'+(d.chg>=0?"+":"")+d.chg.toFixed(2)+'%</span></div><div class="chart-ranges">'+ranges.map(r=>'<button type="button" class="chart-range '+(r.v===Math.min(22,h.length)?"selected":"")+'" data-chart-symbol="'+esc(s.symbol)+'" data-range="'+r.v+'">'+r.n+'</button>').join("")+'</div></div>'+
  '<div class="chart-stats"><span>고가 <b>'+formatPrice(s,d.hi)+'</b></span><span>저가 <b>'+formatPrice(s,d.loV)+'</b></span><span>현재 <b>'+formatPrice(s,s.price)+'</b></span></div>'+
  '<div class="price-chart detailed"><svg id="'+id+'" viewBox="0 0 '+w+' '+H" role="img" aria-label="'+esc(s.name)+' 상세 주가 차트">'+d.grid+
  '<polyline points="'+d.pts+'" class="chart-history"/>'+
@@ -107,6 +107,12 @@ function setChartRange(symbol,count){
  const label=el.querySelector(".label")?.outerHTML||'<div class="label">주가 차트 · 최근 흐름 + 전망</div>';
  el.innerHTML=label+makeStockChart(s,count);
 }
+document.addEventListener("click",e=>{
+ const b=e.target.closest(".chart-range[data-chart-symbol]");
+ if(!b)return;
+ e.preventDefault();
+ setChartRange(b.dataset.chartSymbol,Number(b.dataset.range));
+});
 function openStock(s){
  const f=s.forecast||{}, sh=f.short||{}, lo=f.long||{};
  const history=(s.history||[]).map(Number).filter(Number.isFinite);
