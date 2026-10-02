@@ -14,6 +14,20 @@ def get(url):
 def quote_symbol(symbol):
     return urllib.parse.quote(symbol,safe="")
 
+def chart_data(symbol, rng, interval):
+    url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range={rng}&interval={interval}&includePrePost=false"
+    try:
+        raw=json.loads(get(url)); res=raw["chart"]["result"][0]
+        q=res["indicators"]["quote"][0]
+        out=[]
+        for i,ts in enumerate(res.get("timestamp",[])):
+            o,h,l,c=(q["open"][i],q["high"][i],q["low"][i],q["close"][i])
+            if None in (o,h,l,c): continue
+            out.append({"t":ts,"o":o,"h":h,"l":l,"c":c,"v":q.get("volume",[None])[i]})
+        return out
+    except Exception:
+        return []
+
 def stock(symbol,name,category):
     url=f"https://query1.finance.yahoo.com/v8/finance/chart/{quote_symbol(symbol)}?range=1y&interval=1d"
     try:
