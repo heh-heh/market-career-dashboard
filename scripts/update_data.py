@@ -60,6 +60,101 @@ previous_by_symbol={
     if x.get("symbol")
 }
 
+def enrich_next_day_forecast(items, indices):
+    """다음 거래일 참고 시나리오.
+    최근 1/5/20일 모멘텀, MA5/MA20 위치, 실현 변동성, 관련 지수의 최근 흐름을 조합한다.
+    확정 예측이 아니라 다음 장의 기준/상승/하락 시나리오를 표시하기 위한 지표다.
+    """
+    index_map={x.get("symbol"):x for x in indices}
+    benchmark_symbols={
+        "한국 반도체":["^KS11","^SOX"],
+        "미국 반도체":["^IXIC","^SOX"],
+        "미국/글로벌 반도체":["^IXIC","^SOX"],
+        "한국 게임":["^KS11","^KQ11"]
+    }
+
+    def pct(a,b):
+        return (a/b-1)*100 if a is not None and b not in (None,0) else 0.0
+
+    for item in items:
+        h=[float(x) for x in item.get("history",[]) if isinstance(x,(int,float))]
+        if len(h)<6 or not item.get("price"):
+            item["next_day_forecast"]={
+                "period":"다음 거래일",
+                "bias":"데이터 부족",
+                "confidence":"낮음",
+                "expectedLow":None,
+                "expectedHigh":None,
+                "expectedReturn":None,
+                "factors":["최근 일봉 데이터 부족"]
+            }
+            continue
+
+        cur=h[-1]
+        r1=pct(h[-1],h[-2])
+        r5=pct(h[-1],h[-6])
+        r20=pct(h[-1],h[-21]) if len(h)>=21 else r5
+        ma5=sum(h[-5:])/5
+        ma20=sum(h[-20:])/20 if len(h)>=20 else sum(h)/len(h)
+        ma_gap=pct(ma5,ma20)
+
+        returns=[pct(h[i],h[i-1]) for i in range(max(1,len(h)-20),len(h))]
+        vol=(sum(r*r for r in returns)/len(returns))**0.5 if returns else 1.5
+        vol=max(0.5,min(vol,8.0))
+
+        score=0.0
+        score += max(-2.5,min(2.5,r5))*0.30
+        score += max(-3.5,min(3.5,r20))*0.15
+        score += max(-3.0,min(3.0,ma_gap))*0.25
+        score += max(-5.0,min(5.0,r1))*0.15
+
+        factors=[]
+        if r5>1: factors.append("최근 5거래일 상승 모멘텀")
+        elif r5<-1: factors.append("최근 5거래일 하락 모멘텀")
+        else: factors.append("최근 5거래일 방향성 제한")
+        if ma5>ma20*1.005: factors.append("MA5가 MA20 상회")
+        elif ma5<ma20*0.995: factors.append("MA5가 MA20 하회")
+        else: factors.append("MA5·MA20 수렴")
+        if abs(r1)>=2: factors.append("전일 변동성 확대")
+
+        for bs in benchmark_symbols.get(item.get("category"),[]):
+            b=index_map.get(bs)
+            bh=[float(x) for x in (b or {}).get("history",[]) if isinstance(x,(int,float))]
+            if len(bh)>=6:
+                br1=pct(bh[-1],bh[-2])
+                br5=pct(bh[-1],bh[-6])
+                score += max(-3,min(3,br1))*0.05
+                score += max(-3,min(3,br5))*0.05
+                if abs(br1)>0.7:
+                    factors.append((b or {}).get("name",bs)+" 전일 흐름 반영")
+
+        # score는 %가 아닌 내부 점수. 과도한 외삽을 막기 위해 기대수익률을 제한한다.
+        expected=max(-3.5,min(3.5,score*0.55))
+        half_range=max(1.0,min(5.5,vol*0.85))
+        low=cur*(1+(expected-half_range)/100)
+        high=cur*(1+(expected+half_range)/100)
+
+        if expected>=0.65: bias="상승 시나리오"
+        elif expected<=-0.65: bias="하락 시나리오"
+        else: bias="보합 시나리오"
+
+        strength=abs(score)
+        if strength>=2.0 and len(h)>=20: confidence="높음"
+        elif strength>=0.9: confidence="중간"
+        else: confidence="낮음"
+
+        item["next_day_forecast"]={
+            "period":"다음 거래일",
+            "bias":bias,
+            "confidence":confidence,
+            "expectedReturn":round(expected,2),
+            "expectedLow":round(low,4),
+            "expectedHigh":round(high,4),
+            "rangePct":round(half_range,2),
+            "factors":factors[:5],
+            "method":"최근 1·5·20일 모멘텀, MA5/MA20, 최근 변동성, 관련 지수 흐름을 조합한 참고용 시나리오"
+        }
+
 def stock(symbol,name,category):
     previous=previous_by_symbol.get(symbol)
     daily=chart_data(symbol,"1y","1d")
@@ -585,6 +680,10 @@ indices=[
     stock("SMH","VanEck Semiconductor ETF","반도체 ETF")
 ]
 
+# 주식/ETF에 다음 거래일 참고 시나리오를 부여한다.
+enrich_next_day_forecast(korea+us, indices)
+enrich_next_day_forecast(indices, indices)
+
 news=[]
 for q in [
     "반도체 AI HBM 한국 미국",
@@ -602,7 +701,7 @@ news=sorted(
 
 data={
     "updatedAt":now,
-    "notice":"주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
+    "notice":"주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
     "stocks":korea+us,
     "indices":indices,
     "news":news,
