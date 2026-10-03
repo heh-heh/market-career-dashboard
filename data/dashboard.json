@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T04:14:16+00:00",
+  "updatedAt": "2026-10-03T04:20:11+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -39248,7 +39248,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.1999969482422,
+            "o": 232.2100067138672,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -39848,9 +39848,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
-            "l": 230.83999633789062,
+            "l": 230.47999572753906,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42802,7 +42802,7 @@
           },
           {
             "t": 1789565400,
-            "o": 213.72000122070312,
+            "o": 214.13999938964844,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43138,7 +43138,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.64999389648438,
+            "o": 222.11599731445312,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43194,7 +43194,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.25,
+            "o": 225.14999389648438,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43306,7 +43306,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -48959,7 +48959,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -49582,8 +49582,8 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
-            "h": 615.0598754882812,
+            "o": 616.9600219726562,
+            "h": 617.5700073242188,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52872,9 +52872,9 @@
           },
           {
             "t": 1790256600,
-            "o": 605.344970703125,
+            "o": 600.7550048828125,
             "h": 624.8400268554688,
-            "l": 604.35400390625,
+            "l": 599.3499755859375,
             "c": 617.25,
             "v": 8101441
           },
@@ -52928,7 +52928,7 @@
           },
           {
             "t": 1790343000,
-            "o": 634.610107421875,
+            "o": 635.0679931640625,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -52985,7 +52985,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53040,7 +53040,7 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
+            "o": 616.9600219726562,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59316,7 +59316,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62326,9 +62326,9 @@
           },
           {
             "t": 1789651800,
-            "o": 105.75,
+            "o": 104.77999877929688,
             "h": 109.83999633789062,
-            "l": 104.87030029296875,
+            "l": 104.69999694824219,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62606,9 +62606,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.01000213623047,
+            "o": 120.61000061035156,
             "h": 125.91999816894531,
-            "l": 119.94999694824219,
+            "l": 119.55000305175781,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62774,7 +62774,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -69050,9 +69050,9 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
-            "l": 357.4100036621094,
+            "l": 355.9775085449219,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72060,9 +72060,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.30999755859375,
+            "o": 346.07000732421875,
             "h": 349.94000244140625,
-            "l": 346.1597900390625,
+            "l": 345.30999755859375,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72508,7 +72508,7 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -81458,7 +81458,7 @@
           },
           {
             "t": 1788960600,
-            "o": 1003.1777954101562,
+            "o": 999.3499755859375,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81794,9 +81794,9 @@
           },
           {
             "t": 1789651800,
-            "o": 961.3300170898438,
+            "o": 954.9979858398438,
             "h": 986.2000122070312,
-            "l": 961.1303100585938,
+            "l": 953.5,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -112406,7 +112406,7 @@
           },
           {
             "t": 1790947860,
-            "o": 27195.884765625,
+            "o": 27197.251953125,
             "h": 27197.251953125,
             "l": 27175.92578125,
             "c": 27179.453125,
@@ -131874,8 +131874,8 @@
           },
           {
             "t": 1790947860,
-            "o": 13110.154296875,
-            "h": 13110.154296875,
+            "o": 13107.7958984375,
+            "h": 13108.1064453125,
             "l": 13090.056640625,
             "c": 13091.6328125,
             "v": 0
@@ -134998,7 +134998,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12584.86328125,
+            "l": 12585.8232421875,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -144732,7 +144732,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9000244140625,
+            "l": 566.9099731445312,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -145354,8 +145354,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
-            "h": 569.6950073242188,
+            "o": 569.8699951171875,
+            "h": 570.4299926757812,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -148644,7 +148644,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.8300170898438,
+            "o": 554.9650268554688,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -148812,7 +148812,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
+            "o": 569.8699951171875,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -160811,6 +160811,7 @@
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBQaEhfcEdTVUluOVVxZHIybVlqVGtybkhKU2ZoeFlLdVNsVlZwUjE0T29MaVZjNmdjS25jVXFGMnNrdThYQ2YxYUZ2bWp5VjBHWi1fcmVZVkVHdURV?oc=5",
       "published": "Fri, 02 Oct 2026 13:22:00 GMT",
       "publishedAt": "2026-10-02T13:22:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXEFVX3lxTFBQaEhfcEdTVUluOVVxZHIybVlqVGtybkhKU2ZoeFlLdVNsVlZwUjE0T29MaVZjNmdjS25jVXFGMnNrdThYQ2YxYUZ2bWp5VjBHWi1fcmVZVkVHdURV?oc=5\" target=\"_blank\">[AI MY 뉴스] 뉴욕 반도체주 프리뷰...美 고용 쇼크에 엔비디아 등 반도체주 강세</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스핌</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "높음",
@@ -160821,26 +160822,29 @@
       "link": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5",
       "published": "Fri, 02 Oct 2026 04:53:37 GMT",
       "publishedAt": "2026-10-02T04:53:37+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5\" target=\"_blank\">AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Benzinga</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "긍정",
       "importance": "높음",
       "relevance": 3
     },
     {
-      "title": "HBM·낸드·CPU로…AI ETF 쪼개 담는다 - 서울경제",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5",
-      "published": "Fri, 02 Oct 2026 08:55:55 GMT",
-      "publishedAt": "2026-10-02T08:55:55+00:00",
+      "title": "HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략 - smartbizn.com",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5",
+      "published": "Fri, 02 Oct 2026 00:31:29 GMT",
+      "publishedAt": "2026-10-02T00:31:29+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5\" target=\"_blank\">HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">smartbizn.com</font>",
       "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
+      "impact": "긍정",
       "importance": "높음",
       "relevance": 2
     },
     {
-      "title": "HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략 - 스마트비즈",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5",
-      "published": "Fri, 02 Oct 2026 00:31:29 GMT",
-      "publishedAt": "2026-10-02T00:31:29+00:00",
+      "title": "美 마이크론, 사상 최대 실적…삼성·SK '청신호' - 서울경제TV",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBnRVBBS2ZLZ1h0YW1qVmoxUXZzcVMwdW5WYlpxOENEUVJnYUlaR1dWb3lZeHFyNGxGTDVyLW9rWXZlaFd1U01iT2tVV0ZHM1ktRHlYUk1tc0RNZDNZaWQ2NUpkbXA?oc=5",
+      "published": "Thu, 01 Oct 2026 08:47:05 GMT",
+      "publishedAt": "2026-10-01T08:47:05+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTFBnRVBBS2ZLZ1h0YW1qVmoxUXZzcVMwdW5WYlpxOENEUVJnYUlaR1dWb3lZeHFyNGxGTDVyLW9rWXZlaFd1U01iT2tVV0ZHM1ktRHlYUk1tc0RNZDNZaWQ2NUpkbXA?oc=5\" target=\"_blank\">美 마이크론, 사상 최대 실적…삼성·SK '청신호'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">서울경제TV</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "높음",
@@ -160851,6 +160855,7 @@
       "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE95MUlEbFJDREdEbmYtVVh0WHFpMlFONm8tN3F1Z29lMFhjZDZ3MHI0VDR6MmphMmpyd1pvdU9SUWJTOFZmbWJCSDBTc1dyZzdMdzhYY1lZaVI1S3JyYnlyeVk5WDZSMWMwcjNlLUhjSXJNQ1dv?oc=5",
       "published": "Thu, 01 Oct 2026 08:36:18 GMT",
       "publishedAt": "2026-10-01T08:36:18+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE95MUlEbFJDREdEbmYtVVh0WHFpMlFONm8tN3F1Z29lMFhjZDZ3MHI0VDR6MmphMmpyd1pvdU9SUWJTOFZmbWJCSDBTc1dyZzdMdzhYY1lZaVI1S3JyYnlyeVk5WDZSMWMwcjNlLUhjSXJNQ1dv?oc=5\" target=\"_blank\">‘AI 메모리 훈풍’에 사상 최대 실적 낸 마이크론</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">부산일보</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "높음",
@@ -160861,17 +160866,8 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5",
       "published": "Fri, 02 Oct 2026 16:29:39 GMT",
       "publishedAt": "2026-10-02T16:29:39+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5\" target=\"_blank\">경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스타운</font>",
       "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "게임이 시작되지 않을 때 확인할 파워볼 한국 구매 이용 조건 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNSVQ0bnNpbWppZEJyTmNYSVctNF8xdy03bkRzb1RLX0tZRWxoX0I5TDB6cDNTT3BNV0F6R0ZFVDlIUGd3VkZXcFdRR3YtTFpqbTdGZzZmajZHZk90MW5wQ281TWtxdUxVV1pCNW9EeWdNWE1uTG9aT3I5V2d1SllBeWJNZXhUX3dLNF9BT2F4VlkxRk5yNkZHZmdSNTF2aG9majAwUE4xemk3bUNlM2NRaUNMQWE3Z2IzSkV5bVMyaw?oc=5",
-      "published": "Fri, 02 Oct 2026 08:24:58 GMT",
-      "publishedAt": "2026-10-02T08:24:58+00:00",
-      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160881,6 +160877,7 @@
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE93ekI0NXg2c185Z01BSXhMSUZlMlU3RHhZVFktMzlTWUx2Tm11eUFGbHhsZjY4UkJBMkxXQXl2azJ3VmQwYncyV1N3N2xHUHQtTFR6NUtmUHJCQUFv?oc=5",
       "published": "Fri, 02 Oct 2026 07:06:00 GMT",
       "publishedAt": "2026-10-02T07:06:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXEFVX3lxTE93ekI0NXg2c185Z01BSXhMSUZlMlU3RHhZVFktMzlTWUx2Tm11eUFGbHhsZjY4UkJBMkxXQXl2azJ3VmQwYncyV1N3N2xHUHQtTFR6NUtmUHJCQUFv?oc=5\" target=\"_blank\">[미국 ETF 히든 챔피언] (56) 에이전틱 AI 시대 CPU 수혜 펀드는</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스핌</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
@@ -160891,7 +160888,19 @@
       "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBtaG1IRXo3QlNWUW1DcHJ3a25xVksta2hXREZOTl9UTUdZeHVWZG9Xemw0T0lLREdYR2hieFFkWGtXcnQtQUJBLVpjcmY4c0tpZlM1RUV6ZXBXTGFDU1Q0d0Y4YlhOdEU?oc=5",
       "published": "Fri, 02 Oct 2026 06:52:00 GMT",
       "publishedAt": "2026-10-02T06:52:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBtaG1IRXo3QlNWUW1DcHJ3a25xVksta2hXREZOTl9UTUdZeHVWZG9Xemw0T0lLREdYR2hieFFkWGtXcnQtQUJBLVpjcmY4c0tpZlM1RUV6ZXBXTGFDU1Q0d0Y4YlhOdEU?oc=5\" target=\"_blank\">비즈데이터, 글로벌우수기업연구소 육성사업 선정…산업폐수 AI 기술 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">중소벤처기업신문</font>",
       "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다 - 비즈한국",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5",
+      "published": "Fri, 02 Oct 2026 06:46:45 GMT",
+      "publishedAt": "2026-10-02T06:46:45+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5\" target=\"_blank\">“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">비즈한국</font>",
+      "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160901,16 +160910,18 @@
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFB4WHY2TW1xaExGdFMxR0pFdmg5WktxUEdmYTVTakVVSG0zbjB6S2VvUHBySFdrSUdMdTNYOWk3OVpOdzJ1Sl9CS1EwTlZSS09sTzRaZlE4N2tkLV93c3hxWi1zakxITUZ1ZGFwYnFn?oc=5",
       "published": "Fri, 02 Oct 2026 05:06:53 GMT",
       "publishedAt": "2026-10-02T05:06:53+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibkFVX3lxTFB4WHY2TW1xaExGdFMxR0pFdmg5WktxUEdmYTVTakVVSG0zbjB6S2VvUHBySFdrSUdMdTNYOWk3OVpOdzJ1Sl9CS1EwTlZSS09sTzRaZlE4N2tkLV93c3hxWi1zakxITUZ1ZGFwYnFn?oc=5\" target=\"_blank\">[뉴in] KETI 연구팀, 한국 문화ㆍ언어 이해하는 AI 'HAECHI' 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">산업인뉴스</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - 네이버 프리미엄콘텐츠",
+      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - contents.premium.naver.com",
       "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5",
       "published": "Fri, 02 Oct 2026 01:44:00 GMT",
       "publishedAt": "2026-10-02T01:44:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5\" target=\"_blank\">[산업분석] 게임 : BM이 다르면 다른 산업이다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">contents.premium.naver.com</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
@@ -160921,6 +160932,7 @@
       "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5",
       "published": "Fri, 02 Oct 2026 01:02:34 GMT",
       "publishedAt": "2026-10-02T01:02:34+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5\" target=\"_blank\">HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">코리아리포트</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
@@ -160931,6 +160943,7 @@
       "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5",
       "published": "Thu, 01 Oct 2026 22:04:50 GMT",
       "publishedAt": "2026-10-01T22:04:50+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5\" target=\"_blank\">건설연, AI 기반 교량 안전성 실시간 진단기술 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사이언스타임즈</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
@@ -160941,6 +160954,7 @@
       "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0wNmYxb3hnZ2l0RVhNQTVrdXBDZ091UlRhTEMwTnRPSnJHMnNYclpnOUFrSzlVS2ZLZi1WY1Rna09hbkRSak42N0l2b0Y2aDNBS1gxSUM0Ynd3c2RiZV9sdU9MaFBiOFRHU3hpWjlWbTRZaVlHcy1z?oc=5",
       "published": "Thu, 01 Oct 2026 08:55:45 GMT",
       "publishedAt": "2026-10-01T08:55:45+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMid0FVX3lxTE0wNmYxb3hnZ2l0RVhNQTVrdXBDZ091UlRhTEMwTnRPSnJHMnNYclpnOUFrSzlVS2ZLZi1WY1Rna09hbkRSak42N0l2b0Y2aDNBS1gxSUM0Ynd3c2RiZV9sdU9MaFBiOFRHU3hpWjlWbTRZaVlHcy1z?oc=5\" target=\"_blank\">게임 아트 포트폴리오 추가 기능의 사용 가능 상태</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
@@ -160951,7 +160965,19 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE50YXpoTDBsT0RZc09uNVN3ZzV5RWtoY3JYMVFxVHJuUW1SWnAwbWt5cnJpRXVZTFFNN09EVXJ6SmRUeHBsWHpMcWhZYzVSUDQxNDBwMzlzekpzR0lZa2tOQlA5UVQ0VnBmWTZTMdIBcEFVX3lxTE41V3RrVThlNzNXNFUwSkpvakJDY08tSlNnLWNqRUhsd0RPVzc2c181bmNYS1VvZG5MY3J0d0FRdXVtbXBJNnp4UWlXZGxaNWJFNXNfZkM4bWFMZzY0MXpGY25ZSjhMNUplR042QUhhR3E?oc=5",
       "published": "Thu, 01 Oct 2026 08:32:08 GMT",
       "publishedAt": "2026-10-01T08:32:08+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE50YXpoTDBsT0RZc09uNVN3ZzV5RWtoY3JYMVFxVHJuUW1SWnAwbWt5cnJpRXVZTFFNN09EVXJ6SmRUeHBsWHpMcWhZYzVSUDQxNDBwMzlzekpzR0lZa2tOQlA5UVQ0VnBmWTZTMdIBcEFVX3lxTE41V3RrVThlNzNXNFUwSkpvakJDY08tSlNnLWNqRUhsd0RPVzc2c181bmNYS1VvZG5MY3J0d0FRdXVtbXBJNnp4UWlXZGxaNWJFNXNfZkM4bWFMZzY0MXpGY25ZSjhMNUplR042QUhhR3E?oc=5\" target=\"_blank\">콘크리트 배합기술에 AI 기술을 활용한다고?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">전기신문</font>",
       "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "반도체에 영원한 승자는 없다 — 잘나갈 때 위기를 준비하라 - 최보식의언론",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5KVnRabWl1WWtobWViWFN1dnB3c3h2NnlPb0wyVUNpWUhLbTVYa05PSDYyb1M0d2JQS0VmZno0dG84SnRoZ0FfaW05U0lCYVFHOEQ4UGhlQ3J6X3NmUmg1SnlhXzg2LVBV0gFoQVVfeXFMTkpWdFptaXVZa2htZWJYU3V2cHdzeHY2eU9vTDJVQ2lZSEttNVhrTk9INjJvUzR3YlBLRWZmejR0bzhKdGhnQV9pbTlTSUJhUUc4RDhQaGVDcnpfc2ZSaDVKeWFfODYtUFU?oc=5",
+      "published": "Thu, 01 Oct 2026 07:38:33 GMT",
+      "publishedAt": "2026-10-01T07:38:33+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTE5KVnRabWl1WWtobWViWFN1dnB3c3h2NnlPb0wyVUNpWUhLbTVYa05PSDYyb1M0d2JQS0VmZno0dG84SnRoZ0FfaW05U0lCYVFHOEQ4UGhlQ3J6X3NmUmg1SnlhXzg2LVBV0gFoQVVfeXFMTkpWdFptaXVZa2htZWJYU3V2cHdzeHY2eU9vTDJVQ2lZSEttNVhrTk9INjJvUzR3YlBLRWZmejR0bzhKdGhnQV9pbTlTSUJhUUc4RDhQaGVDcnpfc2ZSaDVKeWFfODYtUFU?oc=5\" target=\"_blank\">반도체에 영원한 승자는 없다 — 잘나갈 때 위기를 준비하라</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">최보식의언론</font>",
+      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160961,6 +160987,7 @@
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVODRFM0FQQWM1V0lvX09NbmxZRjhPaW1uSkZ4Q1JIdG9VWWNEenhaazRsc2pvcnRfaVBiVmsyNE5vaGoxSXhNQTVodEtpbzVXNk0wUDNXUkM3c0VWVlRkM0Iya2RFQQ?oc=5",
       "published": "Thu, 01 Oct 2026 06:40:27 GMT",
       "publishedAt": "2026-10-01T06:40:27+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVODRFM0FQQWM1V0lvX09NbmxZRjhPaW1uSkZ4Q1JIdG9VWWNEenhaazRsc2pvcnRfaVBiVmsyNE5vaGoxSXhNQTVodEtpbzVXNk0wUDNXUkM3c0VWVlRkM0Iya2RFQQ?oc=5\" target=\"_blank\">[신기술이 경쟁력] 건설연, AI로 교량 안전성 10분 만에 자동 평가</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">건설이코노미뉴스</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
@@ -160971,6 +160998,7 @@
       "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5",
       "published": "Thu, 01 Oct 2026 06:23:36 GMT",
       "publishedAt": "2026-10-01T06:23:36+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5\" target=\"_blank\">[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
@@ -160981,6 +161009,7 @@
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5",
       "published": "Thu, 01 Oct 2026 05:59:03 GMT",
       "publishedAt": "2026-10-01T05:59:03+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5\" target=\"_blank\">韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "보통",
@@ -160991,6 +161020,7 @@
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFAtanNQRTE4b0gwQlAxbEswV0xDeWRENDZnUFZMTlNSRGRPOVVIOWVweWo4UXZqenA2WjVIaFVsX1NjeEhxbEpGaHppdnVVT1oySkFsNEpJUTBpTkFtSGxRQ3BFeHJ0dw?oc=5",
       "published": "Thu, 01 Oct 2026 05:00:13 GMT",
       "publishedAt": "2026-10-01T05:00:13+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTFAtanNQRTE4b0gwQlAxbEswV0xDeWRENDZnUFZMTlNSRGRPOVVIOWVweWo4UXZqenA2WjVIaFVsX1NjeEhxbEpGaHppdnVVT1oySkFsNEpJUTBpTkFtSGxRQ3BFeHJ0dw?oc=5\" target=\"_blank\">넥슨, 신작 ‘템빨: 오버기어드’ 사전등록 시작</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">디일렉</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
@@ -161001,6 +161031,7 @@
       "link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOajlkRmMyWGxOQ2oxVmpuaWRvZnc3b0lYdDBjYURNX0dMOHVLS3dBaXFyVi1icXVjTmozOFN0NEVpQTd4ZzRkdW5rYWdjVTNFZllwVExOd05EdUw3SU9fUWxzRGJBNnV1a1FtTEJXQmgtT0tMWGxRNjRXVzZVdk9taGpRNkU3ZkpvS2UxbDFLc0h2OURhYUxmcTQwVXVSamZObHVPVmplTHhTSHVkMUlOMjRkSklveHFfa2Z6bXBPb3EyaVEtbER3NmhFeG41MDlQMVpSZU5XZWhGOUU?oc=5",
       "published": "Fri, 02 Oct 2026 17:59:34 GMT",
       "publishedAt": "2026-10-02T17:59:34+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi2wFBVV95cUxOajlkRmMyWGxOQ2oxVmpuaWRvZnc3b0lYdDBjYURNX0dMOHVLS3dBaXFyVi1icXVjTmozOFN0NEVpQTd4ZzRkdW5rYWdjVTNFZllwVExOd05EdUw3SU9fUWxzRGJBNnV1a1FtTEJXQmgtT0tMWGxRNjRXVzZVdk9taGpRNkU3ZkpvS2UxbDFLc0h2OURhYUxmcTQwVXVSamZObHVPVmplTHhTSHVkMUlOMjRkSklveHFfa2Z6bXBPb3EyaVEtbER3NmhFeG41MDlQMVpSZU5XZWhGOUU?oc=5\" target=\"_blank\">시각 효과를 중심으로 모아보는 더굿 토토 추천인코드 테마 콘텐츠</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
@@ -161011,6 +161042,7 @@
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE4tSEpYMV9Kc1ZzeEV4MWZMT29JVEdaZXpFdHZSdW1oLXFNaTFUTEJrUzE1eEp2cFkyTl9DaWl1WEZ2bE1kaGd0UF8wVnU5eU1USVpaRi1CbHBaUmg2b1lpQk9JdVVHcEFXZG1lddIBcEFVX3lxTFAyMFZsNWZ2elliRUNkSko2bldYRTNwWTBBZXBMUk95ckdpZWhKNWdkbnpxLVM2N1ViNFNkcUt5ek05NHNDNUtqbkREZHBFbGdVVEtaR1NPemp1VlZkbFRhMGd6T2oyZzdVR2RaOHR1OWE?oc=5",
       "published": "Fri, 02 Oct 2026 10:28:41 GMT",
       "publishedAt": "2026-10-02T10:28:41+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE4tSEpYMV9Kc1ZzeEV4MWZMT29JVEdaZXpFdHZSdW1oLXFNaTFUTEJrUzE1eEp2cFkyTl9DaWl1WEZ2bE1kaGd0UF8wVnU5eU1USVpaRi1CbHBaUmg2b1lpQk9JdVVHcEFXZG1lddIBcEFVX3lxTFAyMFZsNWZ2elliRUNkSko2bldYRTNwWTBBZXBMUk95ckdpZWhKNWdkbnpxLVM2N1ViNFNkcUt5ek05NHNDNUtqbkREZHBFbGdVVEtaR1NPemp1VlZkbFRhMGd6T2oyZzdVR2RaOHR1OWE?oc=5\" target=\"_blank\">[기획] 3N 빠진 지스타…글로벌·인디로 외연 확대</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">소년한국일보</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "긍정",
       "importance": "낮음",
@@ -161021,16 +161053,7 @@
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
       "publishedAt": "2026-10-02T07:45:02+00:00",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기 - 뉴스핌",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5",
-      "published": "Fri, 02 Oct 2026 00:31:00 GMT",
-      "publishedAt": "2026-10-02T00:31:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5\" target=\"_blank\">시프트업, 신작 아직인데···3분기 영업이익 반토막 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">증권경제신문</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
@@ -161041,6 +161064,7 @@
       "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5",
       "published": "Thu, 01 Oct 2026 20:51:58 GMT",
       "publishedAt": "2026-10-01T20:51:58+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5\" target=\"_blank\">이반토니 도박 : 위험 피하기와 보호 조치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "낮음",
@@ -161110,6 +161134,171 @@
     }
   ],
   "employmentUpdatedAt": "2026-10-03T04:14:16+00:00",
+  "jobPostings": [
+    {
+      "title": "호전실업㈜ 채용 - 의류제조시스템 웹/앱 및 응용소프트웨어 개발 - 잡코리아",
+      "company": "호전실업㈜",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1UeGRkNV9KUm41ZEVndDhSVWxYRHNmMEJHQ0pXSnFHVnpIMXpKamdGODJxb1ZWWlVQSFgzQmR1bXMxcG5UR04zX1NyRUFXbUxrWlM1aHBmaWxsekNlNVdSWEo5OFBoQ1k?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1UeGRkNV9KUm41ZEVndDhSVWxYRHNmMEJHQ0pXSnFHVnpIMXpKamdGODJxb1ZWWlVQSFgzQmR1bXMxcG5UR04zX1NyRUFXbUxrWlM1aHBmaWxsekNlNVdSWEo5OFBoQ1k?oc=5\" target=\"_blank\">호전실업㈜ 채용 - 의류제조시스템 웹/앱 및 응용소프트웨어 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Fri, 02 Oct 2026 09:53:39 GMT",
+      "publishedAt": "2026-10-02T09:53:39+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1UeGRkNV9KUm41ZEVndDhSVWxYRHNmMEJHQ0pXSnFHVnpIMXpKamdGODJxb1ZWWlVQSFgzQmR1bXMxcG5UR04zX1NyRUFXbUxrWlM1aHBmaWxsekNlNVdSWEo5OFBoQ1k?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "티맥스소프트 채용 - [일본근무] 티맥스소프트 일본법인엔지니어 - 잡코리아",
+      "company": "티맥스소프트",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBwcHdCU3BpeElsYzZTQTh4YU80LVo1X2JfODZkR0hTWTAzRW5xbE5ZY0NGQVNIcVRxM0pqNkRuaHBqejcwM0pOX2ZfaFZqdllocHJ5YjV0dHg0RFNZd1g3cw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTFBwcHdCU3BpeElsYzZTQTh4YU80LVo1X2JfODZkR0hTWTAzRW5xbE5ZY0NGQVNIcVRxM0pqNkRuaHBqejcwM0pOX2ZfaFZqdllocHJ5YjV0dHg0RFNZd1g3cw?oc=5\" target=\"_blank\">티맥스소프트 채용 - [일본근무] 티맥스소프트 일본법인엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Fri, 02 Oct 2026 06:57:03 GMT",
+      "publishedAt": "2026-10-02T06:57:03+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBwcHdCU3BpeElsYzZTQTh4YU80LVo1X2JfODZkR0hTWTAzRW5xbE5ZY0NGQVNIcVRxM0pqNkRuaHBqejcwM0pOX2ZfaFZqdllocHJ5YjV0dHg0RFNZd1g3cw?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "2026년 하반기 웹젠 채용연계형 인턴십 - 잡코리아",
+      "company": "2026년 하반기 웹젠",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPZTdTdlVlLURtOGdISFVDTEh3bXhtOUQ1dUNzbWhuM0JpdWlYLWpCR3lJdmJFYzVLRXhJano2ZFk0LS1abHJqdUpZNVdISy01ZnJ3MGU0QllTdDJFMTB0NFRyeHNhNVJ1RXBQWmh6STV0dHQ3M20tLXc1dF9NWnNsaS00Rm1UbUxVR3NQRm9xV3M?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMikAFBVV95cUxPZTdTdlVlLURtOGdISFVDTEh3bXhtOUQ1dUNzbWhuM0JpdWlYLWpCR3lJdmJFYzVLRXhJano2ZFk0LS1abHJqdUpZNVdISy01ZnJ3MGU0QllTdDJFMTB0NFRyeHNhNVJ1RXBQWmh6STV0dHQ3M20tLXc1dF9NWnNsaS00Rm1UbUxVR3NQRm9xV3M?oc=5\" target=\"_blank\">2026년 하반기 웹젠 채용연계형 인턴십</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Fri, 02 Oct 2026 02:31:31 GMT",
+      "publishedAt": "2026-10-02T02:31:31+00:00",
+      "area": "개발",
+      "career": "인턴",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPZTdTdlVlLURtOGdISFVDTEh3bXhtOUQ1dUNzbWhuM0JpdWlYLWpCR3lJdmJFYzVLRXhJano2ZFk0LS1abHJqdUpZNVdISy01ZnJ3MGU0QllTdDJFMTB0NFRyeHNhNVJ1RXBQWmh6STV0dHQ3M20tLXc1dF9NWnNsaS00Rm1UbUxVR3NQRm9xV3M?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "안랩 채용 - [안랩] 2026년 10월 신입/경력 채용 - 잡코리아",
+      "company": "안랩",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOTEljckJ6UmNSTmRCb1pDVVZDSTJDRTVHS2Y3OTh5eUx4cWx2cDFSeUd6ekVnY2JkRVg4VXhRMVpINWFMN1ZMRzJHYnR1WlUxcXhxS3k4YVNBa0ZEX2xLem1SX1Q5dm83TENIa3FHa1BJSG5KNGNfZXBPS1d0OF9JQm1XeXVMQWxNenBYMQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMijAFBVV95cUxOTEljckJ6UmNSTmRCb1pDVVZDSTJDRTVHS2Y3OTh5eUx4cWx2cDFSeUd6ekVnY2JkRVg4VXhRMVpINWFMN1ZMRzJHYnR1WlUxcXhxS3k4YVNBa0ZEX2xLem1SX1Q5dm83TENIa3FHa1BJSG5KNGNfZXBPS1d0OF9JQm1XeXVMQWxNenBYMQ?oc=5\" target=\"_blank\">안랩 채용 - [안랩] 2026년 10월 신입/경력 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Fri, 02 Oct 2026 02:05:26 GMT",
+      "publishedAt": "2026-10-02T02:05:26+00:00",
+      "area": "개발",
+      "career": "신입/경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOTEljckJ6UmNSTmRCb1pDVVZDSTJDRTVHS2Y3OTh5eUx4cWx2cDFSeUd6ekVnY2JkRVg4VXhRMVpINWFMN1ZMRzJHYnR1WlUxcXhxS3k4YVNBa0ZEX2xLem1SX1Q5dm83TENIa3FHa1BJSG5KNGNfZXBPS1d0OF9JQm1XeXVMQWxNenBYMQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "운우 채용 - [신규런칭/5만유저] 대기업 풀스택 엔지니어 - 잡코리아",
+      "company": "운우",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iQ0ZDV3NWYVo5cU5FNEF2WnpLSXRFNER0RlRfWXNGNWF5LVJ0NHoxdFJhTXRTRy1GYVNYRnFVZ1pSQklvbERLVjZOMldSY3l0a3plZnhyNFV0V3ZVV3U0cURjRVFtVjA?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iQ0ZDV3NWYVo5cU5FNEF2WnpLSXRFNER0RlRfWXNGNWF5LVJ0NHoxdFJhTXRTRy1GYVNYRnFVZ1pSQklvbERLVjZOMldSY3l0a3plZnhyNFV0V3ZVV3U0cURjRVFtVjA?oc=5\" target=\"_blank\">운우 채용 - [신규런칭/5만유저] 대기업 풀스택 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Thu, 01 Oct 2026 21:45:43 GMT",
+      "publishedAt": "2026-10-01T21:45:43+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iQ0ZDV3NWYVo5cU5FNEF2WnpLSXRFNER0RlRfWXNGNWF5LVJ0NHoxdFJhTXRTRy1GYVNYRnFVZ1pSQklvbERLVjZOMldSY3l0a3plZnhyNFV0V3ZVV3U0cURjRVFtVjA?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "(주)마이나비코리아 채용 - [일본 도쿄,사이타마,가나가와 근무] 소프트웨어 엔지니어 J140 - 잡코리아",
+      "company": "(주)마이나비코리아",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBZNlJFMU9NLWRlek5sU3piTTJTUGpWbE5wTnV3cGxPNG1rWk83aUdpcTd0RE1MdkxHWE9aQ0VMdC1yUHJaT0xWNF8wcndobHhUYVNsYUh3azBicFVlWDh6S0hlTWpiSmc?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBZNlJFMU9NLWRlek5sU3piTTJTUGpWbE5wTnV3cGxPNG1rWk83aUdpcTd0RE1MdkxHWE9aQ0VMdC1yUHJaT0xWNF8wcndobHhUYVNsYUh3azBicFVlWDh6S0hlTWpiSmc?oc=5\" target=\"_blank\">(주)마이나비코리아 채용 - [일본 도쿄,사이타마,가나가와 근무] 소프트웨어 엔지니어 J140</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Thu, 01 Oct 2026 18:13:54 GMT",
+      "publishedAt": "2026-10-01T18:13:54+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBZNlJFMU9NLWRlek5sU3piTTJTUGpWbE5wTnV3cGxPNG1rWk83aUdpcTd0RE1MdkxHWE9aQ0VMdC1yUHJaT0xWNF8wcndobHhUYVNsYUh3azBicFVlWDh6S0hlTWpiSmc?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "로브로스 채용 - 로봇 데이터 솔루션 엔지니어 - 잡코리아",
+      "company": "로브로스",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE0wMzQ5cHVYOS1KMEM0N3pfVl9oYlY4WlFoLVE1cGtVV0lnY0FGVHhWaTJZa2NYNV9QVFVxWlVTc0ZFZXhTamFRS2Utb2xIaWpKY3l3dTFfSVYxX3RFU0ZzZDNja25IODA?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE0wMzQ5cHVYOS1KMEM0N3pfVl9oYlY4WlFoLVE1cGtVV0lnY0FGVHhWaTJZa2NYNV9QVFVxWlVTc0ZFZXhTamFRS2Utb2xIaWpKY3l3dTFfSVYxX3RFU0ZzZDNja25IODA?oc=5\" target=\"_blank\">로브로스 채용 - 로봇 데이터 솔루션 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Thu, 01 Oct 2026 10:03:30 GMT",
+      "publishedAt": "2026-10-01T10:03:30+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE0wMzQ5cHVYOS1KMEM0N3pfVl9oYlY4WlFoLVE1cGtVV0lnY0FGVHhWaTJZa2NYNV9QVFVxWlVTc0ZFZXhTamFRS2Utb2xIaWpKY3l3dTFfSVYxX3RFU0ZzZDNja25IODA?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "와탭랩스 채용 - 백엔드 개발자 - 잡코리아",
+      "company": "와탭랩스",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9qUUUtalYtenA4aDMxazVjakctZXJGelIyb2xaZGY2aTJIdFY2dU1mWkZuY1d2dG9PVDFBQVNaaTBrUFRmSTR6ZW1mckdIWDY4dUd0TU4zcTlyTnlVTENpSTJhUWM1YWs?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9qUUUtalYtenA4aDMxazVjakctZXJGelIyb2xaZGY2aTJIdFY2dU1mWkZuY1d2dG9PVDFBQVNaaTBrUFRmSTR6ZW1mckdIWDY4dUd0TU4zcTlyTnlVTENpSTJhUWM1YWs?oc=5\" target=\"_blank\">와탭랩스 채용 - 백엔드 개발자</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Thu, 01 Oct 2026 04:46:50 GMT",
+      "publishedAt": "2026-10-01T04:46:50+00:00",
+      "area": "백엔드/서버",
+      "career": "경력",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9qUUUtalYtenA4aDMxazVjakctZXJGelIyb2xaZGY2aTJIdFY2dU1mWkZuY1d2dG9PVDFBQVNaaTBrUFRmSTR6ZW1mckdIWDY4dUd0TU4zcTlyTnlVTENpSTJhUWM1YWs?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "애드팝콘 채용 - 수익화 운영 매니저(신입-2년차) - 잡코리아",
+      "company": "애드팝콘",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9jMHpzdGFLTWE2dFQ3bkk4WlZmREZRWEVNeFVTbVc4eEluVHZ1cHlPLV9YRXZDWm5tZ3lSVGxCOHRURG9KelhLT0tRTGZDWXFLWFpXUWJyMi1zNV9NckxVWmU2aTZ3dWxmMkNVbUNZTmw4dnZNY2lN?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMid0FVX3lxTE9jMHpzdGFLTWE2dFQ3bkk4WlZmREZRWEVNeFVTbVc4eEluVHZ1cHlPLV9YRXZDWm5tZ3lSVGxCOHRURG9KelhLT0tRTGZDWXFLWFpXUWJyMi1zNV9NckxVWmU2aTZ3dWxmMkNVbUNZTmw4dnZNY2lN?oc=5\" target=\"_blank\">애드팝콘 채용 - 수익화 운영 매니저(신입-2년차)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Thu, 01 Oct 2026 04:38:30 GMT",
+      "publishedAt": "2026-10-01T04:38:30+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9jMHpzdGFLTWE2dFQ3bkk4WlZmREZRWEVNeFVTbVc4eEluVHZ1cHlPLV9YRXZDWm5tZ3lSVGxCOHRURG9KelhLT0tRTGZDWXFLWFpXUWJyMi1zNV9NckxVWmU2aTZ3dWxmMkNVbUNZTmw4dnZNY2lN?oc=5"
+        }
+      ]
+    }
+  ],
+  "jobPostingsUpdatedAt": "2026-10-03T04:20:11+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -161165,6 +161354,6 @@
     "quotes_ok": 17,
     "quotes_total": 17,
     "candle_ready": 17,
-    "generatedAt": "2026-10-03T04:14:16+00:00"
+    "generatedAt": "2026-10-03T04:20:11+00:00"
   }
 }
