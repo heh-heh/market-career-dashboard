@@ -15,7 +15,8 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
   <div class="card"><div class="label">종합 지수 <span class="live">● 실시간 갱신</span></div><div id="indices"></div></div>
-  <div class="card" style="margin-top:18px"><div class="label">다음 거래일 예상 <span class="live">● 참고용 시나리오</span></div><div id="nextDayForecasts"></div></div>\n  <div class="card" style="margin-top:18px"><div class="label">SOXL · SOXS 비교 <span class="live">● 반도체 레버리지 / 인버스</span></div><div id="leveragedPair"></div></div>
+  <div class="card" style="margin-top:18px"><div class="label">다음 거래일 예상 <span class="live">● 참고용 시나리오</span></div><div id="nextDayForecasts"></div></div>
+  <div class="card" style="margin-top:18px"><div class="label">SOXL · SOXS 비교 <span class="live">● 반도체 레버리지 / 인버스</span></div><div id="leveragedPair"></div></div>
   <div class="card" style="margin-top:18px"><div class="label">한국 주식</div><div id="koreaStocks"></div></div>
   <div class="card" style="margin-top:18px"><div class="label">미국 · 글로벌 반도체</div><div id="usStocks"></div></div>
   <div class="card" style="margin-top:18px"><div class="label">반도체 ETF</div><div id="etfs"></div></div>
@@ -84,7 +85,8 @@ function renderLeveragedPair(d){
  el.innerHTML='<div class="pair-grid">'+card(bull,"SOXL · Bull 3X")+card(bear,"SOXS · Bear 3X")+'</div>'+
  '<div class="signal" style="margin-top:12px"><b>반도체 기준 흐름</b> · '+soxLine+
  '<br><span class="mini">두 상품의 수익률을 단순 합산하거나 다음 거래일 예상만으로 어느 쪽의 거래를 권하는 용도로 사용하지 않습니다. 레버리지·인버스 ETF는 단기 가격 변동에 민감하므로 실제 거래 전 상품 구조와 비용·추적 특성을 별도로 확인해야 합니다.</span></div>';
-}\nfunction renderNextDayForecasts(d){
+}
+function renderNextDayForecasts(d){
  const items=[...(d.stocks||[])].filter(s=>s.next_day_forecast).concat((d.indices||[]).filter(s=>["^KS11","^KQ11","^IXIC","^GSPC","^SOX","SOXX","SMH","SOXL","SOXS"].includes(s.symbol)&&s.next_day_forecast));
  document.getElementById("nextDayForecasts").innerHTML=items.map(nextDayForecastRow).join("")+
  '<div class="signal" style="margin-top:12px">다음 거래일 예상은 최근 가격 데이터에서 계산한 참고용 범위입니다. 갭 상승·하락, 실적 발표, 금리·환율, 장중 뉴스 등은 반영되지 않을 수 있습니다.</div>';
@@ -182,7 +184,8 @@ function render(d){
  document.getElementById("topnews").innerHTML=renderNews(news.slice(0,6));
  document.getElementById("jobnews").innerHTML=renderNews(d.employmentNews||[]);
  renderJobPostings();
- renderNextDayForecasts(d);\n renderLeveragedPair(d);
+ renderNextDayForecasts(d);
+ renderLeveragedPair(d);
  document.getElementById("technews").innerHTML=renderNews(news.filter(n=>/AI|반도체|신기술|개발/i.test(n.title)));
  const indices=d.indices||[];
  document.getElementById("indices").innerHTML=indices.filter(x=>["^KS11","^KQ11","^IXIC","^GSPC","^SOX"].includes(x.symbol)).map(stockRow).join("");
