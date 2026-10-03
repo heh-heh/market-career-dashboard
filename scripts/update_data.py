@@ -431,7 +431,7 @@ def collect_job_postings(previous):
     ]
     for page in range(1,7):
         url="https://www.gamejob.co.kr/Recruit/joblist" if page==1 else f"https://www.gamejob.co.kr/recruit/_GI_Job_List?Page={page}"
-        fresh += direct_job_list(url,"게임잡",limit=80,keywords=game_keywords)
+        page_jobs=direct_job_list(url,"게임잡",limit=80,keywords=game_keywords)\n        print(f"job source gamejob page={page} count={len(page_jobs)}")\n        fresh += page_jobs
 
     # Keep RSS discovery as a broad fallback across major hiring sites.
     sites=[
