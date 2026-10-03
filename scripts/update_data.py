@@ -291,6 +291,7 @@ def collect_job_postings(previous):
         ("site:rocketpunch.com/jobs 백엔드 개발자", "로켓펀치"),
         ("site:career.programmers.co.kr 개발자 채용", "프로그래머스")
     ]
+
     fresh=[]
     for q,site_name in sites:
         for item in rss(q,8,days=2):
@@ -314,6 +315,17 @@ def collect_job_postings(previous):
 
     cutoff=now-timedelta(days=2)
     candidates=previous.get("jobPostings",[])+fresh
+
+    def role_tokens(title, company):
+        import re
+        text=normalize_text(title)
+        comp=normalize_text(company)
+        for token in ["채용","모집","공고","개발자","인턴","신입","경력","잡코리아","사람인","원티드","점핏","프로그래머스","로켓펀치","sw","개발"]:
+            text=text.replace(token,"")
+        if comp:
+            text=text.replace(comp,"")
+        return set(re.findall(r"[0-9a-z가-힣]{2,}",text))
+
     grouped={}
     for item in candidates:
         stamp=item.get("publishedAt","")
@@ -323,17 +335,29 @@ def collect_job_postings(previous):
             dt=None
         if not dt or dt<cutoff:
             continue
+
         company=normalize_text(item.get("company",""))
-        role=normalize_text(item.get("title",""))
+        role=role_tokens(item.get("title",""),item.get("company",""))
         if not role:
-            continue
-        key=company+"|"+role[:120] if company and company!="기업명확인필요" else "url|"+item.get("link","")
-        if key not in grouped:
+            role={normalize_text(item.get("title",""))}
+
+        match_key=None
+        for key,existing in grouped.items():
+            if company and company==normalize_text(existing.get("company","")):
+                existing_role=role_tokens(existing.get("title",""),existing.get("company",""))
+                union=role|existing_role
+                overlap=len(role&existing_role)/len(union) if union else 0
+                if overlap>=0.45 or not existing_role:
+                    match_key=key
+                    break
+
+        if match_key is None:
+            match_key=(company or "unknown")+"|"+normalize_text(item.get("title",""))[:140]+"|"+str(len(grouped))
             item=dict(item)
             item["sources"]=[{"site":item.get("source",""),"link":item.get("link","")}]
-            grouped[key]=item
+            grouped[match_key]=item
         else:
-            existing=grouped[key]
+            existing=grouped[match_key]
             existing_sources=existing.setdefault("sources",[])
             if not any(x.get("link")==item.get("link") for x in existing_sources):
                 existing_sources.append({"site":item.get("source",""),"link":item.get("link","")})
@@ -342,50 +366,6 @@ def collect_job_postings(previous):
     items=sorted(grouped.values(),key=lambda x:x.get("publishedAt",""),reverse=True)[:100]
     return items, now.isoformat(timespec="seconds")
 
-def collect_employment_news(previous):
-    now=datetime.now(timezone.utc)
-    previous_updated=previous.get("employmentUpdatedAt","")
-    try:
-        last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
-    except Exception:
-        last=datetime.min.replace(tzinfo=timezone.utc)
-
-    # The market workflow runs every 30 minutes, but employment data is
-    # refreshed only when at least one hour has elapsed.
-    if now-last < timedelta(hours=1):
-        return previous.get("employmentNews",[]), previous_updated
-
-    queries=[
-        "게임 개발자 채용 C++ Unity Unreal",
-        "게임 서버 개발자 채용",
-        "백엔드 개발자 채용 Java Python AWS",
-        "신입 개발자 채용 게임 IT",
-        "개발자 채용 공고 취업"
-    ]
-    fresh=[]
-    for q in queries:
-        fresh += rss(q,8,days=2)
-
-    cutoff=now-timedelta(days=2)
-    merged={}
-    for item in previous.get("employmentNews",[])+fresh:
-        stamp=item.get("publishedAt","")
-        try:
-            dt=datetime.fromisoformat(stamp.replace("Z","+00:00"))
-        except Exception:
-            dt=None
-        if dt and dt>=cutoff:
-            key=(item.get("link") or item.get("title","")).strip()
-            if key:
-                merged[key]=item
-
-    items=sorted(
-        merged.values(),
-        key=lambda x:x.get("publishedAt",""),
-        reverse=True
-    )[:50]
-
-    return items, now.isoformat(timespec="seconds")
 
 now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 employment_news, employment_updated_at=collect_employment_news(previous_data)
