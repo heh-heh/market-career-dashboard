@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T04:57:19+00:00",
+  "updatedAt": "2026-10-03T05:06:36+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -39308,7 +39308,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.1999969482422,
+            "o": 232.2100067138672,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -39908,9 +39908,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
-            "l": 230.83999633789062,
+            "l": 230.47999572753906,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42862,7 +42862,7 @@
           },
           {
             "t": 1789565400,
-            "o": 213.72000122070312,
+            "o": 214.13999938964844,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43198,7 +43198,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.64999389648438,
+            "o": 222.11599731445312,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43254,7 +43254,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.25,
+            "o": 225.14999389648438,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43366,7 +43366,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -49035,7 +49035,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -49658,8 +49658,8 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
-            "h": 615.0598754882812,
+            "o": 616.9600219726562,
+            "h": 617.5700073242188,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52948,9 +52948,9 @@
           },
           {
             "t": 1790256600,
-            "o": 605.344970703125,
+            "o": 600.7550048828125,
             "h": 624.8400268554688,
-            "l": 604.35400390625,
+            "l": 599.3499755859375,
             "c": 617.25,
             "v": 8101441
           },
@@ -53004,7 +53004,7 @@
           },
           {
             "t": 1790343000,
-            "o": 634.610107421875,
+            "o": 635.0679931640625,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -53061,7 +53061,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53116,7 +53116,7 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
+            "o": 616.9600219726562,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59409,7 +59409,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62419,9 +62419,9 @@
           },
           {
             "t": 1789651800,
-            "o": 105.75,
+            "o": 104.77999877929688,
             "h": 109.83999633789062,
-            "l": 104.87030029296875,
+            "l": 104.69999694824219,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62699,9 +62699,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.01000213623047,
+            "o": 120.61000061035156,
             "h": 125.91999816894531,
-            "l": 119.94999694824219,
+            "l": 119.55000305175781,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62867,7 +62867,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -69159,9 +69159,9 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
-            "l": 357.4100036621094,
+            "l": 355.9775085449219,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72169,9 +72169,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.30999755859375,
+            "o": 346.07000732421875,
             "h": 349.94000244140625,
-            "l": 346.1597900390625,
+            "l": 345.30999755859375,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72617,7 +72617,7 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -81584,7 +81584,7 @@
           },
           {
             "t": 1788960600,
-            "o": 1003.1777954101562,
+            "o": 999.3499755859375,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81920,9 +81920,9 @@
           },
           {
             "t": 1789651800,
-            "o": 961.3300170898438,
+            "o": 954.9979858398438,
             "h": 986.2000122070312,
-            "l": 961.1303100585938,
+            "l": 953.5,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -98412,8 +98412,8 @@
           },
           {
             "t": 1790688600,
-            "o": 148.5,
-            "h": 148.85000610351562,
+            "o": 148.93499755859375,
+            "h": 149.38999938964844,
             "l": 146.25,
             "c": 146.49240112304688,
             "v": 10628861
@@ -100974,7 +100974,7 @@
           },
           {
             "t": 1788528600,
-            "o": 110.37999725341797,
+            "o": 111.22000122070312,
             "h": 117.86000061035156,
             "l": 109.7300033569336,
             "c": 116.95999908447266,
@@ -101086,9 +101086,9 @@
           },
           {
             "t": 1788960600,
-            "o": 123.37999725341797,
+            "o": 121.23999786376953,
             "h": 128.47999572753906,
-            "l": 122.58000183105469,
+            "l": 121.23999786376953,
             "c": 127.15499877929688,
             "v": 19020541
           },
@@ -101198,7 +101198,7 @@
           },
           {
             "t": 1789133400,
-            "o": 119.75,
+            "o": 120.70999908447266,
             "h": 123.19999694824219,
             "l": 117.8656005859375,
             "c": 122.41999816894531,
@@ -101870,7 +101870,7 @@
           },
           {
             "t": 1790688600,
-            "o": 148.5,
+            "o": 148.93499755859375,
             "h": 151.7198944091797,
             "l": 145.49000549316406,
             "c": 151.24000549316406,
@@ -110667,9 +110667,9 @@
         "1h": [
           {
             "t": 1788442200,
-            "o": 53.66999816894531,
+            "o": 53.494998931884766,
             "h": 55.689998626708984,
-            "l": 53.48500061035156,
+            "l": 53.279998779296875,
             "c": 54.22999954223633,
             "v": 18731325
           },
@@ -110723,7 +110723,7 @@
           },
           {
             "t": 1788528600,
-            "o": 49.91999816894531,
+            "o": 49.560001373291016,
             "h": 50.209999084472656,
             "l": 46.2599983215332,
             "c": 46.70100021362305,
@@ -132092,7 +132092,7 @@
           },
           {
             "t": 1790947860,
-            "o": 27195.884765625,
+            "o": 27197.251953125,
             "h": 27197.251953125,
             "l": 27175.92578125,
             "c": 27179.453125,
@@ -151588,8 +151588,8 @@
           },
           {
             "t": 1790947860,
-            "o": 13110.154296875,
-            "h": 13110.154296875,
+            "o": 13107.7958984375,
+            "h": 13108.1064453125,
             "l": 13090.056640625,
             "c": 13091.6328125,
             "v": 0
@@ -154712,7 +154712,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12584.86328125,
+            "l": 12585.8232421875,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -164461,7 +164461,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9000244140625,
+            "l": 566.9099731445312,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -165083,8 +165083,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
-            "h": 569.6950073242188,
+            "o": 569.8699951171875,
+            "h": 570.4299926757812,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -168373,7 +168373,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.8300170898438,
+            "o": 554.9650268554688,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -168541,7 +168541,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
+            "o": 569.8699951171875,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -180599,11 +180599,11 @@
       "relevance": 2
     },
     {
-      "title": "‘AI 메모리 훈풍’에 사상 최대 실적 낸 마이크론 - 부산일보",
+      "title": "‘AI 메모리 훈풍’에 사상 최대 실적 낸 마이크론 - busan.com",
       "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE95MUlEbFJDREdEbmYtVVh0WHFpMlFONm8tN3F1Z29lMFhjZDZ3MHI0VDR6MmphMmpyd1pvdU9SUWJTOFZmbWJCSDBTc1dyZzdMdzhYY1lZaVI1S3JyYnlyeVk5WDZSMWMwcjNlLUhjSXJNQ1dv?oc=5",
       "published": "Thu, 01 Oct 2026 08:36:18 GMT",
       "publishedAt": "2026-10-01T08:36:18+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE95MUlEbFJDREdEbmYtVVh0WHFpMlFONm8tN3F1Z29lMFhjZDZ3MHI0VDR6MmphMmpyd1pvdU9SUWJTOFZmbWJCSDBTc1dyZzdMdzhYY1lZaVI1S3JyYnlyeVk5WDZSMWMwcjNlLUhjSXJNQ1dv?oc=5\" target=\"_blank\">‘AI 메모리 훈풍’에 사상 최대 실적 낸 마이크론</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">부산일보</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE95MUlEbFJDREdEbmYtVVh0WHFpMlFONm8tN3F1Z29lMFhjZDZ3MHI0VDR6MmphMmpyd1pvdU9SUWJTOFZmbWJCSDBTc1dyZzdMdzhYY1lZaVI1S3JyYnlyeVk5WDZSMWMwcjNlLUhjSXJNQ1dv?oc=5\" target=\"_blank\">‘AI 메모리 훈풍’에 사상 최대 실적 낸 마이크론</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">busan.com</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "높음",
@@ -180621,11 +180621,11 @@
       "relevance": 1
     },
     {
-      "title": "경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축 - 뉴스타운",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5",
-      "published": "Fri, 02 Oct 2026 16:29:39 GMT",
-      "publishedAt": "2026-10-02T16:29:39+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5\" target=\"_blank\">경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스타운</font>",
+      "title": "경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시 - 뉴스프리존",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5",
+      "published": "Sat, 03 Oct 2026 02:02:37 GMT",
+      "publishedAt": "2026-10-03T02:02:37+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5\" target=\"_blank\">경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스프리존</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
@@ -180687,11 +180687,11 @@
       "relevance": 1
     },
     {
-      "title": "HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로 - koreareport.co.kr",
+      "title": "HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로 - 코리아리포트",
       "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5",
       "published": "Fri, 02 Oct 2026 01:02:34 GMT",
       "publishedAt": "2026-10-02T01:02:34+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5\" target=\"_blank\">HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">koreareport.co.kr</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5\" target=\"_blank\">HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">코리아리포트</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
@@ -180753,22 +180753,22 @@
       "relevance": 1
     },
     {
-      "title": "[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그 - Naver Blog",
+      "title": "[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그 - blog.naver.com",
       "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5",
       "published": "Thu, 01 Oct 2026 06:23:36 GMT",
       "publishedAt": "2026-10-01T06:23:36+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5\" target=\"_blank\">[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5\" target=\"_blank\">[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">blog.naver.com</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대 - 매일일보",
+      "title": "韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대 - m-i.kr",
       "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5",
       "published": "Thu, 01 Oct 2026 05:59:03 GMT",
       "publishedAt": "2026-10-01T05:59:03+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5\" target=\"_blank\">韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5\" target=\"_blank\">韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">m-i.kr</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "보통",
@@ -180797,11 +180797,11 @@
       "relevance": 0
     },
     {
-      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
+      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - koreastocknews.com",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
       "publishedAt": "2026-10-02T07:45:02+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5\" target=\"_blank\">시프트업, 신작 아직인데···3분기 영업이익 반토막 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">증권경제신문</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5\" target=\"_blank\">시프트업, 신작 아직인데···3분기 영업이익 반토막 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">koreastocknews.com</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
@@ -181077,7 +181077,7 @@
       "description": "구, 강남구 온라인PC게임, 콘솔게임 정규직 채용시 09/17(목) 등록 ㈜이스트게임즈 서초구'));\" target=\"_blank\"> [신입] UI 디자이너 서초구'));\" data-value=\"285532|estgames|285532\">채용공고 스크랩 신입 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 20시간 전 등록 ㈜이스트게임즈",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
+      "area": "클라이언트",
       "career": "신입",
       "skills": [],
       "employmentType": "정규직",
@@ -181099,8 +181099,8 @@
       "description": "gt; 서초구 온라인PC게임, 모바일게임 정규직 채용시 20시간 전 등록 ㈜이스트게임즈 서초구'));\" target=\"_blank\"> [경력] UI 디자이너 서초구'));\" data-value=\"285531|estgames|285531\">채용공고 스크랩 경력1년↑ 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 22시간 전 등록 (주)크래프톤",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "1년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-10-02 15:24 등록 2026-10-02 15:",
@@ -181121,8 +181121,8 @@
       "description": "gt; 서초구 온라인PC게임, 모바일게임 정규직 채용시 22시간 전 등록 (주)크래프톤 서초구'));\" target=\"_blank\"> [Flyway Games] Jazz & Juice - Animator (1년 이상) 서초구'));\" data-value=\"285530|blueholeginno|285530\">채용공고 스크랩 경력1년↑ 학력무관 서울 > 서초구 웹게임 계약직 ~12/01 22시간 전 등록 디나미스원㈜ <",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "1년 이상",
       "skills": [],
       "employmentType": "계약직",
       "deadline": "~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02",
@@ -181167,8 +181167,8 @@
       "description": "서울 > 서초구 모바일게임 정규직 채용시 1일 전 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] ’반쵸 더 셰프’ 기획자 성남시 분당구'));\" data-value=\"284429|mintrocket|284429\">채용공고 스크랩 경력2년↑ 학력무관 경기 > 성남시 웹게임, 콘솔게임 정규직 채용시 08/31(월) 등록 민트로켓",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "2년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-08-31 21:19 등록 2026-10-02 12:",
@@ -181189,8 +181189,8 @@
       "description": "n>경기 > 성남시 웹게임, 콘솔게임 정규직 채용시 08/31(월) 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] 커뮤니티 매니저 (시니어) 성남시 분당구'));\" data-value=\"284499|mintrocket|284499\">채용공고 스크랩 경력5년↑ 학력무관 경기 > 성남시 웹게임, 콘솔게임 정규직 채용시 09/01(화) 등록 민트로켓",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "5년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-01 16:25 등록 2026-10-02 12:",
@@ -181211,8 +181211,8 @@
       "description": "n>경기 > 성남시 웹게임, 콘솔게임 정규직 채용시 09/01(화) 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] ’고질라 디펜스 포스 X’ UI 디자이너 성남시 분당구'));\" data-value=\"284502|mintrocket|284502\">채용공고 스크랩 경력3년↑ 학력무관 경기 > 성남시 모바일게임, 콘솔게임 정규직 채용시 09/01(화) 등록 민트로켓 <div class=",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-01 16:29 등록 2026-10-02 12:",
@@ -181234,7 +181234,7 @@
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
       "area": "클라이언트",
-      "career": "경력",
+      "career": "5년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-04 17:34 등록 2026-10-02 12:",
@@ -181280,8 +181280,8 @@
       "description": "경기 > 성남시 모바일게임, 콘솔게임 정규직 채용시 09/04(금) 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [신규 PC/콘솔] 컨셉 아티스트 성남시 분당구'));\" data-value=\"284663|mintrocket|284663\">채용공고 스크랩 경력3년↑ 학력무관 경기 > 성남시 온라인PC게임, 콘솔게임 정규직 채용시 09/04(금) 등록 민트로켓",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-04 17:39 등록 2026-10-02 12:",
@@ -181302,8 +181302,8 @@
       "description": "> 성남시 온라인PC게임, 콘솔게임 정규직 채용시 09/04(금) 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] ’반쵸 더 셰프’ 캐릭터 모델러 성남시 분당구'));\" data-value=\"284664|mintrocket|284664\">채용공고 스크랩 경력무관 학력무관 경기 > 성남시 온라인PC게임, 콘솔게임 정규직 채용시 09/04(금) 등록 민트로켓 <div class=\"t",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "2년",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-04 17:41 등록 2026-10-02 12:",
@@ -181422,8 +181422,8 @@
       "description": "> 성남시 온라인PC게임, 콘솔게임 정규직 채용시 09/16(수) 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] 게임플레이 QA 채용 [계약직] 성남시 분당구'));\" data-value=\"285105|mintrocket|285105\">채용공고 스크랩 경력무관 학력무관 경기 > 성남시 온라인PC게임, 콘솔게임 계약직 상시 09/18(금) 등록 넷마블네오 <div class=\"t",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "클라이언트",
+      "career": "2년",
       "skills": [],
       "employmentType": "계약직",
       "deadline": "상시채용 지원하기 스크랩 2026-09-18 18:43 등록 2026-10-02 12:34",
@@ -181468,8 +181468,8 @@
       "description": "> 구로구 온라인PC게임, 콘솔게임 정규직 채용시 07/28(화) 등록 ㈜어썸피스 관악구'));\" target=\"_blank\"> [경력] 좀비고등학교 유료화 기획자 인재 영입 관악구'));\" data-value=\"285045|ap2010|285045\">채용공고 스크랩 경력3년↑ 학력무관 서울 > 관악구 모바일게임 정규직 채용시 09/18(금) 등록 ㈜해긴",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "AI/데이터",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-18 11:24 등록 2026-10-02 11:",
@@ -181490,8 +181490,8 @@
       "description": "서울 > 관악구 모바일게임 정규직 채용시 09/18(금) 등록 ㈜해긴 구로구'));\" target=\"_blank\"> [해긴] 모바일 게임 마케터 채용 구로구'));\" data-value=\"282936|haegin|282936\">채용공고 스크랩 경력3년↑ 학력무관 서울 > 구로구 모바일게임 정규직 채용시 07/21(화) 등록 ㈜해긴",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "AI/데이터",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-21 14:21 등록 2026-10-02 10:",
@@ -181513,7 +181513,7 @@
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
       "area": "AI/데이터",
-      "career": "경력",
+      "career": "5년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "상시채용 지원하기 스크랩 2026-08-04 10:00 등록 2026-10-02 10:47",
@@ -181534,8 +181534,8 @@
       "description": "서울 > 구로구 모바일게임 정규직 상시 08/04(화) 등록 ㈜해긴 구로구'));\" target=\"_blank\"> [해긴] 게임 마케팅 디자이너 모집 구로구'));\" data-value=\"284609|haegin|284609\">채용공고 스크랩 경력3년↑ 학력무관 서울 > 구로구 모바일게임 정규직 채용시 09/03(목) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "AI/데이터",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직",
       "deadline": "채용시 마감 지원하기 스크랩 2026-09-03 17:04 등록 2026-10-02 10:",
@@ -181556,8 +181556,8 @@
       "description": "span>서울 > 구로구 모바일게임 정규직 채용시 09/03(목) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] 사운드 디자이너 성동구'));\" data-value=\"282481|gearsecond|282481\">채용공고 스크랩 경력무관 학력무관 서울 > 성동구 모바일게임 계약직 채용시 07/09(목) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년",
       "skills": [],
       "employmentType": "정규직, 계약직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-09 11:01 등록 2026-10-02 10:",
@@ -181578,8 +181578,8 @@
       "description": "span>서울 > 성동구 모바일게임 계약직 채용시 07/09(목) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [레츠고 레전드!] 기획자 성동구'));\" data-value=\"282657|gearsecond|282657\">채용공고 스크랩 경력무관 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/14(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-14 10:41 등록 2026-10-02 10:",
@@ -181600,8 +181600,8 @@
       "description": "span>서울 > 성동구 모바일게임 정규직 채용시 07/14(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] 사업 PM 성동구'));\" data-value=\"282723|gearsecond|282723\">채용공고 스크랩 경력3년↑ 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/15(수) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-15 10:35 등록 2026-10-02 10:",
@@ -181671,8 +181671,8 @@
       "description": "span>서울 > 성동구 모바일게임 인턴직 채용시 07/27(월) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] 피플팀 체험형 인턴 성동구'));\" data-value=\"283196|gearsecond|283196\">채용공고 스크랩 신입 학력무관 서울 > 성동구 모바일게임 인턴직 채용시 07/28(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "인턴",
+      "area": "백엔드/서버",
+      "career": "신입",
       "skills": [],
       "employmentType": "인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:27 등록 2026-10-02 10:",
@@ -181693,8 +181693,8 @@
       "description": "span>서울 > 성동구 모바일게임 인턴직 채용시 07/28(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] 2D 스파인 애니메이터 성동구'));\" data-value=\"283195|gearsecond|283195\">채용공고 스크랩 경력무관 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:29 등록 2026-10-02 10:",
@@ -181715,8 +181715,8 @@
       "description": "span>서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [신규 프로젝트] 게임 기획자 성동구'));\" data-value=\"283194|gearsecond|283194\">채용공고 스크랩 경력3년↑ 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년 이상",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:29 등록 2026-10-02 10:",
@@ -181737,8 +181737,8 @@
       "description": "span>서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] 게임 커뮤니티 매니저(CM) 성동구'));\" data-value=\"283193|gearsecond|283193\">채용공고 스크랩 경력무관 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:30 등록 2026-10-02 10:",
@@ -181759,8 +181759,8 @@
       "description": "span>서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] HR 리드 성동구'));\" data-value=\"283192|gearsecond|283192\">채용공고 스크랩 경력5년↑ 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "5년 이상",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:32 등록 2026-10-02 10:",
@@ -181781,8 +181781,8 @@
       "description": "span>서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] HR 담당자 성동구'));\" data-value=\"283191|gearsecond|283191\">채용공고 스크랩 경력무관 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:33 등록 2026-10-02 10:",
@@ -181803,8 +181803,8 @@
       "description": "span>서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 기어세컨드 성동구'));\" target=\"_blank\"> [기어세컨드] 이펙트 디자이너 성동구'));\" data-value=\"283189|gearsecond|283189\">채용공고 스크랩 경력무관 학력무관 서울 > 성동구 모바일게임 정규직 채용시 07/28(화) 등록 1 2 3 4 5 <a href=\"/recrui",
       "published": "2026-10-03",
       "publishedAt": "2026-10-03T04:43:24+00:00",
-      "area": "개발",
-      "career": "경력",
+      "area": "백엔드/서버",
+      "career": "3년",
       "skills": [],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-28 14:35 등록 2026-10-02 10:",
@@ -181813,6 +181813,26 @@
         {
           "site": "게임잡",
           "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=283189"
+        }
+      ]
+    },
+    {
+      "title": "AI Engineer(E2E 자율주행) - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBySk05bTJkNEtUU244Wm85NGVCT3Y1WGlYbVFMX3pjc09qUnd3alFVNlJ2UkRFcGVNcEY1Q2xOTTZLTE5nMkRZSVJvTV9TTmlwUUZxbS1CM3JEUQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBySk05bTJkNEtUU244Wm85NGVCT3Y1WGlYbVFMX3pjc09qUnd3alFVNlJ2UkRFcGVNcEY1Q2xOTTZLTE5nMkRZSVJvTV9TTmlwUUZxbS1CM3JEUQ?oc=5\" target=\"_blank\">AI Engineer(E2E 자율주행)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Sat, 03 Oct 2026 03:25:12 GMT",
+      "publishedAt": "2026-10-03T03:25:12+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBySk05bTJkNEtUU244Wm85NGVCT3Y1WGlYbVFMX3pjc09qUnd3alFVNlJ2UkRFcGVNcEY1Q2xOTTZLTE5nMkRZSVJvTV9TTmlwUUZxbS1CM3JEUQ?oc=5"
         }
       ]
     },
@@ -183143,10 +183163,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iS2gzRzRBYnVaUkZubGd3VzJmdHlkYzVpRi03NjNuVVBoQUFRUE9FOUNKN0ZpSVEyeVJ4YTJ6R2VXeW02bjF1dHdmb1p1bWVDVWtVazJiY2ZGZw?oc=5"
         }
       ]
     },
@@ -184182,6 +184198,10 @@
         {
           "site": "게임잡",
           "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBHM082OVNycVpzR1J6MHRDWXllMTlpdlczWjUwVjlYcE5kSEd3a0Q4bzJ0Z3ItOEtGbHZiX3NiT1RUeUtnYVppNUE4WnNRcGdCTWZ3aG5acE5kLTRzQ3VPWnBaWW93SXhGZXBj?oc=5"
+        },
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBNdllLejRVczdCb25TeVRaY19lTFZpV1hxNXkxQ2E4TUxPT0h1eHlGM01HVFFNbUl5MHVZWExBeHoxcUh6dkF3OFpBNGF1ZzZLVDFIODVVNkxzNXdlRDVlOE13bko3QQ?oc=5"
         }
       ]
     },
@@ -184752,6 +184772,26 @@
       ]
     },
     {
+      "title": "유지티피 채용 - 2026년 반기 신입 개발자 모집 - 잡코리아",
+      "company": "유지티피",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5uaFppOE1HRXR0MkJCbmRiWW55U2hIa1BRd0JVcDZhMTd6dWhXOUUtM3l0MFE5Rm9nb1hlaUp6aFJMMWlwV1pRYnRYck9CLXF0WnFnVjRGSmdIcEdXSGtjTjh4ZWZIMTBuZWxlQ0s0eGJwUFI3MHM4?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMid0FVX3lxTE5uaFppOE1HRXR0MkJCbmRiWW55U2hIa1BRd0JVcDZhMTd6dWhXOUUtM3l0MFE5Rm9nb1hlaUp6aFJMMWlwV1pRYnRYck9CLXF0WnFnVjRGSmdIcEdXSGtjTjh4ZWZIMTBuZWxlQ0s0eGJwUFI3MHM4?oc=5\" target=\"_blank\">유지티피 채용 - 2026년 반기 신입 개발자 모집</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Mon, 28 Sep 2026 09:07:51 GMT",
+      "publishedAt": "2026-09-28T09:07:51+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5uaFppOE1HRXR0MkJCbmRiWW55U2hIa1BRd0JVcDZhMTd6dWhXOUUtM3l0MFE5Rm9nb1hlaUp6aFJMMWlwV1pRYnRYck9CLXF0WnFnVjRGSmdIcEdXSGtjTjh4ZWZIMTBuZWxlQ0s0eGJwUFI3MHM4?oc=5"
+        }
+      ]
+    },
+    {
       "title": "스마일게이트 채용정보 - 게임잡",
       "company": "스마일게이트",
       "source": "게임잡",
@@ -185021,57 +185061,9 @@
           "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9MR3RZV0pDR2NDbjFqak5YQlE1X083Rnc5ZExHZS1qRy0wX3NvTG5EN2tUdFFzNkdBR1k2ZEVnd3ZWWUc3RlhZZXBqN1IxTDk4S0FkRnJIc29qNVlaUGtXbjl2VXF6MWM?oc=5"
         }
       ]
-    },
-    {
-      "title": "AI 면접 코치 - jumpit.saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5\" target=\"_blank\">AI 면접 코치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Mon, 28 Sep 2026 02:50:31 GMT",
-      "publishedAt": "2026-09-28T02:50:31+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "AI 면접 코치 - 점핏",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5\" target=\"_blank\">AI 면접 코치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
-      "published": "Mon, 28 Sep 2026 02:50:31 GMT",
-      "publishedAt": "2026-09-28T02:50:31+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5"
-        },
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxQa2k3c2Yxd3BjSEM5aGFibkx3bm1SR2plMUgwempaekthVmtMNFFyVFZ0czJWeTRSQzk5a2gyZU9hSjRBVGZPeXhJanZxWjRjNFhpSWpMT2NNeHEtUHZ4Uk1GUWJnazlqSEQ4VlJLM3hlak45ZU4ySThBZm1yQjRYRkpjMXRMbXFYbTlXRW1CRWtuck00R2pDX1dCd2M1akFfajVYaFQ3aVhIR3pXRVRlckpqRDlaUFhWUWkwcnd4MFBZZTBCNHBWOWVBM2M5VnpPeEtGNlNnNHVabGdueUtjd0ZkemMxSTlLRGt4Y053eVNKQlE3bGFNYkU0WmdpZlk?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxOVHdoZHczRGJPSlhzdmw2cUszeVJuY3hFdnJTWTByT1V0X0NwRmFWdFpOUTdDSDc3aFVBWTQ1d3RNQVRUTklrSzkycnNyQjNVUFdfdF9RdElURXFoVWhXX2doRTc4WGw5b0k5Ym1JeUpGQjg5cXNoc3J1U082QmhLYi1vTTNsdlZhS01EV1R4S1VENGpVenRtNHMxNWJtVWozdFJZVkRRNzZUODFqd0VpODlrdEVhd2dodWtRNGpmSGx1ZnpSTGQ3NkZxemNuSVVYVUxkY3ZJUVZPS1gxaXNGazR5UnkxdDhlNjhVeUxDaDhaOWFNMnlDVVFmbXBEZDQ?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-03T04:57:21+00:00",
+  "jobPostingsUpdatedAt": "2026-10-03T05:06:36+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185127,6 +185119,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-03T04:57:19+00:00"
+    "generatedAt": "2026-10-03T05:06:36+00:00"
   }
 }
