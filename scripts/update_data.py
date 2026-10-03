@@ -204,10 +204,10 @@ def classify_job(title, description):
     t=(title+" "+description).lower()
     if any(x in t for x in ["인턴","intern","internship"]):
         career="인턴"
-    elif any(x in t for x in ["신입","주니어","junior","new grad","entry level","entry-level"]):
-        career="신입"
     elif any(x in t for x in ["신입/경력","신입·경력","신입 경력"]):
         career="신입/경력"
+    elif any(x in t for x in ["신입","주니어","junior","new grad","entry level","entry-level"]):
+        career="신입"
     else:
         import re
         m=re.search(r"(?:경력|experience)\s*(?:\(|:)?\s*(\d+)\s*[~\-]?\s*(\d+)?\s*년",t)
