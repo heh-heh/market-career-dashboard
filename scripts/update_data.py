@@ -365,6 +365,53 @@ def collect_employment_news(previous):
     )[:50]
     return items, now.isoformat(timespec="seconds")
 
+def direct_job_list(url, site_name, limit=80, keywords=None):
+    import re, html as htmlmod
+    out=[]
+    try:
+        raw=get(url,attempts=2,timeout=12).decode("utf-8","ignore")
+    except Exception:
+        return out
+    # GameJob/JobKorea-style HTML: extract real detail links and nearby visible text.
+    pat=re.compile(r'href=["\']([^"\']*(?:GI_Read/View|Recruit/GI_Read|Recruit/GI_Read/View|Recruit/GI_Read/View)[^"\']*)["\'][^>]*>(.*?)</a>',re.I|re.S)
+    seen=set()
+    for m in pat.finditer(raw):
+        link=urllib.parse.urljoin(url,htmlmod.unescape(m.group(1)))
+        title=clean_html(m.group(2))
+        if not title or len(title)<3 or link in seen:
+            continue
+        seen.add(link)
+        if keywords and not any(k.lower() in (title+" "+clean_html(raw[max(0,m.start()-900):m.end()+900])).lower() for k in keywords):
+            continue
+        context=clean_html(raw[max(0,m.start()-1200):m.end()+1800])
+        company=""
+        cm=re.search(r'(?:기업명|회사명)[^가-힣A-Za-z0-9]{0,20}([^<|]{2,80})',context,re.I)
+        if cm:
+            company=clean_html(cm.group(1)).strip(" -|·")
+        if not company:
+            # Common GameJob structure has company anchor immediately before the job title.
+            prev=clean_html(raw[max(0,m.start()-2200):m.start()])
+            parts=[x.strip() for x in re.split(r'\\s{2,}|\\n',prev) if x.strip()]
+            if parts:
+                company=parts[-1][-80:]
+        area=classify_job(title,context)
+        out.append({
+            "title":title,
+            "company":company or "기업명 확인 필요",
+            "source":site_name,
+            "sourceSite":site_name,
+            "link":link,
+            "description":context[:3000],
+            "published":datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "publishedAt":datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "area":area["area"],
+            "career":area["career"],
+            "skills":area["skills"]
+        })
+        if len(out)>=limit:
+            break
+    return out
+
 def collect_job_postings(previous):
     now=datetime.now(timezone.utc)
     previous_updated=previous.get("jobPostingsUpdatedAt","")
@@ -375,6 +422,18 @@ def collect_job_postings(previous):
     if now-last < timedelta(hours=1):
         return previous.get("jobPostings",[]), previous_updated
 
+    fresh=[]
+    # GameJob has a server-rendered public recruitment list with pagination.
+    # Collect several pages and focus on development/server/client/engine/backend roles.
+    game_keywords=[
+        "프로그래머","클라이언트","서버","네트워크","엔진","백엔드",
+        "개발","C++","C#","Unity","Unreal","언리얼","게임","테크"
+    ]
+    for page in range(1,7):
+        url="https://www.gamejob.co.kr/Recruit/joblist" if page==1 else f"https://www.gamejob.co.kr/recruit/_GI_Job_List?Page={page}"
+        fresh += direct_job_list(url,"게임잡",limit=80,keywords=game_keywords)
+
+    # Keep RSS discovery as a secondary source for platforms whose public list markup varies.
     sites=[
         ("site:wanted.co.kr 게임 개발자 채용", "원티드"),
         ("site:wanted.co.kr 서버 백엔드 개발자 채용", "원티드"),
@@ -385,10 +444,6 @@ def collect_job_postings(previous):
         ("site:jobkorea.co.kr 게임 개발자 채용", "잡코리아"),
         ("site:jobkorea.co.kr 서버 백엔드 개발자 채용", "잡코리아"),
         ("site:jobkorea.co.kr 신입 개발자 채용", "잡코리아"),
-        ("site:gamejob.co.kr/Recruit 게임개발 클라이언트", "게임잡"),
-        ("site:gamejob.co.kr/Recruit 게임 서버 개발", "게임잡"),
-        ("site:gamejob.co.kr/Recruit C++ Unreal Unity", "게임잡"),
-        ("site:gamejob.co.kr/Recruit 백엔드 서버 네트워크", "게임잡"),
         ("site:jumpit.saramin.co.kr 개발자 채용", "점핏"),
         ("site:jumpit.saramin.co.kr 백엔드 C++ 개발자", "점핏"),
         ("site:rocketpunch.com/jobs 개발자 채용", "로켓펀치"),
@@ -396,10 +451,9 @@ def collect_job_postings(previous):
         ("site:career.programmers.co.kr 개발자 채용", "프로그래머스")
     ]
 
-    fresh=[]
     existing_links={x.get("link") for x in previous.get("jobPostings",[])}
     for q,site_name in sites:
-        for item in rss(q,8,days=2):
+        for item in rss(q,12,days=7):
             link=item.get("link","")
             desc=item.get("description","")
             title=item.get("title","").strip()
@@ -408,7 +462,7 @@ def collect_job_postings(previous):
             fresh.append({
                 "title":title,
                 "company":company or "기업명 확인 필요",
-                "source":site_name or job_source(link),
+                "source":site_name,
                 "link":link,
                 "description":desc,
                 "published":item.get("published",""),
@@ -436,7 +490,7 @@ def collect_job_postings(previous):
         import re
         text=normalize_text(title)
         comp=normalize_text(company)
-        for token in ["채용","모집","공고","개발자","인턴","신입","경력","잡코리아","사람인","원티드","점핏","프로그래머스","로켓펀치","sw","개발"]:
+        for token in ["채용","모집","공고","개발자","인턴","신입","경력","잡코리아","사람인","원티드","점핏","프로그래머스","로켓펀치","게임잡","sw","개발"]:
             text=text.replace(token,"")
         if comp:
             text=text.replace(comp,"")
@@ -459,7 +513,8 @@ def collect_job_postings(previous):
 
         match_key=None
         for key,existing in grouped.items():
-            if company and company==normalize_text(existing.get("company","")):
+            existing_company=normalize_text(existing.get("company",""))
+            if company and company==existing_company:
                 existing_role=role_tokens(existing.get("title",""),existing.get("company",""))
                 union=role|existing_role
                 overlap=len(role&existing_role)/len(union) if union else 0
@@ -477,11 +532,16 @@ def collect_job_postings(previous):
             existing_sources=existing.setdefault("sources",[])
             if not any(x.get("link")==item.get("link") for x in existing_sources):
                 existing_sources.append({"site":item.get("sourceSite") or item.get("source",""),"link":item.get("link","")})
-            existing["skills"]=sorted(set(existing.get("skills",[])+item.get("skills",[])))[:12]
+            existing["skills"]=sorted(set(existing.get("skills",[])+item.get("skills",[])))[:18]
+            if not existing.get("detailText") and item.get("detailText"):
+                existing["detailText"]=item["detailText"]
+            if not existing.get("deadline") and item.get("deadline"):
+                existing["deadline"]=item["deadline"]
+            if not existing.get("employmentType") and item.get("employmentType"):
+                existing["employmentType"]=item["employmentType"]
 
-    items=sorted(grouped.values(),key=lambda x:x.get("publishedAt",""),reverse=True)[:100]
+    items=sorted(grouped.values(),key=lambda x:x.get("publishedAt",""),reverse=True)[:200]
     return items, now.isoformat(timespec="seconds")
-
 
 now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 employment_news, employment_updated_at=collect_employment_news(previous_data)
