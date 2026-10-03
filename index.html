@@ -92,8 +92,8 @@ function setChartRange(symbol,mode){
 document.addEventListener("click",e=>{
  const stock=e.target.closest(".stock-click[data-symbol]");
  if(stock){openStockBySymbol(stock.dataset.symbol);return;}
- const job=e.target.closest("[data-job-index]");
- if(job){openJob((cached?.jobPostings||[])[Number(job.dataset.jobIndex)]);return;}
+ const job=e.target.closest("[data-job-link]");
+ if(job){const item=(cached?.jobPostings||[]).find(x=>x.link===job.dataset.jobLink);if(item)openJob(item);return;}
  const action=e.target.closest("[data-action]");
  if(action?.dataset.action==="close-stock"){closeStock();return;}
  if(action?.dataset.action==="close-job"){closeJob();return;}
@@ -121,7 +121,7 @@ function closeStock(){document.getElementById("stockModal").classList.remove("op
 function jobPostingRow(j,i){
  const source=(j.sources||[]).map(x=>esc(x.site)).filter(Boolean).join(" · ")||esc(j.source||"채용 사이트");
  const skills=(j.skills||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join("");
- return '<div class="item stock-click" data-job-index="'+i+'"><h3>'+esc(j.company||"기업명 확인 필요")+' · '+esc(j.title||"채용공고")+'</h3><p><b>'+esc(j.area||"개발")+'</b> · '+esc(j.career||"경력")+' · '+source+'</p><p>'+skills+'</p></div>';
+ return '<div class="item stock-click" data-job-link="'+esc(j.link||"")+'"><h3>'+esc(j.company||"기업명 확인 필요")+' · '+esc(j.title||"채용공고")+'</h3><p><b>'+esc(j.area||"개발")+'</b> · '+esc(j.career||"경력")+' · '+source+'</p><p>'+skills+'</p></div>';
 }
 function openJob(j){
  const sources=(j.sources||[{site:j.source||"채용 사이트",link:j.link||""}]).map(x=>'<a href="'+esc(x.link)+'" target="_blank" rel="noopener">'+esc(x.site||"채용 사이트")+'</a>').join(" · ");
