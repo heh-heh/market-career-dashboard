@@ -163,9 +163,9 @@ def classify(title):
         "relevance":r
     }
 
-def rss(query,limit=6):
+def rss(query,limit=6,days=2):
     url="https://news.google.com/rss/search?"+urllib.parse.urlencode({
-        "q":query+" when:1d",
+        "q":query+" when:"+str(days)+"d",
         "hl":"ko",
         "gl":"KR",
         "ceid":"KR:ko"
@@ -173,7 +173,7 @@ def rss(query,limit=6):
     out=[]
     try:
         root=ET.fromstring(get(url))
-        cutoff=datetime.now(timezone.utc)-timedelta(days=2)
+        cutoff=datetime.now(timezone.utc)-timedelta(days=days)
         for item in root.findall("./channel/item")[:limit]:
             title=item.findtext("title","")
             pub=item.findtext("pubDate","")
@@ -187,6 +187,7 @@ def rss(query,limit=6):
                 "title":title,
                 "link":item.findtext("link",""),
                 "published":pub,
+                "publishedAt":dt.isoformat() if dt else "",
                 "source":query,
                 **classify(title)
             })
@@ -194,7 +195,54 @@ def rss(query,limit=6):
         pass
     return out
 
+def collect_employment_news(previous):
+    now=datetime.now(timezone.utc)
+    previous_updated=previous.get("employmentUpdatedAt","")
+    try:
+        last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
+    except Exception:
+        last=datetime.min.replace(tzinfo=timezone.utc)
+
+    # The market workflow runs every 30 minutes, but employment data is
+    # refreshed only when at least one hour has elapsed.
+    if now-last < timedelta(hours=1):
+        return previous.get("employmentNews",[]), previous_updated
+
+    queries=[
+        "게임 개발자 채용 C++ Unity Unreal",
+        "게임 서버 개발자 채용",
+        "백엔드 개발자 채용 Java Python AWS",
+        "신입 개발자 채용 게임 IT",
+        "개발자 채용 공고 취업"
+    ]
+    fresh=[]
+    for q in queries:
+        fresh += rss(q,8,days=2)
+
+    cutoff=now-timedelta(days=2)
+    merged={}
+    for item in previous.get("employmentNews",[])+fresh:
+        stamp=item.get("publishedAt","")
+        try:
+            dt=datetime.fromisoformat(stamp.replace("Z","+00:00"))
+        except Exception:
+            dt=None
+        if dt and dt>=cutoff:
+            key=(item.get("link") or item.get("title","")).strip()
+            if key:
+                merged[key]=item
+
+    items=sorted(
+        merged.values(),
+        key=lambda x:x.get("publishedAt",""),
+        reverse=True
+    )[:50]
+
+    return items, now.isoformat(timespec="seconds")
+
 now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+employment_news, employment_updated_at=collect_employment_news(previous_data)
+
 
 korea=[
     stock("005930.KS","삼성전자","한국 반도체"),
@@ -227,15 +275,13 @@ for q in [
     "반도체 AI HBM 한국 미국",
     "NVIDIA AMD Intel semiconductor",
     "게임 산업 신작 실적 한국",
-    "게임 개발자 채용",
-    "백엔드 서버 개발자 채용",
     "AI 개발 신기술"
 ]:
-    news += rss(q,6)
+    news += rss(q,6,days=2)
 
 news=sorted(
     news,
-    key=lambda x:(x.get("importance")=="높음",x.get("relevance",0),x.get("published","")),
+    key=lambda x:(x.get("importance")=="높음",x.get("relevance",0),x.get("publishedAt","")),
     reverse=True
 )[:30]
 
@@ -245,6 +291,8 @@ data={
     "stocks":korea+us,
     "indices":indices,
     "news":news,
+    "employmentNews":employment_news,
+    "employmentUpdatedAt":employment_updated_at,
     "employment":[
         {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
         {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
