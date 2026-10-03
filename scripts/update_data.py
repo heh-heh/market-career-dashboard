@@ -331,7 +331,7 @@ def collect_employment_news(previous):
         last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
     except Exception:
         last=datetime.min.replace(tzinfo=timezone.utc)
-    if now-last < timedelta(hours=1):
+    if (now-last).total_seconds() < 1800:
         return previous.get("employmentNews",[]), previous_updated
 
     queries=[
