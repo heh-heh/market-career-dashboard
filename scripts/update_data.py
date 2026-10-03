@@ -419,8 +419,7 @@ def collect_job_postings(previous):
         last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
     except Exception:
         last=datetime.min.replace(tzinfo=timezone.utc)
-    if now-last < timedelta(hours=1):
-        return previous.get("jobPostings",[]), previous_updated
+    # Refresh job postings on every scheduled run.
 
     fresh=[]
     # GameJob has a server-rendered public recruitment list with pagination.
