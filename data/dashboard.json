@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T19:44:06+00:00",
+  "updatedAt": "2026-10-03T22:47:08+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180577,15 +180577,37 @@
       "relevance": 3
     },
     {
-      "title": "AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디? - kr.benzinga.com",
+      "title": "AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디? - Benzinga",
       "link": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5",
       "published": "Fri, 02 Oct 2026 04:53:37 GMT",
       "publishedAt": "2026-10-02T04:53:37+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5\" target=\"_blank\">AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">kr.benzinga.com</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5\" target=\"_blank\">AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Benzinga</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "긍정",
       "importance": "높음",
       "relevance": 3
+    },
+    {
+      "title": "\"신작도 뚫렸다\"…끝나지 않는 게임 사설서버 - 뉴스핌",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1Pa3dhVzhRaDdCYXNmUzBGN2pqaWJhR2VTRUhJdEJORkhtR3NBUW9SbUdrd0JDZ0hCc2N5Zkx4M01RMXppeXlFb3g3aEtrTXQxN1lScnh6eHlDRHh0?oc=5",
+      "published": "Sat, 03 Oct 2026 22:00:00 GMT",
+      "publishedAt": "2026-10-03T22:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXEFVX3lxTE1Pa3dhVzhRaDdCYXNmUzBGN2pqaWJhR2VTRUhJdEJORkhtR3NBUW9SbUdrd0JDZ0hCc2N5Zkx4M01RMXppeXlFb3g3aEtrTXQxN1lScnh6eHlDRHh0?oc=5\" target=\"_blank\">\"신작도 뚫렸다\"…끝나지 않는 게임 사설서버</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스핌</font>",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
+    },
+    {
+      "title": "AI 개발 가속화… 주목할 만한 AI·반도체 ETF는? - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5xbExKOTFaZ0FjOGVpSm40MzdlRjJ1aV9lMmhBMmhFR1VPODJzdEV3VFR4elZRR0ppcE5DT2pEZ25iMktmeHlOLXNicmd3c0U?oc=5",
+      "published": "Sat, 03 Oct 2026 21:03:10 GMT",
+      "publishedAt": "2026-10-03T21:03:10+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE5xbExKOTFaZ0FjOGVpSm40MzdlRjJ1aV9lMmhBMmhFR1VPODJzdEV3VFR4elZRR0ppcE5DT2pEZ25iMktmeHlOLXNicmd3c0U?oc=5\" target=\"_blank\">AI 개발 가속화… 주목할 만한 AI·반도체 ETF는?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
     },
     {
       "title": "마이크론 호실적에도 잠잠한 삼성·하이닉스…쟁점은 수익성 - Naver Blog",
@@ -180599,15 +180621,15 @@
       "relevance": 2
     },
     {
-      "title": "HBM·낸드·CPU로…AI ETF 쪼개 담는다 - 서울경제",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5",
-      "published": "Fri, 02 Oct 2026 08:55:55 GMT",
-      "publishedAt": "2026-10-02T08:55:55+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5\" target=\"_blank\">HBM·낸드·CPU로…AI ETF 쪼개 담는다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">서울경제</font>",
+      "title": "'몸값 2백조원' 솔리다임의 화려한 부활…SK하이닉스 빅피처는 - 파이낸셜포스트",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1kTGYtVGJubDFQQ1ZwR0ZfSzE3dV8xZkxfbnczT1oyeV9RWnFVNFFEYkFzWDRNamNJNmpuUnU2NDZQVkU3MWx6WUMyUTVmQlFfaGRDemhqc0M2NGVGV0JqcGZ1R3Z4YVR6ZWN5em9ETjdsWXJE?oc=5",
+      "published": "Sat, 03 Oct 2026 20:00:00 GMT",
+      "publishedAt": "2026-10-03T20:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE1kTGYtVGJubDFQQ1ZwR0ZfSzE3dV8xZkxfbnczT1oyeV9RWnFVNFFEYkFzWDRNamNJNmpuUnU2NDZQVkU3MWx6WUMyUTVmQlFfaGRDemhqc0M2NGVGV0JqcGZ1R3Z4YVR6ZWN5em9ETjdsWXJE?oc=5\" target=\"_blank\">'몸값 2백조원' 솔리다임의 화려한 부활…SK하이닉스 빅피처는</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">파이낸셜포스트</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
-      "importance": "높음",
-      "relevance": 2
+      "importance": "보통",
+      "relevance": 1
     },
     {
       "title": "대한민국 AI, 그래서 무엇이 좋아졌습니까? - 브랜드뉴스",
@@ -180654,28 +180676,6 @@
       "relevance": 1
     },
     {
-      "title": "경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시 - 뉴스프리존",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5",
-      "published": "Sat, 03 Oct 2026 02:02:37 GMT",
-      "publishedAt": "2026-10-03T02:02:37+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5\" target=\"_blank\">경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스프리존</font>",
-      "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "나스닥 1%, 美반도체지수 2% 상승…연휴 뒤 韓증시도 따라 웃을까 - 매일경제 마켓",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5GQUJPZWpQTkRCcnBveEF1VVNJbGtadmxBVjRBNWpjU0UtODdwS2tGZGZyOFNjcFo5aEFvYnVoa1lfQldSN2RqeFhrejNvMEl5YkE?oc=5",
-      "published": "Sat, 03 Oct 2026 01:05:07 GMT",
-      "publishedAt": "2026-10-03T01:05:07+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUkFVX3lxTE5GQUJPZWpQTkRCcnBveEF1VVNJbGtadmxBVjRBNWpjU0UtODdwS2tGZGZyOFNjcFo5aEFvYnVoa1lfQldSN2RqeFhrejNvMEl5YkE?oc=5\" target=\"_blank\">나스닥 1%, 美반도체지수 2% 상승…연휴 뒤 韓증시도 따라 웃을까</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일경제 마켓</font>",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
       "title": "[미국 ETF 히든 챔피언] (56) 에이전틱 AI 시대 CPU 수혜 펀드는 - 뉴스핌",
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE93ekI0NXg2c185Z01BSXhMSUZlMlU3RHhZVFktMzlTWUx2Tm11eUFGbHhsZjY4UkJBMkxXQXl2azJ3VmQwYncyV1N3N2xHUHQtTFR6NUtmUHJCQUFv?oc=5",
       "published": "Fri, 02 Oct 2026 07:06:00 GMT",
@@ -180709,6 +180709,17 @@
       "relevance": 1
     },
     {
+      "title": "AI 사용료, “역사상 어떤 기술보다 빠르게 하락” - 애플경제",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9FNGMwVXZ0ZENrbGNtYjdUNXpWRnNhTzU3TUNEdGN3el9MR3REVUcxMEdCa0RoaVZpampLQ0t4YlMyMkhMa0g1dUZxd291T0N1ZXlvOXBObnpISGFxeU9UdWEyOGVLNWFUak9abDBXMVc?oc=5",
+      "published": "Fri, 02 Oct 2026 05:46:32 GMT",
+      "publishedAt": "2026-10-02T05:46:32+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE9FNGMwVXZ0ZENrbGNtYjdUNXpWRnNhTzU3TUNEdGN3el9MR3REVUcxMEdCa0RoaVZpampLQ0t4YlMyMkhMa0g1dUZxd291T0N1ZXlvOXBObnpISGFxeU9UdWEyOGVLNWFUak9abDBXMVc?oc=5\" target=\"_blank\">AI 사용료, “역사상 어떤 기술보다 빠르게 하락”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">애플경제</font>",
+      "source": "AI 개발 신기술",
+      "impact": "부정",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
       "title": "[뉴in] KETI 연구팀, 한국 문화ㆍ언어 이해하는 AI 'HAECHI' 개발 - 산업인뉴스",
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFB4WHY2TW1xaExGdFMxR0pFdmg5WktxUEdmYTVTakVVSG0zbjB6S2VvUHBySFdrSUdMdTNYOWk3OVpOdzJ1Sl9CS1EwTlZSS09sTzRaZlE4N2tkLV93c3hxWi1zakxITUZ1ZGFwYnFn?oc=5",
       "published": "Fri, 02 Oct 2026 05:06:53 GMT",
@@ -180720,11 +180731,22 @@
       "relevance": 1
     },
     {
+      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
+      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
+      "publishedAt": "2026-10-02T00:41:05+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5\" target=\"_blank\">일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
       "title": "건설연, AI 기반 교량 안전성 실시간 진단기술 개발 - 사이언스타임즈",
-      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5",
-      "published": "Thu, 01 Oct 2026 22:04:50 GMT",
-      "publishedAt": "2026-10-01T22:04:50+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5\" target=\"_blank\">건설연, AI 기반 교량 안전성 실시간 진단기술 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사이언스타임즈</font>",
+      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPQlIyMGJtakZLeWNWeDZ2NU9NT1h0UkNYVFgzRFQzRWhJTl9PNDNMMUN4M0FrVE0yQ3JSaTREbm43SzBJdkdMVFMwVkJJcGl2SVhoNjgzZmtJZVUtS1VibGNZcS1nRm1ncFpVVTdXMVlWVkNieXBfa1ZKcU5zN3ZqbFNsc2cxRlhZWkMtVHZhcmt3SmlPWjVYc040Nko4Ty15LXROeHpzVXJVM094c2NsdEZRek8xc05pWmN1WERBZjNYanM?oc=5",
+      "published": "Thu, 01 Oct 2026 23:31:13 GMT",
+      "publishedAt": "2026-10-01T23:31:13+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwwFBVV95cUxPQlIyMGJtakZLeWNWeDZ2NU9NT1h0UkNYVFgzRFQzRWhJTl9PNDNMMUN4M0FrVE0yQ3JSaTREbm43SzBJdkdMVFMwVkJJcGl2SVhoNjgzZmtJZVUtS1VibGNZcS1nRm1ncFpVVTdXMVlWVkNieXBfa1ZKcU5zN3ZqbFNsc2cxRlhZWkMtVHZhcmt3SmlPWjVYc040Nko4Ty15LXROeHpzVXJVM094c2NsdEZRek8xc05pWmN1WERBZjNYanM?oc=5\" target=\"_blank\">건설연, AI 기반 교량 안전성 실시간 진단기술 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사이언스타임즈</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
@@ -180806,28 +180828,6 @@
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
-    },
-    {
-      "title": "[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기 - 뉴스핌",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5",
-      "published": "Fri, 02 Oct 2026 00:31:00 GMT",
-      "publishedAt": "2026-10-02T00:31:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5\" target=\"_blank\">[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스핌</font>",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "이반토니 도박 : 위험 피하기와 보호 조치 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5",
-      "published": "Thu, 01 Oct 2026 20:51:58 GMT",
-      "publishedAt": "2026-10-01T20:51:58+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5\" target=\"_blank\">이반토니 도박 : 위험 피하기와 보호 조치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
-      "source": "NVIDIA AMD Intel semiconductor",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
     }
   ],
   "employmentNews": [
@@ -180898,8 +180898,28 @@
       "relevance": 0
     }
   ],
-  "employmentUpdatedAt": "2026-10-03T19:44:06+00:00",
+  "employmentUpdatedAt": "2026-10-03T22:47:08+00:00",
   "jobPostings": [
+    {
+      "title": "히든몬스터 채용 - [경력 1년 이상] 모바일 게임 운영 매니저 모집 (언어 가능자) - 잡코리아",
+      "company": "히든몬스터",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9ETVlCQVlMbmhGa1hVZUVQZWtNUHFoRU5qamtfdXVYR3NyNFg5VjVNMHhwU3ZKTkMtZWxzRHM4M0pMNVV5WUlQaG9KdnZ5M0xPckVwbVZNbS01SUptNkZoeg?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE9ETVlCQVlMbmhGa1hVZUVQZWtNUHFoRU5qamtfdXVYR3NyNFg5VjVNMHhwU3ZKTkMtZWxzRHM4M0pMNVV5WUlQaG9KdnZ5M0xPckVwbVZNbS01SUptNkZoeg?oc=5\" target=\"_blank\">히든몬스터 채용 - [경력 1년 이상] 모바일 게임 운영 매니저 모집 (언어 가능자)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Sat, 03 Oct 2026 13:43:34 GMT",
+      "publishedAt": "2026-10-03T13:43:34+00:00",
+      "area": "개발",
+      "career": "1년+",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9ETVlCQVlMbmhGa1hVZUVQZWtNUHFoRU5qamtfdXVYR3NyNFg5VjVNMHhwU3ZKTkMtZWxzRHM4M0pMNVV5WUlQaG9KdnZ5M0xPckVwbVZNbS01SUptNkZoeg?oc=5"
+        }
+      ]
+    },
     {
       "title": "[경력] UI 디자이너",
       "company": "ames|285532\">채용공고 스크랩 신입 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 1일 전 등록 ㈜이스트게임즈 <a",
@@ -180939,6 +180959,10 @@
         {
           "site": "게임잡",
           "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFAxM045QkNYektnZXlhSWliNnU1bExRLTEwLVdWdm1FUFVOODdfdDVRbndMbmk4YnRnaERQa0pUQTZhTEZiaHRFUm4wMU4zaVRKZjNQTk11U0Nsak1rM2xneXA4bnJEWGFPS2dV?oc=5"
+        },
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE40c2hMTGxNalJXUmRpTmpQT1hHdjExYnR2TE9NaEoyczV2ZXdlZjRkLWU0YW1IcUI5M0JkNlpVc1FfSTlPbllIX3pVUFc0Z3FNcFFES2VLTkFIM1RNV3d3SWVDMTB6NDNJLTZr?oc=5"
         }
       ]
     },
@@ -182151,6 +182175,14 @@
         {
           "site": "게임잡",
           "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBCVzVQWlRmZ1ptNU1yUllFNlVoaGlfQ0s0RnhBWjJlTU5DMlE5UjR1eGlfTTdNRk5hcXZxSmZOcFl2QWVjWTZ5SlpHZUVQQVFBV1ZiejV1YVd0T0V4bmM0dkh6SXhrOExWVVE?oc=5"
+        },
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1KSUZuYlA1OXd6V01Seno1VzRLenZobDVuTG9xSHlhYTR6WTI5N1ZSVWNQWUp6cmNPRWRSdERfaTZxYmkzMzdwNWFKVE9Vc0lmcHFGeFNPdDQ1RjBtR21oMXl3R0tuZHBiMEdn?oc=5"
+        },
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE41TTJGalFFSU1sWW9NaFVoX3hnQlpKTi0zNjZPem9QYnBhVE1ialNwd2FPZ1JGWGFtcEp1VGZjYW5jOHUtRGQ2RVBNQVlacVZrNnd1YVh4ancwSVFqa184c1VaY1BaXzQ0cUE?oc=5"
         }
       ]
     },
@@ -182236,6 +182268,28 @@
         }
       ],
       "detailText": "Google News"
+    },
+    {
+      "title": "[상주] [서울역] Kotlin/Java 금융권 캐피탈 채널계 운영 유지보수 백엔드 개발 - Java, Kotlin - wanted.co.kr",
+      "company": "기업명 확인 필요",
+      "source": "원티드",
+      "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9hV0VFMEdpdW1ZSWcycG9GcWlVbGg3VnNRQnFWNEUyM0xhczU4cGpqZlZ2cFRpVDg3TXNWSV9QZ1BiY3dmWlpob3NxSnhFUlZmdlZnZXVXRQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiV0FVX3lxTE9hV0VFMEdpdW1ZSWcycG9GcWlVbGg3VnNRQnFWNEUyM0xhczU4cGpqZlZ2cFRpVDg3TXNWSV9QZ1BiY3dmWlpob3NxSnhFUlZmdlZnZXVXRQ?oc=5\" target=\"_blank\">[상주] [서울역] Kotlin/Java 금융권 캐피탈 채널계 운영 유지보수 백엔드 개발 - Java, Kotlin</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">wanted.co.kr</font>",
+      "published": "Fri, 02 Oct 2026 11:40:10 GMT",
+      "publishedAt": "2026-10-02T11:40:10+00:00",
+      "area": "백엔드/서버",
+      "career": "경력",
+      "skills": [
+        "Java"
+      ],
+      "sourceSite": "원티드",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "원티드",
+          "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9hV0VFMEdpdW1ZSWcycG9GcWlVbGg3VnNRQnFWNEUyM0xhczU4cGpqZlZ2cFRpVDg3TXNWSV9QZ1BiY3dmWlpob3NxSnhFUlZmdlZnZXVXRQ?oc=5"
+        }
+      ]
     },
     {
       "title": "모라이 채용정보 - 게임잡",
@@ -182435,6 +182489,26 @@
         {
           "site": "원티드",
           "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE15Zkc2S1VoZjRycFJ4a3lMNkRFQS1jZmQyNkVyVHVGNmtROG41MkMwMDQ4M2xNTEI1dndUWEtybkFQLWU4YnVPUlc1UHNEdU0?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "투비스텍 채용 - SAP DevOps Engineer 경력직 - 잡코리아",
+      "company": "투비스텍",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1kNFFiQngtNy01TXl6MjBuRUlQWlNFY1dFQ3o3S1pXRUs0M1R1a1ZhOExza3p4U1ZyQnBlcF9rcjRvd0t5Rzd5S2N6TEt3OFFxZThDd0l6bmdIcWFwRXphLUlIT2o3Njg?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1kNFFiQngtNy01TXl6MjBuRUlQWlNFY1dFQ3o3S1pXRUs0M1R1a1ZhOExza3p4U1ZyQnBlcF9rcjRvd0t5Rzd5S2N6TEt3OFFxZThDd0l6bmdIcWFwRXphLUlIT2o3Njg?oc=5\" target=\"_blank\">투비스텍 채용 - SAP DevOps Engineer 경력직</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Fri, 02 Oct 2026 05:08:21 GMT",
+      "publishedAt": "2026-10-02T05:08:21+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1kNFFiQngtNy01TXl6MjBuRUlQWlNFY1dFQ3o3S1pXRUs0M1R1a1ZhOExza3p4U1ZyQnBlcF9rcjRvd0t5Rzd5S2N6TEt3OFFxZThDd0l6bmdIcWFwRXphLUlIT2o3Njg?oc=5"
         }
       ]
     },
@@ -183155,6 +183229,26 @@
       ]
     },
     {
+      "title": "칼㈜영업소 채용 - [일본도쿄·오사카/CAL]수탁개발·프로젝트 기반 개발자 채용 - 잡코리아",
+      "company": "칼㈜영업소",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBmTFJBbnBGZTJPaldiS3I3WVFNNExScWZwelJoYlBHVUJwNmZBR0VKMUNJZ0VmaHVManNsUzQ1ak5UQWY0V01sanZuNmJhd0diWXpfc29NWmpVaGZjVzJTUVFteU90eDQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBmTFJBbnBGZTJPaldiS3I3WVFNNExScWZwelJoYlBHVUJwNmZBR0VKMUNJZ0VmaHVManNsUzQ1ak5UQWY0V01sanZuNmJhd0diWXpfc29NWmpVaGZjVzJTUVFteU90eDQ?oc=5\" target=\"_blank\">칼㈜영업소 채용 - [일본도쿄·오사카/CAL]수탁개발·프로젝트 기반 개발자 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Wed, 30 Sep 2026 23:15:42 GMT",
+      "publishedAt": "2026-09-30T23:15:42+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBmTFJBbnBGZTJPaldiS3I3WVFNNExScWZwelJoYlBHVUJwNmZBR0VKMUNJZ0VmaHVManNsUzQ1ak5UQWY0V01sanZuNmJhd0diWXpfc29NWmpVaGZjVzJTUVFteU90eDQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "크로스플랫폼 앱 개발자 채용[신입] - jumpit.saramin.co.kr",
       "company": "크로스플랫폼 앱 개발자",
       "source": "사람인",
@@ -183616,6 +183710,10 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
+        },
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iS2gzRzRBYnVaUkZubGd3VzJmdHlkYzVpRi03NjNuVVBoQUFRUE9FOUNKN0ZpSVEyeVJ4YTJ6R2VXeW02bjF1dHdmb1p1bWVDVWtVazJiY2ZGZw?oc=5"
         }
       ]
     },
@@ -183770,8 +183868,8 @@
       "area": "클라이언트",
       "career": "경력",
       "skills": [
-        "C++",
-        "C#"
+        "C#",
+        "C++"
       ],
       "sourceSite": "사람인",
       "detailText": "Google News",
@@ -184104,6 +184202,10 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
+        },
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -184969,89 +185071,9 @@
           "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5"
         }
       ]
-    },
-    {
-      "title": "[(주)페이타랩] Windows개발자 (신입) (D-29) - 사람인",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5\" target=\"_blank\">[(주)페이타랩] Windows개발자 (신입) (D-29)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
-      "published": "Tue, 29 Sep 2026 08:30:07 GMT",
-      "publishedAt": "2026-09-29T08:30:07+00:00",
-      "area": "개발",
-      "career": "신입",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "(주)웹젠 채용정보 - 게임잡",
-      "company": "(주)웹젠",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE85Umdsd2Rvd1IwbDFsOG5qdzRnRjl5V1R2azc3ejVhTDZtYWZmX1ByRWhvb01UbUtHZDY4Tno0NnlrbWxMMElBVkUtdUliMkZoLS1qRjdVR2Z3aWtPQkZfdkVMU0ZnSEMyUnZF?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE85Umdsd2Rvd1IwbDFsOG5qdzRnRjl5V1R2azc3ejVhTDZtYWZmX1ByRWhvb01UbUtHZDY4Tno0NnlrbWxMMElBVkUtdUliMkZoLS1qRjdVR2Z3aWtPQkZfdkVMU0ZnSEMyUnZF?oc=5\" target=\"_blank\">(주)웹젠 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Tue, 29 Sep 2026 08:08:45 GMT",
-      "publishedAt": "2026-09-29T08:08:45+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE85Umdsd2Rvd1IwbDFsOG5qdzRnRjl5V1R2azc3ejVhTDZtYWZmX1ByRWhvb01UbUtHZDY4Tno0NnlrbWxMMElBVkUtdUliMkZoLS1qRjdVR2Z3aWtPQkZfdkVMU0ZnSEMyUnZF?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[버블탭] 백엔드 개발자 채용 공고 - 원티드",
-      "company": "[버블탭] 백엔드 개발자",
-      "source": "원티드",
-      "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBULXI3RjVxUWMwcTV1UGVKY2kxY0hLdDNSUGZPa2pnUWdWOXNINXZoQzRiNGplcldHY0ZPMG9XM2F5elVLUVZac2tn?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiSkFVX3lxTFBULXI3RjVxUWMwcTV1UGVKY2kxY0hLdDNSUGZPa2pnUWdWOXNINXZoQzRiNGplcldHY0ZPMG9XM2F5elVLUVZac2tn?oc=5\" target=\"_blank\">[버블탭] 백엔드 개발자 채용 공고</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">원티드</font>",
-      "published": "Tue, 29 Sep 2026 07:56:26 GMT",
-      "publishedAt": "2026-09-29T07:56:26+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "원티드",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "원티드",
-          "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBULXI3RjVxUWMwcTV1UGVKY2kxY0hLdDNSUGZPa2pnUWdWOXNINXZoQzRiNGplcldHY0ZPMG9XM2F5elVLUVZac2tn?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[버블탭] 백엔드 개발자 채용 공고 - wanted.co.kr",
-      "company": "[버블탭] 백엔드 개발자",
-      "source": "원티드",
-      "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBULXI3RjVxUWMwcTV1UGVKY2kxY0hLdDNSUGZPa2pnUWdWOXNINXZoQzRiNGplcldHY0ZPMG9XM2F5elVLUVZac2tn?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiSkFVX3lxTFBULXI3RjVxUWMwcTV1UGVKY2kxY0hLdDNSUGZPa2pnUWdWOXNINXZoQzRiNGplcldHY0ZPMG9XM2F5elVLUVZac2tn?oc=5\" target=\"_blank\">[버블탭] 백엔드 개발자 채용 공고</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">wanted.co.kr</font>",
-      "published": "Tue, 29 Sep 2026 07:56:26 GMT",
-      "publishedAt": "2026-09-29T07:56:26+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "원티드",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "원티드",
-          "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTFBULXI3RjVxUWMwcTV1UGVKY2kxY0hLdDNSUGZPa2pnUWdWOXNINXZoQzRiNGplcldHY0ZPMG9XM2F5elVLUVZac2tn?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-03T19:46:19+00:00",
+  "jobPostingsUpdatedAt": "2026-10-03T22:47:09+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185107,6 +185129,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-03T19:44:06+00:00"
+    "generatedAt": "2026-10-03T22:47:08+00:00"
   }
 }
