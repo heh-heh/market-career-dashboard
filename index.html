@@ -187,7 +187,8 @@ function render(d){
  document.getElementById("indices").innerHTML=indices.filter(x=>["^KS11","^KQ11","^IXIC","^GSPC","^SOX"].includes(x.symbol)).map(stockRow).join("");
  document.getElementById("koreaStocks").innerHTML=d.stocks.filter(x=>x.category==="한국 반도체"||x.category==="한국 게임").map(stockRow).join("");
  document.getElementById("usStocks").innerHTML=d.stocks.filter(x=>x.category==="미국 반도체"||x.category==="미국/글로벌 반도체").map(stockRow).join("");
- document.getElementById("etfs").innerHTML=indices.filter(x=>["SOXX","SMH","SOXL","SOXS"].includes(x.symbol)).map(stockRow).join("");
+ const etfItems=[...indices.filter(x=>["SOXX","SMH"].includes(x.symbol)),...(d.stocks||[]).filter(x=>["SOXL","SOXS"].includes(x.symbol))];
+ document.getElementById("etfs").innerHTML=etfItems.map(stockRow).join("");
  document.getElementById("jobs").innerHTML=(d.employment||[]).map(j=>'<div class="item"><h3>'+esc(j.title)+'</h3><p>'+j.skills.map(esc).map(x=>'<span class="tag">'+x+'</span>').join("")+'</p></div>').join("");
  document.getElementById("trends").innerHTML=(d.trends||[]).map(t=>'<div class="item"><h3>'+esc(t.title)+'</h3><p>'+esc(t.text)+'</p></div>').join("");
  document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+esc(d.updatedAt||"-")+"</b><br>시세 수집: <b>"+esc(d.quality?.quotes_ok??"-")+"/"+esc(d.quality?.quotes_total??"-")+"</b> · 캔들 준비: <b>"+esc(d.quality?.candle_ready??"-")+"</b><br>"+esc(d.notice||"");
