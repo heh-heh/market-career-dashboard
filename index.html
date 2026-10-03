@@ -92,9 +92,13 @@ function setChartRange(symbol,mode){
 document.addEventListener("click",e=>{
  const stock=e.target.closest(".stock-click[data-symbol]");
  if(stock){openStockBySymbol(stock.dataset.symbol);return;}
- const job=e.target.closest("[data-job-index]");\n if(job){openJob((cached?.jobPostings||[])[Number(job.dataset.jobIndex)]);return;}\n const action=e.target.closest("[data-action]");
- if(action?.dataset.action==="close-stock"){closeStock();return;}\n if(action?.dataset.action==="close-job"){closeJob();return;}
- if(e.target.id==="stockModal"){closeStock();return;}\n if(e.target.id==="jobModal"){closeJob();return;}
+ const job=e.target.closest("[data-job-index]");
+ if(job){openJob((cached?.jobPostings||[])[Number(job.dataset.jobIndex)]);return;}
+ const action=e.target.closest("[data-action]");
+ if(action?.dataset.action==="close-stock"){closeStock();return;}
+ if(action?.dataset.action==="close-job"){closeJob();return;}
+ if(e.target.id==="stockModal"){closeStock();return;}
+ if(e.target.id==="jobModal"){closeJob();return;}
  const b=e.target.closest(".chart-range[data-chart-symbol]");
  if(!b)return;
  e.preventDefault();
@@ -159,6 +163,7 @@ async function liveQuotes(){
   // 마지막으로 성공한 데이터 유지
  }
 }
-document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);\nloadData();
+document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
+loadData();
 setInterval(liveQuotes,60000);
 </script></body></html>
