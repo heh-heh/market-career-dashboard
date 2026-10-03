@@ -265,6 +265,47 @@ def extract_company(title, description):
             return m.group(1).strip()
     return ""
 
+def collect_employment_news(previous):
+    now=datetime.now(timezone.utc)
+    previous_updated=previous.get("employmentUpdatedAt","")
+    try:
+        last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
+    except Exception:
+        last=datetime.min.replace(tzinfo=timezone.utc)
+    if now-last < timedelta(hours=1):
+        return previous.get("employmentNews",[]), previous_updated
+
+    queries=[
+        "게임 개발자 채용 C++ Unity Unreal",
+        "게임 서버 개발자 채용",
+        "백엔드 개발자 채용 Java Python AWS",
+        "신입 개발자 채용 게임 IT",
+        "개발자 채용 공고 취업"
+    ]
+    fresh=[]
+    for q in queries:
+        fresh += rss(q,8,days=2)
+
+    cutoff=now-timedelta(days=2)
+    merged={}
+    for item in previous.get("employmentNews",[])+fresh:
+        stamp=item.get("publishedAt","")
+        try:
+            dt=datetime.fromisoformat(stamp.replace("Z","+00:00"))
+        except Exception:
+            dt=None
+        if dt and dt>=cutoff:
+            key=(item.get("link") or item.get("title","")).strip()
+            if key:
+                merged[key]=item
+
+    items=sorted(
+        merged.values(),
+        key=lambda x:x.get("publishedAt",""),
+        reverse=True
+    )[:50]
+    return items, now.isoformat(timespec="seconds")
+
 def collect_job_postings(previous):
     now=datetime.now(timezone.utc)
     previous_updated=previous.get("jobPostingsUpdatedAt","")
