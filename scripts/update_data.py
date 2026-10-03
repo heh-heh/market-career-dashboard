@@ -433,27 +433,37 @@ def collect_job_postings(previous):
         url="https://www.gamejob.co.kr/Recruit/joblist" if page==1 else f"https://www.gamejob.co.kr/recruit/_GI_Job_List?Page={page}"
         fresh += direct_job_list(url,"게임잡",limit=80,keywords=game_keywords)
 
-    # Keep RSS discovery as a secondary source for platforms whose public list markup varies.
+    # Keep RSS discovery as a broad fallback across major hiring sites.
     sites=[
+        ("site:gamejob.co.kr/Recruit/GI_Read 게임 프로그래머", "게임잡"),
+        ("site:gamejob.co.kr/Recruit/GI_Read 클라이언트 프로그래머", "게임잡"),
+        ("site:gamejob.co.kr/Recruit/GI_Read 서버 프로그래머", "게임잡"),
+        ("site:gamejob.co.kr/Recruit/GI_Read C++ Unity Unreal", "게임잡"),
+        ("site:gamejob.co.kr/Recruit/GI_Read 신입 프로그래머", "게임잡"),
         ("site:wanted.co.kr 게임 개발자 채용", "원티드"),
         ("site:wanted.co.kr 서버 백엔드 개발자 채용", "원티드"),
         ("site:wanted.co.kr C++ Unity Unreal 개발자", "원티드"),
+        ("site:wanted.co.kr 신입 개발자 채용", "원티드"),
         ("site:saramin.co.kr 게임 개발자 채용", "사람인"),
         ("site:saramin.co.kr 백엔드 서버 개발자 채용", "사람인"),
         ("site:saramin.co.kr C++ Unity 개발자", "사람인"),
+        ("site:saramin.co.kr 신입 개발자 채용", "사람인"),
         ("site:jobkorea.co.kr 게임 개발자 채용", "잡코리아"),
         ("site:jobkorea.co.kr 서버 백엔드 개발자 채용", "잡코리아"),
         ("site:jobkorea.co.kr 신입 개발자 채용", "잡코리아"),
+        ("site:jobkorea.co.kr C++ Unity 개발자", "잡코리아"),
         ("site:jumpit.saramin.co.kr 개발자 채용", "점핏"),
         ("site:jumpit.saramin.co.kr 백엔드 C++ 개발자", "점핏"),
+        ("site:jumpit.saramin.co.kr 신입 개발자", "점핏"),
         ("site:rocketpunch.com/jobs 개발자 채용", "로켓펀치"),
         ("site:rocketpunch.com/jobs 백엔드 개발자", "로켓펀치"),
-        ("site:career.programmers.co.kr 개발자 채용", "프로그래머스")
+        ("site:career.programmers.co.kr 개발자 채용", "프로그래머스"),
+        ("site:career.programmers.co.kr 게임 개발자", "프로그래머스")
     ]
 
     existing_links={x.get("link") for x in previous.get("jobPostings",[])}
     for q,site_name in sites:
-        for item in rss(q,12,days=7):
+        for item in rss(q,20,days=14):
             link=item.get("link","")
             desc=item.get("description","")
             title=item.get("title","").strip()
@@ -634,4 +644,4 @@ data["quality"]={
 tmp=OUT.with_suffix(".json.tmp")
 tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding="utf-8")
 tmp.replace(OUT)
-print(f"updated {OUT} at {now}; quotes={len(successful)}/{len(all_quotes)} candle_ready={candle_ready}")
+print(f"updated {OUT} at {now}; quotes={len(successful)}/{len(all_quotes)} candle_ready={candle_ready} job_postings={len(job_postings)}")
