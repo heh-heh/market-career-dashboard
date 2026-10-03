@@ -667,7 +667,9 @@ us=[
     stock("INTC","Intel","미국 반도체"),
     stock("AVGO","Broadcom","미국 반도체"),
     stock("MU","Micron","미국 반도체"),
-    stock("TSM","TSMC","미국/글로벌 반도체")
+    stock("TSM","TSMC","미국/글로벌 반도체"),
+    stock("SOXL","Direxion Daily Semiconductor Bull 3X ETF","반도체 레버리지 ETF"),
+    stock("SOXS","Direxion Daily Semiconductor Bear 3X ETF","반도체 인버스 ETF")
 ]
 
 indices=[
