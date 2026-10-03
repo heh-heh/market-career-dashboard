@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T04:24:14+00:00",
+  "updatedAt": "2026-10-03T04:27:31+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -160829,22 +160829,22 @@
       "relevance": 3
     },
     {
-      "title": "HBM·낸드·CPU로…AI ETF 쪼개 담는다 - 서울경제",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5",
-      "published": "Fri, 02 Oct 2026 08:55:55 GMT",
-      "publishedAt": "2026-10-02T08:55:55+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5\" target=\"_blank\">HBM·낸드·CPU로…AI ETF 쪼개 담는다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">서울경제</font>",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2
-    },
-    {
       "title": "HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략 - 스마트비즈",
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5",
       "published": "Fri, 02 Oct 2026 00:31:29 GMT",
       "publishedAt": "2026-10-02T00:31:29+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5\" target=\"_blank\">HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">스마트비즈</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2
+    },
+    {
+      "title": "美 마이크론, 사상 최대 실적…삼성·SK '청신호' - 서울경제TV",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBnRVBBS2ZLZ1h0YW1qVmoxUXZzcVMwdW5WYlpxOENEUVJnYUlaR1dWb3lZeHFyNGxGTDVyLW9rWXZlaFd1U01iT2tVV0ZHM1ktRHlYUk1tc0RNZDNZaWQ2NUpkbXA?oc=5",
+      "published": "Thu, 01 Oct 2026 08:47:05 GMT",
+      "publishedAt": "2026-10-01T08:47:05+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTFBnRVBBS2ZLZ1h0YW1qVmoxUXZzcVMwdW5WYlpxOENEUVJnYUlaR1dWb3lZeHFyNGxGTDVyLW9rWXZlaFd1U01iT2tVV0ZHM1ktRHlYUk1tc0RNZDNZaWQ2NUpkbXA?oc=5\" target=\"_blank\">美 마이크론, 사상 최대 실적…삼성·SK '청신호'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">서울경제TV</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "높음",
@@ -160868,17 +160868,6 @@
       "publishedAt": "2026-10-02T16:29:39+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5\" target=\"_blank\">경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스타운</font>",
       "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "게임이 시작되지 않을 때 확인할 파워볼 한국 구매 이용 조건 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNSVQ0bnNpbWppZEJyTmNYSVctNF8xdy03bkRzb1RLX0tZRWxoX0I5TDB6cDNTT3BNV0F6R0ZFVDlIUGd3VkZXcFdRR3YtTFpqbTdGZzZmajZHZk90MW5wQ281TWtxdUxVV1pCNW9EeWdNWE1uTG9aT3I5V2d1SllBeWJNZXhUX3dLNF9BT2F4VlkxRk5yNkZHZmdSNTF2aG9majAwUE4xemk3bUNlM2NRaUNMQWE3Z2IzSkV5bVMyaw?oc=5",
-      "published": "Fri, 02 Oct 2026 08:24:58 GMT",
-      "publishedAt": "2026-10-02T08:24:58+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMivwFBVV95cUxNSVQ0bnNpbWppZEJyTmNYSVctNF8xdy03bkRzb1RLX0tZRWxoX0I5TDB6cDNTT3BNV0F6R0ZFVDlIUGd3VkZXcFdRR3YtTFpqbTdGZzZmajZHZk90MW5wQ281TWtxdUxVV1pCNW9EeWdNWE1uTG9aT3I5V2d1SllBeWJNZXhUX3dLNF9BT2F4VlkxRk5yNkZHZmdSNTF2aG9majAwUE4xemk3bUNlM2NRaUNMQWE3Z2IzSkV5bVMyaw?oc=5\" target=\"_blank\">게임이 시작되지 않을 때 확인할 파워볼 한국 구매 이용 조건</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
-      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160978,6 +160967,17 @@
       "publishedAt": "2026-10-01T08:32:08+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE50YXpoTDBsT0RZc09uNVN3ZzV5RWtoY3JYMVFxVHJuUW1SWnAwbWt5cnJpRXVZTFFNN09EVXJ6SmRUeHBsWHpMcWhZYzVSUDQxNDBwMzlzekpzR0lZa2tOQlA5UVQ0VnBmWTZTMdIBcEFVX3lxTE41V3RrVThlNzNXNFUwSkpvakJDY08tSlNnLWNqRUhsd0RPVzc2c181bmNYS1VvZG5MY3J0d0FRdXVtbXBJNnp4UWlXZGxaNWJFNXNfZkM4bWFMZzY0MXpGY25ZSjhMNUplR042QUhhR3E?oc=5\" target=\"_blank\">콘크리트 배합기술에 AI 기술을 활용한다고?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">전기신문</font>",
       "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "반도체에 영원한 승자는 없다 — 잘나갈 때 위기를 준비하라 - 최보식의언론",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5KVnRabWl1WWtobWViWFN1dnB3c3h2NnlPb0wyVUNpWUhLbTVYa05PSDYyb1M0d2JQS0VmZno0dG84SnRoZ0FfaW05U0lCYVFHOEQ4UGhlQ3J6X3NmUmg1SnlhXzg2LVBV0gFoQVVfeXFMTkpWdFptaXVZa2htZWJYU3V2cHdzeHY2eU9vTDJVQ2lZSEttNVhrTk9INjJvUzR3YlBLRWZmejR0bzhKdGhnQV9pbTlTSUJhUUc4RDhQaGVDcnpfc2ZSaDVKeWFfODYtUFU?oc=5",
+      "published": "Thu, 01 Oct 2026 07:38:33 GMT",
+      "publishedAt": "2026-10-01T07:38:33+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTE5KVnRabWl1WWtobWViWFN1dnB3c3h2NnlPb0wyVUNpWUhLbTVYa05PSDYyb1M0d2JQS0VmZno0dG84SnRoZ0FfaW05U0lCYVFHOEQ4UGhlQ3J6X3NmUmg1SnlhXzg2LVBV0gFoQVVfeXFMTkpWdFptaXVZa2htZWJYU3V2cHdzeHY2eU9vTDJVQ2lZSEttNVhrTk9INjJvUzR3YlBLRWZmejR0bzhKdGhnQV9pbTlTSUJhUUc4RDhQaGVDcnpfc2ZSaDVKeWFfODYtUFU?oc=5\" target=\"_blank\">반도체에 영원한 승자는 없다 — 잘나갈 때 위기를 준비하라</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">최보식의언론</font>",
+      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -161378,6 +161378,6 @@
     "quotes_ok": 17,
     "quotes_total": 17,
     "candle_ready": 17,
-    "generatedAt": "2026-10-03T04:24:14+00:00"
+    "generatedAt": "2026-10-03T04:27:31+00:00"
   }
 }
