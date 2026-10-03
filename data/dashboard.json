@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T04:43:22+00:00",
+  "updatedAt": "2026-10-03T04:47:47+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -39248,7 +39248,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.1999969482422,
+            "o": 232.2100067138672,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -39848,9 +39848,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
-            "l": 230.83999633789062,
+            "l": 230.47999572753906,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42802,7 +42802,7 @@
           },
           {
             "t": 1789565400,
-            "o": 213.72000122070312,
+            "o": 214.13999938964844,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43138,7 +43138,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.64999389648438,
+            "o": 222.11599731445312,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43194,7 +43194,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.25,
+            "o": 225.14999389648438,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43306,7 +43306,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -48959,7 +48959,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -49582,8 +49582,8 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
-            "h": 615.0598754882812,
+            "o": 616.9600219726562,
+            "h": 617.5700073242188,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52872,9 +52872,9 @@
           },
           {
             "t": 1790256600,
-            "o": 605.344970703125,
+            "o": 600.7550048828125,
             "h": 624.8400268554688,
-            "l": 604.35400390625,
+            "l": 599.3499755859375,
             "c": 617.25,
             "v": 8101441
           },
@@ -52928,7 +52928,7 @@
           },
           {
             "t": 1790343000,
-            "o": 634.610107421875,
+            "o": 635.0679931640625,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -52985,7 +52985,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53040,7 +53040,7 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
+            "o": 616.9600219726562,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59316,7 +59316,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62326,9 +62326,9 @@
           },
           {
             "t": 1789651800,
-            "o": 105.75,
+            "o": 104.77999877929688,
             "h": 109.83999633789062,
-            "l": 104.87030029296875,
+            "l": 104.69999694824219,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62606,9 +62606,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.01000213623047,
+            "o": 120.61000061035156,
             "h": 125.91999816894531,
-            "l": 119.94999694824219,
+            "l": 119.55000305175781,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62774,7 +62774,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -69050,9 +69050,9 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
-            "l": 357.4100036621094,
+            "l": 355.9775085449219,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72060,9 +72060,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.30999755859375,
+            "o": 346.07000732421875,
             "h": 349.94000244140625,
-            "l": 346.1597900390625,
+            "l": 345.30999755859375,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72508,7 +72508,7 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -81458,7 +81458,7 @@
           },
           {
             "t": 1788960600,
-            "o": 1003.1777954101562,
+            "o": 999.3499755859375,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81794,9 +81794,9 @@
           },
           {
             "t": 1789651800,
-            "o": 961.3300170898438,
+            "o": 954.9979858398438,
             "h": 986.2000122070312,
-            "l": 961.1303100585938,
+            "l": 953.5,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -112406,7 +112406,7 @@
           },
           {
             "t": 1790947860,
-            "o": 27195.884765625,
+            "o": 27197.251953125,
             "h": 27197.251953125,
             "l": 27175.92578125,
             "c": 27179.453125,
@@ -131874,8 +131874,8 @@
           },
           {
             "t": 1790947860,
-            "o": 13110.154296875,
-            "h": 13110.154296875,
+            "o": 13107.7958984375,
+            "h": 13108.1064453125,
             "l": 13090.056640625,
             "c": 13091.6328125,
             "v": 0
@@ -134998,7 +134998,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12584.86328125,
+            "l": 12585.8232421875,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -144732,7 +144732,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9000244140625,
+            "l": 566.9099731445312,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -145354,8 +145354,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
-            "h": 569.6950073242188,
+            "o": 569.8699951171875,
+            "h": 570.4299926757812,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -148644,7 +148644,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.8300170898438,
+            "o": 554.9650268554688,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -148812,7 +148812,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
+            "o": 569.8699951171875,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -160829,22 +160829,11 @@
       "relevance": 3
     },
     {
-      "title": "HBM·낸드·CPU로…AI ETF 쪼개 담는다 - 서울경제",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5",
-      "published": "Fri, 02 Oct 2026 08:55:55 GMT",
-      "publishedAt": "2026-10-02T08:55:55+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5\" target=\"_blank\">HBM·낸드·CPU로…AI ETF 쪼개 담는다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">서울경제</font>",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2
-    },
-    {
-      "title": "HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략 - 스마트비즈",
+      "title": "HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략 - smartbizn.com",
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5",
       "published": "Fri, 02 Oct 2026 00:31:29 GMT",
       "publishedAt": "2026-10-02T00:31:29+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5\" target=\"_blank\">HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">스마트비즈</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5\" target=\"_blank\">HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">smartbizn.com</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
       "importance": "높음",
@@ -160873,23 +160862,12 @@
       "relevance": 1
     },
     {
-      "title": "경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시 - 뉴스프리존",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5",
-      "published": "Sat, 03 Oct 2026 02:02:37 GMT",
-      "publishedAt": "2026-10-03T02:02:37+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5\" target=\"_blank\">경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스프리존</font>",
+      "title": "경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축 - 뉴스타운",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5",
+      "published": "Fri, 02 Oct 2026 16:29:39 GMT",
+      "publishedAt": "2026-10-02T16:29:39+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5\" target=\"_blank\">경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스타운</font>",
       "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "게임이 시작되지 않을 때 확인할 파워볼 한국 구매 이용 조건 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNSVQ0bnNpbWppZEJyTmNYSVctNF8xdy03bkRzb1RLX0tZRWxoX0I5TDB6cDNTT3BNV0F6R0ZFVDlIUGd3VkZXcFdRR3YtTFpqbTdGZzZmajZHZk90MW5wQ281TWtxdUxVV1pCNW9EeWdNWE1uTG9aT3I5V2d1SllBeWJNZXhUX3dLNF9BT2F4VlkxRk5yNkZHZmdSNTF2aG9majAwUE4xemk3bUNlM2NRaUNMQWE3Z2IzSkV5bVMyaw?oc=5",
-      "published": "Fri, 02 Oct 2026 08:24:58 GMT",
-      "publishedAt": "2026-10-02T08:24:58+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMivwFBVV95cUxNSVQ0bnNpbWppZEJyTmNYSVctNF8xdy03bkRzb1RLX0tZRWxoX0I5TDB6cDNTT3BNV0F6R0ZFVDlIUGd3VkZXcFdRR3YtTFpqbTdGZzZmajZHZk90MW5wQ281TWtxdUxVV1pCNW9EeWdNWE1uTG9aT3I5V2d1SllBeWJNZXhUX3dLNF9BT2F4VlkxRk5yNkZHZmdSNTF2aG9majAwUE4xemk3bUNlM2NRaUNMQWE3Z2IzSkV5bVMyaw?oc=5\" target=\"_blank\">게임이 시작되지 않을 때 확인할 파워볼 한국 구매 이용 조건</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
-      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160917,6 +160895,17 @@
       "relevance": 1
     },
     {
+      "title": "“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다 - 비즈한국",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5",
+      "published": "Fri, 02 Oct 2026 06:46:45 GMT",
+      "publishedAt": "2026-10-02T06:46:45+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5\" target=\"_blank\">“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">비즈한국</font>",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
       "title": "[뉴in] KETI 연구팀, 한국 문화ㆍ언어 이해하는 AI 'HAECHI' 개발 - 산업인뉴스",
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFB4WHY2TW1xaExGdFMxR0pFdmg5WktxUEdmYTVTakVVSG0zbjB6S2VvUHBySFdrSUdMdTNYOWk3OVpOdzJ1Sl9CS1EwTlZSS09sTzRaZlE4N2tkLV93c3hxWi1zakxITUZ1ZGFwYnFn?oc=5",
       "published": "Fri, 02 Oct 2026 05:06:53 GMT",
@@ -160928,11 +160917,11 @@
       "relevance": 1
     },
     {
-      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - 네이버 프리미엄콘텐츠",
+      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - contents.premium.naver.com",
       "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5",
       "published": "Fri, 02 Oct 2026 01:44:00 GMT",
       "publishedAt": "2026-10-02T01:44:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5\" target=\"_blank\">[산업분석] 게임 : BM이 다르면 다른 산업이다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">네이버 프리미엄콘텐츠</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5\" target=\"_blank\">[산업분석] 게임 : BM이 다르면 다른 산업이다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">contents.premium.naver.com</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
@@ -160983,6 +160972,17 @@
       "relevance": 1
     },
     {
+      "title": "반도체에 영원한 승자는 없다 — 잘나갈 때 위기를 준비하라 - 최보식의언론",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5KVnRabWl1WWtobWViWFN1dnB3c3h2NnlPb0wyVUNpWUhLbTVYa05PSDYyb1M0d2JQS0VmZno0dG84SnRoZ0FfaW05U0lCYVFHOEQ4UGhlQ3J6X3NmUmg1SnlhXzg2LVBV0gFoQVVfeXFMTkpWdFptaXVZa2htZWJYU3V2cHdzeHY2eU9vTDJVQ2lZSEttNVhrTk9INjJvUzR3YlBLRWZmejR0bzhKdGhnQV9pbTlTSUJhUUc4RDhQaGVDcnpfc2ZSaDVKeWFfODYtUFU?oc=5",
+      "published": "Thu, 01 Oct 2026 07:38:33 GMT",
+      "publishedAt": "2026-10-01T07:38:33+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTE5KVnRabWl1WWtobWViWFN1dnB3c3h2NnlPb0wyVUNpWUhLbTVYa05PSDYyb1M0d2JQS0VmZno0dG84SnRoZ0FfaW05U0lCYVFHOEQ4UGhlQ3J6X3NmUmg1SnlhXzg2LVBV0gFoQVVfeXFMTkpWdFptaXVZa2htZWJYU3V2cHdzeHY2eU9vTDJVQ2lZSEttNVhrTk9INjJvUzR3YlBLRWZmejR0bzhKdGhnQV9pbTlTSUJhUUc4RDhQaGVDcnpfc2ZSaDVKeWFfODYtUFU?oc=5\" target=\"_blank\">반도체에 영원한 승자는 없다 — 잘나갈 때 위기를 준비하라</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">최보식의언론</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
       "title": "[신기술이 경쟁력] 건설연, AI로 교량 안전성 10분 만에 자동 평가 - 건설이코노미뉴스",
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVODRFM0FQQWM1V0lvX09NbmxZRjhPaW1uSkZ4Q1JIdG9VWWNEenhaazRsc2pvcnRfaVBiVmsyNE5vaGoxSXhNQTVodEtpbzVXNk0wUDNXUkM3c0VWVlRkM0Iya2RFQQ?oc=5",
       "published": "Thu, 01 Oct 2026 06:40:27 GMT",
@@ -161001,6 +161001,17 @@
       "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5\" target=\"_blank\">[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대 - 매일일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5",
+      "published": "Thu, 01 Oct 2026 05:59:03 GMT",
+      "publishedAt": "2026-10-01T05:59:03+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5\" target=\"_blank\">韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "긍정",
       "importance": "보통",
       "relevance": 1
     },
@@ -161043,17 +161054,6 @@
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
       "publishedAt": "2026-10-02T07:45:02+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5\" target=\"_blank\">시프트업, 신작 아직인데···3분기 영업이익 반토막 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">증권경제신문</font>",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기 - 뉴스핌",
-      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5",
-      "published": "Fri, 02 Oct 2026 00:31:00 GMT",
-      "publishedAt": "2026-10-02T00:31:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5\" target=\"_blank\">[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스핌</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
@@ -161866,8 +161866,8 @@
       "area": "백엔드/서버",
       "career": "3년 이상",
       "skills": [
-        "Python",
-        "MySQL"
+        "MySQL",
+        "Python"
       ],
       "employmentType": "정규직, 인턴",
       "deadline": "채용시 마감 지원하기 스크랩 2026-07-22 11:05 등록 2026-10-02 10:",
@@ -162625,6 +162625,26 @@
       ]
     },
     {
+      "title": "데이터 엔지니어 채용 - 점핏",
+      "company": "데이터 엔지니어",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE44cTRkMVI2NDk4SHpxTTBjWDkyb3hYVW5XbDV3cl9ENlBNV3ZNdlhWbnNtT1JHNnRmV0RWdkZFaF9DUlFVczlOYUNPbXg0WGdNUU9IaEdlRnE5QQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE44cTRkMVI2NDk4SHpxTTBjWDkyb3hYVW5XbDV3cl9ENlBNV3ZNdlhWbnNtT1JHNnRmV0RWdkZFaF9DUlFVczlOYUNPbXg0WGdNUU9IaEdlRnE5QQ?oc=5\" target=\"_blank\">데이터 엔지니어 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Thu, 01 Oct 2026 11:23:19 GMT",
+      "publishedAt": "2026-10-01T11:23:19+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE44cTRkMVI2NDk4SHpxTTBjWDkyb3hYVW5XbDV3cl9ENlBNV3ZNdlhWbnNtT1JHNnRmV0RWdkZFaF9DUlFVczlOYUNPbXg0WGdNUU9IaEdlRnE5QQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "㈜컨트롤나인 채용정보 - 게임잡",
       "company": "㈜컨트롤나인",
       "source": "게임잡",
@@ -162924,6 +162944,26 @@
       ]
     },
     {
+      "title": "펌웨어 개발자 채용[신입] - 점핏",
+      "company": "펌웨어 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE96VXg1QWVtVFFMNXVxZmJCY2U4d056M2lVU2drMEFVQmZXVjVLU1R6TTZwZDNISHRmc1hUci04aDZPRjJwVGZseDB1ckR1dDZzWlR0c2xLczBxQQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE96VXg1QWVtVFFMNXVxZmJCY2U4d056M2lVU2drMEFVQmZXVjVLU1R6TTZwZDNISHRmc1hUci04aDZPRjJwVGZseDB1ckR1dDZzWlR0c2xLczBxQQ?oc=5\" target=\"_blank\">펌웨어 개발자 채용[신입]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Thu, 01 Oct 2026 03:14:15 GMT",
+      "publishedAt": "2026-10-01T03:14:15+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE96VXg1QWVtVFFMNXVxZmJCY2U4d056M2lVU2drMEFVQmZXVjVLU1R6TTZwZDNISHRmc1hUci04aDZPRjJwVGZseDB1ckR1dDZzWlR0c2xLczBxQQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "(주)젬블로컴퍼니 게임사업팀 팀장, 경력직 채용 (TCG/보드게임) - 잡코리아",
       "company": "(주)젬블로컴퍼니 게임사업팀 팀장, 경력직",
       "source": "잡코리아",
@@ -162949,6 +162989,26 @@
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE85QjgtOEhjMUFjX3BpeUdETmxodHBldnowY1FpZFByb1RoS2NaekZCZnE1MFM5elliV0s3RHA3UVp1UlZhUnhvSnEzS3ZXQlQ4RTFlZm1pdl9IUQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE85QjgtOEhjMUFjX3BpeUdETmxodHBldnowY1FpZFByb1RoS2NaekZCZnE1MFM5elliV0s3RHA3UVp1UlZhUnhvSnEzS3ZXQlQ4RTFlZm1pdl9IUQ?oc=5\" target=\"_blank\">크로스플랫폼 앱 개발자 채용[신입]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 20:23:38 GMT",
+      "publishedAt": "2026-09-30T20:23:38+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE85QjgtOEhjMUFjX3BpeUdETmxodHBldnowY1FpZFByb1RoS2NaekZCZnE1MFM5elliV0s3RHA3UVp1UlZhUnhvSnEzS3ZXQlQ4RTFlZm1pdl9IUQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "크로스플랫폼 앱 개발자 채용[신입] - 점핏",
+      "company": "크로스플랫폼 앱 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE85QjgtOEhjMUFjX3BpeUdETmxodHBldnowY1FpZFByb1RoS2NaekZCZnE1MFM5elliV0s3RHA3UVp1UlZhUnhvSnEzS3ZXQlQ4RTFlZm1pdl9IUQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE85QjgtOEhjMUFjX3BpeUdETmxodHBldnowY1FpZFByb1RoS2NaekZCZnE1MFM5elliV0s3RHA3UVp1UlZhUnhvSnEzS3ZXQlQ4RTFlZm1pdl9IUQ?oc=5\" target=\"_blank\">크로스플랫폼 앱 개발자 채용[신입]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 20:23:38 GMT",
       "publishedAt": "2026-09-30T20:23:38+00:00",
       "area": "개발",
@@ -163026,6 +163086,26 @@
       ]
     },
     {
+      "title": "프론트엔드 개발자(2~4년) - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9FQll0bExPV0ZET1BwUy1rbmhBOTVuUUQyZWhNUGZlUFhQd29ad18tY3pfeEpQLUZLUk1FcDZYUDJlTTZCQ2gzOW5za1JVQ2pwcjRUQjk4WTk0QQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9FQll0bExPV0ZET1BwUy1rbmhBOTVuUUQyZWhNUGZlUFhQd29ad18tY3pfeEpQLUZLUk1FcDZYUDJlTTZCQ2gzOW5za1JVQ2pwcjRUQjk4WTk0QQ?oc=5\" target=\"_blank\">프론트엔드 개발자(2~4년)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 18:38:29 GMT",
+      "publishedAt": "2026-09-30T18:38:29+00:00",
+      "area": "프론트엔드",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9FQll0bExPV0ZET1BwUy1rbmhBOTVuUUQyZWhNUGZlUFhQd29ad18tY3pfeEpQLUZLUk1FcDZYUDJlTTZCQ2gzOW5za1JVQ2pwcjRUQjk4WTk0QQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[버터소프트] 헬스케어 서비스 프론트엔드 개발자 [Vue.js] 채용 공고 - 원티드",
       "company": "[버터소프트] 헬스케어 서비스 프론트엔드 개발자 [Vue.js]",
       "source": "원티드",
@@ -163066,6 +163146,26 @@
       ]
     },
     {
+      "title": "웹 개발자 채용[신입] - 점핏",
+      "company": "웹 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE02NGEwRE5NOThWTHdlQVY3d3RSTHdxejBfM1VOSmFUdnpTMHpKYi1Fb21zR3I0SG41MXFfNUdhSzNjTlFsTl9qMUxqWHpfT2c4c01LcG5vZXZvVVZHRlQ1VjlFMDlta29LeC1SSDM2dkt6emtRUUx3bENoQ3lSUQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE02NGEwRE5NOThWTHdlQVY3d3RSTHdxejBfM1VOSmFUdnpTMHpKYi1Fb21zR3I0SG41MXFfNUdhSzNjTlFsTl9qMUxqWHpfT2c4c01LcG5vZXZvVVZHRlQ1VjlFMDlta29LeC1SSDM2dkt6emtRUUx3bENoQ3lSUQ?oc=5\" target=\"_blank\">웹 개발자 채용[신입]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 18:31:33 GMT",
+      "publishedAt": "2026-09-30T18:31:33+00:00",
+      "area": "프론트엔드",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE02NGEwRE5NOThWTHdlQVY3d3RSTHdxejBfM1VOSmFUdnpTMHpKYi1Fb21zR3I0SG41MXFfNUdhSzNjTlFsTl9qMUxqWHpfT2c4c01LcG5vZXZvVVZHRlQ1VjlFMDlta29LeC1SSDM2dkt6emtRUUx3bENoQ3lSUQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "백엔드·인프라 풀스택 엔지니어 - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "사람인",
@@ -163086,11 +163186,51 @@
       ]
     },
     {
+      "title": "백엔드·인프라 풀스택 엔지니어 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFAxb3FsZlpLVlpnMVhTMnZ6eXozcy1TSjBUUHFVdmRCZlZDNTFKTWhfTDdpa3pLRWlfMEREcFBCTGVNelJ1MkdoTmFZQnV5eVhmZXoxcmhxSE4wQQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFAxb3FsZlpLVlpnMVhTMnZ6eXozcy1TSjBUUHFVdmRCZlZDNTFKTWhfTDdpa3pLRWlfMEREcFBCTGVNelJ1MkdoTmFZQnV5eVhmZXoxcmhxSE4wQQ?oc=5\" target=\"_blank\">백엔드·인프라 풀스택 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 18:05:26 GMT",
+      "publishedAt": "2026-09-30T18:05:26+00:00",
+      "area": "백엔드/서버",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFAxb3FsZlpLVlpnMVhTMnZ6eXozcy1TSjBUUHFVdmRCZlZDNTFKTWhfTDdpa3pLRWlfMEREcFBCTGVNelJ1MkdoTmFZQnV5eVhmZXoxcmhxSE4wQQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "SoC Verification Engineer - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5\" target=\"_blank\">SoC Verification Engineer</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 18:00:37 GMT",
+      "publishedAt": "2026-09-30T18:00:37+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "SoC Verification Engineer - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5\" target=\"_blank\">SoC Verification Engineer</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 18:00:37 GMT",
       "publishedAt": "2026-09-30T18:00:37+00:00",
       "area": "개발",
@@ -163148,11 +163288,51 @@
       ]
     },
     {
+      "title": "멀웨어 분석가 신입 (Malware Analyst) - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBmYjRKbmM0Y01lRE5UTHNtYm54dHNUVjVzaHJNbG1vd21SLTlyVFM0SFFOdUVWdGpBY3VLeW1CZHAwOHB6MWdwSzVOTEh5LUhtXzc2MWg5VGd0QQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBmYjRKbmM0Y01lRE5UTHNtYm54dHNUVjVzaHJNbG1vd21SLTlyVFM0SFFOdUVWdGpBY3VLeW1CZHAwOHB6MWdwSzVOTEh5LUhtXzc2MWg5VGd0QQ?oc=5\" target=\"_blank\">멀웨어 분석가 신입 (Malware Analyst)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 17:24:17 GMT",
+      "publishedAt": "2026-09-30T17:24:17+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBmYjRKbmM0Y01lRE5UTHNtYm54dHNUVjVzaHJNbG1vd21SLTlyVFM0SFFOdUVWdGpBY3VLeW1CZHAwOHB6MWdwSzVOTEh5LUhtXzc2MWg5VGd0QQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "보안로직 IP 개발 엔지니어 - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "점핏",
       "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1xeFpLaHMtSmlhLXhIdGFwaTI1MEFqRDBBWFU4em1MdlZVVmNtdVhyOXpOQ3oxckI5N3hQbzd1STFWVVRYWkpjQm1XUEFSR19rYWpYWnJGTE5OSFVydWNKMVlFcTZRS0staWpadHdkenkxTWhSMWpDMjlMUFl6UQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE1xeFpLaHMtSmlhLXhIdGFwaTI1MEFqRDBBWFU4em1MdlZVVmNtdVhyOXpOQ3oxckI5N3hQbzd1STFWVVRYWkpjQm1XUEFSR19rYWpYWnJGTE5OSFVydWNKMVlFcTZRS0staWpadHdkenkxTWhSMWpDMjlMUFl6UQ?oc=5\" target=\"_blank\">보안로직 IP 개발 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 17:13:43 GMT",
+      "publishedAt": "2026-09-30T17:13:43+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1xeFpLaHMtSmlhLXhIdGFwaTI1MEFqRDBBWFU4em1MdlZVVmNtdVhyOXpOQ3oxckI5N3hQbzd1STFWVVRYWkpjQm1XUEFSR19rYWpYWnJGTE5OSFVydWNKMVlFcTZRS0staWpadHdkenkxTWhSMWpDMjlMUFl6UQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "보안로직 IP 개발 엔지니어 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1xeFpLaHMtSmlhLXhIdGFwaTI1MEFqRDBBWFU4em1MdlZVVmNtdVhyOXpOQ3oxckI5N3hQbzd1STFWVVRYWkpjQm1XUEFSR19rYWpYWnJGTE5OSFVydWNKMVlFcTZRS0staWpadHdkenkxTWhSMWpDMjlMUFl6UQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE1xeFpLaHMtSmlhLXhIdGFwaTI1MEFqRDBBWFU4em1MdlZVVmNtdVhyOXpOQ3oxckI5N3hQbzd1STFWVVRYWkpjQm1XUEFSR19rYWpYWnJGTE5OSFVydWNKMVlFcTZRS0staWpadHdkenkxTWhSMWpDMjlMUFl6UQ?oc=5\" target=\"_blank\">보안로직 IP 개발 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 17:13:43 GMT",
       "publishedAt": "2026-09-30T17:13:43+00:00",
       "area": "개발",
@@ -163188,11 +163368,51 @@
       ]
     },
     {
+      "title": "펌웨어 개발자 채용[과장] - 점핏",
+      "company": "펌웨어 개발자",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5\" target=\"_blank\">펌웨어 개발자 채용[과장]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 15:24:53 GMT",
+      "publishedAt": "2026-09-30T15:24:53+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "SDx개발실 SW개발 - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "점핏",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9YR1hnQk1VM1hqRnVsWmo2NW5uTmJsWGY3ZndTYlBySjVZT3JBbFpaVUhNanFMU1lOUXkxdU42RWJPM3YycTFtM0pNaVgyeDkzM2dMZnUwRWhlQQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9YR1hnQk1VM1hqRnVsWmo2NW5uTmJsWGY3ZndTYlBySjVZT3JBbFpaVUhNanFMU1lOUXkxdU42RWJPM3YycTFtM0pNaVgyeDkzM2dMZnUwRWhlQQ?oc=5\" target=\"_blank\">SDx개발실 SW개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 14:07:22 GMT",
+      "publishedAt": "2026-09-30T14:07:22+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9YR1hnQk1VM1hqRnVsWmo2NW5uTmJsWGY3ZndTYlBySjVZT3JBbFpaVUhNanFMU1lOUXkxdU42RWJPM3YycTFtM0pNaVgyeDkzM2dMZnUwRWhlQQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "SDx개발실 SW개발 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9YR1hnQk1VM1hqRnVsWmo2NW5uTmJsWGY3ZndTYlBySjVZT3JBbFpaVUhNanFMU1lOUXkxdU42RWJPM3YycTFtM0pNaVgyeDkzM2dMZnUwRWhlQQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9YR1hnQk1VM1hqRnVsWmo2NW5uTmJsWGY3ZndTYlBySjVZT3JBbFpaVUhNanFMU1lOUXkxdU42RWJPM3YycTFtM0pNaVgyeDkzM2dMZnUwRWhlQQ?oc=5\" target=\"_blank\">SDx개발실 SW개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 14:07:22 GMT",
       "publishedAt": "2026-09-30T14:07:22+00:00",
       "area": "개발",
@@ -163248,6 +163468,26 @@
       ]
     },
     {
+      "title": "[(주)노바소프트] 정보보안 솔루션 개발자 신입사원 모집 (D-30) - 사람인",
+      "company": "[(주)노바소프트] 정보보안 솔루션 개발자 신입사원",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZ1F4dkw1dFJHYkF2WDhfYjJwZEptUTI5blhyemhoSFFRR0tCRVc5VWpDNndBWVN4bl9YbC0xUHRGc1phOWJHR3FGOF9XTm9taW9KMnZnRlBDcFRYWm5YNUVhSWZkMkNxbGZTcURZcVMzclZIajBybXR5c2ZwTVhmb2NQR2ZMdUpr?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZ1F4dkw1dFJHYkF2WDhfYjJwZEptUTI5blhyemhoSFFRR0tCRVc5VWpDNndBWVN4bl9YbC0xUHRGc1phOWJHR3FGOF9XTm9taW9KMnZnRlBDcFRYWm5YNUVhSWZkMkNxbGZTcURZcVMzclZIajBybXR5c2ZwTVhmb2NQR2ZMdUpr?oc=5\" target=\"_blank\">[(주)노바소프트] 정보보안 솔루션 개발자 신입사원 모집 (D-30)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Wed, 30 Sep 2026 12:33:02 GMT",
+      "publishedAt": "2026-09-30T12:33:02+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZ1F4dkw1dFJHYkF2WDhfYjJwZEptUTI5blhyemhoSFFRR0tCRVc5VWpDNndBWVN4bl9YbC0xUHRGc1phOWJHR3FGOF9XTm9taW9KMnZnRlBDcFRYWm5YNUVhSWZkMkNxbGZTcURZcVMzclZIajBybXR5c2ZwTVhmb2NQR2ZMdUpr?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[파이(주)] [SW 개발] C++/C# 개발자 모집 (영상처리/AI 전문가 우대) (D-30) - saramin.co.kr",
       "company": "[파이(주)] [SW 개발] C++/C# 개발자",
       "source": "사람인",
@@ -163263,6 +163503,28 @@
       ],
       "sourceSite": "사람인",
       "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaVpMclFBdGZsaGlkQ2JZYmhZQnJzc0ZMSU16a1RrUHVTM1M3QXZQSUk3OS1qYUx2Y3Ntc0dOTzlKUGNwcU9OVGFJd3htNmhkaWV1NXNUd194YVpNSHB4M25jSlpBd3AzVm5jY1NoT1d3TGxqZ3lyN2wyWWNlcXd2NmlkaDdhWll2?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[파이(주)] [SW 개발] C++/C# 개발자 모집 (영상처리/AI 전문가 우대) (D-30) - 사람인",
+      "company": "[파이(주)] [SW 개발] C++/C# 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaVpMclFBdGZsaGlkQ2JZYmhZQnJzc0ZMSU16a1RrUHVTM1M3QXZQSUk3OS1qYUx2Y3Ntc0dOTzlKUGNwcU9OVGFJd3htNmhkaWV1NXNUd194YVpNSHB4M25jSlpBd3AzVm5jY1NoT1d3TGxqZ3lyN2wyWWNlcXd2NmlkaDdhWll2?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaVpMclFBdGZsaGlkQ2JZYmhZQnJzc0ZMSU16a1RrUHVTM1M3QXZQSUk3OS1qYUx2Y3Ntc0dOTzlKUGNwcU9OVGFJd3htNmhkaWV1NXNUd194YVpNSHB4M25jSlpBd3AzVm5jY1NoT1d3TGxqZ3lyN2wyWWNlcXd2NmlkaDdhWll2?oc=5\" target=\"_blank\">[파이(주)] [SW 개발] C++/C# 개발자 모집 (영상처리/AI 전문가 우대) (D-30)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Wed, 30 Sep 2026 10:38:33 GMT",
+      "publishedAt": "2026-09-30T10:38:33+00:00",
+      "area": "클라이언트",
+      "career": "경력",
+      "skills": [
+        "C++",
+        "C#"
+      ],
+      "sourceSite": "사람인",
       "sources": [
         {
           "site": "사람인",
@@ -163291,11 +163553,51 @@
       ]
     },
     {
+      "title": "AI Agent Platform Engineer 채용 - 점핏",
+      "company": "AI Agent Platform Engineer",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE56T0VvY1k0ajM0NEFnVnh0VDhzNVFJLXRSOUF4QVJ4dkhmVHlQWlRNWVhwRWtZeHRRbHNESDBUSUp3c2xVQXBsNExEU0VoRGtoOThKVzV0aTNkQQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE56T0VvY1k0ajM0NEFnVnh0VDhzNVFJLXRSOUF4QVJ4dkhmVHlQWlRNWVhwRWtZeHRRbHNESDBUSUp3c2xVQXBsNExEU0VoRGtoOThKVzV0aTNkQQ?oc=5\" target=\"_blank\">AI Agent Platform Engineer 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 09:19:50 GMT",
+      "publishedAt": "2026-09-30T09:19:50+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE56T0VvY1k0ajM0NEFnVnh0VDhzNVFJLXRSOUF4QVJ4dkhmVHlQWlRNWVhwRWtZeHRRbHNESDBUSUp3c2xVQXBsNExEU0VoRGtoOThKVzV0aTNkQQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "시스템 엔지니어 채용[11~15년] - jumpit.saramin.co.kr",
       "company": "시스템 엔지니어",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qNEJiaTlDay1sVmtoR0dlRFJPWFpCZHQzU2JjbVJlMFNhaDNhWC1VQzVrZzZtVngzY25LMDhYSnJNQWRkS1lmazJKYk1rNUUyV052ZGYxWGpJdw?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qNEJiaTlDay1sVmtoR0dlRFJPWFpCZHQzU2JjbVJlMFNhaDNhWC1VQzVrZzZtVngzY25LMDhYSnJNQWRkS1lmazJKYk1rNUUyV052ZGYxWGpJdw?oc=5\" target=\"_blank\">시스템 엔지니어 채용[11~15년]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 08:33:58 GMT",
+      "publishedAt": "2026-09-30T08:33:58+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qNEJiaTlDay1sVmtoR0dlRFJPWFpCZHQzU2JjbVJlMFNhaDNhWC1VQzVrZzZtVngzY25LMDhYSnJNQWRkS1lmazJKYk1rNUUyV052ZGYxWGpJdw?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "시스템 엔지니어 채용[11~15년] - 점핏",
+      "company": "시스템 엔지니어",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qNEJiaTlDay1sVmtoR0dlRFJPWFpCZHQzU2JjbVJlMFNhaDNhWC1VQzVrZzZtVngzY25LMDhYSnJNQWRkS1lmazJKYk1rNUUyV052ZGYxWGpJdw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qNEJiaTlDay1sVmtoR0dlRFJPWFpCZHQzU2JjbVJlMFNhaDNhWC1VQzVrZzZtVngzY25LMDhYSnJNQWRkS1lmazJKYk1rNUUyV052ZGYxWGpJdw?oc=5\" target=\"_blank\">시스템 엔지니어 채용[11~15년]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 08:33:58 GMT",
       "publishedAt": "2026-09-30T08:33:58+00:00",
       "area": "개발",
@@ -163336,6 +163638,26 @@
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2MndiUW9zMmV3LTRkdkVOVlhDcHh4S0VvR1kteTlkc0hiUDdpWTlYQ0JndjJiYlljV2lzcXJhVVViYUZnSk9Dem15WTg1eUl2ZTNFb1ZUdUpjZw?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2MndiUW9zMmV3LTRkdkVOVlhDcHh4S0VvR1kteTlkc0hiUDdpWTlYQ0JndjJiYlljV2lzcXJhVVViYUZnSk9Dem15WTg1eUl2ZTNFb1ZUdUpjZw?oc=5\" target=\"_blank\">풀스텍 개발자(FullStack) 전문연구요원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 06:12:51 GMT",
+      "publishedAt": "2026-09-30T06:12:51+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2MndiUW9zMmV3LTRkdkVOVlhDcHh4S0VvR1kteTlkc0hiUDdpWTlYQ0JndjJiYlljV2lzcXJhVVViYUZnSk9Dem15WTg1eUl2ZTNFb1ZUdUpjZw?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "풀스텍 개발자(FullStack) 전문연구요원 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2MndiUW9zMmV3LTRkdkVOVlhDcHh4S0VvR1kteTlkc0hiUDdpWTlYQ0JndjJiYlljV2lzcXJhVVViYUZnSk9Dem15WTg1eUl2ZTNFb1ZUdUpjZw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2MndiUW9zMmV3LTRkdkVOVlhDcHh4S0VvR1kteTlkc0hiUDdpWTlYQ0JndjJiYlljV2lzcXJhVVViYUZnSk9Dem15WTg1eUl2ZTNFb1ZUdUpjZw?oc=5\" target=\"_blank\">풀스텍 개발자(FullStack) 전문연구요원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 06:12:51 GMT",
       "publishedAt": "2026-09-30T06:12:51+00:00",
       "area": "개발",
@@ -163393,11 +163715,72 @@
       ]
     },
     {
+      "title": "[스포츠투아이(주)] 솔루션 응용 SW 개발자 채용(C#/.NET, Windows응용프로그램/API) (D-60) - 사람인",
+      "company": "[스포츠투아이(주)] 솔루션 응용 SW 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNakZsY0s2eVZtaFV0OTZkTXo0MTFTeGRNcEZlTnlxdW9vYjgxalZWdHhBbFc0ZUM0b1B2TmkteDNtVnUtbnR2bVVlcGttTXhxMS01SXo1R0UzMlRhOUxHYWN5QjBrRjFmZXNxczJFMm1OSXhGSnhvV1dRellCUjBuM1FjajlyQm40?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNakZsY0s2eVZtaFV0OTZkTXo0MTFTeGRNcEZlTnlxdW9vYjgxalZWdHhBbFc0ZUM0b1B2TmkteDNtVnUtbnR2bVVlcGttTXhxMS01SXo1R0UzMlRhOUxHYWN5QjBrRjFmZXNxczJFMm1OSXhGSnhvV1dRellCUjBuM1FjajlyQm40?oc=5\" target=\"_blank\">[스포츠투아이(주)] 솔루션 응용 SW 개발자 채용(C#/.NET, Windows응용프로그램/API) (D-60)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Wed, 30 Sep 2026 06:00:00 GMT",
+      "publishedAt": "2026-09-30T06:00:00+00:00",
+      "area": "백엔드/서버",
+      "career": "경력",
+      "skills": [
+        "C#"
+      ],
+      "sourceSite": "사람인",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNakZsY0s2eVZtaFV0OTZkTXo0MTFTeGRNcEZlTnlxdW9vYjgxalZWdHhBbFc0ZUM0b1B2TmkteDNtVnUtbnR2bVVlcGttTXhxMS01SXo1R0UzMlRhOUxHYWN5QjBrRjFmZXNxczJFMm1OSXhGSnhvV1dRellCUjBuM1FjajlyQm40?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "볼타온 AI 개발자(풀스택) 채용 공고 - 사람인",
+      "company": "볼타온 AI 개발자(풀스택)",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNQkFKcmRGS1BIbGRwWDcwZWRZNDhwc0RJUzVWNE1PbjNwZ3ZZdGw0eUMwejdqZE5GR3Z4MXVuU1B1NFI0cC16RTI3OUIyZGVMYldVYTloWjVwRml3TTF0N1JPSXU1U3hfYUFSbzV2MU5vNjFETHM0NzlDRk1mWVBkY0ZjTWg2a0V4?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNQkFKcmRGS1BIbGRwWDcwZWRZNDhwc0RJUzVWNE1PbjNwZ3ZZdGw0eUMwejdqZE5GR3Z4MXVuU1B1NFI0cC16RTI3OUIyZGVMYldVYTloWjVwRml3TTF0N1JPSXU1U3hfYUFSbzV2MU5vNjFETHM0NzlDRk1mWVBkY0ZjTWg2a0V4?oc=5\" target=\"_blank\">볼타온 AI 개발자(풀스택) 채용 공고</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Wed, 30 Sep 2026 06:00:00 GMT",
+      "publishedAt": "2026-09-30T06:00:00+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNQkFKcmRGS1BIbGRwWDcwZWRZNDhwc0RJUzVWNE1PbjNwZ3ZZdGw0eUMwejdqZE5GR3Z4MXVuU1B1NFI0cC16RTI3OUIyZGVMYldVYTloWjVwRml3TTF0N1JPSXU1U3hfYUFSbzV2MU5vNjFETHM0NzlDRk1mWVBkY0ZjTWg2a0V4?oc=5"
+        }
+      ]
+    },
+    {
       "title": "의료기기 HW/FW 개발 채용 - jumpit.saramin.co.kr",
       "company": "의료기기 HW/FW 개발",
       "source": "점핏",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9oOG10Zk1XVU9McFpvWW9hMi1lTEZlTlNuRE1IM2FaRVNaMWVGbmtDVEhFTlEtbjRTNlk5bERnZ2hTcWk5THd2WTZyakRRYmQ1akUtcHZ2eEVnUQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9oOG10Zk1XVU9McFpvWW9hMi1lTEZlTlNuRE1IM2FaRVNaMWVGbmtDVEhFTlEtbjRTNlk5bERnZ2hTcWk5THd2WTZyakRRYmQ1akUtcHZ2eEVnUQ?oc=5\" target=\"_blank\">의료기기 HW/FW 개발 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 05:53:49 GMT",
+      "publishedAt": "2026-09-30T05:53:49+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9oOG10Zk1XVU9McFpvWW9hMi1lTEZlTlNuRE1IM2FaRVNaMWVGbmtDVEhFTlEtbjRTNlk5bERnZ2hTcWk5THd2WTZyakRRYmQ1akUtcHZ2eEVnUQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "의료기기 HW/FW 개발 채용 - 점핏",
+      "company": "의료기기 HW/FW 개발",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9oOG10Zk1XVU9McFpvWW9hMi1lTEZlTlNuRE1IM2FaRVNaMWVGbmtDVEhFTlEtbjRTNlk5bERnZ2hTcWk5THd2WTZyakRRYmQ1akUtcHZ2eEVnUQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9oOG10Zk1XVU9McFpvWW9hMi1lTEZlTlNuRE1IM2FaRVNaMWVGbmtDVEhFTlEtbjRTNlk5bERnZ2hTcWk5THd2WTZyakRRYmQ1akUtcHZ2eEVnUQ?oc=5\" target=\"_blank\">의료기기 HW/FW 개발 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 05:53:49 GMT",
       "publishedAt": "2026-09-30T05:53:49+00:00",
       "area": "개발",
@@ -163429,6 +163812,10 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
+        },
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -163458,6 +163845,26 @@
       "source": "점핏",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5\" target=\"_blank\">HW 회로설계 엔지니어 차장급 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 04:57:40 GMT",
+      "publishedAt": "2026-09-30T04:57:40+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "HW 회로설계 엔지니어 차장급 채용 - 점핏",
+      "company": "HW 회로설계 엔지니어 차장급",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5\" target=\"_blank\">HW 회로설계 엔지니어 차장급 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Wed, 30 Sep 2026 04:57:40 GMT",
       "publishedAt": "2026-09-30T04:57:40+00:00",
       "area": "개발",
@@ -163533,6 +163940,26 @@
       ]
     },
     {
+      "title": "풀스텍 개발자-경력 - 점핏",
+      "company": "풀스텍 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5\" target=\"_blank\">풀스텍 개발자-경력</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 03:40:56 GMT",
+      "publishedAt": "2026-09-30T03:40:56+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5"
+        }
+      ]
+    },
+    {
       "title": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다 - saramin.co.kr",
       "company": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자",
       "source": "사람인",
@@ -163553,11 +163980,71 @@
       ]
     },
     {
+      "title": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다 - 사람인",
+      "company": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5\" target=\"_blank\">스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Wed, 30 Sep 2026 03:00:00 GMT",
+      "publishedAt": "2026-09-30T03:00:00+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "FPGA 코딩/ 설계 차장급 채용 - 점핏",
+      "company": "FPGA 코딩/ 설계 차장급",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5FeUhrc3VyaktVekk0ckRhTTF3U2d0M3VfS3hZRk5EVkZ4UllpX3dTU2FMa0JaX2pKeHEzWFFvc1R6YVVDamZVSGhVNmJ3c3o3eThBODU5c1NyRTZfcmZ5Z21TUk5EV0VZZGVKb1R3eVpYRF9EUTJTT1d5MnJhdw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE5FeUhrc3VyaktVekk0ckRhTTF3U2d0M3VfS3hZRk5EVkZ4UllpX3dTU2FMa0JaX2pKeHEzWFFvc1R6YVVDamZVSGhVNmJ3c3o3eThBODU5c1NyRTZfcmZ5Z21TUk5EV0VZZGVKb1R3eVpYRF9EUTJTT1d5MnJhdw?oc=5\" target=\"_blank\">FPGA 코딩/ 설계 차장급 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Wed, 30 Sep 2026 02:32:45 GMT",
+      "publishedAt": "2026-09-30T02:32:45+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5FeUhrc3VyaktVekk0ckRhTTF3U2d0M3VfS3hZRk5EVkZ4UllpX3dTU2FMa0JaX2pKeHEzWFFvc1R6YVVDamZVSGhVNmJ3c3o3eThBODU5c1NyRTZfcmZ5Z21TUk5EV0VZZGVKb1R3eVpYRF9EUTJTT1d5MnJhdw?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[㈜디코나이] DT시스템개발팀 경력직 PM/개발자 채용 공고 - saramin.co.kr",
       "company": "[㈜디코나이] DT시스템개발팀 경력직 PM/개발자",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPSG9VbGlBeDRYTTZISGRDa2x4N0FVVHotblN2NkwyYlE2clpQYUpQSXgzbnhSdDhPVzZCXy1TQlhGMGs1Vnkxd0I5MFVwbWhNUTh0cXE2RjAtQXV4R1RxVDdlMzdJQ3JHRkFWM3YtRS1SNnhJZWpFcUY4TWxuNUQybXlnbE5jTEpf?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPSG9VbGlBeDRYTTZISGRDa2x4N0FVVHotblN2NkwyYlE2clpQYUpQSXgzbnhSdDhPVzZCXy1TQlhGMGs1Vnkxd0I5MFVwbWhNUTh0cXE2RjAtQXV4R1RxVDdlMzdJQ3JHRkFWM3YtRS1SNnhJZWpFcUY4TWxuNUQybXlnbE5jTEpf?oc=5\" target=\"_blank\">[㈜디코나이] DT시스템개발팀 경력직 PM/개발자 채용 공고</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
+      "published": "Wed, 30 Sep 2026 01:00:00 GMT",
+      "publishedAt": "2026-09-30T01:00:00+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPSG9VbGlBeDRYTTZISGRDa2x4N0FVVHotblN2NkwyYlE2clpQYUpQSXgzbnhSdDhPVzZCXy1TQlhGMGs1Vnkxd0I5MFVwbWhNUTh0cXE2RjAtQXV4R1RxVDdlMzdJQ3JHRkFWM3YtRS1SNnhJZWpFcUY4TWxuNUQybXlnbE5jTEpf?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[㈜디코나이] DT시스템개발팀 경력직 PM/개발자 채용 공고 - 사람인",
+      "company": "[㈜디코나이] DT시스템개발팀 경력직 PM/개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPSG9VbGlBeDRYTTZISGRDa2x4N0FVVHotblN2NkwyYlE2clpQYUpQSXgzbnhSdDhPVzZCXy1TQlhGMGs1Vnkxd0I5MFVwbWhNUTh0cXE2RjAtQXV4R1RxVDdlMzdJQ3JHRkFWM3YtRS1SNnhJZWpFcUY4TWxuNUQybXlnbE5jTEpf?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPSG9VbGlBeDRYTTZISGRDa2x4N0FVVHotblN2NkwyYlE2clpQYUpQSXgzbnhSdDhPVzZCXy1TQlhGMGs1Vnkxd0I5MFVwbWhNUTh0cXE2RjAtQXV4R1RxVDdlMzdJQ3JHRkFWM3YtRS1SNnhJZWpFcUY4TWxuNUQybXlnbE5jTEpf?oc=5\" target=\"_blank\">[㈜디코나이] DT시스템개발팀 경력직 PM/개발자 채용 공고</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
       "published": "Wed, 30 Sep 2026 01:00:00 GMT",
       "publishedAt": "2026-09-30T01:00:00+00:00",
       "area": "개발",
@@ -163593,6 +164080,26 @@
       ]
     },
     {
+      "title": "재미스튜디오 AI Agent 관련 웹 개발자 모집 - 사람인",
+      "company": "재미스튜디오 AI Agent 관련 웹 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaGF3Znc3WjRkaWpCN21HdENYX3Z5VmM5WWViQmI4QW92UFhoWHlLSGdpUUNrYzM0TFdueXRPZENRdW9nSW1fYzNRdWJmUFFxZDBTVFZYaUZTazRVeW5NSnNuemxvMjcxVUVoV2RNcm9Rdl9tdUFkZVBmUUZKTG9kMlNQbFgzRGRa?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaGF3Znc3WjRkaWpCN21HdENYX3Z5VmM5WWViQmI4QW92UFhoWHlLSGdpUUNrYzM0TFdueXRPZENRdW9nSW1fYzNRdWJmUFFxZDBTVFZYaUZTazRVeW5NSnNuemxvMjcxVUVoV2RNcm9Rdl9tdUFkZVBmUUZKTG9kMlNQbFgzRGRa?oc=5\" target=\"_blank\">재미스튜디오 AI Agent 관련 웹 개발자 모집</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Wed, 30 Sep 2026 00:00:00 GMT",
+      "publishedAt": "2026-09-30T00:00:00+00:00",
+      "area": "프론트엔드",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaGF3Znc3WjRkaWpCN21HdENYX3Z5VmM5WWViQmI4QW92UFhoWHlLSGdpUUNrYzM0TFdueXRPZENRdW9nSW1fYzNRdWJmUFFxZDBTVFZYaUZTazRVeW5NSnNuemxvMjcxVUVoV2RNcm9Rdl9tdUFkZVBmUUZKTG9kMlNQbFgzRGRa?oc=5"
+        }
+      ]
+    },
+    {
       "title": "Bioinformatics Research Scientist - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "점핏",
@@ -163613,11 +164120,51 @@
       ]
     },
     {
+      "title": "Bioinformatics Research Scientist - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5\" target=\"_blank\">Bioinformatics Research Scientist</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Tue, 29 Sep 2026 23:17:55 GMT",
+      "publishedAt": "2026-09-29T23:17:55+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5"
+        }
+      ]
+    },
+    {
       "title": "펌웨어 개발 및 전자회로 설계 경력 - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "점핏",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9QYVUtSGp0VlB2ZUsxRUtCdFVvTGJ0RkkwcS1XemNGTlJqZW1xTXU2ai01VFpmSHhOUkVKdXFaU3BXQ3BtcTEweW92cE9YeTBzTFdGLXhfVG1iUQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9QYVUtSGp0VlB2ZUsxRUtCdFVvTGJ0RkkwcS1XemNGTlJqZW1xTXU2ai01VFpmSHhOUkVKdXFaU3BXQ3BtcTEweW92cE9YeTBzTFdGLXhfVG1iUQ?oc=5\" target=\"_blank\">펌웨어 개발 및 전자회로 설계 경력</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Tue, 29 Sep 2026 22:38:33 GMT",
+      "publishedAt": "2026-09-29T22:38:33+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9QYVUtSGp0VlB2ZUsxRUtCdFVvTGJ0RkkwcS1XemNGTlJqZW1xTXU2ai01VFpmSHhOUkVKdXFaU3BXQ3BtcTEweW92cE9YeTBzTFdGLXhfVG1iUQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "펌웨어 개발 및 전자회로 설계 경력 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9QYVUtSGp0VlB2ZUsxRUtCdFVvTGJ0RkkwcS1XemNGTlJqZW1xTXU2ai01VFpmSHhOUkVKdXFaU3BXQ3BtcTEweW92cE9YeTBzTFdGLXhfVG1iUQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9QYVUtSGp0VlB2ZUsxRUtCdFVvTGJ0RkkwcS1XemNGTlJqZW1xTXU2ai01VFpmSHhOUkVKdXFaU3BXQ3BtcTEweW92cE9YeTBzTFdGLXhfVG1iUQ?oc=5\" target=\"_blank\">펌웨어 개발 및 전자회로 설계 경력</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Tue, 29 Sep 2026 22:38:33 GMT",
       "publishedAt": "2026-09-29T22:38:33+00:00",
       "area": "개발",
@@ -163655,11 +164202,52 @@
       ]
     },
     {
+      "title": "Digital Logic 개발/분당R&D - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE93U2cxelU3WE1WWjFWNVp4ZFc0UVhrUUxTT0p1TThqOGVhQXh4U0lEU2I5Wk4wUXNwY1BSSDhPeWhweUg5R0pyYWhFQmNXMlNtejc5ZU01NHZsZw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE93U2cxelU3WE1WWjFWNVp4ZFc0UVhrUUxTT0p1TThqOGVhQXh4U0lEU2I5Wk4wUXNwY1BSSDhPeWhweUg5R0pyYWhFQmNXMlNtejc5ZU01NHZsZw?oc=5\" target=\"_blank\">Digital Logic 개발/분당R&D</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Tue, 29 Sep 2026 20:52:20 GMT",
+      "publishedAt": "2026-09-29T20:52:20+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [
+        "Git"
+      ],
+      "sourceSite": "점핏",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE93U2cxelU3WE1WWjFWNVp4ZFc0UVhrUUxTT0p1TThqOGVhQXh4U0lEU2I5Wk4wUXNwY1BSSDhPeWhweUg5R0pyYWhFQmNXMlNtejc5ZU01NHZsZw?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[(주)데이터스트림즈] 데이터통합 솔루션 개발자 신입/경력 채용 (D-29) - saramin.co.kr",
       "company": "[(주)데이터스트림즈] 데이터통합 솔루션 개발자 신입/경력",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeFJ3UW02Sko0Zzl5OTRNRFV5a0Vxa2hhQVdVOE9uVnFTOGZnZDZ5VktKM21HdmtRT0hRWjlIWWVZVjUyc2dzdURKV0czSE01dGxjS0gyRXZPb3o2cWZDQ0lCZUczdDdtdzBXdTVrQzdzaHZpbFBWWUpTVjJ5bnhuMk9XcWotTy16?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeFJ3UW02Sko0Zzl5OTRNRFV5a0Vxa2hhQVdVOE9uVnFTOGZnZDZ5VktKM21HdmtRT0hRWjlIWWVZVjUyc2dzdURKV0czSE01dGxjS0gyRXZPb3o2cWZDQ0lCZUczdDdtdzBXdTVrQzdzaHZpbFBWWUpTVjJ5bnhuMk9XcWotTy16?oc=5\" target=\"_blank\">[(주)데이터스트림즈] 데이터통합 솔루션 개발자 신입/경력 채용 (D-29)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
+      "published": "Tue, 29 Sep 2026 18:32:52 GMT",
+      "publishedAt": "2026-09-29T18:32:52+00:00",
+      "area": "AI/데이터",
+      "career": "신입/경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeFJ3UW02Sko0Zzl5OTRNRFV5a0Vxa2hhQVdVOE9uVnFTOGZnZDZ5VktKM21HdmtRT0hRWjlIWWVZVjUyc2dzdURKV0czSE01dGxjS0gyRXZPb3o2cWZDQ0lCZUczdDdtdzBXdTVrQzdzaHZpbFBWWUpTVjJ5bnhuMk9XcWotTy16?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[(주)데이터스트림즈] 데이터통합 솔루션 개발자 신입/경력 채용 (D-29) - 사람인",
+      "company": "[(주)데이터스트림즈] 데이터통합 솔루션 개발자 신입/경력",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeFJ3UW02Sko0Zzl5OTRNRFV5a0Vxa2hhQVdVOE9uVnFTOGZnZDZ5VktKM21HdmtRT0hRWjlIWWVZVjUyc2dzdURKV0czSE01dGxjS0gyRXZPb3o2cWZDQ0lCZUczdDdtdzBXdTVrQzdzaHZpbFBWWUpTVjJ5bnhuMk9XcWotTy16?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeFJ3UW02Sko0Zzl5OTRNRFV5a0Vxa2hhQVdVOE9uVnFTOGZnZDZ5VktKM21HdmtRT0hRWjlIWWVZVjUyc2dzdURKV0czSE01dGxjS0gyRXZPb3o2cWZDQ0lCZUczdDdtdzBXdTVrQzdzaHZpbFBWWUpTVjJ5bnhuMk9XcWotTy16?oc=5\" target=\"_blank\">[(주)데이터스트림즈] 데이터통합 솔루션 개발자 신입/경력 채용 (D-29)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
       "published": "Tue, 29 Sep 2026 18:32:52 GMT",
       "publishedAt": "2026-09-29T18:32:52+00:00",
       "area": "AI/데이터",
@@ -163715,11 +164303,51 @@
       ]
     },
     {
+      "title": "[코스닥 상장사] 2026년 포스뱅크 신입사원 공개채용 - 사람인",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNdFgtUzIwVnlaOVBkYU0yU0lmWUJtRTFPb3FWeXRpNjEyRkFfR1kwa1ZwZjFKMDZXa0d5MTVJMzI4N2dLMkktREhsTTJkSHBhUFYzVE5ySEZoM196MGpCU1Iyal9JOXBfUlFmdURkUWdEWlBIQnFWd1pqRE5XR3owYXpuR0h5Mldf?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNdFgtUzIwVnlaOVBkYU0yU0lmWUJtRTFPb3FWeXRpNjEyRkFfR1kwa1ZwZjFKMDZXa0d5MTVJMzI4N2dLMkktREhsTTJkSHBhUFYzVE5ySEZoM196MGpCU1Iyal9JOXBfUlFmdURkUWdEWlBIQnFWd1pqRE5XR3owYXpuR0h5Mldf?oc=5\" target=\"_blank\">[코스닥 상장사] 2026년 포스뱅크 신입사원 공개채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Tue, 29 Sep 2026 15:00:00 GMT",
+      "publishedAt": "2026-09-29T15:00:00+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNdFgtUzIwVnlaOVBkYU0yU0lmWUJtRTFPb3FWeXRpNjEyRkFfR1kwa1ZwZjFKMDZXa0d5MTVJMzI4N2dLMkktREhsTTJkSHBhUFYzVE5ySEZoM196MGpCU1Iyal9JOXBfUlFmdURkUWdEWlBIQnFWd1pqRE5XR3owYXpuR0h5Mldf?oc=5"
+        }
+      ]
+    },
+    {
       "title": "웹에이전시 (주)뮤자인 웹퍼블리셔/프론트개발자 채용(1년이상) - saramin.co.kr",
       "company": "웹에이전시 (주)뮤자인 웹퍼블리셔/프론트개발자",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPX0NLMzYwNmtGV2RXNU9WM3pXd256bVJIblZ5akNrUkpmM1FxMzhDeWdXYmtuTWk2dTczajUtNDRMcHl4UGdCbmM3U21EMU9qY040dmVxeXJ2UEkwSTNfZWdjRjE3bnBNdm1HWFBINzBhUkE2TVJwSEh3SUFRWVpwVWM5ODJuNlRl?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPX0NLMzYwNmtGV2RXNU9WM3pXd256bVJIblZ5akNrUkpmM1FxMzhDeWdXYmtuTWk2dTczajUtNDRMcHl4UGdCbmM3U21EMU9qY040dmVxeXJ2UEkwSTNfZWdjRjE3bnBNdm1HWFBINzBhUkE2TVJwSEh3SUFRWVpwVWM5ODJuNlRl?oc=5\" target=\"_blank\">웹에이전시 (주)뮤자인 웹퍼블리셔/프론트개발자 채용(1년이상)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
+      "published": "Tue, 29 Sep 2026 13:03:25 GMT",
+      "publishedAt": "2026-09-29T13:03:25+00:00",
+      "area": "프론트엔드",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPX0NLMzYwNmtGV2RXNU9WM3pXd256bVJIblZ5akNrUkpmM1FxMzhDeWdXYmtuTWk2dTczajUtNDRMcHl4UGdCbmM3U21EMU9qY040dmVxeXJ2UEkwSTNfZWdjRjE3bnBNdm1HWFBINzBhUkE2TVJwSEh3SUFRWVpwVWM5ODJuNlRl?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "웹에이전시 (주)뮤자인 웹퍼블리셔/프론트개발자 채용(1년이상) - 사람인",
+      "company": "웹에이전시 (주)뮤자인 웹퍼블리셔/프론트개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPX0NLMzYwNmtGV2RXNU9WM3pXd256bVJIblZ5akNrUkpmM1FxMzhDeWdXYmtuTWk2dTczajUtNDRMcHl4UGdCbmM3U21EMU9qY040dmVxeXJ2UEkwSTNfZWdjRjE3bnBNdm1HWFBINzBhUkE2TVJwSEh3SUFRWVpwVWM5ODJuNlRl?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPX0NLMzYwNmtGV2RXNU9WM3pXd256bVJIblZ5akNrUkpmM1FxMzhDeWdXYmtuTWk2dTczajUtNDRMcHl4UGdCbmM3U21EMU9qY040dmVxeXJ2UEkwSTNfZWdjRjE3bnBNdm1HWFBINzBhUkE2TVJwSEh3SUFRWVpwVWM5ODJuNlRl?oc=5\" target=\"_blank\">웹에이전시 (주)뮤자인 웹퍼블리셔/프론트개발자 채용(1년이상)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
       "published": "Tue, 29 Sep 2026 13:03:25 GMT",
       "publishedAt": "2026-09-29T13:03:25+00:00",
       "area": "프론트엔드",
@@ -163751,6 +164379,10 @@
         {
           "site": "게임잡",
           "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBHM082OVNycVpzR1J6MHRDWXllMTlpdlczWjUwVjlYcE5kSEd3a0Q4bzJ0Z3ItOEtGbHZiX3NiT1RUeUtnYVppNUE4WnNRcGdCTWZ3aG5acE5kLTRzQ3VPWnBaWW93SXhGZXBj?oc=5"
+        },
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBNdllLejRVczdCb25TeVRaY19lTFZpV1hxNXkxQ2E4TUxPT0h1eHlGM01HVFFNbUl5MHVZWExBeHoxcUh6dkF3OFpBNGF1ZzZLVDFIODVVNkxzNXdlRDVlOE13bko3QQ?oc=5"
         }
       ]
     },
@@ -163855,6 +164487,26 @@
       ]
     },
     {
+      "title": "[(주)포스콤] [의료기기] HW(하드웨어) 연구개발자 채용 (D-60) - 사람인",
+      "company": "[(주)포스콤] [의료기기] HW(하드웨어) 연구개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZGpYMXVVUTNqTm16dEdGZU1wR08taEM0VFdVRVZHeG93MDYwcGZIQUd1US1HeEltcUxVTnBFZ1ZRVlAzWWhfZW1wTFpMaTg5Z3lYM3RETFZuOTYzbXpheWlFMWJvcXZzcEljdmJ0YTVTZXY5R2w2TmpmRFZnY2ZsU1JzMEc0N2tk?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZGpYMXVVUTNqTm16dEdGZU1wR08taEM0VFdVRVZHeG93MDYwcGZIQUd1US1HeEltcUxVTnBFZ1ZRVlAzWWhfZW1wTFpMaTg5Z3lYM3RETFZuOTYzbXpheWlFMWJvcXZzcEljdmJ0YTVTZXY5R2w2TmpmRFZnY2ZsU1JzMEc0N2tk?oc=5\" target=\"_blank\">[(주)포스콤] [의료기기] HW(하드웨어) 연구개발자 채용 (D-60)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Tue, 29 Sep 2026 10:10:18 GMT",
+      "publishedAt": "2026-09-29T10:10:18+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZGpYMXVVUTNqTm16dEdGZU1wR08taEM0VFdVRVZHeG93MDYwcGZIQUd1US1HeEltcUxVTnBFZ1ZRVlAzWWhfZW1wTFpMaTg5Z3lYM3RETFZuOTYzbXpheWlFMWJvcXZzcEljdmJ0YTVTZXY5R2w2TmpmRFZnY2ZsU1JzMEc0N2tk?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[써클온] UI디자이너 채용 공고 - 원티드",
       "company": "[써클온] UI디자이너",
       "source": "원티드",
@@ -163895,11 +164547,51 @@
       ]
     },
     {
+      "title": "[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입·경력) (D-32) - 사람인",
+      "company": "[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5\" target=\"_blank\">[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입·경력) (D-32)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Tue, 29 Sep 2026 08:30:09 GMT",
+      "publishedAt": "2026-09-29T08:30:09+00:00",
+      "area": "개발",
+      "career": "신입/경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[(주)페이타랩] Windows개발자 (신입) (D-29) - saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5\" target=\"_blank\">[(주)페이타랩] Windows개발자 (신입) (D-29)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
+      "published": "Tue, 29 Sep 2026 08:30:07 GMT",
+      "publishedAt": "2026-09-29T08:30:07+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[(주)페이타랩] Windows개발자 (신입) (D-29) - 사람인",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5\" target=\"_blank\">[(주)페이타랩] Windows개발자 (신입) (D-29)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
       "published": "Tue, 29 Sep 2026 08:30:07 GMT",
       "publishedAt": "2026-09-29T08:30:07+00:00",
       "area": "개발",
@@ -163975,11 +164667,51 @@
       ]
     },
     {
+      "title": "[(주)단디코리아] AI활용 개발자 채용 (D-60) - 사람인",
+      "company": "[(주)단디코리아] AI활용 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQYkZscF82MHNWZ2txX0RFZDlOdGpUdE83Y2h6SEJjWW5uQnZKV2s2TTdIZ1YyZ0JzeDEwOGEzazRTTHJOS1Nid19Ba1ZJZWVyWVpoRTlnVnVnSDJhaUxhcjRBVU9BbTBYSnJXMVZzY3hjM2llMjVqcW9OSUktYTRkdk9tcEY1LTU1?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQYkZscF82MHNWZ2txX0RFZDlOdGpUdE83Y2h6SEJjWW5uQnZKV2s2TTdIZ1YyZ0JzeDEwOGEzazRTTHJOS1Nid19Ba1ZJZWVyWVpoRTlnVnVnSDJhaUxhcjRBVU9BbTBYSnJXMVZzY3hjM2llMjVqcW9OSUktYTRkdk9tcEY1LTU1?oc=5\" target=\"_blank\">[(주)단디코리아] AI활용 개발자 채용 (D-60)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Tue, 29 Sep 2026 06:17:44 GMT",
+      "publishedAt": "2026-09-29T06:17:44+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQYkZscF82MHNWZ2txX0RFZDlOdGpUdE83Y2h6SEJjWW5uQnZKV2s2TTdIZ1YyZ0JzeDEwOGEzazRTTHJOS1Nid19Ba1ZJZWVyWVpoRTlnVnVnSDJhaUxhcjRBVU9BbTBYSnJXMVZzY3hjM2llMjVqcW9OSUktYTRkdk9tcEY1LTU1?oc=5"
+        }
+      ]
+    },
+    {
       "title": "[(주)에이아이매틱스] Machine Vision 설비 연동 SW개발 , AI 알고리즘 개발자 채용 (D-31) - saramin.co.kr",
       "company": "[(주)에이아이매틱스] Machine Vision 설비 연동 SW개발 , AI 알고리즘 개발자",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNVmFFTktyU0VublM2WERPNjJMWEJKcHRBbXd1RmYzZlNsalNhdDBYUUJsUVczYlhObUhpc0toYUlDUk85bHF6MEw5SkRxbWhscm5Mc2VCdXVoWnBLRW9GTEdRdkZ6WXBidlFJa2VLUVJkUDJCeXR1T0l3Z3E2Z1BjNGNYTVF3QTAwVlE?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiigFBVV95cUxNVmFFTktyU0VublM2WERPNjJMWEJKcHRBbXd1RmYzZlNsalNhdDBYUUJsUVczYlhObUhpc0toYUlDUk85bHF6MEw5SkRxbWhscm5Mc2VCdXVoWnBLRW9GTEdRdkZ6WXBidlFJa2VLUVJkUDJCeXR1T0l3Z3E2Z1BjNGNYTVF3QTAwVlE?oc=5\" target=\"_blank\">[(주)에이아이매틱스] Machine Vision 설비 연동 SW개발 , AI 알고리즘 개발자 채용 (D-31)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
+      "published": "Tue, 29 Sep 2026 05:01:18 GMT",
+      "publishedAt": "2026-09-29T05:01:18+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNVmFFTktyU0VublM2WERPNjJMWEJKcHRBbXd1RmYzZlNsalNhdDBYUUJsUVczYlhObUhpc0toYUlDUk85bHF6MEw5SkRxbWhscm5Mc2VCdXVoWnBLRW9GTEdRdkZ6WXBidlFJa2VLUVJkUDJCeXR1T0l3Z3E2Z1BjNGNYTVF3QTAwVlE?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[(주)에이아이매틱스] Machine Vision 설비 연동 SW개발 , AI 알고리즘 개발자 채용 (D-31) - 사람인",
+      "company": "[(주)에이아이매틱스] Machine Vision 설비 연동 SW개발 , AI 알고리즘 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNVmFFTktyU0VublM2WERPNjJMWEJKcHRBbXd1RmYzZlNsalNhdDBYUUJsUVczYlhObUhpc0toYUlDUk85bHF6MEw5SkRxbWhscm5Mc2VCdXVoWnBLRW9GTEdRdkZ6WXBidlFJa2VLUVJkUDJCeXR1T0l3Z3E2Z1BjNGNYTVF3QTAwVlE?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiigFBVV95cUxNVmFFTktyU0VublM2WERPNjJMWEJKcHRBbXd1RmYzZlNsalNhdDBYUUJsUVczYlhObUhpc0toYUlDUk85bHF6MEw5SkRxbWhscm5Mc2VCdXVoWnBLRW9GTEdRdkZ6WXBidlFJa2VLUVJkUDJCeXR1T0l3Z3E2Z1BjNGNYTVF3QTAwVlE?oc=5\" target=\"_blank\">[(주)에이아이매틱스] Machine Vision 설비 연동 SW개발 , AI 알고리즘 개발자 채용 (D-31)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
       "published": "Tue, 29 Sep 2026 05:01:18 GMT",
       "publishedAt": "2026-09-29T05:01:18+00:00",
       "area": "AI/데이터",
@@ -164009,6 +164741,27 @@
       ],
       "sourceSite": "사람인",
       "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQTDVFeHJ3cVR1T2pLMXhieVVSaXgta29BNHozMUJrTC1HTU54MUNaSTQ5UDk2TndkUHlJaUdYN1JpbFIxUWUtX0VDaWQwTnJuRjlvbTRobG00RWFmVmlXYXExaG9ickZTZHVabnBUZFEtelZNaEoxazRYYkFfZUxWZ0E2YjBhNXlw?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[버터소프트] 헬스케어 서비스 백엔드 개발자 [Spring] (채용시 마감) - 사람인",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQTDVFeHJ3cVR1T2pLMXhieVVSaXgta29BNHozMUJrTC1HTU54MUNaSTQ5UDk2TndkUHlJaUdYN1JpbFIxUWUtX0VDaWQwTnJuRjlvbTRobG00RWFmVmlXYXExaG9ickZTZHVabnBUZFEtelZNaEoxazRYYkFfZUxWZ0E2YjBhNXlw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQTDVFeHJ3cVR1T2pLMXhieVVSaXgta29BNHozMUJrTC1HTU54MUNaSTQ5UDk2TndkUHlJaUdYN1JpbFIxUWUtX0VDaWQwTnJuRjlvbTRobG00RWFmVmlXYXExaG9ickZTZHVabnBUZFEtelZNaEoxazRYYkFfZUxWZ0E2YjBhNXlw?oc=5\" target=\"_blank\">[버터소프트] 헬스케어 서비스 백엔드 개발자 [Spring] (채용시 마감)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Tue, 29 Sep 2026 05:00:00 GMT",
+      "publishedAt": "2026-09-29T05:00:00+00:00",
+      "area": "백엔드/서버",
+      "career": "경력",
+      "skills": [
+        "Spring"
+      ],
+      "sourceSite": "사람인",
       "sources": [
         {
           "site": "사람인",
@@ -164204,6 +164957,46 @@
       ]
     },
     {
+      "title": "슈퍼센트㈜ 채용 - 플러터 클라이언트 개발자 (2년 이상) - 잡코리아",
+      "company": "슈퍼센트㈜",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9GdUZIbkR4S21fMVBfNUJXcnFhX2FlMnQ3TWEwOUZaUlBTdkNZdjltZkNMODlOSDRBcTF4OFJFcTNIZGlHS09qQlljWFI0NXpiUFRuaEI4RjU3dW1MVFd1bVNVQkVSUEU?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9GdUZIbkR4S21fMVBfNUJXcnFhX2FlMnQ3TWEwOUZaUlBTdkNZdjltZkNMODlOSDRBcTF4OFJFcTNIZGlHS09qQlljWFI0NXpiUFRuaEI4RjU3dW1MVFd1bVNVQkVSUEU?oc=5\" target=\"_blank\">슈퍼센트㈜ 채용 - 플러터 클라이언트 개발자 (2년 이상)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Mon, 28 Sep 2026 06:33:00 GMT",
+      "publishedAt": "2026-09-28T06:33:00+00:00",
+      "area": "클라이언트",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9GdUZIbkR4S21fMVBfNUJXcnFhX2FlMnQ3TWEwOUZaUlBTdkNZdjltZkNMODlOSDRBcTF4OFJFcTNIZGlHS09qQlljWFI0NXpiUFRuaEI4RjU3dW1MVFd1bVNVQkVSUEU?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "(주)빛과전자 소프트웨어 개발자 신입/경력 채용 - 잡코리아",
+      "company": "(주)빛과전자 소프트웨어 개발자 신입/경력",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1TVUd4VVhrTmh5VmNpb3hsLVBzN1hSSlVLLS1FZE85QjhhRlF3TWhqWEowd2s3RFRSNUgwcDBYNmg0NERLNHlFeEpjdF9CSEptNjZBeU1UanpBUVZFY3c?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE1TVUd4VVhrTmh5VmNpb3hsLVBzN1hSSlVLLS1FZE85QjhhRlF3TWhqWEowd2s3RFRSNUgwcDBYNmg0NERLNHlFeEpjdF9CSEptNjZBeU1UanpBUVZFY3c?oc=5\" target=\"_blank\">(주)빛과전자 소프트웨어 개발자 신입/경력 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Mon, 28 Sep 2026 06:13:19 GMT",
+      "publishedAt": "2026-09-28T06:13:19+00:00",
+      "area": "개발",
+      "career": "신입/경력",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1TVUd4VVhrTmh5VmNpb3hsLVBzN1hSSlVLLS1FZE85QjhhRlF3TWhqWEowd2s3RFRSNUgwcDBYNmg0NERLNHlFeEpjdF9CSEptNjZBeU1UanpBUVZFY3c?oc=5"
+        }
+      ]
+    },
+    {
       "title": "한국에이아이랩 채용 - AI 개발자 채용 (AI개발 국비 교육 이수必) - 잡코리아",
       "company": "한국에이아이랩",
       "source": "잡코리아",
@@ -164351,11 +165144,91 @@
       ]
     },
     {
+      "title": "AI 로보틱스 시뮬레이션 기술 개발자 - 사람인",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNdC10N0IyVzJwRnNZRVlMNmM2cUhJb3FDV05DT3Q1TGxzaUNGWDladF9XN3B0WTBfSmdMdlhSSWlTT29DeXdKTHlOdVJSOHRkbnM4UjcxQ1JJbVRpMUdibUh0MnFmaFBNSDZnTTJBVTFvclpsSVZXaWxxMVJVUllmWml5S0N4aFct?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNdC10N0IyVzJwRnNZRVlMNmM2cUhJb3FDV05DT3Q1TGxzaUNGWDladF9XN3B0WTBfSmdMdlhSSWlTT29DeXdKTHlOdVJSOHRkbnM4UjcxQ1JJbVRpMUdibUh0MnFmaFBNSDZnTTJBVTFvclpsSVZXaWxxMVJVUllmWml5S0N4aFct?oc=5\" target=\"_blank\">AI 로보틱스 시뮬레이션 기술 개발자</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Mon, 28 Sep 2026 05:00:00 GMT",
+      "publishedAt": "2026-09-28T05:00:00+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNdC10N0IyVzJwRnNZRVlMNmM2cUhJb3FDV05DT3Q1TGxzaUNGWDladF9XN3B0WTBfSmdMdlhSSWlTT29DeXdKTHlOdVJSOHRkbnM4UjcxQ1JJbVRpMUdibUh0MnFmaFBNSDZnTTJBVTFvclpsSVZXaWxxMVJVUllmWml5S0N4aFct?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[삼일피더블유씨엑셀러레이션센터] 웹서비스 개발자 신입 채용 - 사람인",
+      "company": "[삼일피더블유씨엑셀러레이션센터] 웹서비스 개발자 신입",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQLXpxVkRYZDRraksxWFRuQzAxenVNRkY4MWF1MkJvaThhMUU4SF82bVF4ekVwdWpoZEhrV0FuTFJ3SG1EM0c3c0ZTbkdOSkJ3c29PR0R0QWF5UU9FZTRTNlprb2lETkhxX0VZN1A2YkN6cTd6RkFIak1mVk5nTEwxQW5MSXVKcGtY?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQLXpxVkRYZDRraksxWFRuQzAxenVNRkY4MWF1MkJvaThhMUU4SF82bVF4ekVwdWpoZEhrV0FuTFJ3SG1EM0c3c0ZTbkdOSkJ3c29PR0R0QWF5UU9FZTRTNlprb2lETkhxX0VZN1A2YkN6cTd6RkFIak1mVk5nTEwxQW5MSXVKcGtY?oc=5\" target=\"_blank\">[삼일피더블유씨엑셀러레이션센터] 웹서비스 개발자 신입 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Mon, 28 Sep 2026 05:00:00 GMT",
+      "publishedAt": "2026-09-28T05:00:00+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQLXpxVkRYZDRraksxWFRuQzAxenVNRkY4MWF1MkJvaThhMUU4SF82bVF4ekVwdWpoZEhrV0FuTFJ3SG1EM0c3c0ZTbkdOSkJ3c29PR0R0QWF5UU9FZTRTNlprb2lETkhxX0VZN1A2YkN6cTd6RkFIak1mVk5nTEwxQW5MSXVKcGtY?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "브레인힐 채용 - 개발팀장 (시니어 풀스택 엔지니어) - 잡코리아",
+      "company": "브레인힐",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9MR3RZV0pDR2NDbjFqak5YQlE1X083Rnc5ZExHZS1qRy0wX3NvTG5EN2tUdFFzNkdBR1k2ZEVnd3ZWWUc3RlhZZXBqN1IxTDk4S0FkRnJIc29qNVlaUGtXbjl2VXF6MWM?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9MR3RZV0pDR2NDbjFqak5YQlE1X083Rnc5ZExHZS1qRy0wX3NvTG5EN2tUdFFzNkdBR1k2ZEVnd3ZWWUc3RlhZZXBqN1IxTDk4S0FkRnJIc29qNVlaUGtXbjl2VXF6MWM?oc=5\" target=\"_blank\">브레인힐 채용 - 개발팀장 (시니어 풀스택 엔지니어)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Mon, 28 Sep 2026 03:02:23 GMT",
+      "publishedAt": "2026-09-28T03:02:23+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9MR3RZV0pDR2NDbjFqak5YQlE1X083Rnc5ZExHZS1qRy0wX3NvTG5EN2tUdFFzNkdBR1k2ZEVnd3ZWWUc3RlhZZXBqN1IxTDk4S0FkRnJIc29qNVlaUGtXbjl2VXF6MWM?oc=5"
+        }
+      ]
+    },
+    {
       "title": "AI 면접 코치 - jumpit.saramin.co.kr",
       "company": "기업명 확인 필요",
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5\" target=\"_blank\">AI 면접 코치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
+      "published": "Mon, 28 Sep 2026 02:50:31 GMT",
+      "publishedAt": "2026-09-28T02:50:31+00:00",
+      "area": "AI/데이터",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "AI 면접 코치 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi_wFBVV95cUxNR0g2YWFsZUVwYy1Ma0duaUFRakNVb3pHenQxUml1UE15SDJjY1dFY05URmVHZEM1V0hUYzZENDlCNTBpV2tJVDVqc1dmc3FJT2ZWVEtNY1pyejlDM1Y3Tmd0V3lDQU00V0xrZVFHaW9sQVhOVUpCdXpPN0lsUDdaWUJjVWhHUkdvaW9MZTNlUHR6bUxpMWh4VWZLQzBnR0FMNWJ3RUlLUkFoVFpLYnd4MEdwdVZ5dDg1UmpBTDFoUTB4WWhuS1NjemRWcUx6a21tVWFVSXpqWEJpbTROaU1QQmZ2SWU5TEw4LXh5U3pGOURCcjNOVkhfT2hOZ3B6VnM?oc=5\" target=\"_blank\">AI 면접 코치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
       "published": "Mon, 28 Sep 2026 02:50:31 GMT",
       "publishedAt": "2026-09-28T02:50:31+00:00",
       "area": "AI/데이터",
@@ -164437,856 +165310,9 @@
           "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1MWEtJMGN2OEUzVmRkQkdsSmg5Z1VIdkhfTlFpMHV0b200RFF1N0V0bzdSMmFjOThMSXBMNFYwUEVrRWhzN1djUkdBckVvZDdkTXdwYXFISEZSOUYtVkV4aHdIUHB1UUQ4dHp3?oc=5"
         }
       ]
-    },
-    {
-      "title": "페스카로 채용 - 윈도우 어플리케이션 SW 개발자 (신입/경력 5년 이하) - 잡코리아",
-      "company": "페스카로",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE14SWNLb1paeTAzMUw5X05SM0F3SFlPVjhlTm5SS29qbG5UZ25uemdWQ290dHE1dk9MMW03SGlrTzJLQS1VMElBcm5CLTNoZjFYWTBXLXBrc3ZYTDZyUWd0VlVldVNTTFE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE14SWNLb1paeTAzMUw5X05SM0F3SFlPVjhlTm5SS29qbG5UZ25uemdWQ290dHE1dk9MMW03SGlrTzJLQS1VMElBcm5CLTNoZjFYWTBXLXBrc3ZYTDZyUWd0VlVldVNTTFE?oc=5\" target=\"_blank\">페스카로 채용 - 윈도우 어플리케이션 SW 개발자 (신입/경력 5년 이하)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Mon, 28 Sep 2026 00:29:08 GMT",
-      "publishedAt": "2026-09-28T00:29:08+00:00",
-      "area": "개발",
-      "career": "신입/경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE14SWNLb1paeTAzMUw5X05SM0F3SFlPVjhlTm5SS29qbG5UZ25uemdWQ290dHE1dk9MMW03SGlrTzJLQS1VMElBcm5CLTNoZjFYWTBXLXBrc3ZYTDZyUWd0VlVldVNTTFE?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "모티브짐 채용 - AI·Computer Vision / Full-Stack 개발자 채용 - 잡코리아",
-      "company": "모티브짐",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9rTldsei1WVW85aUhGWm1UZDhFTzZ5cWF2VmZ3ODNvTUVrNDhWRndiTkFJVkU3YkRtUF84WVRJQzZOS0lHWEhPVjA4QnVlS3h0dTJWSnMxN2JCa3FMWFBXQ3I0NzNZSU1QUndKNQ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE9rTldsei1WVW85aUhGWm1UZDhFTzZ5cWF2VmZ3ODNvTUVrNDhWRndiTkFJVkU3YkRtUF84WVRJQzZOS0lHWEhPVjA4QnVlS3h0dTJWSnMxN2JCa3FMWFBXQ3I0NzNZSU1QUndKNQ?oc=5\" target=\"_blank\">모티브짐 채용 - AI·Computer Vision / Full-Stack 개발자 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 23:52:47 GMT",
-      "publishedAt": "2026-09-27T23:52:47+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9rTldsei1WVW85aUhGWm1UZDhFTzZ5cWF2VmZ3ODNvTUVrNDhWRndiTkFJVkU3YkRtUF84WVRJQzZOS0lHWEhPVjA4QnVlS3h0dTJWSnMxN2JCa3FMWFBXQ3I0NzNZSU1QUndKNQ?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "케이씨엠에스 채용 - 마곡 FMS 고도화 서버 개발 (k10) - 잡코리아",
-      "company": "케이씨엠에스",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5GTGR5RllRQ090dUNKa0xRRTFmY2RNd2c0Z1NmRWJPRlFQOF82aHBiV2JpVEtPVWtLdW8xeFc4UDlSQk83Ui1oVDBVMGNfVjdIRmxYRmNHbGdBU2FoRWFhbFJkMlpFRXM?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5GTGR5RllRQ090dUNKa0xRRTFmY2RNd2c0Z1NmRWJPRlFQOF82aHBiV2JpVEtPVWtLdW8xeFc4UDlSQk83Ui1oVDBVMGNfVjdIRmxYRmNHbGdBU2FoRWFhbFJkMlpFRXM?oc=5\" target=\"_blank\">케이씨엠에스 채용 - 마곡 FMS 고도화 서버 개발 (k10)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 23:18:34 GMT",
-      "publishedAt": "2026-09-27T23:18:34+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5GTGR5RllRQ090dUNKa0xRRTFmY2RNd2c0Z1NmRWJPRlFQOF82aHBiV2JpVEtPVWtLdW8xeFc4UDlSQk83Ui1oVDBVMGNfVjdIRmxYRmNHbGdBU2FoRWFhbFJkMlpFRXM?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "이카운트 개발자 신입채용 - 잡코리아",
-      "company": "기업명 확인 필요",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE43RnNCWkxqa2p1Zmt3NkNseC1leWlLY3h4NUh3bEZTX3ZhSlhsSE9XejdpbUlscmx0NW1LWjFDRnJhVUN3LXlRVW9BR3VTWHY1Y3JYTEhHQThhdW9Nam5kQnQ3eWptbWM?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE43RnNCWkxqa2p1Zmt3NkNseC1leWlLY3h4NUh3bEZTX3ZhSlhsSE9XejdpbUlscmx0NW1LWjFDRnJhVUN3LXlRVW9BR3VTWHY1Y3JYTEhHQThhdW9Nam5kQnQ3eWptbWM?oc=5\" target=\"_blank\">이카운트 개발자 신입채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 22:07:23 GMT",
-      "publishedAt": "2026-09-27T22:07:23+00:00",
-      "area": "개발",
-      "career": "신입",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE43RnNCWkxqa2p1Zmt3NkNseC1leWlLY3h4NUh3bEZTX3ZhSlhsSE9XejdpbUlscmx0NW1LWjFDRnJhVUN3LXlRVW9BR3VTWHY1Y3JYTEhHQThhdW9Nam5kQnQ3eWptbWM?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "컴투스 채용 - [컴투스][AX HUB] 게임 콘텐츠 AI 응용 개발 (전문연구요원) - 잡코리아",
-      "company": "컴투스",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBJRC1CRXpDUDhnQjVVSnpNa2tpbVEyUEw4cFdzWFA3S1UtV2N6WGJ1MnA3aXBsR0dxOGVuTXM4b2ZQTEFLc2lZRDBRLVZoUVozV0M5R2FjVnRZQ1JOeGdZY3AyV2hmUGtPZGQ0UmRn?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMibkFVX3lxTFBJRC1CRXpDUDhnQjVVSnpNa2tpbVEyUEw4cFdzWFA3S1UtV2N6WGJ1MnA3aXBsR0dxOGVuTXM4b2ZQTEFLc2lZRDBRLVZoUVozV0M5R2FjVnRZQ1JOeGdZY3AyV2hmUGtPZGQ0UmRn?oc=5\" target=\"_blank\">컴투스 채용 - [컴투스][AX HUB] 게임 콘텐츠 AI 응용 개발 (전문연구요원)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 18:48:56 GMT",
-      "publishedAt": "2026-09-27T18:48:56+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBJRC1CRXpDUDhnQjVVSnpNa2tpbVEyUEw4cFdzWFA3S1UtV2N6WGJ1MnA3aXBsR0dxOGVuTXM4b2ZQTEFLc2lZRDBRLVZoUVozV0M5R2FjVnRZQ1JOeGdZY3AyV2hmUGtPZGQ0UmRn?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1rV2o0dXI1Q2dOX0R0Q2Ezbmtqa1R2ZlJyWU52N0VnbFhmS1VuU0pHZWs1S0hKZVBTQzZ6NmkxX3Z2SzlTR2Z0YjVZZjAtODkxS2pmOVJKRTZFR09TaWc?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "(유)앤서스랩코리아 채용 - [NP]C# 백엔드 서버 엔지니어 - 잡코리아",
-      "company": "(유)앤서스랩코리아",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBNWVdlaEY0TkxLeXB1MkdiOWptTUhvR1UxVXJoT25TeThEZXJ5YW9kUUN2N0ZNRGlTN2lVWGJKUlFxTkFDNnc2TTNLTEN2WDFFakRRdzhhc1IwMDk5bVZzUFVveHRERDA?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBNWVdlaEY0TkxLeXB1MkdiOWptTUhvR1UxVXJoT25TeThEZXJ5YW9kUUN2N0ZNRGlTN2lVWGJKUlFxTkFDNnc2TTNLTEN2WDFFakRRdzhhc1IwMDk5bVZzUFVveHRERDA?oc=5\" target=\"_blank\">(유)앤서스랩코리아 채용 - [NP]C# 백엔드 서버 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 18:10:08 GMT",
-      "publishedAt": "2026-09-27T18:10:08+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [
-        "C#"
-      ],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBNWVdlaEY0TkxLeXB1MkdiOWptTUhvR1UxVXJoT25TeThEZXJ5YW9kUUN2N0ZNRGlTN2lVWGJKUlFxTkFDNnc2TTNLTEN2WDFFakRRdzhhc1IwMDk5bVZzUFVveHRERDA?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "엔에스원소프트㈜ 채용 - 자사 솔루션 서버 개발자/중급(경력5-10년) - 잡코리아",
-      "company": "엔에스원소프트㈜",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE8tRk5zS0FPMWYtaGthV1AwVHFwclJCV3Y2VGFNSTZJYjJhZk1FQk8tbkpmVkxjeldxZ2dhc01fOFM4N2RCbnR6d3pzZlN0anhsVHZkUmVvWS1obUktYU1meGtGbExwdEU?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE8tRk5zS0FPMWYtaGthV1AwVHFwclJCV3Y2VGFNSTZJYjJhZk1FQk8tbkpmVkxjeldxZ2dhc01fOFM4N2RCbnR6d3pzZlN0anhsVHZkUmVvWS1obUktYU1meGtGbExwdEU?oc=5\" target=\"_blank\">엔에스원소프트㈜ 채용 - 자사 솔루션 서버 개발자/중급(경력5-10년)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 07:21:34 GMT",
-      "publishedAt": "2026-09-27T07:21:34+00:00",
-      "area": "백엔드/서버",
-      "career": "5년+",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE8tRk5zS0FPMWYtaGthV1AwVHFwclJCV3Y2VGFNSTZJYjJhZk1FQk8tbkpmVkxjeldxZ2dhc01fOFM4N2RCbnR6d3pzZlN0anhsVHZkUmVvWS1obUktYU1meGtGbExwdEU?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "비즈컨 채용 - 프로그래머(c#,vc++) 채용 - 잡코리아",
-      "company": "비즈컨",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE94bUdWeG9nTnU2OUJYUmYxMVVCemJKTmJmczl5Y1V3S1RiNG5MVW5HdkloRDNDNkg3b3dBQkstYktfQWFDaHVUSWhJcHN5REEycV9wM2xyUFY5bksxb0dzVi1HWFV6MUE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE94bUdWeG9nTnU2OUJYUmYxMVVCemJKTmJmczl5Y1V3S1RiNG5MVW5HdkloRDNDNkg3b3dBQkstYktfQWFDaHVUSWhJcHN5REEycV9wM2xyUFY5bksxb0dzVi1HWFV6MUE?oc=5\" target=\"_blank\">비즈컨 채용 - 프로그래머(c#,vc++) 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-27T07:00:00+00:00",
-      "area": "클라이언트",
-      "career": "경력",
-      "skills": [
-        "C++",
-        "C#"
-      ],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE94bUdWeG9nTnU2OUJYUmYxMVVCemJKTmJmczl5Y1V3S1RiNG5MVW5HdkloRDNDNkg3b3dBQkstYktfQWFDaHVUSWhJcHN5REEycV9wM2xyUFY5bksxb0dzVi1HWFV6MUE?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "에이아이소프트테크 채용 - 공공기관 상주 시스템 운영 유지보수 (백엔드 서버 개발자) 모집 - 잡코리아",
-      "company": "에이아이소프트테크",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA4ZVpidVVOSW9rTDRRNXlyeWQ4dTJNY19leGxISEhXLWJqWExmdnZSMExHUlVrNGE1akxna2ozcFByQUJ0VTV6UlZkcmNuUDhQWFpGMDRycldtdHk4dEtNd0V6SGpNZ00?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA4ZVpidVVOSW9rTDRRNXlyeWQ4dTJNY19leGxISEhXLWJqWExmdnZSMExHUlVrNGE1akxna2ozcFByQUJ0VTV6UlZkcmNuUDhQWFpGMDRycldtdHk4dEtNd0V6SGpNZ00?oc=5\" target=\"_blank\">에이아이소프트테크 채용 - 공공기관 상주 시스템 운영 유지보수 (백엔드 서버 개발자) 모집</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-27T07:00:00+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA4ZVpidVVOSW9rTDRRNXlyeWQ4dTJNY19leGxISEhXLWJqWExmdnZSMExHUlVrNGE1akxna2ozcFByQUJ0VTV6UlZkcmNuUDhQWFpGMDRycldtdHk4dEtNd0V6SGpNZ00?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "엠티오메가 채용 - 블랙박스 H/W 개발 경력자 모집 - 잡코리아",
-      "company": "엠티오메가",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNYlBRT1RJQkFvMjJHSExNejdkeTAwQ0dzM0tHQ0lweUtybjFzaHNYUzNUdmZuOUVqSnhjWXplOERTSFZxMUNEbHNKT0QtaDZubE9PeENBX1liU2xMUVlxS0dVN1RJbmhKcV9yMU1JZzh3UkhZaGJLNFI5cGplaGRNYVVqa1BNNk5SWlZvX3piNkJINVVVRFM0MWZfanlvZ244cHpfVF9YSUlydVZFZUlKWF9Wa1FVc0g2WTdVTg?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMivAFBVV95cUxNYlBRT1RJQkFvMjJHSExNejdkeTAwQ0dzM0tHQ0lweUtybjFzaHNYUzNUdmZuOUVqSnhjWXplOERTSFZxMUNEbHNKT0QtaDZubE9PeENBX1liU2xMUVlxS0dVN1RJbmhKcV9yMU1JZzh3UkhZaGJLNFI5cGplaGRNYVVqa1BNNk5SWlZvX3piNkJINVVVRFM0MWZfanlvZ244cHpfVF9YSUlydVZFZUlKWF9Wa1FVc0g2WTdVTg?oc=5\" target=\"_blank\">엠티오메가 채용 - 블랙박스 H/W 개발 경력자 모집</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 05:36:20 GMT",
-      "publishedAt": "2026-09-27T05:36:20+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNYlBRT1RJQkFvMjJHSExNejdkeTAwQ0dzM0tHQ0lweUtybjFzaHNYUzNUdmZuOUVqSnhjWXplOERTSFZxMUNEbHNKT0QtaDZubE9PeENBX1liU2xMUVlxS0dVN1RJbmhKcV9yMU1JZzh3UkhZaGJLNFI5cGplaGRNYVVqa1BNNk5SWlZvX3piNkJINVVVRFM0MWZfanlvZ244cHpfVF9YSUlydVZFZUlKWF9Wa1FVc0g2WTdVTg?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[CJ그룹-디엑스이] AI/AX 플랫폼 개발 백엔드/데이터 엔지니어 경력채용 - 잡코리아",
-      "company": "기업명 확인 필요",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1PMWU2aHU2LTg0X0Z1NnlSZ2xpMDFnT1owSjBORFhUWTBOSWlnRjJGdzR0d3VKMjM4OHFucUtFUnpmUm0xSUNtQjRRUEZqVV85MmktM2FNSEVZQXl5VlpnMXdwd1M1d0E?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1PMWU2aHU2LTg0X0Z1NnlSZ2xpMDFnT1owSjBORFhUWTBOSWlnRjJGdzR0d3VKMjM4OHFucUtFUnpmUm0xSUNtQjRRUEZqVV85MmktM2FNSEVZQXl5VlpnMXdwd1M1d0E?oc=5\" target=\"_blank\">[CJ그룹-디엑스이] AI/AX 플랫폼 개발 백엔드/데이터 엔지니어 경력채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sun, 27 Sep 2026 01:13:33 GMT",
-      "publishedAt": "2026-09-27T01:13:33+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1PMWU2aHU2LTg0X0Z1NnlSZ2xpMDFnT1owSjBORFhUWTBOSWlnRjJGdzR0d3VKMjM4OHFucUtFUnpmUm0xSUNtQjRRUEZqVV85MmktM2FNSEVZQXl5VlpnMXdwd1M1d0E?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "'C 서버 개발' 관련 📢 채용공고 | 총 142건의 검색결과 - 잡코리아",
-      "company": "'C 서버 개발' 관련 📢",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQSnFxd3NfUEtTcmpCR2hlLXE4dURndnZJZDJrN3NOQ0hkelZtLWtXa3FUQVB1YlZ2VGJDcC1McXA0cjV6N1pWMUh0UmFCOVk0M2FiMkUwNWVjb0Nab2pUVGR1N1VLZXF5MVdvQ2ZCSDBjYlROd1BTUEloOFFJQmVkUDRuWnJCSFVQZ3NUSw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijAFBVV95cUxQSnFxd3NfUEtTcmpCR2hlLXE4dURndnZJZDJrN3NOQ0hkelZtLWtXa3FUQVB1YlZ2VGJDcC1McXA0cjV6N1pWMUh0UmFCOVk0M2FiMkUwNWVjb0Nab2pUVGR1N1VLZXF5MVdvQ2ZCSDBjYlROd1BTUEloOFFJQmVkUDRuWnJCSFVQZ3NUSw?oc=5\" target=\"_blank\">'C 서버 개발' 관련 📢 채용공고 | 총 142건의 검색결과</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sat, 26 Sep 2026 13:08:40 GMT",
-      "publishedAt": "2026-09-26T13:08:40+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQSnFxd3NfUEtTcmpCR2hlLXE4dURndnZJZDJrN3NOQ0hkelZtLWtXa3FUQVB1YlZ2VGJDcC1McXA0cjV6N1pWMUh0UmFCOVk0M2FiMkUwNWVjb0Nab2pUVGR1N1VLZXF5MVdvQ2ZCSDBjYlROd1BTUEloOFFJQmVkUDRuWnJCSFVQZ3NUSw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[설문조사] 게임 마케팅·프로모션 실무 경험자분들의 의견을 부탁드립니다 - career.saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE54Vk1VN3YtNkRQcWVudkFoeTFkOFZtNkEzX0lTMGRMZ2hEd2hkLTVyU1NyUmhtMk9uQWNlbUo4amt1ZVpQSWN0VUJNWVhERHFxb3p3aXNwblU?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWEFVX3lxTE54Vk1VN3YtNkRQcWVudkFoeTFkOFZtNkEzX0lTMGRMZ2hEd2hkLTVyU1NyUmhtMk9uQWNlbUo4amt1ZVpQSWN0VUJNWVhERHFxb3p3aXNwblU?oc=5\" target=\"_blank\">[설문조사] 게임 마케팅·프로모션 실무 경험자분들의 의견을 부탁드립니다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">career.saramin.co.kr</font>",
-      "published": "Sat, 26 Sep 2026 11:02:46 GMT",
-      "publishedAt": "2026-09-26T11:02:46+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE54Vk1VN3YtNkRQcWVudkFoeTFkOFZtNkEzX0lTMGRMZ2hEd2hkLTVyU1NyUmhtMk9uQWNlbUo4amt1ZVpQSWN0VUJNWVhERHFxb3p3aXNwblU?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "슈퍼센트㈜ 채용 - 클라이언트 개발자(5년 이상) - 잡코리아",
-      "company": "슈퍼센트㈜",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1lM2JwS1MxNE9IdFJTTVFWWFlfSWlDTHhuZGM2ZEh4QnFSQzJNWi1zUUpudUtheFhncERyWlpvNmRIWmpITzRHUm9Yem5pZ253Z3BGT25Uak5VMmhfNE5oejU3RW51WWM?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1lM2JwS1MxNE9IdFJTTVFWWFlfSWlDTHhuZGM2ZEh4QnFSQzJNWi1zUUpudUtheFhncERyWlpvNmRIWmpITzRHUm9Yem5pZ253Z3BGT25Uak5VMmhfNE5oejU3RW51WWM?oc=5\" target=\"_blank\">슈퍼센트㈜ 채용 - 클라이언트 개발자(5년 이상)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sat, 26 Sep 2026 11:02:02 GMT",
-      "publishedAt": "2026-09-26T11:02:02+00:00",
-      "area": "클라이언트",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1lM2JwS1MxNE9IdFJTTVFWWFlfSWlDTHhuZGM2ZEh4QnFSQzJNWi1zUUpudUtheFhncERyWlpvNmRIWmpITzRHUm9Yem5pZ253Z3BGT25Uak5VMmhfNE5oejU3RW51WWM?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "마상소프트 채용 - 2026년 진행 중인 공고 총 1건 - 잡코리아",
-      "company": "마상소프트",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNN29GNndjZWdOQWtlektKOFRNTS1vSHpuSXdhcmhlLVdtR09YR2pkdG9nREZYS2ZEbUdYVlNVX3M3TUh4WmZ1Sk5scUdWcFM4eWdNRk9pZ2JWSTB4aWRIZGpjWmdBdTJTRVdHWEJYZ21PSWFNaE5JQWJQaGpaRDR5RFUtSFBNNjhCbEtfeEZRUTRFSmpMWlVRWHhuV19HS3NGemc?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiogFBVV95cUxNN29GNndjZWdOQWtlektKOFRNTS1vSHpuSXdhcmhlLVdtR09YR2pkdG9nREZYS2ZEbUdYVlNVX3M3TUh4WmZ1Sk5scUdWcFM4eWdNRk9pZ2JWSTB4aWRIZGpjWmdBdTJTRVdHWEJYZ21PSWFNaE5JQWJQaGpaRDR5RFUtSFBNNjhCbEtfeEZRUTRFSmpMWlVRWHhuV19HS3NGemc?oc=5\" target=\"_blank\">마상소프트 채용 - 2026년 진행 중인 공고 총 1건</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sat, 26 Sep 2026 09:44:04 GMT",
-      "publishedAt": "2026-09-26T09:44:04+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNN29GNndjZWdOQWtlektKOFRNTS1vSHpuSXdhcmhlLVdtR09YR2pkdG9nREZYS2ZEbUdYVlNVX3M3TUh4WmZ1Sk5scUdWcFM4eWdNRk9pZ2JWSTB4aWRIZGpjWmdBdTJTRVdHWEJYZ21PSWFNaE5JQWJQaGpaRDR5RFUtSFBNNjhCbEtfeEZRUTRFSmpMWlVRWHhuV19HS3NGemc?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "제노바 채용 - 언리얼 엔진 클라이언트 개발자(경력) 채용 - 잡코리아",
-      "company": "제노바",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBpY3NpUmkxbklQVUNnVGE5WU8zd3BMR2tFT0tfUnMxeGdnOG8zQnZCM2cxNXNwejJGYVI5QUxIR2laS3hzWGdlUjN3ZGZuVHJRODRvNF9nNDJtVUt1ekRfQ3pheFNYRGc?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBpY3NpUmkxbklQVUNnVGE5WU8zd3BMR2tFT0tfUnMxeGdnOG8zQnZCM2cxNXNwejJGYVI5QUxIR2laS3hzWGdlUjN3ZGZuVHJRODRvNF9nNDJtVUt1ekRfQ3pheFNYRGc?oc=5\" target=\"_blank\">제노바 채용 - 언리얼 엔진 클라이언트 개발자(경력) 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Sat, 26 Sep 2026 08:59:59 GMT",
-      "publishedAt": "2026-09-26T08:59:59+00:00",
-      "area": "클라이언트",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBpY3NpUmkxbklQVUNnVGE5WU8zd3BMR2tFT0tfUnMxeGdnOG8zQnZCM2cxNXNwejJGYVI5QUxIR2laS3hzWGdlUjN3ZGZuVHJRODRvNF9nNDJtVUt1ekRfQ3pheFNYRGc?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "스타픽시스튜디오 채용 - [메이플스타/MSW] UI 컨텐츠 프로그래머 - 잡코리아",
-      "company": "스타픽시스튜디오",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5BZU9LSVBTSXNtNUZtWjZ0SVdfTEFFaTBjQ1pQRzUycTY5ZTFsXzZyVF8xcFJuVS1QQUsxMm4zR2htTTdzdmp1UGxfVEU1OHRoZXNTSVBlVFJaOVBZUG1DZGZpYkgwbXM?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5BZU9LSVBTSXNtNUZtWjZ0SVdfTEFFaTBjQ1pQRzUycTY5ZTFsXzZyVF8xcFJuVS1QQUsxMm4zR2htTTdzdmp1UGxfVEU1OHRoZXNTSVBlVFJaOVBZUG1DZGZpYkgwbXM?oc=5\" target=\"_blank\">스타픽시스튜디오 채용 - [메이플스타/MSW] UI 컨텐츠 프로그래머</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 20:16:50 GMT",
-      "publishedAt": "2026-09-25T20:16:50+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5BZU9LSVBTSXNtNUZtWjZ0SVdfTEFFaTBjQ1pQRzUycTY5ZTFsXzZyVF8xcFJuVS1QQUsxMm4zR2htTTdzdmp1UGxfVEU1OHRoZXNTSVBlVFJaOVBZUG1DZGZpYkgwbXM?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "석세스모드 채용 - [핀테크 스타트업] 서버 개발자(Backend) 채용 - 잡코리아",
-      "company": "석세스모드",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMioAJBVV95cUxOSER3WnVOUmpFcUhYbk9fbDEtZzVoa2lYcFFHbWNTWVd5REY4RXZZaEt2Yzg4cjBuLWZEV2FQOUxFbXd2bFJ5eDVramJNRjRSQ09sTF9BOXpIYjk3aDhaN3hDU096OElhR1BvSWlkQ3A1QlhacXRaWUFpaXpnWVJ5dGp5N0ROb3NwR0pnMGw5UmhCek1JWFVyc3FzUlJhZEtSQkFuVTlKeDhvbWdjSGJ6WGJTV05rZWozY2libjZjZ0NXV1RDSFZUU1Q2dEhyZF9VRzlNQXRhWVR1d0VGSWVHMnp1b1Yzek00dEl6cnBUQkxCNlNNOEV1WUVyeEgyZ2d5QkY2TnQ4Vjc5RmNvTlBhWUZIdnBqVWlIRW5pWG85Rlo?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMioAJBVV95cUxOSER3WnVOUmpFcUhYbk9fbDEtZzVoa2lYcFFHbWNTWVd5REY4RXZZaEt2Yzg4cjBuLWZEV2FQOUxFbXd2bFJ5eDVramJNRjRSQ09sTF9BOXpIYjk3aDhaN3hDU096OElhR1BvSWlkQ3A1QlhacXRaWUFpaXpnWVJ5dGp5N0ROb3NwR0pnMGw5UmhCek1JWFVyc3FzUlJhZEtSQkFuVTlKeDhvbWdjSGJ6WGJTV05rZWozY2libjZjZ0NXV1RDSFZUU1Q2dEhyZF9VRzlNQXRhWVR1d0VGSWVHMnp1b1Yzek00dEl6cnBUQkxCNlNNOEV1WUVyeEgyZ2d5QkY2TnQ4Vjc5RmNvTlBhWUZIdnBqVWlIRW5pWG85Rlo?oc=5\" target=\"_blank\">석세스모드 채용 - [핀테크 스타트업] 서버 개발자(Backend) 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 12:19:54 GMT",
-      "publishedAt": "2026-09-25T12:19:54+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMioAJBVV95cUxOSER3WnVOUmpFcUhYbk9fbDEtZzVoa2lYcFFHbWNTWVd5REY4RXZZaEt2Yzg4cjBuLWZEV2FQOUxFbXd2bFJ5eDVramJNRjRSQ09sTF9BOXpIYjk3aDhaN3hDU096OElhR1BvSWlkQ3A1QlhacXRaWUFpaXpnWVJ5dGp5N0ROb3NwR0pnMGw5UmhCek1JWFVyc3FzUlJhZEtSQkFuVTlKeDhvbWdjSGJ6WGJTV05rZWozY2libjZjZ0NXV1RDSFZUU1Q2dEhyZF9VRzlNQXRhWVR1d0VGSWVHMnp1b1Yzek00dEl6cnBUQkxCNlNNOEV1WUVyeEgyZ2d5QkY2TnQ4Vjc5RmNvTlBhWUZIdnBqVWlIRW5pWG85Rlo?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "네오위드넷 채용 - [용산] 인사시스템 유지보수 개발자 채용 - 잡코리아",
-      "company": "네오위드넷",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1HWGhIRThrWnJKV09ORUtlWjM3X0IyM2s2MXRERnBxdFNFa0xfNVptc1dDMDBGcGIxb091RjgyaU9GYk9tdm5wNjFmZ2UzTEl2T2FVRGtCNk1BWC1Ed1VJMml4NzNvMk0?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1HWGhIRThrWnJKV09ORUtlWjM3X0IyM2s2MXRERnBxdFNFa0xfNVptc1dDMDBGcGIxb091RjgyaU9GYk9tdm5wNjFmZ2UzTEl2T2FVRGtCNk1BWC1Ed1VJMml4NzNvMk0?oc=5\" target=\"_blank\">네오위드넷 채용 - [용산] 인사시스템 유지보수 개발자 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 10:10:07 GMT",
-      "publishedAt": "2026-09-25T10:10:07+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1HWGhIRThrWnJKV09ORUtlWjM3X0IyM2s2MXRERnBxdFNFa0xfNVptc1dDMDBGcGIxb091RjgyaU9GYk9tdm5wNjFmZ2UzTEl2T2FVRGtCNk1BWC1Ed1VJMml4NzNvMk0?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "에버스핀 채용 - 모바일 보안파트 솔루션개발 신입 - 잡코리아",
-      "company": "에버스핀",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9ERHA0MTRVa1NKVmxzdHBDeGdmR2xDTDZ6QlFCdjlBSzJtakJrZ0dKenRSU1VIa2V3eG5tVC1qYkNiaWVsMkhSREE0TUV0a213NDRvVERxM25FSjhxOFE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE9ERHA0MTRVa1NKVmxzdHBDeGdmR2xDTDZ6QlFCdjlBSzJtakJrZ0dKenRSU1VIa2V3eG5tVC1qYkNiaWVsMkhSREE0TUV0a213NDRvVERxM25FSjhxOFE?oc=5\" target=\"_blank\">에버스핀 채용 - 모바일 보안파트 솔루션개발 신입</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 06:45:44 GMT",
-      "publishedAt": "2026-09-25T06:45:44+00:00",
-      "area": "개발",
-      "career": "신입",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9ERHA0MTRVa1NKVmxzdHBDeGdmR2xDTDZ6QlFCdjlBSzJtakJrZ0dKenRSU1VIa2V3eG5tVC1qYkNiaWVsMkhSREE0TUV0a213NDRvVERxM25FSjhxOFE?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "필라넷 채용 - .NET 풀스택 개발자 - 잡코리아",
-      "company": "필라넷",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBra1VjQXVNLWdLQUNlMk00cUN3cWZoNFByZms3QW1UcTZrNHozVUJFNXpHS2IxNmVIOXh5QjZGbmpiT1drRV9VQk5la3J2anVERU9xSHdLSTFCeEJJMUxrOVhERVQyams?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBra1VjQXVNLWdLQUNlMk00cUN3cWZoNFByZms3QW1UcTZrNHozVUJFNXpHS2IxNmVIOXh5QjZGbmpiT1drRV9VQk5la3J2anVERU9xSHdLSTFCeEJJMUxrOVhERVQyams?oc=5\" target=\"_blank\">필라넷 채용 - .NET 풀스택 개발자</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 04:43:13 GMT",
-      "publishedAt": "2026-09-25T04:43:13+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBra1VjQXVNLWdLQUNlMk00cUN3cWZoNFByZms3QW1UcTZrNHozVUJFNXpHS2IxNmVIOXh5QjZGbmpiT1drRV9VQk5la3J2anVERU9xSHdLSTFCeEJJMUxrOVhERVQyams?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "유닛블랙 채용 - [B2B 택스테크 IT 스타트업 유닛블랙] 백엔드 개발자 - 잡코리아",
-      "company": "유닛블랙",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9sbXQtMkNPRGd1YjV4bG1FejlyY3k1dnBuUjI5WG94MU9kUmJEdXFKVUlkblN2SGFvc0FmWF9OWUI1NUY4eUUweF9GeHRLRXlkMUZRU0F5a1VzbUFDUFY3aUhsdV9lWGs?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9sbXQtMkNPRGd1YjV4bG1FejlyY3k1dnBuUjI5WG94MU9kUmJEdXFKVUlkblN2SGFvc0FmWF9OWUI1NUY4eUUweF9GeHRLRXlkMUZRU0F5a1VzbUFDUFY3aUhsdV9lWGs?oc=5\" target=\"_blank\">유닛블랙 채용 - [B2B 택스테크 IT 스타트업 유닛블랙] 백엔드 개발자</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 00:43:02 GMT",
-      "publishedAt": "2026-09-25T00:43:02+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9sbXQtMkNPRGd1YjV4bG1FejlyY3k1dnBuUjI5WG94MU9kUmJEdXFKVUlkblN2SGFvc0FmWF9OWUI1NUY4eUUweF9GeHRLRXlkMUZRU0F5a1VzbUFDUFY3aUhsdV9lWGs?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "케이플 채용 - SpringBoot 백엔드 개발자 채용 - 잡코리아",
-      "company": "케이플",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9LRFpfb1pmVDNvR2dPOU9jUXZwMTNPd01oUUdYVHNyVUZmNkxOdml0XzdPTTRxV0p1NXBzQVBSRERRMm15dUY1bHlJRE12eXZLenlqY3hCSUlwNTdMMnc?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE9LRFpfb1pmVDNvR2dPOU9jUXZwMTNPd01oUUdYVHNyVUZmNkxOdml0XzdPTTRxV0p1NXBzQVBSRERRMm15dUY1bHlJRE12eXZLenlqY3hCSUlwNTdMMnc?oc=5\" target=\"_blank\">케이플 채용 - SpringBoot 백엔드 개발자 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Fri, 25 Sep 2026 00:23:08 GMT",
-      "publishedAt": "2026-09-25T00:23:08+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [
-        "Spring"
-      ],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE9LRFpfb1pmVDNvR2dPOU9jUXZwMTNPd01oUUdYVHNyVUZmNkxOdml0XzdPTTRxV0p1NXBzQVBSRERRMm15dUY1bHlJRE12eXZLenlqY3hCSUlwNTdMMnc?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "금융권 SI 고급 개발자 (원천징수/환원) 모집 - jumpit.saramin.co.kr",
-      "company": "금융권 SI 고급 개발자 (원천징수/환원)",
-      "source": "점핏",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE41Y0xMVm80VGFScjltRS1kVm1ueklVRDZhRE1HOHYyNTVhQVNqRXNkbFl6QWJ2QXNITjI2bk1Wdmg5SXhyV0FERjBlTTV0elFkSjNfQXdpZnpVUQ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE41Y0xMVm80VGFScjltRS1kVm1ueklVRDZhRE1HOHYyNTVhQVNqRXNkbFl6QWJ2QXNITjI2bk1Wdmg5SXhyV0FERjBlTTV0elFkSjNfQXdpZnpVUQ?oc=5\" target=\"_blank\">금융권 SI 고급 개발자 (원천징수/환원) 모집</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Thu, 24 Sep 2026 10:11:57 GMT",
-      "publishedAt": "2026-09-24T10:11:57+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "점핏",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE41Y0xMVm80VGFScjltRS1kVm1ueklVRDZhRE1HOHYyNTVhQVNqRXNkbFl6QWJ2QXNITjI2bk1Wdmg5SXhyV0FERjBlTTV0elFkSjNfQXdpZnpVUQ?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "백엔드 개발자(4~6년) - jumpit.saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFAwcVpTSUxtWnI0V0RlTnRaenhRaFlWc0FkTzVSaWVCeUF0YkM2Zm1tQ181OUplNkl1ZzlyTlNiNmgzSXJDcDI2MkFuVkdMbGxaQXBCRmZwMzNRZw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFAwcVpTSUxtWnI0V0RlTnRaenhRaFlWc0FkTzVSaWVCeUF0YkM2Zm1tQ181OUplNkl1ZzlyTlNiNmgzSXJDcDI2MkFuVkdMbGxaQXBCRmZwMzNRZw?oc=5\" target=\"_blank\">백엔드 개발자(4~6년)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Thu, 24 Sep 2026 08:44:15 GMT",
-      "publishedAt": "2026-09-24T08:44:15+00:00",
-      "area": "백엔드/서버",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFAwcVpTSUxtWnI0V0RlTnRaenhRaFlWc0FkTzVSaWVCeUF0YkM2Zm1tQ181OUplNkl1ZzlyTlNiNmgzSXJDcDI2MkFuVkdMbGxaQXBCRmZwMzNRZw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "데브닷소프트(주) 2026년 기업정보 | 직원수, 매출액, 복리후생 등 - saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiggJBVV95cUxPUEFZcGNpbzBJeFJfbmJvSkJIYnY3OHcwNkM5QWlESWhzcFc3X3N2RU04Rm5qQ2dZVXR4S0pGQ1pxMHVpTnl4LVcxVU9pVm5GeGpHN290U0dZMWFsWmdFZm9GZHJRUGJGTkRZQ2hzVzF5SnpxZmJsVmR1VFR1bEtFSmVyUDhMdjdDY3BZRm9CeFBfSExlMDlqUm93ZEdXc1M3OENyVWZvTURnbWlCbkF3RzMzckNpZmZmWGlLaFlqWUltUGNOZVc3ZjB1eHdoLTR4UGVvckdfaUF2N3NLWkcxTGNINW9kd1ZhV0xScmtxbFZMR09kcF9CdHUyNTJObHpZOEE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiggJBVV95cUxPUEFZcGNpbzBJeFJfbmJvSkJIYnY3OHcwNkM5QWlESWhzcFc3X3N2RU04Rm5qQ2dZVXR4S0pGQ1pxMHVpTnl4LVcxVU9pVm5GeGpHN290U0dZMWFsWmdFZm9GZHJRUGJGTkRZQ2hzVzF5SnpxZmJsVmR1VFR1bEtFSmVyUDhMdjdDY3BZRm9CeFBfSExlMDlqUm93ZEdXc1M3OENyVWZvTURnbWlCbkF3RzMzckNpZmZmWGlLaFlqWUltUGNOZVc3ZjB1eHdoLTR4UGVvckdfaUF2N3NLWkcxTGNINW9kd1ZhV0xScmtxbFZMR09kcF9CdHUyNTJObHpZOEE?oc=5\" target=\"_blank\">데브닷소프트(주) 2026년 기업정보 | 직원수, 매출액, 복리후생 등</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Thu, 24 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-24T07:00:00+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiggJBVV95cUxPUEFZcGNpbzBJeFJfbmJvSkJIYnY3OHcwNkM5QWlESWhzcFc3X3N2RU04Rm5qQ2dZVXR4S0pGQ1pxMHVpTnl4LVcxVU9pVm5GeGpHN290U0dZMWFsWmdFZm9GZHJRUGJGTkRZQ2hzVzF5SnpxZmJsVmR1VFR1bEtFSmVyUDhMdjdDY3BZRm9CeFBfSExlMDlqUm93ZEdXc1M3OENyVWZvTURnbWlCbkF3RzMzckNpZmZmWGlLaFlqWUltUGNOZVc3ZjB1eHdoLTR4UGVvckdfaUF2N3NLWkcxTGNINW9kd1ZhV0xScmtxbFZMR09kcF9CdHUyNTJObHpZOEE?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "개발PM 취업 | 고졸 채용정보 - saramin.co.kr",
-      "company": "개발PM 취업 | 고졸",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1RVUptNFVycS1NTndNOWJHLWZOMWRzcHlLQU55SkZvZEgwbFM0b0JoR3RzWFQzNHBxcGp5dnRmeFExbkRQTHpxUXFpVDI0MmI5Q0lFdGJ2eGFyWTYxSXllMlQtQ2xmRXEzaXVhQ04xbmxoeWJrYzE4?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMid0FVX3lxTE1RVUptNFVycS1NTndNOWJHLWZOMWRzcHlLQU55SkZvZEgwbFM0b0JoR3RzWFQzNHBxcGp5dnRmeFExbkRQTHpxUXFpVDI0MmI5Q0lFdGJ2eGFyWTYxSXllMlQtQ2xmRXEzaXVhQ04xbmxoeWJrYzE4?oc=5\" target=\"_blank\">개발PM 취업 | 고졸 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Thu, 24 Sep 2026 05:33:21 GMT",
-      "publishedAt": "2026-09-24T05:33:21+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE1RVUptNFVycS1NTndNOWJHLWZOMWRzcHlLQU55SkZvZEgwbFM0b0JoR3RzWFQzNHBxcGp5dnRmeFExbkRQTHpxUXFpVDI0MmI5Q0lFdGJ2eGFyWTYxSXllMlQtQ2xmRXEzaXVhQ04xbmxoeWJrYzE4?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "NC 채용정보 - 게임잡",
-      "company": "NC",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0ybVZibmp5WjYxdUpkemh6S1ZkZmZBQzFlMzQtVmlZNnAtUXBaMVMxUTZSN2VLWjgxSldKVUh6anRZS2lQemNOcEVQd1pSclNDaHN3cU96QmdIOVJ6dWc5VXRJd3RsWVVFMUE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTE0ybVZibmp5WjYxdUpkemh6S1ZkZmZBQzFlMzQtVmlZNnAtUXBaMVMxUTZSN2VLWjgxSldKVUh6anRZS2lQemNOcEVQd1pSclNDaHN3cU96QmdIOVJ6dWc5VXRJd3RsWVVFMUE?oc=5\" target=\"_blank\">NC 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Wed, 23 Sep 2026 16:16:20 GMT",
-      "publishedAt": "2026-09-23T16:16:20+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0ybVZibmp5WjYxdUpkemh6S1ZkZmZBQzFlMzQtVmlZNnAtUXBaMVMxUTZSN2VLWjgxSldKVUh6anRZS2lQemNOcEVQd1pSclNDaHN3cU96QmdIOVJ6dWc5VXRJd3RsWVVFMUE?oc=5"
-        },
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9ZV1h6WFlROUwyclE2NE52WXJlTE12Q0NHa19rRXNsdEN3cnRUbFUwaVhOMWFvMzliVkE4NHpCRHh4ak1zMTVDTld3QUMtb0dvMFR5bWJURDZheWVWT1hkeXlfR2tYZw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "스타픽시스튜디오 채용정보 - 게임잡",
-      "company": "스타픽시스튜디오",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE56aFhKdFVpZy0tbGtzY3R1QXE3QVNwVW94WWdNck56ZGZ5bTBpY3dIdWRMNTNZalZXRVpfckNkU1NjaDdGcFI3cW1SaGR1cnVpVk5kaVgwTVM0Wk94VW42S0w0N1NnWVhLWk5F?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE56aFhKdFVpZy0tbGtzY3R1QXE3QVNwVW94WWdNck56ZGZ5bTBpY3dIdWRMNTNZalZXRVpfckNkU1NjaDdGcFI3cW1SaGR1cnVpVk5kaVgwTVM0Wk94VW42S0w0N1NnWVhLWk5F?oc=5\" target=\"_blank\">스타픽시스튜디오 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Wed, 23 Sep 2026 08:00:55 GMT",
-      "publishedAt": "2026-09-23T08:00:55+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE56aFhKdFVpZy0tbGtzY3R1QXE3QVNwVW94WWdNck56ZGZ5bTBpY3dIdWRMNTNZalZXRVpfckNkU1NjaDdGcFI3cW1SaGR1cnVpVk5kaVgwTVM0Wk94VW42S0w0N1NnWVhLWk5F?oc=5"
-        },
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9aS0M3eHRBRnlIdnFsZjNDbTJCOURndGV1Z1NwQ0hOS3QwLTl0SG9icnVISHJWaDM5dmw2SnE3UVJ3N01tbU8yZy1wcnFQSXUxQ0JueGVsTzlHN3UzbmxEb3FmUlRQenQ3dDVN?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "(주)크래프톤 채용정보 - 게임잡",
-      "company": "(주)크래프톤",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5FbnJIenQtb1E0ck1xeGRUV3BLR0lmZ0xmOTY3STBhTi1sX3dXMWtYMVNhVHJCcDg3bTJLSVg2d1dOVlNzQzAwa0hHeVNQYnFZRmF0bGM2RGtWelFCdkZQVWhFTUhobGl6bnJj?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE5FbnJIenQtb1E0ck1xeGRUV3BLR0lmZ0xmOTY3STBhTi1sX3dXMWtYMVNhVHJCcDg3bTJLSVg2d1dOVlNzQzAwa0hHeVNQYnFZRmF0bGM2RGtWelFCdkZQVWhFTUhobGl6bnJj?oc=5\" target=\"_blank\">(주)크래프톤 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Wed, 23 Sep 2026 04:19:36 GMT",
-      "publishedAt": "2026-09-23T04:19:36+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5FbnJIenQtb1E0ck1xeGRUV3BLR0lmZ0xmOTY3STBhTi1sX3dXMWtYMVNhVHJCcDg3bTJLSVg2d1dOVlNzQzAwa0hHeVNQYnFZRmF0bGM2RGtWelFCdkZQVWhFTUhobGl6bnJj?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[CCR(주)] 산업기능요원 보충역 모집 (개발자 2명) (채용시 마감) - saramin.co.kr",
-      "company": "[CCR(주)] 산업기능요원 보충역",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOSDhTSjI5LWE1MFpDNXZ6UDBKbDlxTzBMTHNKUXM3Y2ZON3ZFQS1jZ2xvalAyZ2pMN3A5RUx6NnhnTDRZdlBUMEREQTRsN0FnbHMwVVdqVE0wdEZSWmJhYXA5Ty1mRElZVms4bDhQYzJVZEtLRkZQS1VNbkctOVVqTm81R0xPNVRI?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOSDhTSjI5LWE1MFpDNXZ6UDBKbDlxTzBMTHNKUXM3Y2ZON3ZFQS1jZ2xvalAyZ2pMN3A5RUx6NnhnTDRZdlBUMEREQTRsN0FnbHMwVVdqVE0wdEZSWmJhYXA5Ty1mRElZVms4bDhQYzJVZEtLRkZQS1VNbkctOVVqTm81R0xPNVRI?oc=5\" target=\"_blank\">[CCR(주)] 산업기능요원 보충역 모집 (개발자 2명) (채용시 마감)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Wed, 23 Sep 2026 03:52:24 GMT",
-      "publishedAt": "2026-09-23T03:52:24+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOSDhTSjI5LWE1MFpDNXZ6UDBKbDlxTzBMTHNKUXM3Y2ZON3ZFQS1jZ2xvalAyZ2pMN3A5RUx6NnhnTDRZdlBUMEREQTRsN0FnbHMwVVdqVE0wdEZSWmJhYXA5Ty1mRElZVms4bDhQYzJVZEtLRkZQS1VNbkctOVVqTm81R0xPNVRI?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[(주)위세아이텍] 프로젝트 매니저, 데이터 아키텍트, 풀스택 개발자를 찾습니다 (D-18) - saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNX1JOd2xvWl80djV3alJHSy14alBGOEhVMmVsMDNsTUtWOUpLV2ljYnBuVkxqem54bTJOTmZkZlh1ell4a2o5Njg1SUVCOUhnVGdDVWZzOVJveEFrWUtBMjRKXzZHMEMyS0RXOVBRMVc2OW16aG15TWQ1V2NKMmFVcENyWkhtSGZI?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNX1JOd2xvWl80djV3alJHSy14alBGOEhVMmVsMDNsTUtWOUpLV2ljYnBuVkxqem54bTJOTmZkZlh1ell4a2o5Njg1SUVCOUhnVGdDVWZzOVJveEFrWUtBMjRKXzZHMEMyS0RXOVBRMVc2OW16aG15TWQ1V2NKMmFVcENyWkhtSGZI?oc=5\" target=\"_blank\">[(주)위세아이텍] 프로젝트 매니저, 데이터 아키텍트, 풀스택 개발자를 찾습니다 (D-18)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Wed, 23 Sep 2026 01:59:58 GMT",
-      "publishedAt": "2026-09-23T01:59:58+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNX1JOd2xvWl80djV3alJHSy14alBGOEhVMmVsMDNsTUtWOUpLV2ljYnBuVkxqem54bTJOTmZkZlh1ell4a2o5Njg1SUVCOUhnVGdDVWZzOVJveEFrWUtBMjRKXzZHMEMyS0RXOVBRMVc2OW16aG15TWQ1V2NKMmFVcENyWkhtSGZI?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "넷마블네오 채용정보 - 게임잡",
-      "company": "넷마블네오",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5YM2pPeDBUR1BXcWVPNTZlWTB2VXdCRGpOVGo3UXRCT3p3WDlyUTdyWGtVNWk3aUVFTmhpNVB5SW1VbXhQNl92UE5nQnlQa1BjdzY1WkdHd2pnbkpfNWdwVk44cUV0R1RBaEtn?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE5YM2pPeDBUR1BXcWVPNTZlWTB2VXdCRGpOVGo3UXRCT3p3WDlyUTdyWGtVNWk3aUVFTmhpNVB5SW1VbXhQNl92UE5nQnlQa1BjdzY1WkdHd2pnbkpfNWdwVk44cUV0R1RBaEtn?oc=5\" target=\"_blank\">넷마블네오 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Tue, 22 Sep 2026 11:03:17 GMT",
-      "publishedAt": "2026-09-22T11:03:17+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5YM2pPeDBUR1BXcWVPNTZlWTB2VXdCRGpOVGo3UXRCT3p3WDlyUTdyWGtVNWk3aUVFTmhpNVB5SW1VbXhQNl92UE5nQnlQa1BjdzY1WkdHd2pnbkpfNWdwVk44cUV0R1RBaEtn?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "111퍼센트㈜ 채용정보 - 게임잡",
-      "company": "111퍼센트㈜",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5ZVFU4TzBlTldRZGRPTE94N3F3SGROUkZpRjFuT0NIc1B1aXdxdl9xOElqUXRSUzh0clRlcnpSajdhN1pkRnNNaHlVal9kQ28yX20tc295RG1qaUZlQ1U3bUhRYVdkOVQtRjU4?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE5ZVFU4TzBlTldRZGRPTE94N3F3SGROUkZpRjFuT0NIc1B1aXdxdl9xOElqUXRSUzh0clRlcnpSajdhN1pkRnNNaHlVal9kQ28yX20tc295RG1qaUZlQ1U3bUhRYVdkOVQtRjU4?oc=5\" target=\"_blank\">111퍼센트㈜ 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Tue, 22 Sep 2026 10:21:31 GMT",
-      "publishedAt": "2026-09-22T10:21:31+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5ZVFU4TzBlTldRZGRPTE94N3F3SGROUkZpRjFuT0NIc1B1aXdxdl9xOElqUXRSUzh0clRlcnpSajdhN1pkRnNNaHlVal9kQ28yX20tc295RG1qaUZlQ1U3bUhRYVdkOVQtRjU4?oc=5"
-        },
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9RR1gwSWVJcG5UQnFrUWpQdHUxQ1NOSmt0OTdIbVpFUV9TZy1JeUdCUnp5X3NISEJqTTNLb1I2VDRDVnRXZFhvWHRjX3hWZmFRVVhscXlPWWx2aVlMOGlBNzVNX2Vadw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[에이블맥스(주)] 소프트웨어 개발자 채용 - 잡코리아",
-      "company": "[에이블맥스(주)] 소프트웨어 개발자",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBtd2tKNVFMRW5mRjVTdmN0LUlWdHNaQ3Y3cUFLRENxYXpSZ3hPZGhaQTFOdUJIU01pdi0yQXdxamlMYVZRRm5HeTNRNlByUjVaZ3ZJeWYxMU9tUXg3TmpMLTcyRlFtcVZjRF9xWEg2ZFZUeTJ4VmVn?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMid0FVX3lxTFBtd2tKNVFMRW5mRjVTdmN0LUlWdHNaQ3Y3cUFLRENxYXpSZ3hPZGhaQTFOdUJIU01pdi0yQXdxamlMYVZRRm5HeTNRNlByUjVaZ3ZJeWYxMU9tUXg3TmpMLTcyRlFtcVZjRF9xWEg2ZFZUeTJ4VmVn?oc=5\" target=\"_blank\">[에이블맥스(주)] 소프트웨어 개발자 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Tue, 22 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-22T07:00:00+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBtd2tKNVFMRW5mRjVTdmN0LUlWdHNaQ3Y3cUFLRENxYXpSZ3hPZGhaQTFOdUJIU01pdi0yQXdxamlMYVZRRm5HeTNRNlByUjVaZ3ZJeWYxMU9tUXg3TmpMLTcyRlFtcVZjRF9xWEg2ZFZUeTJ4VmVn?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[선익시스템] SW팀 신입 채용 - 잡코리아",
-      "company": "[선익시스템] SW팀 신입",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5SdDJlaXhwYkRpNEQ5LWJnR2VUbVdmVFdQTElxU0VYMVlVNVh1cms5VXpiWFpNVHAzMjl0Nnk0WWUwcXdfRlBxeEFVOEI0M1VUT0c2X3dVd0hOb2h5NEE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE5SdDJlaXhwYkRpNEQ5LWJnR2VUbVdmVFdQTElxU0VYMVlVNVh1cms5VXpiWFpNVHAzMjl0Nnk0WWUwcXdfRlBxeEFVOEI0M1VUT0c2X3dVd0hOb2h5NEE?oc=5\" target=\"_blank\">[선익시스템] SW팀 신입 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Tue, 22 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-22T07:00:00+00:00",
-      "area": "개발",
-      "career": "신입",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5SdDJlaXhwYkRpNEQ5LWJnR2VUbVdmVFdQTElxU0VYMVlVNVh1cms5VXpiWFpNVHAzMjl0Nnk0WWUwcXdfRlBxeEFVOEI0M1VUT0c2X3dVd0hOb2h5NEE?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "코세틱 프론트엔드 개발자 채용 (경력) - 잡코리아",
-      "company": "코세틱 프론트엔드 개발자",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5tVVZ5Rkc3ZmVkb0V5aGJjOTlnUV9aVWJaRE1DM2luYkhSbkNhMXBmaXBnWlZid0ExZl9mbkdlb0RhSHU4ZGFjQktmWTFzWVY0TTlOTThRdmNhdS03SXc?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE5tVVZ5Rkc3ZmVkb0V5aGJjOTlnUV9aVWJaRE1DM2luYkhSbkNhMXBmaXBnWlZid0ExZl9mbkdlb0RhSHU4ZGFjQktmWTFzWVY0TTlOTThRdmNhdS03SXc?oc=5\" target=\"_blank\">코세틱 프론트엔드 개발자 채용 (경력)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Tue, 22 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-22T07:00:00+00:00",
-      "area": "프론트엔드",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE5tVVZ5Rkc3ZmVkb0V5aGJjOTlnUV9aVWJaRE1DM2luYkhSbkNhMXBmaXBnWlZid0ExZl9mbkdlb0RhSHU4ZGFjQktmWTFzWVY0TTlOTThRdmNhdS03SXc?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "에이에프아이 채용정보 - 게임잡",
-      "company": "에이에프아이",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1QQ0pHYS0xZmQ5QjU2dF9pVHVfdjB3TDFBUG5iWXRxWmVLY1JqZ0dyMGhaNk9MNkVFSDFzd1ZSQWU1Vmp4NGNfOUh6aTRUNi1Md0xrZ0xhZktVSlpGUmh4amNoSG9XUFRkM0hZ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE1QQ0pHYS0xZmQ5QjU2dF9pVHVfdjB3TDFBUG5iWXRxWmVLY1JqZ0dyMGhaNk9MNkVFSDFzd1ZSQWU1Vmp4NGNfOUh6aTRUNi1Md0xrZ0xhZktVSlpGUmh4amNoSG9XUFRkM0hZ?oc=5\" target=\"_blank\">에이에프아이 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Tue, 22 Sep 2026 06:05:00 GMT",
-      "publishedAt": "2026-09-22T06:05:00+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1QQ0pHYS0xZmQ5QjU2dF9pVHVfdjB3TDFBUG5iWXRxWmVLY1JqZ0dyMGhaNk9MNkVFSDFzd1ZSQWU1Vmp4NGNfOUh6aTRUNi1Md0xrZ0xhZktVSlpGUmh4amNoSG9XUFRkM0hZ?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[(주)스콘] [SCON] 버추얼 캐릭터 솔루션 유니티 개발자 (채용시 마감) - saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxONHMyUVNYX0Nka293SHltaGgwTmotMWFaalNQa2tUdHduRDlrR2M0dzY5SFM3YWM0bmVLaS1CQjJ3OG5tTkhOZlNEVVVaVU5tRkp2LWxYUHFhSGJqbWNVYlJxclU3S255dGQyTVQ2RlByMXMyREdEa0Jod0JVRDRqZ0c0VWZ2VVFX?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxONHMyUVNYX0Nka293SHltaGgwTmotMWFaalNQa2tUdHduRDlrR2M0dzY5SFM3YWM0bmVLaS1CQjJ3OG5tTkhOZlNEVVVaVU5tRkp2LWxYUHFhSGJqbWNVYlJxclU3S255dGQyTVQ2RlByMXMyREdEa0Jod0JVRDRqZ0c0VWZ2VVFX?oc=5\" target=\"_blank\">[(주)스콘] [SCON] 버추얼 캐릭터 솔루션 유니티 개발자 (채용시 마감)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Mon, 21 Sep 2026 11:00:00 GMT",
-      "publishedAt": "2026-09-21T11:00:00+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxONHMyUVNYX0Nka293SHltaGgwTmotMWFaalNQa2tUdHduRDlrR2M0dzY5SFM3YWM0bmVLaS1CQjJ3OG5tTkhOZlNEVVVaVU5tRkp2LWxYUHFhSGJqbWNVYlJxclU3S255dGQyTVQ2RlByMXMyREdEa0Jod0JVRDRqZ0c0VWZ2VVFX?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "슈퍼센트 연봉정보 - 평균연봉 4,638만원 - 잡코리아",
-      "company": "기업명 확인 필요",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBRTEJvOHRveV9DQTdYUm5yNnF4MzdGTEgxSnVSWGdXZEZ0Nm12Q2pGN3dKdUtRdWdaQ2RiVlVrMUhwX21xV2FJaVNYRlliRnhQbWtV?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiU0FVX3lxTFBRTEJvOHRveV9DQTdYUm5yNnF4MzdGTEgxSnVSWGdXZEZ0Nm12Q2pGN3dKdUtRdWdaQ2RiVlVrMUhwX21xV2FJaVNYRlliRnhQbWtV?oc=5\" target=\"_blank\">슈퍼센트 연봉정보 - 평균연봉 4,638만원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Mon, 21 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-21T07:00:00+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBRTEJvOHRveV9DQTdYUm5yNnF4MzdGTEgxSnVSWGdXZEZ0Nm12Q2pGN3dKdUtRdWdaQ2RiVlVrMUhwX21xV2FJaVNYRlliRnhQbWtV?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "유지티피 채용 - 2026년 반기 신입 개발자 모집 - 잡코리아",
-      "company": "유지티피",
-      "source": "잡코리아",
-      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1ta3V0ZHNpSFl3NGszSU5UX1Q2SDVBNGNlNng5Z3ZoQ0FlOTVnQ1ZYbUJJLWlsUnRhUG5qcEk2dndIcExSYmJJMFFUYmtPMmJQUWdiNzlhNFZNOTdVNFE?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE1ta3V0ZHNpSFl3NGszSU5UX1Q2SDVBNGNlNng5Z3ZoQ0FlOTVnQ1ZYbUJJLWlsUnRhUG5qcEk2dndIcExSYmJJMFFUYmtPMmJQUWdiNzlhNFZNOTdVNFE?oc=5\" target=\"_blank\">유지티피 채용 - 2026년 반기 신입 개발자 모집</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
-      "published": "Mon, 21 Sep 2026 07:00:00 GMT",
-      "publishedAt": "2026-09-21T07:00:00+00:00",
-      "area": "개발",
-      "career": "신입",
-      "skills": [],
-      "sourceSite": "잡코리아",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1ta3V0ZHNpSFl3NGszSU5UX1Q2SDVBNGNlNng5Z3ZoQ0FlOTVnQ1ZYbUJJLWlsUnRhUG5qcEk2dndIcExSYmJJMFFUYmtPMmJQUWdiNzlhNFZNOTdVNFE?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5uaFppOE1HRXR0MkJCbmRiWW55U2hIa1BRd0JVcDZhMTd6dWhXOUUtM3l0MFE5Rm9nb1hlaUp6aFJMMWlwV1pRYnRYck9CLXF0WnFnVjRGSmdIcEdXSGtjTjh4ZWZIMTBuZWxlQ0s0eGJwUFI3MHM4?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-03T04:43:22+00:00",
+  "jobPostingsUpdatedAt": "2026-10-03T04:47:47+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -165342,6 +165368,6 @@
     "quotes_ok": 17,
     "quotes_total": 17,
     "candle_ready": 17,
-    "generatedAt": "2026-10-03T04:43:22+00:00"
+    "generatedAt": "2026-10-03T04:47:47+00:00"
   }
 }
