@@ -30,3 +30,4 @@ jobs:
           git add data/dashboard.json
           git diff --cached --quiet || git commit -m "data: update dashboard"
           git push
+
