@@ -265,6 +265,65 @@ def extract_company(title, description):
             return m.group(1).strip()
     return ""
 
+def clean_html(text):
+    import re, html
+    text=html.unescape(text or "")
+    text=re.sub(r"<script[\s\S]*?</script>"," ",text,flags=re.I)
+    text=re.sub(r"<style[\s\S]*?</style>"," ",text,flags=re.I)
+    text=re.sub(r"<[^>]+>"," ",text)
+    return re.sub(r"\s+"," ",text).strip()
+
+def fetch_job_detail(url):
+    try:
+        raw=get(url,attempts=1,timeout=7).decode("utf-8","ignore")
+    except Exception:
+        return {}
+    text=clean_html(raw)
+    return {"detailText":text[:12000]}
+
+def parse_job_detail(item):
+    detail=fetch_job_detail(item.get("link",""))
+    text=detail.get("detailText","")
+    title=(item.get("title","")+" "+text).strip()
+    meta=classify_job(title,text)
+    import re
+    skill_patterns=[
+        ("C++",r"\bc\+\+\b"),("C#",r"\bc#\b"),("Java",r"\bjava\b"),
+        ("Kotlin",r"\bkotlin\b"),("Python",r"\bpython\b"),("JavaScript",r"javascript"),
+        ("TypeScript",r"typescript"),("Go",r"\bgolang\b"),("Rust",r"\brust\b"),
+        ("Unity",r"unity"),("Unreal",r"unreal|언리얼"),("DirectX",r"directx"),
+        ("OpenGL",r"opengl"),("UE5",r"unreal engine 5|ue5"),("AWS",r"\baws\b"),
+        ("Azure",r"\bazure\b"),("GCP",r"\bgcp\b"),("Docker",r"docker"),
+        ("Kubernetes",r"kubernetes"),("Spring",r"spring"),("React",r"react"),
+        ("Node.js",r"node\.?js"),("Redis",r"redis"),("MySQL",r"mysql"),
+        ("PostgreSQL",r"postgresql|postgre"),("MongoDB",r"mongodb"),("Git",r"\bgit\b"),
+        ("Linux",r"linux"),("WebSocket",r"websocket"),("REST API",r"rest\s*api"),
+        ("TCP/UDP",r"tcp\s*/?\s*udp"),("Unreal Blueprint",r"blueprint")
+    ]
+    skills=[name for name,pat in skill_patterns if re.search(pat,text,re.I)]
+    career=meta["career"]
+    m=re.search(r"(?:경력사항|경력|experience)\s*[:：]?\s*(경력무관|신입[·/]?경력|신입|인턴|\d+\s*[~\-]?\s*\d*\s*년(?:\s*이상|\s*이하)?)",text,re.I)
+    if m:
+        raw=m.group(1).strip()
+        if "무관" in raw: career="경력무관"
+        elif "인턴" in raw.lower(): career="인턴"
+        elif "신입" in raw and "경력" in raw: career="신입/경력"
+        elif "신입" in raw: career="신입"
+        elif "년" in raw: career=raw
+        else: career="경력"
+    employment=""
+    for term in ["정규직","계약직","인턴","프리랜서","병역특례","아르바이트"]:
+        if term in text:
+            employment += (", " if employment else "")+term
+    deadline=""
+    m=re.search(r"(?:마감일|접수기간)\s*[:：]?\s*([^\n]{2,50})",text,re.I)
+    if m: deadline=m.group(1).strip()
+    return {
+        "area":meta["area"],"career":career,"skills":skills[:18],
+        "employmentType":employment,"deadline":deadline,
+        "detailText":text[:6000]
+    }
+
 def collect_employment_news(previous):
     now=datetime.now(timezone.utc)
     previous_updated=previous.get("employmentUpdatedAt","")
@@ -326,6 +385,10 @@ def collect_job_postings(previous):
         ("site:jobkorea.co.kr 게임 개발자 채용", "잡코리아"),
         ("site:jobkorea.co.kr 서버 백엔드 개발자 채용", "잡코리아"),
         ("site:jobkorea.co.kr 신입 개발자 채용", "잡코리아"),
+        ("site:gamejob.co.kr/Recruit 게임개발 클라이언트", "게임잡"),
+        ("site:gamejob.co.kr/Recruit 게임 서버 개발", "게임잡"),
+        ("site:gamejob.co.kr/Recruit C++ Unreal Unity", "게임잡"),
+        ("site:gamejob.co.kr/Recruit 백엔드 서버 네트워크", "게임잡"),
         ("site:jumpit.saramin.co.kr 개발자 채용", "점핏"),
         ("site:jumpit.saramin.co.kr 백엔드 C++ 개발자", "점핏"),
         ("site:rocketpunch.com/jobs 개발자 채용", "로켓펀치"),
@@ -334,6 +397,7 @@ def collect_job_postings(previous):
     ]
 
     fresh=[]
+    existing_links={x.get("link") for x in previous.get("jobPostings",[])}
     for q,site_name in sites:
         for item in rss(q,8,days=2):
             link=item.get("link","")
@@ -352,10 +416,21 @@ def collect_job_postings(previous):
                 "area":meta["area"],
                 "career":meta["career"],
                 "skills":meta["skills"],
+                "sourceSite":site_name,
             })
 
-    cutoff=now-timedelta(days=2)
+    cutoff=now-timedelta(days=30)
     candidates=previous.get("jobPostings",[])+fresh
+
+    enriched=[]
+    for item in candidates:
+        if item.get("link") in existing_links and item.get("skills"):
+            enriched.append(item)
+            continue
+        detail=parse_job_detail(item)
+        item={**item,**{k:v for k,v in detail.items() if v}}
+        enriched.append(item)
+    candidates=enriched
 
     def role_tokens(title, company):
         import re
@@ -395,13 +470,13 @@ def collect_job_postings(previous):
         if match_key is None:
             match_key=(company or "unknown")+"|"+normalize_text(item.get("title",""))[:140]+"|"+str(len(grouped))
             item=dict(item)
-            item["sources"]=[{"site":item.get("source",""),"link":item.get("link","")}]
+            item["sources"]=[{"site":item.get("sourceSite") or item.get("source",""),"link":item.get("link","")}]
             grouped[match_key]=item
         else:
             existing=grouped[match_key]
             existing_sources=existing.setdefault("sources",[])
             if not any(x.get("link")==item.get("link") for x in existing_sources):
-                existing_sources.append({"site":item.get("source",""),"link":item.get("link","")})
+                existing_sources.append({"site":item.get("sourceSite") or item.get("source",""),"link":item.get("link","")})
             existing["skills"]=sorted(set(existing.get("skills",[])+item.get("skills",[])))[:12]
 
     items=sorted(grouped.values(),key=lambda x:x.get("publishedAt",""),reverse=True)[:100]
