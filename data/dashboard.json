@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T16:38:07+00:00",
+  "updatedAt": "2026-10-03T19:44:06+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -39308,7 +39308,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.2100067138672,
+            "o": 232.1999969482422,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -39908,9 +39908,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.9949951171875,
+            "o": 230.875,
             "h": 232.82000732421875,
-            "l": 230.47999572753906,
+            "l": 230.83999633789062,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42862,7 +42862,7 @@
           },
           {
             "t": 1789565400,
-            "o": 214.13999938964844,
+            "o": 213.72000122070312,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43198,7 +43198,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.11599731445312,
+            "o": 222.64999389648438,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43254,7 +43254,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.14999389648438,
+            "o": 225.25,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43366,7 +43366,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.9949951171875,
+            "o": 230.875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -49035,7 +49035,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 628.7650146484375,
+            "h": 629.5,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -49658,8 +49658,8 @@
           },
           {
             "t": 1790688600,
-            "o": 616.9600219726562,
-            "h": 617.5700073242188,
+            "o": 614.0,
+            "h": 615.0598754882812,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52948,9 +52948,9 @@
           },
           {
             "t": 1790256600,
-            "o": 600.7550048828125,
+            "o": 605.344970703125,
             "h": 624.8400268554688,
-            "l": 599.3499755859375,
+            "l": 604.35400390625,
             "c": 617.25,
             "v": 8101441
           },
@@ -53004,7 +53004,7 @@
           },
           {
             "t": 1790343000,
-            "o": 635.0679931640625,
+            "o": 634.610107421875,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -53061,7 +53061,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 628.7650146484375,
+            "h": 629.5,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53116,7 +53116,7 @@
           },
           {
             "t": 1790688600,
-            "o": 616.9600219726562,
+            "o": 614.0,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59409,7 +59409,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.86000061035156,
+            "o": 116.25,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62419,9 +62419,9 @@
           },
           {
             "t": 1789651800,
-            "o": 104.77999877929688,
+            "o": 105.75,
             "h": 109.83999633789062,
-            "l": 104.69999694824219,
+            "l": 104.87030029296875,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62699,9 +62699,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.61000061035156,
+            "o": 120.01000213623047,
             "h": 125.91999816894531,
-            "l": 119.55000305175781,
+            "l": 119.94999694824219,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62867,7 +62867,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.86000061035156,
+            "o": 116.25,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -69159,9 +69159,9 @@
           },
           {
             "t": 1790688600,
-            "o": 357.0799865722656,
+            "o": 358.92999267578125,
             "h": 361.260009765625,
-            "l": 355.9775085449219,
+            "l": 357.4100036621094,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72169,9 +72169,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.07000732421875,
+            "o": 346.30999755859375,
             "h": 349.94000244140625,
-            "l": 345.30999755859375,
+            "l": 346.1597900390625,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72617,7 +72617,7 @@
           },
           {
             "t": 1790688600,
-            "o": 357.0799865722656,
+            "o": 358.92999267578125,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -81584,7 +81584,7 @@
           },
           {
             "t": 1788960600,
-            "o": 999.3499755859375,
+            "o": 1003.1777954101562,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81920,9 +81920,9 @@
           },
           {
             "t": 1789651800,
-            "o": 954.9979858398438,
+            "o": 961.3300170898438,
             "h": 986.2000122070312,
-            "l": 953.5,
+            "l": 961.1303100585938,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -98412,8 +98412,8 @@
           },
           {
             "t": 1790688600,
-            "o": 148.93499755859375,
-            "h": 149.38999938964844,
+            "o": 148.5,
+            "h": 148.85000610351562,
             "l": 146.25,
             "c": 146.49240112304688,
             "v": 10628861
@@ -100974,7 +100974,7 @@
           },
           {
             "t": 1788528600,
-            "o": 111.22000122070312,
+            "o": 110.37999725341797,
             "h": 117.86000061035156,
             "l": 109.7300033569336,
             "c": 116.95999908447266,
@@ -101086,9 +101086,9 @@
           },
           {
             "t": 1788960600,
-            "o": 121.23999786376953,
+            "o": 123.37999725341797,
             "h": 128.47999572753906,
-            "l": 121.23999786376953,
+            "l": 122.58000183105469,
             "c": 127.15499877929688,
             "v": 19020541
           },
@@ -101198,7 +101198,7 @@
           },
           {
             "t": 1789133400,
-            "o": 120.70999908447266,
+            "o": 119.75,
             "h": 123.19999694824219,
             "l": 117.8656005859375,
             "c": 122.41999816894531,
@@ -101870,7 +101870,7 @@
           },
           {
             "t": 1790688600,
-            "o": 148.93499755859375,
+            "o": 148.5,
             "h": 151.7198944091797,
             "l": 145.49000549316406,
             "c": 151.24000549316406,
@@ -110667,9 +110667,9 @@
         "1h": [
           {
             "t": 1788442200,
-            "o": 53.494998931884766,
+            "o": 53.66999816894531,
             "h": 55.689998626708984,
-            "l": 53.279998779296875,
+            "l": 53.48500061035156,
             "c": 54.22999954223633,
             "v": 18731325
           },
@@ -110723,7 +110723,7 @@
           },
           {
             "t": 1788528600,
-            "o": 49.560001373291016,
+            "o": 49.91999816894531,
             "h": 50.209999084472656,
             "l": 46.2599983215332,
             "c": 46.70100021362305,
@@ -132092,7 +132092,7 @@
           },
           {
             "t": 1790947860,
-            "o": 27197.251953125,
+            "o": 27195.884765625,
             "h": 27197.251953125,
             "l": 27175.92578125,
             "c": 27179.453125,
@@ -151588,8 +151588,8 @@
           },
           {
             "t": 1790947860,
-            "o": 13107.7958984375,
-            "h": 13108.1064453125,
+            "o": 13110.154296875,
+            "h": 13110.154296875,
             "l": 13090.056640625,
             "c": 13091.6328125,
             "v": 0
@@ -154712,7 +154712,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12585.8232421875,
+            "l": 12584.86328125,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -164461,7 +164461,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9099731445312,
+            "l": 566.9000244140625,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -165083,8 +165083,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.8699951171875,
-            "h": 570.4299926757812,
+            "o": 569.0700073242188,
+            "h": 569.6950073242188,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -168373,7 +168373,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.9650268554688,
+            "o": 554.8300170898438,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -168541,7 +168541,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.8699951171875,
+            "o": 569.0700073242188,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -180577,11 +180577,11 @@
       "relevance": 3
     },
     {
-      "title": "AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디? - Benzinga",
+      "title": "AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디? - kr.benzinga.com",
       "link": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5",
       "published": "Fri, 02 Oct 2026 04:53:37 GMT",
       "publishedAt": "2026-10-02T04:53:37+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5\" target=\"_blank\">AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Benzinga</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5\" target=\"_blank\">AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">kr.benzinga.com</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "긍정",
       "importance": "높음",
@@ -180621,45 +180621,45 @@
       "relevance": 1
     },
     {
-      "title": "카지노 나오는 날 게임 안내의 기호와 범례 - calgaryroughnecks.com",
-      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQN2tKSV9YV0RpMGZLbk02TzJwMU1ZLUZVenpweWxYRlRwRHJzeEtVdWlPbFl6cjJjNUhLTXpncEFDeENZbUVvdmVKQzlLQnQzM3l6ZzdNVW1jT3N4ZVhJNXQyc1NTUUJaYnZaRDRuZnhaSUZGMUFjOEdlckowZW5tX3lSWEs0ZmNPQ3lqV0I0cWdCVmkwZ3JkQURGUXJaRTNob3VOM0pFLTFkVjU2Wlo1U1AwNnFiLXk5ZVZn?oc=5",
-      "published": "Sat, 03 Oct 2026 10:02:47 GMT",
-      "publishedAt": "2026-10-03T10:02:47+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiuwFBVV95cUxQN2tKSV9YV0RpMGZLbk02TzJwMU1ZLUZVenpweWxYRlRwRHJzeEtVdWlPbFl6cjJjNUhLTXpncEFDeENZbUVvdmVKQzlLQnQzM3l6ZzdNVW1jT3N4ZVhJNXQyc1NTUUJaYnZaRDRuZnhaSUZGMUFjOEdlckowZW5tX3lSWEs0ZmNPQ3lqV0I0cWdCVmkwZ3JkQURGUXJaRTNob3VOM0pFLTFkVjU2Wlo1U1AwNnFiLXk5ZVZn?oc=5\" target=\"_blank\">카지노 나오는 날 게임 안내의 기호와 범례</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "[금주의인물] 다리오 아모데이 앤트로픽CEO \"AI 신기술, 안전성 확보할 '속도' 조절해야\" - weekly.hankooki.com",
+      "title": "[금주의인물] 다리오 아모데이 앤트로픽CEO \"AI 신기술, 안전성 확보할 '속도' 조절해야\" - 주간한국",
       "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1RTUc5WGExOWxNYUhWMG5pRlRiaVNDSDZpQnl1RlZER0pfOVdtLXJDem5nZzlCRFQ4RjhoR2p0YjZRLVVQOGNlOVdnUGNvdlQyaEt2YXp2ZEVtNkNoWXdrR2tvcC1QbTN3TGVjZGFrUDJPVXdU0gF0QVVfeXFMTVFNRzlYYTE5bE1hSFYwbmlGVGJpU0NINmlCeXVGVkRHSl85V20tckN6bmdnOUJEVDhGOGhHanRiNlEtVVA4Y2U5V2dQY292VDJoS3ZhenZkRW02Q2hZd2tHa29wLVBtM3dMZWNkYWtQMk9Vd1Q?oc=5",
       "published": "Sat, 03 Oct 2026 06:51:12 GMT",
       "publishedAt": "2026-10-03T06:51:12+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE1RTUc5WGExOWxNYUhWMG5pRlRiaVNDSDZpQnl1RlZER0pfOVdtLXJDem5nZzlCRFQ4RjhoR2p0YjZRLVVQOGNlOVdnUGNvdlQyaEt2YXp2ZEVtNkNoWXdrR2tvcC1QbTN3TGVjZGFrUDJPVXdU0gF0QVVfeXFMTVFNRzlYYTE5bE1hSFYwbmlGVGJpU0NINmlCeXVGVkRHSl85V20tckN6bmdnOUJEVDhGOGhHanRiNlEtVVA4Y2U5V2dQY292VDJoS3ZhenZkRW02Q2hZd2tHa29wLVBtM3dMZWNkYWtQMk9Vd1Q?oc=5\" target=\"_blank\">[금주의인물] 다리오 아모데이 앤트로픽CEO \"AI 신기술, 안전성 확보할 '속도' 조절해야\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">weekly.hankooki.com</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE1RTUc5WGExOWxNYUhWMG5pRlRiaVNDSDZpQnl1RlZER0pfOVdtLXJDem5nZzlCRFQ4RjhoR2p0YjZRLVVQOGNlOVdnUGNvdlQyaEt2YXp2ZEVtNkNoWXdrR2tvcC1QbTN3TGVjZGFrUDJPVXdU0gF0QVVfeXFMTVFNRzlYYTE5bE1hSFYwbmlGVGJpU0NINmlCeXVGVkRHSl85V20tckN6bmdnOUJEVDhGOGhHanRiNlEtVVA4Y2U5V2dQY292VDJoS3ZhenZkRW02Q2hZd2tHa29wLVBtM3dMZWNkYWtQMk9Vd1Q?oc=5\" target=\"_blank\">[금주의인물] 다리오 아모데이 앤트로픽CEO \"AI 신기술, 안전성 확보할 '속도' 조절해야\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">주간한국</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "원전 설비 건전성 관리, AI 검사·해외 운영경험 접목 - energy-news.co.kr",
+      "title": "원전 설비 건전성 관리, AI 검사·해외 운영경험 접목 - 에너지신문",
       "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFB1QkMwQy03WW0yaXVUQmswSjc5b3JiRGRqZE85TV9QV1YySF85aVhqYWJtaEhvZTE1bFFnbFpZOWMwbzlVZmpUR1hjZXZ0eEpKWjNTelJwR3NsWHR2b1ZkRjNIM2xPcXFEcHBrUHdfRV9RQQ?oc=5",
       "published": "Sat, 03 Oct 2026 03:36:25 GMT",
       "publishedAt": "2026-10-03T03:36:25+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMickFVX3lxTFB1QkMwQy03WW0yaXVUQmswSjc5b3JiRGRqZE85TV9QV1YySF85aVhqYWJtaEhvZTE1bFFnbFpZOWMwbzlVZmpUR1hjZXZ0eEpKWjNTelJwR3NsWHR2b1ZkRjNIM2xPcXFEcHBrUHdfRV9RQQ?oc=5\" target=\"_blank\">원전 설비 건전성 관리, AI 검사·해외 운영경험 접목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">energy-news.co.kr</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMickFVX3lxTFB1QkMwQy03WW0yaXVUQmswSjc5b3JiRGRqZE85TV9QV1YySF85aVhqYWJtaEhvZTE1bFFnbFpZOWMwbzlVZmpUR1hjZXZ0eEpKWjNTelJwR3NsWHR2b1ZkRjNIM2xPcXFEcHBrUHdfRV9RQQ?oc=5\" target=\"_blank\">원전 설비 건전성 관리, AI 검사·해외 운영경험 접목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">에너지신문</font>",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "10년물 국채 5% 뚫은 AI와 석유… 빅테크와 정유주만 웃었다 - g-enews.com",
+      "title": "10년물 국채 5% 뚫은 AI와 석유… 빅테크와 정유주만 웃었다 - 글로벌이코노믹",
       "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOU1Z6SWR4ZE5URlJUbHplY0xqdS0zcVExdXlLY0JELWlsYjBFOHFISjVfY0JaTFgwaF9lOTFEUk9wSFhYVmpZdmlfVDhDeFVNZGp2WGhjb2M1bGcwNUcyYTcyUURUQThoak1kVWdxYm5nYm9Ya2dnOXRkN25PMVJMMmVYNkdMaVU?oc=5",
       "published": "Sat, 03 Oct 2026 03:10:22 GMT",
       "publishedAt": "2026-10-03T03:10:22+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMihwFBVV95cUxOU1Z6SWR4ZE5URlJUbHplY0xqdS0zcVExdXlLY0JELWlsYjBFOHFISjVfY0JaTFgwaF9lOTFEUk9wSFhYVmpZdmlfVDhDeFVNZGp2WGhjb2M1bGcwNUcyYTcyUURUQThoak1kVWdxYm5nYm9Ya2dnOXRkN25PMVJMMmVYNkdMaVU?oc=5\" target=\"_blank\">10년물 국채 5% 뚫은 AI와 석유… 빅테크와 정유주만 웃었다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">g-enews.com</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMihwFBVV95cUxOU1Z6SWR4ZE5URlJUbHplY0xqdS0zcVExdXlLY0JELWlsYjBFOHFISjVfY0JaTFgwaF9lOTFEUk9wSFhYVmpZdmlfVDhDeFVNZGp2WGhjb2M1bGcwNUcyYTcyUURUQThoak1kVWdxYm5nYm9Ya2dnOXRkN25PMVJMMmVYNkdMaVU?oc=5\" target=\"_blank\">10년물 국채 5% 뚫은 AI와 석유… 빅테크와 정유주만 웃었다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
       "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시 - 뉴스프리존",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5",
+      "published": "Sat, 03 Oct 2026 02:02:37 GMT",
+      "publishedAt": "2026-10-03T02:02:37+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTFBhcWRSSFkzaHduZnl6UWJSVlltcjBuWEZycDBmNWdtMGJQeDE5RkJlLUJsQjNxYUhTV19pUS1NMlM0aV9jOVRuSklaSWFadDhmbjVwVFZyZTNGYUMwM2pTbEFuOUFRcmR4N1BCUHNEMndHaUnSAXdBVV95cUxOcE50bnZYYnEyeE1RWWJoc19HWl9CS1Q2emZhQnA5ZFlrTS10QjhmTFhQWnJOeFJRS2xsRnVHdUV2NVNYQkxQYm41QllOUmRPLTRvdHVhbVVlSHdPaXVGY2VJbVd1MHZHa2Ruc3hnLUt2SU9kNFdCOA?oc=5\" target=\"_blank\">경운대, '2026 산학연협력EXPO'서 AI항공모빌리티 혁신성과 전시</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스프리존</font>",
+      "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -180720,17 +180720,6 @@
       "relevance": 1
     },
     {
-      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - calgaryroughnecks.com",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
-      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
-      "publishedAt": "2026-10-02T00:41:05+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5\" target=\"_blank\">일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
-      "source": "NVIDIA AMD Intel semiconductor",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
       "title": "건설연, AI 기반 교량 안전성 실시간 진단기술 개발 - 사이언스타임즈",
       "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5",
       "published": "Thu, 01 Oct 2026 22:04:50 GMT",
@@ -180740,6 +180729,39 @@
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
+    },
+    {
+      "title": "추가 라운드가 끝난 뒤의 토토 플핸 뜻 진행 순서 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxNVkRlOTdwUTJCRmh0VFdHQnh6ZkM4TGctaWh2RFFBSEd3SUlOSGZ1anFiMGpvdUNoYmZYbzB0WVdFdWZRWVFLb3hFWGJRcDBidlZIanJyVUdEdlpURy1GVjNIaWc4N3ZNOFZnQ29CVmYxMVdoRmFXT19sUk1SYXdlNkJBZE9OODRlQ19PdUp6Ykp4NDNRVENnUGtZWkhlUVVfbGw1aEcwVVl0MzZuNkZoamg4amdzbjl2QmdqN2hzUVM5eTlMbENVQlZDTGVjWHVwWU85cHBvb0Q5ZVFEclF3?oc=5",
+      "published": "Sat, 03 Oct 2026 11:40:48 GMT",
+      "publishedAt": "2026-10-03T11:40:48+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi3wFBVV95cUxNVkRlOTdwUTJCRmh0VFdHQnh6ZkM4TGctaWh2RFFBSEd3SUlOSGZ1anFiMGpvdUNoYmZYbzB0WVdFdWZRWVFLb3hFWGJRcDBidlZIanJyVUdEdlpURy1GVjNIaWc4N3ZNOFZnQ29CVmYxMVdoRmFXT19sUk1SYXdlNkJBZE9OODRlQ19PdUp6Ykp4NDNRVENnUGtZWkhlUVVfbGw1aEcwVVl0MzZuNkZoamg4amdzbjl2QmdqN2hzUVM5eTlMbENVQlZDTGVjWHVwWU85cHBvb0Q5ZVFEclF3?oc=5\" target=\"_blank\">추가 라운드가 끝난 뒤의 토토 플핸 뜻 진행 순서</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "규칙 읽기에 익숙해지는 카지노 점유율 입문 노트 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxNU3BUYWtmdTU4TDRRQjJtbEhMOEoxbS11cl93c3VNYkRheE9HZ2gtdmhpWjRCXzNVbUoySFRuVWFIMmVldFYxdTAxSlF1clUzSWN0ZTF3MWMyVHkzVWdjcmZBN0c3d1lSdmhSUmotZDJjZUc5aC1QaURMbTdLRzlyUjJERnhqX3FXYTROVzRXQkcwS1o0czFSOG1NbHhZaENldEpuZmpXbGxoSDFLam16R0Z1R1NCNWRpMDhZYU9nMkpIQUZhTndhU0Q4T3VDbk93d3lwbzRLVExCVDhJd2JWdWxvSXE2QVAya2RDQU5xZDhYUUdnTzhrd1haR1J1QXFjY05BOHdER08?oc=5",
+      "published": "Sat, 03 Oct 2026 09:18:40 GMT",
+      "publishedAt": "2026-10-03T09:18:40+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAJBVV95cUxNU3BUYWtmdTU4TDRRQjJtbEhMOEoxbS11cl93c3VNYkRheE9HZ2gtdmhpWjRCXzNVbUoySFRuVWFIMmVldFYxdTAxSlF1clUzSWN0ZTF3MWMyVHkzVWdjcmZBN0c3d1lSdmhSUmotZDJjZUc5aC1QaURMbTdLRzlyUjJERnhqX3FXYTROVzRXQkcwS1o0czFSOG1NbHhZaENldEpuZmpXbGxoSDFLam16R0Z1R1NCNWRpMDhZYU9nMkpIQUZhTndhU0Q4T3VDbk93d3lwbzRLVExCVDhJd2JWdWxvSXE2QVAya2RDQU5xZDhYUUdnTzhrd1haR1J1QXFjY05BOHdER08?oc=5\" target=\"_blank\">규칙 읽기에 익숙해지는 카지노 점유율 입문 노트</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "nba 토토 디시 기억 기술과 비밀 풀기: 분석, 평가 및 최적화 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPd0U0R3lYdzc3aFlLNE1PRVJCV0J5ZXBicnVCTFFEcF9oZzdjZGRMQVdBejY3MnpocGNybUxLNGw2YzRZX1NKOTFHOHFaOGtpSklRc2hYeHhZcUFJaVgtNmhUQ19WLWVXUXlHbUQwQm5CaDRkN2RQcGxwd3pXSG1YSEtNY3QtTWZiY01vZlBiQXhnbDNRLUNsSHdrZlB4QU9VcEFvME1wQmhldlRoMmtiVnRR?oc=5",
+      "published": "Sat, 03 Oct 2026 07:06:15 GMT",
+      "publishedAt": "2026-10-03T07:06:15+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMisgFBVV95cUxPd0U0R3lYdzc3aFlLNE1PRVJCV0J5ZXBicnVCTFFEcF9oZzdjZGRMQVdBejY3MnpocGNybUxLNGw2YzRZX1NKOTFHOHFaOGtpSklRc2hYeHhZcUFJaVgtNmhUQ19WLWVXUXlHbUQwQm5CaDRkN2RQcGxwd3pXSG1YSEtNY3QtTWZiY01vZlBiQXhnbDNRLUNsSHdrZlB4QU9VcEFvME1wQmhldlRoMmtiVnRR?oc=5\" target=\"_blank\">nba 토토 디시 기억 기술과 비밀 풀기: 분석, 평가 및 최적화</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
     },
     {
       "title": "넷마블, 3분기 매출 6950억 전망…신작 출시 일정에 시선 집중 - 핀포인트뉴스",
@@ -180753,23 +180775,12 @@
       "relevance": 0
     },
     {
-      "title": "슬롯 어나미머스 배당 조합의 표시 방향 - calgaryroughnecks.com",
-      "link": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNY0VxYTBSM0xkaGpNeGFGLTE1RXp2Wndxczd4N0NfMXFYYTZtX3ZBanJTT0NRTjlxc0RjUWw3NGswUDhnX0llQXpMWEpJTk5STm4ybEpPLVdXRmJCMkt6V2hTTlozczRPWTJtNDdtV1ZyaXRsSFByejBYQVFEN010eG9CVGVqaFlnakJlMlVKeXFjNnNQTFktaTNMdmZscldvaVVvMmhyZzVMbUVfc0ljMDZBWUxMa2J5aHJDeURRUm4wSGtuY3VJRQ?oc=5",
-      "published": "Fri, 02 Oct 2026 21:24:17 GMT",
-      "publishedAt": "2026-10-02T21:24:17+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiyAFBVV95cUxNY0VxYTBSM0xkaGpNeGFGLTE1RXp2Wndxczd4N0NfMXFYYTZtX3ZBanJTT0NRTjlxc0RjUWw3NGswUDhnX0llQXpMWEpJTk5STm4ybEpPLVdXRmJCMkt6V2hTTlozczRPWTJtNDdtV1ZyaXRsSFByejBYQVFEN010eG9CVGVqaFlnakJlMlVKeXFjNnNQTFktaTNMdmZscldvaVVvMmhyZzVMbUVfc0ljMDZBWUxMa2J5aHJDeURRUm4wSGtuY3VJRQ?oc=5\" target=\"_blank\">슬롯 어나미머스 배당 조합의 표시 방향</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "배경 이야기보다 규칙이 궁금한 바카라 루쥬 540 엑스트레 드 퍼퓸 상세 해설 - calgaryroughnecks.com",
-      "link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxOLW4xcGZjRzN4a0ZpRzN5aE1HME1YSlBUbjV4LUx3Qlo4Mko0Q3RVWDlfSDJMTlBlTDJTRmRLVjQxWGE3Qmkzanc3NE1wV1NSb3NlbGxDMjdVRXlTUm9XR2tqNGY0WmQyMEtuOUZNZVBRMUFYOTk2RTJCMk9MSVdGTEU3SGJDYjRjcVZNdnAtWnJqbTNRZlQ2WElsampsUUNqdlFGX2NMWVlfQW9jXzE3S1hsUnZzXzhScW1vS2t6cjBFaXpLQkdOT21BbUFQby0w?oc=5",
-      "published": "Fri, 02 Oct 2026 21:08:57 GMT",
-      "publishedAt": "2026-10-02T21:08:57+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi0AFBVV95cUxOLW4xcGZjRzN4a0ZpRzN5aE1HME1YSlBUbjV4LUx3Qlo4Mko0Q3RVWDlfSDJMTlBlTDJTRmRLVjQxWGE3Qmkzanc3NE1wV1NSb3NlbGxDMjdVRXlTUm9XR2tqNGY0WmQyMEtuOUZNZVBRMUFYOTk2RTJCMk9MSVdGTEU3SGJDYjRjcVZNdnAtWnJqbTNRZlQ2WElsampsUUNqdlFGX2NMWVlfQW9jXzE3S1hsUnZzXzhScW1vS2t6cjBFaXpLQkdOT21BbUFQby0w?oc=5\" target=\"_blank\">배경 이야기보다 규칙이 궁금한 바카라 루쥬 540 엑스트레 드 퍼퓸 상세 해설</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
-      "source": "AI 개발 신기술",
+      "title": "온라인 카지노 커뮤니티 순위 소개 이미지에서 확인할 요소 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBMQnM0VXM4VTBpNkl5V0lZazh0VVIxRmFIdEcySEhNXzJmYUVlLVlZUGVUdlJqajMxTlJheGQ4c1diZGkzY0h2V3pSZjdZenItYm8tQTVuOVdrX0FSUWxSSVpsT0RlbGV6TnpuSzlMS3Nxay12dWc?oc=5",
+      "published": "Fri, 02 Oct 2026 15:46:59 GMT",
+      "publishedAt": "2026-10-02T15:46:59+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMidkFVX3lxTFBMQnM0VXM4VTBpNkl5V0lZazh0VVIxRmFIdEcySEhNXzJmYUVlLVlZUGVUdlJqajMxTlJheGQ4c1diZGkzY0h2V3pSZjdZenItYm8tQTVuOVdrX0FSUWxSSVpsT0RlbGV6TnpuSzlMS3Nxay12dWc?oc=5\" target=\"_blank\">온라인 카지노 커뮤니티 순위 소개 이미지에서 확인할 요소</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
@@ -180808,11 +180819,11 @@
       "relevance": 0
     },
     {
-      "title": "이반토니 도박 : 위험 피하기와 보호 조치 - calgaryroughnecks.com",
+      "title": "이반토니 도박 : 위험 피하기와 보호 조치 - Calgary Roughnecks",
       "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5",
       "published": "Thu, 01 Oct 2026 20:51:58 GMT",
       "publishedAt": "2026-10-01T20:51:58+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5\" target=\"_blank\">이반토니 도박 : 위험 피하기와 보호 조치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5\" target=\"_blank\">이반토니 도박 : 위험 피하기와 보호 조치</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "낮음",
@@ -180887,7 +180898,7 @@
       "relevance": 0
     }
   ],
-  "employmentUpdatedAt": "2026-10-03T16:38:07+00:00",
+  "employmentUpdatedAt": "2026-10-03T19:44:06+00:00",
   "jobPostings": [
     {
       "title": "[경력] UI 디자이너",
@@ -180967,7 +180978,7 @@
       "skills": [],
       "employmentType": "계약직",
       "deadline": "~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02",
-      "detailText": "[Flyway Games] Jazz & Juice - Animator (1년 이상) 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> (주)크래프톤 공유하기 인쇄하기 전달하기 [Flyway Games] Jazz & Juice - Animator (1년 이상) 모집분야 애니메이션 툴팁기능 애니메이션 툴팁닫기 키워드 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁기능 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁닫기 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 게임분야 웹게임 Simulation 툴팁기능 디바이스: 웹게임 장르: Simulation 툴팁닫기 경력 경력 1년 이상 고용형태 계약직 (계약기간 : 1년) 학력 학력무관 직급/직책 사원, 주임/계장 모집인원 O명 급여 면접 시 협의 연봉검색 마감일 ~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02 15:23 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 2호선 강남역 5번 출구 500m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험 휴무·휴가 주5일근무 보상제도 인센티브제, 장기근속자 포상, 퇴직금 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 58 일 시작일 2026-10-02(금) 마감일 2026-12-01(화) 지원방법 [당사 홈페이지] 전형절차 서류 전형 > 실무 면접 (Technical Fit Interview) > 최종 면접 (Culture Fit Interview) 제출서류 입사지원서 (자유 양식), 자기소개서, 경력기술서, 포트폴리오(필수) 신입일 경우 자기소개서를, 경력일 경우 경력기술서를 중심으로 기술해 주시기 바랍니다. 포트폴리오 첨부 시, 하단 안내 사항을 확인해 주시기 바랍니다. 담당자 채용담당자(채용담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 (주)크래프톤 연봉정보 대표자명 김창한 설립연도 2007년 사원수 1800 명 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 기업형태 주권(유가증권) 상장(대기업) 주요사업 게임제작 기업뉴스 더보기 크래프톤 '배그' IP 활용작 개발이 계속 미뤄지는 이유는 '펍지: 블랙버짓'크래프톤이 '배틀그라운드' 판권(IP)을 활용한 작품 개발에 난항을 겪고 있다. 최근 준비중인 작품 개발도 중단을 선언했다. 이에따라 현재 진행중인 '타래: 언바운드' 등 차기작의 향배가 더욱 긴요해졌다.2일 관련업계에 따르면 크래프톤(대표 김창한)은 '펍지: 블랙버짓'의 개발을 중단했다. 이 작품은 '배틀그라운드' 판권(IP)을 활용한 익스트랙션 슈터 게임이다. 지난 2022년 첫 공개가 이뤄졌으나, 4년만에 개발 계획을 취소한 것이다. 이에 대해 회사측은 \"프로젝트의 개발 현황과 향후 방향을 검토한 결과, 현재의 개발 방향으로는 팬들에게 오랫동안 만족하며 즐길 수 있는 환경을 제공하기 어렵다고 판단했다\"고 밝혔다. 이 회사는 이에 앞서 이 작품의 완성도를 살펴보기 위해 두 번의 테스트를 진행했는데, 참가한 테스터들로부터 긍정적 반응을 얻지 못한 것으로 알려졌다. 게임업체가 작품의 개발을 중단하는 것은 그다지 생소한 일은 아니다. 하지만 '펍지: 블랙버짓'은 이 회사의 대표작인 '배틀그라운드' IP 활용작이었다는 점에서 업계 안팎의 관심을 모아왔다. 특히 시장에선 이 작품을 통해 '배틀그라운드' 인지도가 한층 제고될 것으로 기대를 나타내 왔다. 이 회사는 앞서부터 '배그' IP 활용작 개발에 주력해 왔지만, 번번히 고배를 마셔왔다. 실제로 이 회사는 지난 2월 '펍지: 블라인드 스팟'을 출시했으나, 한 달여 만에 서비스 종료를 선언했다. 또 2021년에는 '배틀그라운드: 뉴스테이트'를 출시했으나, 론칭 초반 유저들의 아쉬운 평가서를 받아쥐었다. 회사측은 그 때문인지 작품명을 '뉴스테이트 모바일'로 바꾸는 등 '배틀그라운드'와의 거리를 두기도 했다. '배그' IP 활용작 개발에 벌써 세 번이나 나섰지만 뚜렷한 성과를 거두지 못하고 있는 것이다. 이에 대해 업계는 큰 아쉬움을 나타내고 있다. '배틀그라운드'가 개별 회사의 흥행작을 넘어, 게임한류의 대표 주자로 평가되고 있기 때문이다. 일각에서는 '배틀그라운드' IP 활용작이 연이어 좌초됨에 따라 이 회사의 신작 모멘텀 역시 감소할 것으로 우려했다. 하지만 원작 '배틀그라운드'가 여전히 큰 인기를 얻고 있는 만큼, 즉각적인 실적감소 등은 발생하지 않을 것이란 전망이다. '배그' IP 활용작이 잘 됐으면 금상첨화이겠지만, 그렇지 않더라도 캐시카우의 견조한 인기를 통해 회사의 안정적인 성장이 이어질 것으로 보고 있는 것이다. 다만 이 회사가 준비 중이던 작품이 중단된 만큼 차기작의 중요도 역시 한층 높아졌다. 예컨대 다른 '배틀그라운드' IP 활용작인 '펍지: 데드넷'을 비롯해 '타래: 언바운드' 노 로우' 등 주요 작품들의 시장 부담감은 더 커질 전망이다. 업계의 한 관계자는 \"'배틀그라운드'는 크래프톤을 상징하는 이 회사의 핵심 IP\"라며 \"그런데 이 '배그' IP를 활용해 제대로 된 작품을 내놓지 못하고 있다. 부담감이 크게 작용하고 있는 것\"이라고 말했다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-02 크래프톤 '라스트 에포크' 시즌5 업데이트 크래프톤(대표 김창한)은 2일 크리에이티브 스튜디오 일레븐스 아워 게임즈(EHG)의 '라스트 에포크'의 시즌5 '서리화신의 분노'에 대한 업데이트를 진행했다.이 회사는 이를 통해 시즌 콘텐츠 '모르디타스의 분노'에서 '피의 결정'을 활성화하고 적들의 공세에 맞서 보상을 획득할 수 있도록 했다. 또한 새 보스 '모르디타스'와 최상위 보스 '피나클 모르디타스'를 투입하는 등 보다 확장된 전투 콘텐츠를 제공할 계획이다. 특히 스킬 3개와 유니크 및 세트 아이템을 추가해 캐릭터 빌드 구성과 아이템 조합의 폭을 넓혀 눈길을 끌고 있다. 이 회사는 시즌 5를 위해 현지화 전문팀을 구성하고, 게임 내 텍스트와 콘텐츠 전반의 현지화 완성도를 높여왔다. 또 한국어 표현 및 표기의 정확성과 일관성을 대대적으로 개편하기도 했다. 앞으로 한국어를 비롯한 다국어 현지화 품질 향상을 위한 투자를 지속한다는 방침이다.한편 새 시즌 업데이트와 함께 마이크 웨이커 EHG 공동 창업자가 작품의 신임 게임 디렉터로 취임했다. 마이크 웨이커는 지난 2017년 초기 개발 단계부터 약 9년 간 개발에 참여해 왔다. 저드 코블러 EHG 대표의 개발 철학을 이어가며, 향후 개발 방향과 라이브 서비스를 이끌어 갈 계획이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-02 9월 게임주 전반적인 하락세 '뚜렷 ' 9월 게임주는 종목 대부분이 월 초 대비 하락했다. 펄어비스 컴투스 등 일부 종목이 가격을 높였지만, 게임주 전반의 분위기는 침체된 모습을 드러냈다. 지난 30일 크래프톤 주가는 19만 4900원으로, 9월 첫 거래일(1일, 23만 1000원) 대비 15.6% 감소했다. 기간 중 최고가(종가기준)는 23만 1000원(1일), 최저가는 19만 4900원(30일)이다. 9월 e스포츠 관련 이슈가 발생하긴 했지만, 대체로 잠잠한 모습을 보였다. 그럼에도 주가는 월초부터 지속적인 하락세를 보이며 20만원대가 무너졌다. 엔씨 주가는 월초 22만 4000원에서 30일 20만 9000원의 변동을 보였다. 한 달 동안 6.6% 감소한 것이다. 기간 중 최고가는 22만 3000원(7일), 최저가는 20만 1500원(16일)이다. 기간 중 이 회사는 도쿄게임쇼에 참가해 신작을 공개했다. 여기에 '아이온2' 글로벌 출시를 앞두고 있으나, 투자심리를 이끌지 못했다. 넷마블의 30일 종가는 3만 4400원으로, 월초(1일: 3만 8800원) 대비 11.3% 감소한 수치다. 기간 중 최고가는 3만 8800원(1일), 최저가는 3만 4250(16일)이다. 이 회사 역시 도쿄게임쇼에 참가해 신작들을 공개했다. 하지만 이같은 움직임에도 투자심리를 자극하진 못했다. 10%대 하락세를 보인 코스피 상장 게임업체들에 비해 코스닥에 상장한 중견 · 중소업체들은 그나마 사정이 나았다. 펄어비스 컴투스 등 일부 업체는 오히려 가격을 높이며 투자자들의 관심을 샀다. 펄어비스 주가는 지난 1일 3만 1350원에서 30일 3만 3100원의 변동을 보였다. 한 달 동안 5.5% 가격이 오른 것이다. '붉은사막' 이후 신작 공백 우려가 커졌으나, 첫 DLC 론칭 일자가 공개되며 투자심리를 자극했다. 일반적으로 DLC 발매는 신작 출시에 비해 기대감이 적은 편이다. 하지만 '붉은사막'이 워낙 큰 성공을 거둬 DLC 발매에 큰 기대감이 형성됐다. 카카오게임즈의 30일 주식 종가는 9210원으로, 지난 1일(9880원) 대비 6.7% 감소했다. 기간 중 이 회사는 차기작 '도깨비의세계' 출시일을 발표하고 본격적인 띄우기 행보에 돌입했다. 신작이 부각됐지만, 아쉬운 2분기 실적과 일부 작품의 출시 지연이 발목을 잡았다. 컴투스는 30일 3만 6700원에 장을 마감했다. 지난 1일(3만 4500원) 대비 6.3% 가격이 오른 것이다. 지난달 출시한 '제우스: 오만의 신'이 이달 들어서도 선두 자리를 유지하며 실적 개선 기대감을 키웠다. 여기에 차기작 기대감, 기존 작품의 인기 반등 전망도 주가 상승에 일조했다. 위메이드는 지난 1일 1만 5430원에서 30일 1만 4850원의 변동을 보였다. 한 달 동안 3.7% 가격이 떨어진 것이다. 기간 중 게임 사업 부문에서는 '악마단 돌겨억' 출시 외에 특별한 이슈는 없었다. 다만 최대주주 변경 이슈가 구체화되며 투자자들의 이목이 쏠렸다. 노동조합이 출범하는 등 비교적 혼란한 상황에서도 낙폭을 최소하하며 선방했다는 평가다. 이 외에도 네오위즈가 지난 1일 1만 8060원에서 30일 1만 7730원, 웹젠이 1만 1360원에서 1만 1550원, 넥슨게임즈가 1만 1500원에서 1만 350원의 변동을 보이는 등 대부분의 종목이 월 초 대비 하락세로 거래를 마쳤다. 시장에서는 지난 2분기 대부분의 게임업체들이 예상외의 저조한 성적을 거뒀고, 일부 업체들의 핵심 기대작이 지연되면서 게임주에 대한 투자자들의 관심이 상대적으로 떨어졌기 때문으로 분석했다. 그나마 중견 게임업체들은 선방했으나, 메이저 기업들이 고전을 면치 못했다는 것이다. 이에따라 일각에선 메이저 주가가 상승세를 이끌지 못하는 한 게임주의 약세는 앞으로 계속될 것이라며 우려를 나타냈다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-01 [게임스톡] 크래프톤 2거래일 연속 하락 1.91%↓ 하루 사이로 등락을 반복하던 크래프톤의 주가가 20만원대의 벽이 무너진 후 반등하지 못하고 있다.30일 크래프톤의 주가는 전 거래일 대비 1.91%(3800원) 내린 19만 4900원으로 장을 마감했다.이 회사 주가는 9시께 하락세가 이어지며, 이후 이렇다할 반등 없이 거래를 마쳤다.개인은 2거래일 연속 매수세를 이어갔고, 외국인은 3거래일 연속 매수세를 보였다. 반면 기관은 2거래일 연속 매도세를 이어갔다.이는 이 회사의 대표작인 '배틀그라운드'를 활용한 대회인 '펍지 : 아시아 스타즈'에서 운영 이슈가 발생해, 유저들의 불만이 주가에 영향을 끼친 것으로 보인다.[더게임스데일리 한동연 기자 bronzek@tgdaily.co.kr] 2026-09-30 본 채용정보는 게임잡의 동의없이 무단전재, 재배포, 재가공할 수 없으며, 구직활동 이외의 용도로 사용될 수 없습니다. 불법/허위/과장/오류 신고 본 정보는 (주)크래프톤 에서 제공한 자료로 게임잡의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용될 수 없습니다. 게임잡은 (주)크래프톤 에서 게재한 자료에 대한 오류와",
+      "detailText": "[Flyway Games] Jazz & Juice - Animator (1년 이상) 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> (주)크래프톤 공유하기 인쇄하기 전달하기 [Flyway Games] Jazz & Juice - Animator (1년 이상) 모집분야 애니메이션 툴팁기능 애니메이션 툴팁닫기 키워드 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁기능 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁닫기 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 게임분야 웹게임 Simulation 툴팁기능 디바이스: 웹게임 장르: Simulation 툴팁닫기 경력 경력 1년 이상 고용형태 계약직 (계약기간 : 1년) 학력 학력무관 직급/직책 사원, 주임/계장 모집인원 O명 급여 면접 시 협의 연봉검색 마감일 ~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02 15:23 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 2호선 강남역 5번 출구 500m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험 휴무·휴가 주5일근무 보상제도 인센티브제, 장기근속자 포상, 퇴직금 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 58 일 시작일 2026-10-02(금) 마감일 2026-12-01(화) 지원방법 [당사 홈페이지] 전형절차 서류 전형 > 실무 면접 (Technical Fit Interview) > 최종 면접 (Culture Fit Interview) 제출서류 입사지원서 (자유 양식), 자기소개서, 경력기술서, 포트폴리오(필수) 신입일 경우 자기소개서를, 경력일 경우 경력기술서를 중심으로 기술해 주시기 바랍니다. 포트폴리오 첨부 시, 하단 안내 사항을 확인해 주시기 바랍니다. 담당자 채용담당자(채용담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 (주)크래프톤 연봉정보 대표자명 김창한 설립연도 2007년 사원수 1800 명 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 기업형태 주권(유가증권) 상장(대기업) 주요사업 게임제작 기업뉴스 더보기 '배그 모바일' 대회 'PMPS' 시즌2 돌입 크래프톤(대표 김창한)이 3일 '배틀그라운드 모바일'의 한국 최강팀을 가리는 프로 e스포츠 대회 '마운틴듀 펍지 모바일 프로 시리즈(PMPS) 2026 시즌 2' 오픈을 시작한다.이번 대회에는 ▲파트너팀 4개 팀 ▲'대한민국 e스포츠 리그(KEL)' 지역 연고팀 7개 팀 ▲'펍지 모바일 오픈 챌린지(PMOC)' 상위 5개 팀 등 총 16개 팀이 참가한다. 각 팀은 서킷 스테이지와 파이널을 거쳐 최종 순위를 가리게 된다.이번 대회 성적에 따라 우승팀은 글로벌 대회 '펍지 모바일 글로벌 챔피언십(PMGC)'에 진출하며, 나머지 5개 팀은 '배틀그라운드 모바일 인비테이션 컵(BMIC)' 출전 기회가 주어진다.'PMPS 2026 시즌 2'는 5일간의 서킷 스테이지와 2일간의 파이널로 진행된다. 서킷 스테이지는 3일부터 4일, 그리고 9일부터 11일까지 온라인으로 열리게 된다. 각 서킷 스테이지에서 가장 높은 점수를 획득한 상위 3개 팀에 대해서는 파이널에서 적용되는 베네핏 포인트가 지급된다.파이널 경기는 이달 17일부터 18일까지 이틀간 대전 e스포츠 경기장에서 열릴 예정이다. 최종 순위는 파이널에서 획득한 포인트와 베네핏 포인트를 합산해 산정된다. 총상금은 4000만원 규모로, 우승팀에는 2500만원, 준우승팀에는 1000만원, 3위 팀에는 500만원이 각각 수여된다.지난 5월 열린 'PMPS 2026 시즌1' 결승전 영상.이번 PMPS 2026 시즌 2 결승전은 대전시와의 협업을 통해 진행되는 게 특징이다. 대전 지역 대표 축제인 '빵축제' 기간에 맞춰 결승전이 열리게 되며, 대전시 대표 캐릭터 '꿈돌이' 판권(IP)과의 컬래버레이션도 함께 선보인다.결승전 티켓을 구매하면 꿈돌이 컬래버 티셔츠를 증정한다. 빵축제 현장에 마련되는 PMPS 체험 프로그램을 이용한 방문객에 대해서는 그립톡 · 텀블러 · 스티커 등 다양한 굿즈를 추가 제공한다. 또한 대회 기간 경기장 브랜딩을 비롯해 다양한 마케팅 활동도 함께 지원한다.대회는 유튜브 · 네이버 치지직 등을 통해 생중계되며, 카페 및 SNS 채널을 통해 대회의 자세한 소식을 알릴 예정이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-03 크래프톤 '배그' IP 활용작 개발이 계속 미뤄지는 이유는 '펍지: 블랙버짓'크래프톤이 '배틀그라운드' 판권(IP)을 활용한 작품 개발에 난항을 겪고 있다. 최근 준비중인 작품 개발도 중단을 선언했다. 이에따라 현재 진행중인 '타래: 언바운드' 등 차기작의 향배가 더욱 긴요해졌다.2일 관련업계에 따르면 크래프톤(대표 김창한)은 '펍지: 블랙버짓'의 개발을 중단했다. 이 작품은 '배틀그라운드' 판권(IP)을 활용한 익스트랙션 슈터 게임이다. 지난 2022년 첫 공개가 이뤄졌으나, 4년만에 개발 계획을 취소한 것이다. 이에 대해 회사측은 \"프로젝트의 개발 현황과 향후 방향을 검토한 결과, 현재의 개발 방향으로는 팬들에게 오랫동안 만족하며 즐길 수 있는 환경을 제공하기 어렵다고 판단했다\"고 밝혔다. 이 회사는 이에 앞서 이 작품의 완성도를 살펴보기 위해 두 번의 테스트를 진행했는데, 참가한 테스터들로부터 긍정적 반응을 얻지 못한 것으로 알려졌다. 게임업체가 작품의 개발을 중단하는 것은 그다지 생소한 일은 아니다. 하지만 '펍지: 블랙버짓'은 이 회사의 대표작인 '배틀그라운드' IP 활용작이었다는 점에서 업계 안팎의 관심을 모아왔다. 특히 시장에선 이 작품을 통해 '배틀그라운드' 인지도가 한층 제고될 것으로 기대를 나타내 왔다. 이 회사는 앞서부터 '배그' IP 활용작 개발에 주력해 왔지만, 번번히 고배를 마셔왔다. 실제로 이 회사는 지난 2월 '펍지: 블라인드 스팟'을 출시했으나, 한 달여 만에 서비스 종료를 선언했다. 또 2021년에는 '배틀그라운드: 뉴스테이트'를 출시했으나, 론칭 초반 유저들의 아쉬운 평가서를 받아쥐었다. 회사측은 그 때문인지 작품명을 '뉴스테이트 모바일'로 바꾸는 등 '배틀그라운드'와의 거리를 두기도 했다. '배그' IP 활용작 개발에 벌써 세 번이나 나섰지만 뚜렷한 성과를 거두지 못하고 있는 것이다. 이에 대해 업계는 큰 아쉬움을 나타내고 있다. '배틀그라운드'가 개별 회사의 흥행작을 넘어, 게임한류의 대표 주자로 평가되고 있기 때문이다. 일각에서는 '배틀그라운드' IP 활용작이 연이어 좌초됨에 따라 이 회사의 신작 모멘텀 역시 감소할 것으로 우려했다. 하지만 원작 '배틀그라운드'가 여전히 큰 인기를 얻고 있는 만큼, 즉각적인 실적감소 등은 발생하지 않을 것이란 전망이다. '배그' IP 활용작이 잘 됐으면 금상첨화이겠지만, 그렇지 않더라도 캐시카우의 견조한 인기를 통해 회사의 안정적인 성장이 이어질 것으로 보고 있는 것이다. 다만 이 회사가 준비 중이던 작품이 중단된 만큼 차기작의 중요도 역시 한층 높아졌다. 예컨대 다른 '배틀그라운드' IP 활용작인 '펍지: 데드넷'을 비롯해 '타래: 언바운드' 노 로우' 등 주요 작품들의 시장 부담감은 더 커질 전망이다. 업계의 한 관계자는 \"'배틀그라운드'는 크래프톤을 상징하는 이 회사의 핵심 IP\"라며 \"그런데 이 '배그' IP를 활용해 제대로 된 작품을 내놓지 못하고 있다. 부담감이 크게 작용하고 있는 것\"이라고 말했다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-02 크래프톤 '라스트 에포크' 시즌5 업데이트 크래프톤(대표 김창한)은 2일 크리에이티브 스튜디오 일레븐스 아워 게임즈(EHG)의 '라스트 에포크'의 시즌5 '서리화신의 분노'에 대한 업데이트를 진행했다.이 회사는 이를 통해 시즌 콘텐츠 '모르디타스의 분노'에서 '피의 결정'을 활성화하고 적들의 공세에 맞서 보상을 획득할 수 있도록 했다. 또한 새 보스 '모르디타스'와 최상위 보스 '피나클 모르디타스'를 투입하는 등 보다 확장된 전투 콘텐츠를 제공할 계획이다. 특히 스킬 3개와 유니크 및 세트 아이템을 추가해 캐릭터 빌드 구성과 아이템 조합의 폭을 넓혀 눈길을 끌고 있다. 이 회사는 시즌 5를 위해 현지화 전문팀을 구성하고, 게임 내 텍스트와 콘텐츠 전반의 현지화 완성도를 높여왔다. 또 한국어 표현 및 표기의 정확성과 일관성을 대대적으로 개편하기도 했다. 앞으로 한국어를 비롯한 다국어 현지화 품질 향상을 위한 투자를 지속한다는 방침이다.한편 새 시즌 업데이트와 함께 마이크 웨이커 EHG 공동 창업자가 작품의 신임 게임 디렉터로 취임했다. 마이크 웨이커는 지난 2017년 초기 개발 단계부터 약 9년 간 개발에 참여해 왔다. 저드 코블러 EHG 대표의 개발 철학을 이어가며, 향후 개발 방향과 라이브 서비스를 이끌어 갈 계획이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-02 9월 게임주 전반적인 하락세 '뚜렷 ' 9월 게임주는 종목 대부분이 월 초 대비 하락했다. 펄어비스 컴투스 등 일부 종목이 가격을 높였지만, 게임주 전반의 분위기는 침체된 모습을 드러냈다. 지난 30일 크래프톤 주가는 19만 4900원으로, 9월 첫 거래일(1일, 23만 1000원) 대비 15.6% 감소했다. 기간 중 최고가(종가기준)는 23만 1000원(1일), 최저가는 19만 4900원(30일)이다. 9월 e스포츠 관련 이슈가 발생하긴 했지만, 대체로 잠잠한 모습을 보였다. 그럼에도 주가는 월초부터 지속적인 하락세를 보이며 20만원대가 무너졌다. 엔씨 주가는 월초 22만 4000원에서 30일 20만 9000원의 변동을 보였다. 한 달 동안 6.6% 감소한 것이다. 기간 중 최고가는 22만 3000원(7일), 최저가는 20만 1500원(16일)이다. 기간 중 이 회사는 도쿄게임쇼에 참가해 신작을 공개했다. 여기에 '아이온2' 글로벌 출시를 앞두고 있으나, 투자심리를 이끌지 못했다. 넷마블의 30일 종가는 3만 4400원으로, 월초(1일: 3만 8800원) 대비 11.3% 감소한 수치다. 기간 중 최고가는 3만 8800원(1일), 최저가는 3만 4250(16일)이다. 이 회사 역시 도쿄게임쇼에 참가해 신작들을 공개했다. 하지만 이같은 움직임에도 투자심리를 자극하진 못했다. 10%대 하락세를 보인 코스피 상장 게임업체들에 비해 코스닥에 상장한 중견 · 중소업체들은 그나마 사정이 나았다. 펄어비스 컴투스 등 일부 업체는 오히려 가격을 높이며 투자자들의 관심을 샀다. 펄어비스 주가는 지난 1일 3만 1350원에서 30일 3만 3100원의 변동을 보였다. 한 달 동안 5.5% 가격이 오른 것이다. '붉은사막' 이후 신작 공백 우려가 커졌으나, 첫 DLC 론칭 일자가 공개되며 투자심리를 자극했다. 일반적으로 DLC 발매는 신작 출시에 비해 기대감이 적은 편이다. 하지만 '붉은사막'이 워낙 큰 성공을 거둬 DLC 발매에 큰 기대감이 형성됐다. 카카오게임즈의 30일 주식 종가는 9210원으로, 지난 1일(9880원) 대비 6.7% 감소했다. 기간 중 이 회사는 차기작 '도깨비의세계' 출시일을 발표하고 본격적인 띄우기 행보에 돌입했다. 신작이 부각됐지만, 아쉬운 2분기 실적과 일부 작품의 출시 지연이 발목을 잡았다. 컴투스는 30일 3만 6700원에 장을 마감했다. 지난 1일(3만 4500원) 대비 6.3% 가격이 오른 것이다. 지난달 출시한 '제우스: 오만의 신'이 이달 들어서도 선두 자리를 유지하며 실적 개선 기대감을 키웠다. 여기에 차기작 기대감, 기존 작품의 인기 반등 전망도 주가 상승에 일조했다. 위메이드는 지난 1일 1만 5430원에서 30일 1만 4850원의 변동을 보였다. 한 달 동안 3.7% 가격이 떨어진 것이다. 기간 중 게임 사업 부문에서는 '악마단 돌겨억' 출시 외에 특",
       "sources": [
         {
           "site": "게임잡",
@@ -181013,7 +181024,7 @@
       "skills": [],
       "employmentType": "계약직",
       "deadline": "~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02",
-      "detailText": "[Flyway Games] Jazz & Juice - Animator (1년 이상) 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> (주)크래프톤 공유하기 인쇄하기 전달하기 [Flyway Games] Jazz & Juice - Animator (1년 이상) 모집분야 애니메이션 툴팁기능 애니메이션 툴팁닫기 키워드 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁기능 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁닫기 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 게임분야 웹게임 Simulation 툴팁기능 디바이스: 웹게임 장르: Simulation 툴팁닫기 경력 경력 1년 이상 고용형태 계약직 (계약기간 : 1년) 학력 학력무관 직급/직책 사원, 주임/계장 모집인원 O명 급여 면접 시 협의 연봉검색 마감일 ~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02 15:23 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 2호선 강남역 5번 출구 500m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험 휴무·휴가 주5일근무 보상제도 인센티브제, 장기근속자 포상, 퇴직금 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 58 일 시작일 2026-10-02(금) 마감일 2026-12-01(화) 지원방법 [당사 홈페이지] 전형절차 서류 전형 > 실무 면접 (Technical Fit Interview) > 최종 면접 (Culture Fit Interview) 제출서류 입사지원서 (자유 양식), 자기소개서, 경력기술서, 포트폴리오(필수) 신입일 경우 자기소개서를, 경력일 경우 경력기술서를 중심으로 기술해 주시기 바랍니다. 포트폴리오 첨부 시, 하단 안내 사항을 확인해 주시기 바랍니다. 담당자 채용담당자(채용담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 (주)크래프톤 연봉정보 대표자명 김창한 설립연도 2007년 사원수 1800 명 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 기업형태 주권(유가증권) 상장(대기업) 주요사업 게임제작 기업뉴스 더보기 크래프톤 '배그' IP 활용작 개발이 계속 미뤄지는 이유는 '펍지: 블랙버짓'크래프톤이 '배틀그라운드' 판권(IP)을 활용한 작품 개발에 난항을 겪고 있다. 최근 준비중인 작품 개발도 중단을 선언했다. 이에따라 현재 진행중인 '타래: 언바운드' 등 차기작의 향배가 더욱 긴요해졌다.2일 관련업계에 따르면 크래프톤(대표 김창한)은 '펍지: 블랙버짓'의 개발을 중단했다. 이 작품은 '배틀그라운드' 판권(IP)을 활용한 익스트랙션 슈터 게임이다. 지난 2022년 첫 공개가 이뤄졌으나, 4년만에 개발 계획을 취소한 것이다. 이에 대해 회사측은 \"프로젝트의 개발 현황과 향후 방향을 검토한 결과, 현재의 개발 방향으로는 팬들에게 오랫동안 만족하며 즐길 수 있는 환경을 제공하기 어렵다고 판단했다\"고 밝혔다. 이 회사는 이에 앞서 이 작품의 완성도를 살펴보기 위해 두 번의 테스트를 진행했는데, 참가한 테스터들로부터 긍정적 반응을 얻지 못한 것으로 알려졌다. 게임업체가 작품의 개발을 중단하는 것은 그다지 생소한 일은 아니다. 하지만 '펍지: 블랙버짓'은 이 회사의 대표작인 '배틀그라운드' IP 활용작이었다는 점에서 업계 안팎의 관심을 모아왔다. 특히 시장에선 이 작품을 통해 '배틀그라운드' 인지도가 한층 제고될 것으로 기대를 나타내 왔다. 이 회사는 앞서부터 '배그' IP 활용작 개발에 주력해 왔지만, 번번히 고배를 마셔왔다. 실제로 이 회사는 지난 2월 '펍지: 블라인드 스팟'을 출시했으나, 한 달여 만에 서비스 종료를 선언했다. 또 2021년에는 '배틀그라운드: 뉴스테이트'를 출시했으나, 론칭 초반 유저들의 아쉬운 평가서를 받아쥐었다. 회사측은 그 때문인지 작품명을 '뉴스테이트 모바일'로 바꾸는 등 '배틀그라운드'와의 거리를 두기도 했다. '배그' IP 활용작 개발에 벌써 세 번이나 나섰지만 뚜렷한 성과를 거두지 못하고 있는 것이다. 이에 대해 업계는 큰 아쉬움을 나타내고 있다. '배틀그라운드'가 개별 회사의 흥행작을 넘어, 게임한류의 대표 주자로 평가되고 있기 때문이다. 일각에서는 '배틀그라운드' IP 활용작이 연이어 좌초됨에 따라 이 회사의 신작 모멘텀 역시 감소할 것으로 우려했다. 하지만 원작 '배틀그라운드'가 여전히 큰 인기를 얻고 있는 만큼, 즉각적인 실적감소 등은 발생하지 않을 것이란 전망이다. '배그' IP 활용작이 잘 됐으면 금상첨화이겠지만, 그렇지 않더라도 캐시카우의 견조한 인기를 통해 회사의 안정적인 성장이 이어질 것으로 보고 있는 것이다. 다만 이 회사가 준비 중이던 작품이 중단된 만큼 차기작의 중요도 역시 한층 높아졌다. 예컨대 다른 '배틀그라운드' IP 활용작인 '펍지: 데드넷'을 비롯해 '타래: 언바운드' 노 로우' 등 주요 작품들의 시장 부담감은 더 커질 전망이다. 업계의 한 관계자는 \"'배틀그라운드'는 크래프톤을 상징하는 이 회사의 핵심 IP\"라며 \"그런데 이 '배그' IP를 활용해 제대로 된 작품을 내놓지 못하고 있다. 부담감이 크게 작용하고 있는 것\"이라고 말했다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-02 크래프톤 '라스트 에포크' 시즌5 업데이트 크래프톤(대표 김창한)은 2일 크리에이티브 스튜디오 일레븐스 아워 게임즈(EHG)의 '라스트 에포크'의 시즌5 '서리화신의 분노'에 대한 업데이트를 진행했다.이 회사는 이를 통해 시즌 콘텐츠 '모르디타스의 분노'에서 '피의 결정'을 활성화하고 적들의 공세에 맞서 보상을 획득할 수 있도록 했다. 또한 새 보스 '모르디타스'와 최상위 보스 '피나클 모르디타스'를 투입하는 등 보다 확장된 전투 콘텐츠를 제공할 계획이다. 특히 스킬 3개와 유니크 및 세트 아이템을 추가해 캐릭터 빌드 구성과 아이템 조합의 폭을 넓혀 눈길을 끌고 있다. 이 회사는 시즌 5를 위해 현지화 전문팀을 구성하고, 게임 내 텍스트와 콘텐츠 전반의 현지화 완성도를 높여왔다. 또 한국어 표현 및 표기의 정확성과 일관성을 대대적으로 개편하기도 했다. 앞으로 한국어를 비롯한 다국어 현지화 품질 향상을 위한 투자를 지속한다는 방침이다.한편 새 시즌 업데이트와 함께 마이크 웨이커 EHG 공동 창업자가 작품의 신임 게임 디렉터로 취임했다. 마이크 웨이커는 지난 2017년 초기 개발 단계부터 약 9년 간 개발에 참여해 왔다. 저드 코블러 EHG 대표의 개발 철학을 이어가며, 향후 개발 방향과 라이브 서비스를 이끌어 갈 계획이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-02 9월 게임주 전반적인 하락세 '뚜렷 ' 9월 게임주는 종목 대부분이 월 초 대비 하락했다. 펄어비스 컴투스 등 일부 종목이 가격을 높였지만, 게임주 전반의 분위기는 침체된 모습을 드러냈다. 지난 30일 크래프톤 주가는 19만 4900원으로, 9월 첫 거래일(1일, 23만 1000원) 대비 15.6% 감소했다. 기간 중 최고가(종가기준)는 23만 1000원(1일), 최저가는 19만 4900원(30일)이다. 9월 e스포츠 관련 이슈가 발생하긴 했지만, 대체로 잠잠한 모습을 보였다. 그럼에도 주가는 월초부터 지속적인 하락세를 보이며 20만원대가 무너졌다. 엔씨 주가는 월초 22만 4000원에서 30일 20만 9000원의 변동을 보였다. 한 달 동안 6.6% 감소한 것이다. 기간 중 최고가는 22만 3000원(7일), 최저가는 20만 1500원(16일)이다. 기간 중 이 회사는 도쿄게임쇼에 참가해 신작을 공개했다. 여기에 '아이온2' 글로벌 출시를 앞두고 있으나, 투자심리를 이끌지 못했다. 넷마블의 30일 종가는 3만 4400원으로, 월초(1일: 3만 8800원) 대비 11.3% 감소한 수치다. 기간 중 최고가는 3만 8800원(1일), 최저가는 3만 4250(16일)이다. 이 회사 역시 도쿄게임쇼에 참가해 신작들을 공개했다. 하지만 이같은 움직임에도 투자심리를 자극하진 못했다. 10%대 하락세를 보인 코스피 상장 게임업체들에 비해 코스닥에 상장한 중견 · 중소업체들은 그나마 사정이 나았다. 펄어비스 컴투스 등 일부 업체는 오히려 가격을 높이며 투자자들의 관심을 샀다. 펄어비스 주가는 지난 1일 3만 1350원에서 30일 3만 3100원의 변동을 보였다. 한 달 동안 5.5% 가격이 오른 것이다. '붉은사막' 이후 신작 공백 우려가 커졌으나, 첫 DLC 론칭 일자가 공개되며 투자심리를 자극했다. 일반적으로 DLC 발매는 신작 출시에 비해 기대감이 적은 편이다. 하지만 '붉은사막'이 워낙 큰 성공을 거둬 DLC 발매에 큰 기대감이 형성됐다. 카카오게임즈의 30일 주식 종가는 9210원으로, 지난 1일(9880원) 대비 6.7% 감소했다. 기간 중 이 회사는 차기작 '도깨비의세계' 출시일을 발표하고 본격적인 띄우기 행보에 돌입했다. 신작이 부각됐지만, 아쉬운 2분기 실적과 일부 작품의 출시 지연이 발목을 잡았다. 컴투스는 30일 3만 6700원에 장을 마감했다. 지난 1일(3만 4500원) 대비 6.3% 가격이 오른 것이다. 지난달 출시한 '제우스: 오만의 신'이 이달 들어서도 선두 자리를 유지하며 실적 개선 기대감을 키웠다. 여기에 차기작 기대감, 기존 작품의 인기 반등 전망도 주가 상승에 일조했다. 위메이드는 지난 1일 1만 5430원에서 30일 1만 4850원의 변동을 보였다. 한 달 동안 3.7% 가격이 떨어진 것이다. 기간 중 게임 사업 부문에서는 '악마단 돌겨억' 출시 외에 특별한 이슈는 없었다. 다만 최대주주 변경 이슈가 구체화되며 투자자들의 이목이 쏠렸다. 노동조합이 출범하는 등 비교적 혼란한 상황에서도 낙폭을 최소하하며 선방했다는 평가다. 이 외에도 네오위즈가 지난 1일 1만 8060원에서 30일 1만 7730원, 웹젠이 1만 1360원에서 1만 1550원, 넥슨게임즈가 1만 1500원에서 1만 350원의 변동을 보이는 등 대부분의 종목이 월 초 대비 하락세로 거래를 마쳤다. 시장에서는 지난 2분기 대부분의 게임업체들이 예상외의 저조한 성적을 거뒀고, 일부 업체들의 핵심 기대작이 지연되면서 게임주에 대한 투자자들의 관심이 상대적으로 떨어졌기 때문으로 분석했다. 그나마 중견 게임업체들은 선방했으나, 메이저 기업들이 고전을 면치 못했다는 것이다. 이에따라 일각에선 메이저 주가가 상승세를 이끌지 못하는 한 게임주의 약세는 앞으로 계속될 것이라며 우려를 나타냈다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-01 [게임스톡] 크래프톤 2거래일 연속 하락 1.91%↓ 하루 사이로 등락을 반복하던 크래프톤의 주가가 20만원대의 벽이 무너진 후 반등하지 못하고 있다.30일 크래프톤의 주가는 전 거래일 대비 1.91%(3800원) 내린 19만 4900원으로 장을 마감했다.이 회사 주가는 9시께 하락세가 이어지며, 이후 이렇다할 반등 없이 거래를 마쳤다.개인은 2거래일 연속 매수세를 이어갔고, 외국인은 3거래일 연속 매수세를 보였다. 반면 기관은 2거래일 연속 매도세를 이어갔다.이는 이 회사의 대표작인 '배틀그라운드'를 활용한 대회인 '펍지 : 아시아 스타즈'에서 운영 이슈가 발생해, 유저들의 불만이 주가에 영향을 끼친 것으로 보인다.[더게임스데일리 한동연 기자 bronzek@tgdaily.co.kr] 2026-09-30 본 채용정보는 게임잡의 동의없이 무단전재, 재배포, 재가공할 수 없으며, 구직활동 이외의 용도로 사용될 수 없습니다. 불법/허위/과장/오류 신고 본 정보는 (주)크래프톤 에서 제공한 자료로 게임잡의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용될 수 없습니다. 게임잡은 (주)크래프톤 에서 게재한 자료에 대한 오류와",
+      "detailText": "[Flyway Games] Jazz & Juice - Animator (1년 이상) 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> (주)크래프톤 공유하기 인쇄하기 전달하기 [Flyway Games] Jazz & Juice - Animator (1년 이상) 모집분야 애니메이션 툴팁기능 애니메이션 툴팁닫기 키워드 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁기능 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁닫기 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 게임분야 웹게임 Simulation 툴팁기능 디바이스: 웹게임 장르: Simulation 툴팁닫기 경력 경력 1년 이상 고용형태 계약직 (계약기간 : 1년) 학력 학력무관 직급/직책 사원, 주임/계장 모집인원 O명 급여 면접 시 협의 연봉검색 마감일 ~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02 15:23 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 2호선 강남역 5번 출구 500m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험 휴무·휴가 주5일근무 보상제도 인센티브제, 장기근속자 포상, 퇴직금 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 58 일 시작일 2026-10-02(금) 마감일 2026-12-01(화) 지원방법 [당사 홈페이지] 전형절차 서류 전형 > 실무 면접 (Technical Fit Interview) > 최종 면접 (Culture Fit Interview) 제출서류 입사지원서 (자유 양식), 자기소개서, 경력기술서, 포트폴리오(필수) 신입일 경우 자기소개서를, 경력일 경우 경력기술서를 중심으로 기술해 주시기 바랍니다. 포트폴리오 첨부 시, 하단 안내 사항을 확인해 주시기 바랍니다. 담당자 채용담당자(채용담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 (주)크래프톤 연봉정보 대표자명 김창한 설립연도 2007년 사원수 1800 명 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 기업형태 주권(유가증권) 상장(대기업) 주요사업 게임제작 기업뉴스 더보기 '배그 모바일' 대회 'PMPS' 시즌2 돌입 크래프톤(대표 김창한)이 3일 '배틀그라운드 모바일'의 한국 최강팀을 가리는 프로 e스포츠 대회 '마운틴듀 펍지 모바일 프로 시리즈(PMPS) 2026 시즌 2' 오픈을 시작한다.이번 대회에는 ▲파트너팀 4개 팀 ▲'대한민국 e스포츠 리그(KEL)' 지역 연고팀 7개 팀 ▲'펍지 모바일 오픈 챌린지(PMOC)' 상위 5개 팀 등 총 16개 팀이 참가한다. 각 팀은 서킷 스테이지와 파이널을 거쳐 최종 순위를 가리게 된다.이번 대회 성적에 따라 우승팀은 글로벌 대회 '펍지 모바일 글로벌 챔피언십(PMGC)'에 진출하며, 나머지 5개 팀은 '배틀그라운드 모바일 인비테이션 컵(BMIC)' 출전 기회가 주어진다.'PMPS 2026 시즌 2'는 5일간의 서킷 스테이지와 2일간의 파이널로 진행된다. 서킷 스테이지는 3일부터 4일, 그리고 9일부터 11일까지 온라인으로 열리게 된다. 각 서킷 스테이지에서 가장 높은 점수를 획득한 상위 3개 팀에 대해서는 파이널에서 적용되는 베네핏 포인트가 지급된다.파이널 경기는 이달 17일부터 18일까지 이틀간 대전 e스포츠 경기장에서 열릴 예정이다. 최종 순위는 파이널에서 획득한 포인트와 베네핏 포인트를 합산해 산정된다. 총상금은 4000만원 규모로, 우승팀에는 2500만원, 준우승팀에는 1000만원, 3위 팀에는 500만원이 각각 수여된다.지난 5월 열린 'PMPS 2026 시즌1' 결승전 영상.이번 PMPS 2026 시즌 2 결승전은 대전시와의 협업을 통해 진행되는 게 특징이다. 대전 지역 대표 축제인 '빵축제' 기간에 맞춰 결승전이 열리게 되며, 대전시 대표 캐릭터 '꿈돌이' 판권(IP)과의 컬래버레이션도 함께 선보인다.결승전 티켓을 구매하면 꿈돌이 컬래버 티셔츠를 증정한다. 빵축제 현장에 마련되는 PMPS 체험 프로그램을 이용한 방문객에 대해서는 그립톡 · 텀블러 · 스티커 등 다양한 굿즈를 추가 제공한다. 또한 대회 기간 경기장 브랜딩을 비롯해 다양한 마케팅 활동도 함께 지원한다.대회는 유튜브 · 네이버 치지직 등을 통해 생중계되며, 카페 및 SNS 채널을 통해 대회의 자세한 소식을 알릴 예정이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-03 크래프톤 '배그' IP 활용작 개발이 계속 미뤄지는 이유는 '펍지: 블랙버짓'크래프톤이 '배틀그라운드' 판권(IP)을 활용한 작품 개발에 난항을 겪고 있다. 최근 준비중인 작품 개발도 중단을 선언했다. 이에따라 현재 진행중인 '타래: 언바운드' 등 차기작의 향배가 더욱 긴요해졌다.2일 관련업계에 따르면 크래프톤(대표 김창한)은 '펍지: 블랙버짓'의 개발을 중단했다. 이 작품은 '배틀그라운드' 판권(IP)을 활용한 익스트랙션 슈터 게임이다. 지난 2022년 첫 공개가 이뤄졌으나, 4년만에 개발 계획을 취소한 것이다. 이에 대해 회사측은 \"프로젝트의 개발 현황과 향후 방향을 검토한 결과, 현재의 개발 방향으로는 팬들에게 오랫동안 만족하며 즐길 수 있는 환경을 제공하기 어렵다고 판단했다\"고 밝혔다. 이 회사는 이에 앞서 이 작품의 완성도를 살펴보기 위해 두 번의 테스트를 진행했는데, 참가한 테스터들로부터 긍정적 반응을 얻지 못한 것으로 알려졌다. 게임업체가 작품의 개발을 중단하는 것은 그다지 생소한 일은 아니다. 하지만 '펍지: 블랙버짓'은 이 회사의 대표작인 '배틀그라운드' IP 활용작이었다는 점에서 업계 안팎의 관심을 모아왔다. 특히 시장에선 이 작품을 통해 '배틀그라운드' 인지도가 한층 제고될 것으로 기대를 나타내 왔다. 이 회사는 앞서부터 '배그' IP 활용작 개발에 주력해 왔지만, 번번히 고배를 마셔왔다. 실제로 이 회사는 지난 2월 '펍지: 블라인드 스팟'을 출시했으나, 한 달여 만에 서비스 종료를 선언했다. 또 2021년에는 '배틀그라운드: 뉴스테이트'를 출시했으나, 론칭 초반 유저들의 아쉬운 평가서를 받아쥐었다. 회사측은 그 때문인지 작품명을 '뉴스테이트 모바일'로 바꾸는 등 '배틀그라운드'와의 거리를 두기도 했다. '배그' IP 활용작 개발에 벌써 세 번이나 나섰지만 뚜렷한 성과를 거두지 못하고 있는 것이다. 이에 대해 업계는 큰 아쉬움을 나타내고 있다. '배틀그라운드'가 개별 회사의 흥행작을 넘어, 게임한류의 대표 주자로 평가되고 있기 때문이다. 일각에서는 '배틀그라운드' IP 활용작이 연이어 좌초됨에 따라 이 회사의 신작 모멘텀 역시 감소할 것으로 우려했다. 하지만 원작 '배틀그라운드'가 여전히 큰 인기를 얻고 있는 만큼, 즉각적인 실적감소 등은 발생하지 않을 것이란 전망이다. '배그' IP 활용작이 잘 됐으면 금상첨화이겠지만, 그렇지 않더라도 캐시카우의 견조한 인기를 통해 회사의 안정적인 성장이 이어질 것으로 보고 있는 것이다. 다만 이 회사가 준비 중이던 작품이 중단된 만큼 차기작의 중요도 역시 한층 높아졌다. 예컨대 다른 '배틀그라운드' IP 활용작인 '펍지: 데드넷'을 비롯해 '타래: 언바운드' 노 로우' 등 주요 작품들의 시장 부담감은 더 커질 전망이다. 업계의 한 관계자는 \"'배틀그라운드'는 크래프톤을 상징하는 이 회사의 핵심 IP\"라며 \"그런데 이 '배그' IP를 활용해 제대로 된 작품을 내놓지 못하고 있다. 부담감이 크게 작용하고 있는 것\"이라고 말했다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-02 크래프톤 '라스트 에포크' 시즌5 업데이트 크래프톤(대표 김창한)은 2일 크리에이티브 스튜디오 일레븐스 아워 게임즈(EHG)의 '라스트 에포크'의 시즌5 '서리화신의 분노'에 대한 업데이트를 진행했다.이 회사는 이를 통해 시즌 콘텐츠 '모르디타스의 분노'에서 '피의 결정'을 활성화하고 적들의 공세에 맞서 보상을 획득할 수 있도록 했다. 또한 새 보스 '모르디타스'와 최상위 보스 '피나클 모르디타스'를 투입하는 등 보다 확장된 전투 콘텐츠를 제공할 계획이다. 특히 스킬 3개와 유니크 및 세트 아이템을 추가해 캐릭터 빌드 구성과 아이템 조합의 폭을 넓혀 눈길을 끌고 있다. 이 회사는 시즌 5를 위해 현지화 전문팀을 구성하고, 게임 내 텍스트와 콘텐츠 전반의 현지화 완성도를 높여왔다. 또 한국어 표현 및 표기의 정확성과 일관성을 대대적으로 개편하기도 했다. 앞으로 한국어를 비롯한 다국어 현지화 품질 향상을 위한 투자를 지속한다는 방침이다.한편 새 시즌 업데이트와 함께 마이크 웨이커 EHG 공동 창업자가 작품의 신임 게임 디렉터로 취임했다. 마이크 웨이커는 지난 2017년 초기 개발 단계부터 약 9년 간 개발에 참여해 왔다. 저드 코블러 EHG 대표의 개발 철학을 이어가며, 향후 개발 방향과 라이브 서비스를 이끌어 갈 계획이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-02 9월 게임주 전반적인 하락세 '뚜렷 ' 9월 게임주는 종목 대부분이 월 초 대비 하락했다. 펄어비스 컴투스 등 일부 종목이 가격을 높였지만, 게임주 전반의 분위기는 침체된 모습을 드러냈다. 지난 30일 크래프톤 주가는 19만 4900원으로, 9월 첫 거래일(1일, 23만 1000원) 대비 15.6% 감소했다. 기간 중 최고가(종가기준)는 23만 1000원(1일), 최저가는 19만 4900원(30일)이다. 9월 e스포츠 관련 이슈가 발생하긴 했지만, 대체로 잠잠한 모습을 보였다. 그럼에도 주가는 월초부터 지속적인 하락세를 보이며 20만원대가 무너졌다. 엔씨 주가는 월초 22만 4000원에서 30일 20만 9000원의 변동을 보였다. 한 달 동안 6.6% 감소한 것이다. 기간 중 최고가는 22만 3000원(7일), 최저가는 20만 1500원(16일)이다. 기간 중 이 회사는 도쿄게임쇼에 참가해 신작을 공개했다. 여기에 '아이온2' 글로벌 출시를 앞두고 있으나, 투자심리를 이끌지 못했다. 넷마블의 30일 종가는 3만 4400원으로, 월초(1일: 3만 8800원) 대비 11.3% 감소한 수치다. 기간 중 최고가는 3만 8800원(1일), 최저가는 3만 4250(16일)이다. 이 회사 역시 도쿄게임쇼에 참가해 신작들을 공개했다. 하지만 이같은 움직임에도 투자심리를 자극하진 못했다. 10%대 하락세를 보인 코스피 상장 게임업체들에 비해 코스닥에 상장한 중견 · 중소업체들은 그나마 사정이 나았다. 펄어비스 컴투스 등 일부 업체는 오히려 가격을 높이며 투자자들의 관심을 샀다. 펄어비스 주가는 지난 1일 3만 1350원에서 30일 3만 3100원의 변동을 보였다. 한 달 동안 5.5% 가격이 오른 것이다. '붉은사막' 이후 신작 공백 우려가 커졌으나, 첫 DLC 론칭 일자가 공개되며 투자심리를 자극했다. 일반적으로 DLC 발매는 신작 출시에 비해 기대감이 적은 편이다. 하지만 '붉은사막'이 워낙 큰 성공을 거둬 DLC 발매에 큰 기대감이 형성됐다. 카카오게임즈의 30일 주식 종가는 9210원으로, 지난 1일(9880원) 대비 6.7% 감소했다. 기간 중 이 회사는 차기작 '도깨비의세계' 출시일을 발표하고 본격적인 띄우기 행보에 돌입했다. 신작이 부각됐지만, 아쉬운 2분기 실적과 일부 작품의 출시 지연이 발목을 잡았다. 컴투스는 30일 3만 6700원에 장을 마감했다. 지난 1일(3만 4500원) 대비 6.3% 가격이 오른 것이다. 지난달 출시한 '제우스: 오만의 신'이 이달 들어서도 선두 자리를 유지하며 실적 개선 기대감을 키웠다. 여기에 차기작 기대감, 기존 작품의 인기 반등 전망도 주가 상승에 일조했다. 위메이드는 지난 1일 1만 5430원에서 30일 1만 4850원의 변동을 보였다. 한 달 동안 3.7% 가격이 떨어진 것이다. 기간 중 게임 사업 부문에서는 '악마단 돌겨억' 출시 외에 특",
       "sources": [
         {
           "site": "게임잡",
@@ -181293,7 +181304,7 @@
       "skills": [],
       "employmentType": "계약직",
       "deadline": "~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02",
-      "detailText": "[Flyway Games] Jazz & Juice - Animator (1년 이상) 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> (주)크래프톤 공유하기 인쇄하기 전달하기 [Flyway Games] Jazz & Juice - Animator (1년 이상) 모집분야 애니메이션 툴팁기능 애니메이션 툴팁닫기 키워드 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁기능 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁닫기 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 게임분야 웹게임 Simulation 툴팁기능 디바이스: 웹게임 장르: Simulation 툴팁닫기 경력 경력 1년 이상 고용형태 계약직 (계약기간 : 1년) 학력 학력무관 직급/직책 사원, 주임/계장 모집인원 O명 급여 면접 시 협의 연봉검색 마감일 ~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02 15:23 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 2호선 강남역 5번 출구 500m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험 휴무·휴가 주5일근무 보상제도 인센티브제, 장기근속자 포상, 퇴직금 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 58 일 시작일 2026-10-02(금) 마감일 2026-12-01(화) 지원방법 [당사 홈페이지] 전형절차 서류 전형 > 실무 면접 (Technical Fit Interview) > 최종 면접 (Culture Fit Interview) 제출서류 입사지원서 (자유 양식), 자기소개서, 경력기술서, 포트폴리오(필수) 신입일 경우 자기소개서를, 경력일 경우 경력기술서를 중심으로 기술해 주시기 바랍니다. 포트폴리오 첨부 시, 하단 안내 사항을 확인해 주시기 바랍니다. 담당자 채용담당자(채용담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 (주)크래프톤 연봉정보 대표자명 김창한 설립연도 2007년 사원수 1800 명 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 기업형태 주권(유가증권) 상장(대기업) 주요사업 게임제작 기업뉴스 더보기 크래프톤 '배그' IP 활용작 개발이 계속 미뤄지는 이유는 '펍지: 블랙버짓'크래프톤이 '배틀그라운드' 판권(IP)을 활용한 작품 개발에 난항을 겪고 있다. 최근 준비중인 작품 개발도 중단을 선언했다. 이에따라 현재 진행중인 '타래: 언바운드' 등 차기작의 향배가 더욱 긴요해졌다.2일 관련업계에 따르면 크래프톤(대표 김창한)은 '펍지: 블랙버짓'의 개발을 중단했다. 이 작품은 '배틀그라운드' 판권(IP)을 활용한 익스트랙션 슈터 게임이다. 지난 2022년 첫 공개가 이뤄졌으나, 4년만에 개발 계획을 취소한 것이다. 이에 대해 회사측은 \"프로젝트의 개발 현황과 향후 방향을 검토한 결과, 현재의 개발 방향으로는 팬들에게 오랫동안 만족하며 즐길 수 있는 환경을 제공하기 어렵다고 판단했다\"고 밝혔다. 이 회사는 이에 앞서 이 작품의 완성도를 살펴보기 위해 두 번의 테스트를 진행했는데, 참가한 테스터들로부터 긍정적 반응을 얻지 못한 것으로 알려졌다. 게임업체가 작품의 개발을 중단하는 것은 그다지 생소한 일은 아니다. 하지만 '펍지: 블랙버짓'은 이 회사의 대표작인 '배틀그라운드' IP 활용작이었다는 점에서 업계 안팎의 관심을 모아왔다. 특히 시장에선 이 작품을 통해 '배틀그라운드' 인지도가 한층 제고될 것으로 기대를 나타내 왔다. 이 회사는 앞서부터 '배그' IP 활용작 개발에 주력해 왔지만, 번번히 고배를 마셔왔다. 실제로 이 회사는 지난 2월 '펍지: 블라인드 스팟'을 출시했으나, 한 달여 만에 서비스 종료를 선언했다. 또 2021년에는 '배틀그라운드: 뉴스테이트'를 출시했으나, 론칭 초반 유저들의 아쉬운 평가서를 받아쥐었다. 회사측은 그 때문인지 작품명을 '뉴스테이트 모바일'로 바꾸는 등 '배틀그라운드'와의 거리를 두기도 했다. '배그' IP 활용작 개발에 벌써 세 번이나 나섰지만 뚜렷한 성과를 거두지 못하고 있는 것이다. 이에 대해 업계는 큰 아쉬움을 나타내고 있다. '배틀그라운드'가 개별 회사의 흥행작을 넘어, 게임한류의 대표 주자로 평가되고 있기 때문이다. 일각에서는 '배틀그라운드' IP 활용작이 연이어 좌초됨에 따라 이 회사의 신작 모멘텀 역시 감소할 것으로 우려했다. 하지만 원작 '배틀그라운드'가 여전히 큰 인기를 얻고 있는 만큼, 즉각적인 실적감소 등은 발생하지 않을 것이란 전망이다. '배그' IP 활용작이 잘 됐으면 금상첨화이겠지만, 그렇지 않더라도 캐시카우의 견조한 인기를 통해 회사의 안정적인 성장이 이어질 것으로 보고 있는 것이다. 다만 이 회사가 준비 중이던 작품이 중단된 만큼 차기작의 중요도 역시 한층 높아졌다. 예컨대 다른 '배틀그라운드' IP 활용작인 '펍지: 데드넷'을 비롯해 '타래: 언바운드' 노 로우' 등 주요 작품들의 시장 부담감은 더 커질 전망이다. 업계의 한 관계자는 \"'배틀그라운드'는 크래프톤을 상징하는 이 회사의 핵심 IP\"라며 \"그런데 이 '배그' IP를 활용해 제대로 된 작품을 내놓지 못하고 있다. 부담감이 크게 작용하고 있는 것\"이라고 말했다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-02 크래프톤 '라스트 에포크' 시즌5 업데이트 크래프톤(대표 김창한)은 2일 크리에이티브 스튜디오 일레븐스 아워 게임즈(EHG)의 '라스트 에포크'의 시즌5 '서리화신의 분노'에 대한 업데이트를 진행했다.이 회사는 이를 통해 시즌 콘텐츠 '모르디타스의 분노'에서 '피의 결정'을 활성화하고 적들의 공세에 맞서 보상을 획득할 수 있도록 했다. 또한 새 보스 '모르디타스'와 최상위 보스 '피나클 모르디타스'를 투입하는 등 보다 확장된 전투 콘텐츠를 제공할 계획이다. 특히 스킬 3개와 유니크 및 세트 아이템을 추가해 캐릭터 빌드 구성과 아이템 조합의 폭을 넓혀 눈길을 끌고 있다. 이 회사는 시즌 5를 위해 현지화 전문팀을 구성하고, 게임 내 텍스트와 콘텐츠 전반의 현지화 완성도를 높여왔다. 또 한국어 표현 및 표기의 정확성과 일관성을 대대적으로 개편하기도 했다. 앞으로 한국어를 비롯한 다국어 현지화 품질 향상을 위한 투자를 지속한다는 방침이다.한편 새 시즌 업데이트와 함께 마이크 웨이커 EHG 공동 창업자가 작품의 신임 게임 디렉터로 취임했다. 마이크 웨이커는 지난 2017년 초기 개발 단계부터 약 9년 간 개발에 참여해 왔다. 저드 코블러 EHG 대표의 개발 철학을 이어가며, 향후 개발 방향과 라이브 서비스를 이끌어 갈 계획이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-02 9월 게임주 전반적인 하락세 '뚜렷 ' 9월 게임주는 종목 대부분이 월 초 대비 하락했다. 펄어비스 컴투스 등 일부 종목이 가격을 높였지만, 게임주 전반의 분위기는 침체된 모습을 드러냈다. 지난 30일 크래프톤 주가는 19만 4900원으로, 9월 첫 거래일(1일, 23만 1000원) 대비 15.6% 감소했다. 기간 중 최고가(종가기준)는 23만 1000원(1일), 최저가는 19만 4900원(30일)이다. 9월 e스포츠 관련 이슈가 발생하긴 했지만, 대체로 잠잠한 모습을 보였다. 그럼에도 주가는 월초부터 지속적인 하락세를 보이며 20만원대가 무너졌다. 엔씨 주가는 월초 22만 4000원에서 30일 20만 9000원의 변동을 보였다. 한 달 동안 6.6% 감소한 것이다. 기간 중 최고가는 22만 3000원(7일), 최저가는 20만 1500원(16일)이다. 기간 중 이 회사는 도쿄게임쇼에 참가해 신작을 공개했다. 여기에 '아이온2' 글로벌 출시를 앞두고 있으나, 투자심리를 이끌지 못했다. 넷마블의 30일 종가는 3만 4400원으로, 월초(1일: 3만 8800원) 대비 11.3% 감소한 수치다. 기간 중 최고가는 3만 8800원(1일), 최저가는 3만 4250(16일)이다. 이 회사 역시 도쿄게임쇼에 참가해 신작들을 공개했다. 하지만 이같은 움직임에도 투자심리를 자극하진 못했다. 10%대 하락세를 보인 코스피 상장 게임업체들에 비해 코스닥에 상장한 중견 · 중소업체들은 그나마 사정이 나았다. 펄어비스 컴투스 등 일부 업체는 오히려 가격을 높이며 투자자들의 관심을 샀다. 펄어비스 주가는 지난 1일 3만 1350원에서 30일 3만 3100원의 변동을 보였다. 한 달 동안 5.5% 가격이 오른 것이다. '붉은사막' 이후 신작 공백 우려가 커졌으나, 첫 DLC 론칭 일자가 공개되며 투자심리를 자극했다. 일반적으로 DLC 발매는 신작 출시에 비해 기대감이 적은 편이다. 하지만 '붉은사막'이 워낙 큰 성공을 거둬 DLC 발매에 큰 기대감이 형성됐다. 카카오게임즈의 30일 주식 종가는 9210원으로, 지난 1일(9880원) 대비 6.7% 감소했다. 기간 중 이 회사는 차기작 '도깨비의세계' 출시일을 발표하고 본격적인 띄우기 행보에 돌입했다. 신작이 부각됐지만, 아쉬운 2분기 실적과 일부 작품의 출시 지연이 발목을 잡았다. 컴투스는 30일 3만 6700원에 장을 마감했다. 지난 1일(3만 4500원) 대비 6.3% 가격이 오른 것이다. 지난달 출시한 '제우스: 오만의 신'이 이달 들어서도 선두 자리를 유지하며 실적 개선 기대감을 키웠다. 여기에 차기작 기대감, 기존 작품의 인기 반등 전망도 주가 상승에 일조했다. 위메이드는 지난 1일 1만 5430원에서 30일 1만 4850원의 변동을 보였다. 한 달 동안 3.7% 가격이 떨어진 것이다. 기간 중 게임 사업 부문에서는 '악마단 돌겨억' 출시 외에 특별한 이슈는 없었다. 다만 최대주주 변경 이슈가 구체화되며 투자자들의 이목이 쏠렸다. 노동조합이 출범하는 등 비교적 혼란한 상황에서도 낙폭을 최소하하며 선방했다는 평가다. 이 외에도 네오위즈가 지난 1일 1만 8060원에서 30일 1만 7730원, 웹젠이 1만 1360원에서 1만 1550원, 넥슨게임즈가 1만 1500원에서 1만 350원의 변동을 보이는 등 대부분의 종목이 월 초 대비 하락세로 거래를 마쳤다. 시장에서는 지난 2분기 대부분의 게임업체들이 예상외의 저조한 성적을 거뒀고, 일부 업체들의 핵심 기대작이 지연되면서 게임주에 대한 투자자들의 관심이 상대적으로 떨어졌기 때문으로 분석했다. 그나마 중견 게임업체들은 선방했으나, 메이저 기업들이 고전을 면치 못했다는 것이다. 이에따라 일각에선 메이저 주가가 상승세를 이끌지 못하는 한 게임주의 약세는 앞으로 계속될 것이라며 우려를 나타냈다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-01 [게임스톡] 크래프톤 2거래일 연속 하락 1.91%↓ 하루 사이로 등락을 반복하던 크래프톤의 주가가 20만원대의 벽이 무너진 후 반등하지 못하고 있다.30일 크래프톤의 주가는 전 거래일 대비 1.91%(3800원) 내린 19만 4900원으로 장을 마감했다.이 회사 주가는 9시께 하락세가 이어지며, 이후 이렇다할 반등 없이 거래를 마쳤다.개인은 2거래일 연속 매수세를 이어갔고, 외국인은 3거래일 연속 매수세를 보였다. 반면 기관은 2거래일 연속 매도세를 이어갔다.이는 이 회사의 대표작인 '배틀그라운드'를 활용한 대회인 '펍지 : 아시아 스타즈'에서 운영 이슈가 발생해, 유저들의 불만이 주가에 영향을 끼친 것으로 보인다.[더게임스데일리 한동연 기자 bronzek@tgdaily.co.kr] 2026-09-30 본 채용정보는 게임잡의 동의없이 무단전재, 재배포, 재가공할 수 없으며, 구직활동 이외의 용도로 사용될 수 없습니다. 불법/허위/과장/오류 신고 본 정보는 (주)크래프톤 에서 제공한 자료로 게임잡의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용될 수 없습니다. 게임잡은 (주)크래프톤 에서 게재한 자료에 대한 오류와",
+      "detailText": "[Flyway Games] Jazz & Juice - Animator (1년 이상) 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> (주)크래프톤 공유하기 인쇄하기 전달하기 [Flyway Games] Jazz & Juice - Animator (1년 이상) 모집분야 애니메이션 툴팁기능 애니메이션 툴팁닫기 키워드 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁기능 3D, 캐릭터, 애니메이션, 3DMax, Physique, 메카닉, 오브젝트 툴팁닫기 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 게임분야 웹게임 Simulation 툴팁기능 디바이스: 웹게임 장르: Simulation 툴팁닫기 경력 경력 1년 이상 고용형태 계약직 (계약기간 : 1년) 학력 학력무관 직급/직책 사원, 주임/계장 모집인원 O명 급여 면접 시 협의 연봉검색 마감일 ~ 12/01(화) 지원하기 스크랩 2026-10-02 15:23 등록 2026-10-02 15:23 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 2호선 강남역 5번 출구 500m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험 휴무·휴가 주5일근무 보상제도 인센티브제, 장기근속자 포상, 퇴직금 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 58 일 시작일 2026-10-02(금) 마감일 2026-12-01(화) 지원방법 [당사 홈페이지] 전형절차 서류 전형 > 실무 면접 (Technical Fit Interview) > 최종 면접 (Culture Fit Interview) 제출서류 입사지원서 (자유 양식), 자기소개서, 경력기술서, 포트폴리오(필수) 신입일 경우 자기소개서를, 경력일 경우 경력기술서를 중심으로 기술해 주시기 바랍니다. 포트폴리오 첨부 시, 하단 안내 사항을 확인해 주시기 바랍니다. 담당자 채용담당자(채용담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 (주)크래프톤 연봉정보 대표자명 김창한 설립연도 2007년 사원수 1800 명 대표게임 PUBG: 배틀그라운드 툴팁기능 PUBG: 배틀그라운드 툴팁닫기 기업형태 주권(유가증권) 상장(대기업) 주요사업 게임제작 기업뉴스 더보기 '배그 모바일' 대회 'PMPS' 시즌2 돌입 크래프톤(대표 김창한)이 3일 '배틀그라운드 모바일'의 한국 최강팀을 가리는 프로 e스포츠 대회 '마운틴듀 펍지 모바일 프로 시리즈(PMPS) 2026 시즌 2' 오픈을 시작한다.이번 대회에는 ▲파트너팀 4개 팀 ▲'대한민국 e스포츠 리그(KEL)' 지역 연고팀 7개 팀 ▲'펍지 모바일 오픈 챌린지(PMOC)' 상위 5개 팀 등 총 16개 팀이 참가한다. 각 팀은 서킷 스테이지와 파이널을 거쳐 최종 순위를 가리게 된다.이번 대회 성적에 따라 우승팀은 글로벌 대회 '펍지 모바일 글로벌 챔피언십(PMGC)'에 진출하며, 나머지 5개 팀은 '배틀그라운드 모바일 인비테이션 컵(BMIC)' 출전 기회가 주어진다.'PMPS 2026 시즌 2'는 5일간의 서킷 스테이지와 2일간의 파이널로 진행된다. 서킷 스테이지는 3일부터 4일, 그리고 9일부터 11일까지 온라인으로 열리게 된다. 각 서킷 스테이지에서 가장 높은 점수를 획득한 상위 3개 팀에 대해서는 파이널에서 적용되는 베네핏 포인트가 지급된다.파이널 경기는 이달 17일부터 18일까지 이틀간 대전 e스포츠 경기장에서 열릴 예정이다. 최종 순위는 파이널에서 획득한 포인트와 베네핏 포인트를 합산해 산정된다. 총상금은 4000만원 규모로, 우승팀에는 2500만원, 준우승팀에는 1000만원, 3위 팀에는 500만원이 각각 수여된다.지난 5월 열린 'PMPS 2026 시즌1' 결승전 영상.이번 PMPS 2026 시즌 2 결승전은 대전시와의 협업을 통해 진행되는 게 특징이다. 대전 지역 대표 축제인 '빵축제' 기간에 맞춰 결승전이 열리게 되며, 대전시 대표 캐릭터 '꿈돌이' 판권(IP)과의 컬래버레이션도 함께 선보인다.결승전 티켓을 구매하면 꿈돌이 컬래버 티셔츠를 증정한다. 빵축제 현장에 마련되는 PMPS 체험 프로그램을 이용한 방문객에 대해서는 그립톡 · 텀블러 · 스티커 등 다양한 굿즈를 추가 제공한다. 또한 대회 기간 경기장 브랜딩을 비롯해 다양한 마케팅 활동도 함께 지원한다.대회는 유튜브 · 네이버 치지직 등을 통해 생중계되며, 카페 및 SNS 채널을 통해 대회의 자세한 소식을 알릴 예정이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-03 크래프톤 '배그' IP 활용작 개발이 계속 미뤄지는 이유는 '펍지: 블랙버짓'크래프톤이 '배틀그라운드' 판권(IP)을 활용한 작품 개발에 난항을 겪고 있다. 최근 준비중인 작품 개발도 중단을 선언했다. 이에따라 현재 진행중인 '타래: 언바운드' 등 차기작의 향배가 더욱 긴요해졌다.2일 관련업계에 따르면 크래프톤(대표 김창한)은 '펍지: 블랙버짓'의 개발을 중단했다. 이 작품은 '배틀그라운드' 판권(IP)을 활용한 익스트랙션 슈터 게임이다. 지난 2022년 첫 공개가 이뤄졌으나, 4년만에 개발 계획을 취소한 것이다. 이에 대해 회사측은 \"프로젝트의 개발 현황과 향후 방향을 검토한 결과, 현재의 개발 방향으로는 팬들에게 오랫동안 만족하며 즐길 수 있는 환경을 제공하기 어렵다고 판단했다\"고 밝혔다. 이 회사는 이에 앞서 이 작품의 완성도를 살펴보기 위해 두 번의 테스트를 진행했는데, 참가한 테스터들로부터 긍정적 반응을 얻지 못한 것으로 알려졌다. 게임업체가 작품의 개발을 중단하는 것은 그다지 생소한 일은 아니다. 하지만 '펍지: 블랙버짓'은 이 회사의 대표작인 '배틀그라운드' IP 활용작이었다는 점에서 업계 안팎의 관심을 모아왔다. 특히 시장에선 이 작품을 통해 '배틀그라운드' 인지도가 한층 제고될 것으로 기대를 나타내 왔다. 이 회사는 앞서부터 '배그' IP 활용작 개발에 주력해 왔지만, 번번히 고배를 마셔왔다. 실제로 이 회사는 지난 2월 '펍지: 블라인드 스팟'을 출시했으나, 한 달여 만에 서비스 종료를 선언했다. 또 2021년에는 '배틀그라운드: 뉴스테이트'를 출시했으나, 론칭 초반 유저들의 아쉬운 평가서를 받아쥐었다. 회사측은 그 때문인지 작품명을 '뉴스테이트 모바일'로 바꾸는 등 '배틀그라운드'와의 거리를 두기도 했다. '배그' IP 활용작 개발에 벌써 세 번이나 나섰지만 뚜렷한 성과를 거두지 못하고 있는 것이다. 이에 대해 업계는 큰 아쉬움을 나타내고 있다. '배틀그라운드'가 개별 회사의 흥행작을 넘어, 게임한류의 대표 주자로 평가되고 있기 때문이다. 일각에서는 '배틀그라운드' IP 활용작이 연이어 좌초됨에 따라 이 회사의 신작 모멘텀 역시 감소할 것으로 우려했다. 하지만 원작 '배틀그라운드'가 여전히 큰 인기를 얻고 있는 만큼, 즉각적인 실적감소 등은 발생하지 않을 것이란 전망이다. '배그' IP 활용작이 잘 됐으면 금상첨화이겠지만, 그렇지 않더라도 캐시카우의 견조한 인기를 통해 회사의 안정적인 성장이 이어질 것으로 보고 있는 것이다. 다만 이 회사가 준비 중이던 작품이 중단된 만큼 차기작의 중요도 역시 한층 높아졌다. 예컨대 다른 '배틀그라운드' IP 활용작인 '펍지: 데드넷'을 비롯해 '타래: 언바운드' 노 로우' 등 주요 작품들의 시장 부담감은 더 커질 전망이다. 업계의 한 관계자는 \"'배틀그라운드'는 크래프톤을 상징하는 이 회사의 핵심 IP\"라며 \"그런데 이 '배그' IP를 활용해 제대로 된 작품을 내놓지 못하고 있다. 부담감이 크게 작용하고 있는 것\"이라고 말했다. [더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-10-02 크래프톤 '라스트 에포크' 시즌5 업데이트 크래프톤(대표 김창한)은 2일 크리에이티브 스튜디오 일레븐스 아워 게임즈(EHG)의 '라스트 에포크'의 시즌5 '서리화신의 분노'에 대한 업데이트를 진행했다.이 회사는 이를 통해 시즌 콘텐츠 '모르디타스의 분노'에서 '피의 결정'을 활성화하고 적들의 공세에 맞서 보상을 획득할 수 있도록 했다. 또한 새 보스 '모르디타스'와 최상위 보스 '피나클 모르디타스'를 투입하는 등 보다 확장된 전투 콘텐츠를 제공할 계획이다. 특히 스킬 3개와 유니크 및 세트 아이템을 추가해 캐릭터 빌드 구성과 아이템 조합의 폭을 넓혀 눈길을 끌고 있다. 이 회사는 시즌 5를 위해 현지화 전문팀을 구성하고, 게임 내 텍스트와 콘텐츠 전반의 현지화 완성도를 높여왔다. 또 한국어 표현 및 표기의 정확성과 일관성을 대대적으로 개편하기도 했다. 앞으로 한국어를 비롯한 다국어 현지화 품질 향상을 위한 투자를 지속한다는 방침이다.한편 새 시즌 업데이트와 함께 마이크 웨이커 EHG 공동 창업자가 작품의 신임 게임 디렉터로 취임했다. 마이크 웨이커는 지난 2017년 초기 개발 단계부터 약 9년 간 개발에 참여해 왔다. 저드 코블러 EHG 대표의 개발 철학을 이어가며, 향후 개발 방향과 라이브 서비스를 이끌어 갈 계획이다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-10-02 9월 게임주 전반적인 하락세 '뚜렷 ' 9월 게임주는 종목 대부분이 월 초 대비 하락했다. 펄어비스 컴투스 등 일부 종목이 가격을 높였지만, 게임주 전반의 분위기는 침체된 모습을 드러냈다. 지난 30일 크래프톤 주가는 19만 4900원으로, 9월 첫 거래일(1일, 23만 1000원) 대비 15.6% 감소했다. 기간 중 최고가(종가기준)는 23만 1000원(1일), 최저가는 19만 4900원(30일)이다. 9월 e스포츠 관련 이슈가 발생하긴 했지만, 대체로 잠잠한 모습을 보였다. 그럼에도 주가는 월초부터 지속적인 하락세를 보이며 20만원대가 무너졌다. 엔씨 주가는 월초 22만 4000원에서 30일 20만 9000원의 변동을 보였다. 한 달 동안 6.6% 감소한 것이다. 기간 중 최고가는 22만 3000원(7일), 최저가는 20만 1500원(16일)이다. 기간 중 이 회사는 도쿄게임쇼에 참가해 신작을 공개했다. 여기에 '아이온2' 글로벌 출시를 앞두고 있으나, 투자심리를 이끌지 못했다. 넷마블의 30일 종가는 3만 4400원으로, 월초(1일: 3만 8800원) 대비 11.3% 감소한 수치다. 기간 중 최고가는 3만 8800원(1일), 최저가는 3만 4250(16일)이다. 이 회사 역시 도쿄게임쇼에 참가해 신작들을 공개했다. 하지만 이같은 움직임에도 투자심리를 자극하진 못했다. 10%대 하락세를 보인 코스피 상장 게임업체들에 비해 코스닥에 상장한 중견 · 중소업체들은 그나마 사정이 나았다. 펄어비스 컴투스 등 일부 업체는 오히려 가격을 높이며 투자자들의 관심을 샀다. 펄어비스 주가는 지난 1일 3만 1350원에서 30일 3만 3100원의 변동을 보였다. 한 달 동안 5.5% 가격이 오른 것이다. '붉은사막' 이후 신작 공백 우려가 커졌으나, 첫 DLC 론칭 일자가 공개되며 투자심리를 자극했다. 일반적으로 DLC 발매는 신작 출시에 비해 기대감이 적은 편이다. 하지만 '붉은사막'이 워낙 큰 성공을 거둬 DLC 발매에 큰 기대감이 형성됐다. 카카오게임즈의 30일 주식 종가는 9210원으로, 지난 1일(9880원) 대비 6.7% 감소했다. 기간 중 이 회사는 차기작 '도깨비의세계' 출시일을 발표하고 본격적인 띄우기 행보에 돌입했다. 신작이 부각됐지만, 아쉬운 2분기 실적과 일부 작품의 출시 지연이 발목을 잡았다. 컴투스는 30일 3만 6700원에 장을 마감했다. 지난 1일(3만 4500원) 대비 6.3% 가격이 오른 것이다. 지난달 출시한 '제우스: 오만의 신'이 이달 들어서도 선두 자리를 유지하며 실적 개선 기대감을 키웠다. 여기에 차기작 기대감, 기존 작품의 인기 반등 전망도 주가 상승에 일조했다. 위메이드는 지난 1일 1만 5430원에서 30일 1만 4850원의 변동을 보였다. 한 달 동안 3.7% 가격이 떨어진 것이다. 기간 중 게임 사업 부문에서는 '악마단 돌겨억' 출시 외에 특",
       "sources": [
         {
           "site": "게임잡",
@@ -182140,14 +182151,6 @@
         {
           "site": "게임잡",
           "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBCVzVQWlRmZ1ptNU1yUllFNlVoaGlfQ0s0RnhBWjJlTU5DMlE5UjR1eGlfTTdNRk5hcXZxSmZOcFl2QWVjWTZ5SlpHZUVQQVFBV1ZiejV1YVd0T0V4bmM0dkh6SXhrOExWVVE?oc=5"
-        },
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1KSUZuYlA1OXd6V01Seno1VzRLenZobDVuTG9xSHlhYTR6WTI5N1ZSVWNQWUp6cmNPRWRSdERfaTZxYmkzMzdwNWFKVE9Vc0lmcHFGeFNPdDQ1RjBtR21oMXl3R0tuZHBiMEdn?oc=5"
-        },
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE41TTJGalFFSU1sWW9NaFVoX3hnQlpKTi0zNjZPem9QYnBhVE1ialNwd2FPZ1JGWGFtcEp1VGZjYW5jOHUtRGQ2RVBNQVlacVZrNnd1YVh4ancwSVFqa184c1VaY1BaXzQ0cUE?oc=5"
         }
       ]
     },
@@ -183613,10 +183616,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iS2gzRzRBYnVaUkZubGd3VzJmdHlkYzVpRi03NjNuVVBoQUFRUE9FOUNKN0ZpSVEyeVJ4YTJ6R2VXeW02bjF1dHdmb1p1bWVDVWtVazJiY2ZGZw?oc=5"
         }
       ]
     },
@@ -184105,10 +184104,6 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -185056,7 +185051,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-03T16:38:08+00:00",
+  "jobPostingsUpdatedAt": "2026-10-03T19:46:19+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185112,6 +185107,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-03T16:38:07+00:00"
+    "generatedAt": "2026-10-03T19:44:06+00:00"
   }
 }
