@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T01:20:35+00:00",
+  "updatedAt": "2026-10-03T04:14:16+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류이며 투자 판단의 근거가 아닙니다.",
   "stocks": [
     {
@@ -35834,8 +35834,8 @@
       "symbol": "NVDA",
       "name": "NVIDIA",
       "category": "미국 반도체",
-      "price": 230.86000061035156,
-      "change": 1.0859075551783135,
+      "price": 233.9499969482422,
+      "change": 1.3384719439145978,
       "source": "Yahoo Finance",
       "history": [
         187.6199951171875,
@@ -36087,7 +36087,8 @@
         228.86000061035156,
         227.2100067138672,
         228.3800048828125,
-        230.86000061035156
+        230.86000061035156,
+        233.9499969482422
       ],
       "candles": {
         "1m": [
@@ -45536,20 +45537,28 @@
             "l": 228.16000366210938,
             "c": 230.86000061035156,
             "v": 98591400
+          },
+          {
+            "t": 1790947800,
+            "o": 236.05999755859375,
+            "h": 237.8800048828125,
+            "l": 233.60000610351562,
+            "c": 233.9499969482422,
+            "v": 134914600
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 231.71240029964136,
-          "bull": 238.78789922833832,
-          "bear": 224.6369013709444,
+          "base": 235.22607730300837,
+          "bull": 242.48353177240472,
+          "bear": 227.96862283361202,
           "trend": "중립"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 258.7281989066724,
+          "base": 258.46528261292355,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -45559,8 +45568,8 @@
       "symbol": "AMD",
       "name": "AMD",
       "category": "미국 반도체",
-      "price": 615.72998046875,
-      "change": 0.6489425002863393,
+      "price": 633.9099731445312,
+      "change": 2.9525917613985557,
       "source": "Yahoo Finance",
       "history": [
         164.6699981689453,
@@ -45812,7 +45821,8 @@
         607.8699951171875,
         607.5700073242188,
         611.760009765625,
-        615.72998046875
+        615.72998046875,
+        633.9099731445312
       ],
       "candles": {
         "1m": [
@@ -55261,20 +55271,28 @@
             "l": 601.5,
             "c": 615.72998046875,
             "v": 17134500
+          },
+          {
+            "t": 1790947800,
+            "o": 635.9500122070312,
+            "h": 645.4600219726562,
+            "l": 628.5499877929688,
+            "c": 633.9099731445312,
+            "v": 19825500
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 691.1162621896818,
-          "bull": 738.4515861366817,
-          "bear": 643.7809382426819,
+          "base": 706.5420725333676,
+          "bull": 754.105581535131,
+          "bear": 658.9785635316041,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 1121.8618373178997,
+          "base": 1151.739330242115,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -55284,8 +55302,8 @@
       "symbol": "INTC",
       "name": "Intel",
       "category": "미국 반도체",
-      "price": 120.0,
-      "change": -0.191302795069189,
+      "price": 119.33000183105469,
+      "change": -0.5583318074544271,
       "source": "Yahoo Finance",
       "history": [
         36.83000183105469,
@@ -55537,7 +55555,8 @@
         116.02999877929688,
         115.93000030517578,
         120.2300033569336,
-        120.0
+        120.0,
+        119.33000183105469
       ],
       "candles": {
         "1m": [
@@ -64986,20 +65005,28 @@
             "l": 117.3499984741211,
             "c": 120.0,
             "v": 103559800
+          },
+          {
+            "t": 1790947800,
+            "o": 124.01000213623047,
+            "h": 126.0,
+            "l": 118.95999908447266,
+            "c": 119.33000183105469,
+            "v": 95139500
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 132.97982001386555,
-          "bull": 144.96083364490607,
-          "bear": 120.99880638282504,
+          "base": 129.58827059713633,
+          "bull": 141.24823708821748,
+          "bear": 117.92830410605518,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 175.5096649726633,
+          "base": 176.43485824126023,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -65009,8 +65036,8 @@
       "symbol": "AVGO",
       "name": "Broadcom",
       "category": "미국 반도체",
-      "price": 343.6400146484375,
-      "change": -2.1498299326526005,
+      "price": 355.1400146484375,
+      "change": 3.346525290940035,
       "source": "Yahoo Finance",
       "history": [
         338.3699951171875,
@@ -65262,7 +65289,8 @@
         349.57000732421875,
         355.1000061035156,
         351.19000244140625,
-        343.6400146484375
+        343.6400146484375,
+        355.1400146484375
       ],
       "candles": {
         "1m": [
@@ -74711,21 +74739,29 @@
             "l": 343.2900085449219,
             "c": 343.6400146484375,
             "v": 24574100
+          },
+          {
+            "t": 1790947800,
+            "o": 349.8599853515625,
+            "h": 357.3500061035156,
+            "l": 347.4200134277344,
+            "c": 355.1400146484375,
+            "v": 24607000
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 339.08714419465315,
-          "bull": 352.3815113368699,
-          "bear": 325.7927770524364,
-          "trend": "하락"
+          "base": 354.18147125488133,
+          "bull": 368.95950345095423,
+          "bear": 339.40343905880843,
+          "trend": "중립"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 325.6680337601131,
-          "trend": "하락"
+          "base": 341.98758699216427,
+          "trend": "중립"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
       }
@@ -74734,8 +74770,8 @@
       "symbol": "MU",
       "name": "Micron",
       "category": "미국 반도체",
-      "price": 1097.3900146484375,
-      "change": 3.030675680523292,
+      "price": 1074.8900146484375,
+      "change": -2.0503193668304114,
       "source": "Yahoo Finance",
       "history": [
         187.8300018310547,
@@ -74987,7 +75023,8 @@
         1053.97998046875,
         1065.0799560546875,
         1065.1099853515625,
-        1097.3900146484375
+        1097.3900146484375,
+        1074.8900146484375
       ],
       "candles": {
         "1m": [
@@ -84436,20 +84473,28 @@
             "l": 1022.9000244140625,
             "c": 1097.3900146484375,
             "v": 45735400
+          },
+          {
+            "t": 1790947800,
+            "o": 1107.3499755859375,
+            "h": 1108.0,
+            "l": 1072.010009765625,
+            "c": 1074.8900146484375,
+            "v": 27224500
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 1153.2015508728268,
-          "bull": 1224.4340814877346,
-          "bear": 1081.969020257919,
+          "base": 1096.4652077715882,
+          "bull": 1160.2291766340168,
+          "bear": 1032.7012389091597,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 2046.58635648038,
+          "base": 1848.3521708479095,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -84459,8 +84504,8 @@
       "symbol": "TSM",
       "name": "TSMC",
       "category": "미국/글로벌 반도체",
-      "price": 459.20001220703125,
-      "change": 0.6598149344606934,
+      "price": 472.7799987792969,
+      "change": 2.9573140703975116,
       "source": "Yahoo Finance",
       "history": [
         292.19000244140625,
@@ -84712,7 +84757,8 @@
         452.8800048828125,
         456.94000244140625,
         456.19000244140625,
-        459.20001220703125
+        459.20001220703125,
+        472.7799987792969
       ],
       "candles": {
         "1m": [
@@ -94161,20 +94207,28 @@
             "l": 453.4599914550781,
             "c": 459.20001220703125,
             "v": 8214300
+          },
+          {
+            "t": 1790947800,
+            "o": 465.6400146484375,
+            "h": 474.7900085449219,
+            "l": 464.1000061035156,
+            "c": 472.7799987792969,
+            "v": 9916700
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 475.4604788957062,
-          "bull": 491.12394474838925,
-          "bear": 459.7970130430232,
+          "base": 489.7049938162554,
+          "bull": 505.9193290608024,
+          "bear": 473.4906585717084,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 520.4521543894135,
+          "base": 536.3617953252027,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -94186,8 +94240,8 @@
       "symbol": "^KS11",
       "name": "KOSPI",
       "category": "종합 지수",
-      "price": 6971.35009765625,
-      "change": 1.9495360926846357,
+      "price": 7003.740234375,
+      "change": 0.46461784683055124,
       "source": "Yahoo Finance",
       "history": [
         3549.2099609375,
@@ -94430,7 +94484,8 @@
         6889.740234375,
         6870.81005859375,
         6838.0400390625,
-        6971.35009765625
+        6971.35009765625,
+        7003.740234375
       ],
       "candles": {
         "1m": [
@@ -103095,20 +103150,28 @@
             "l": 6765.06005859375,
             "c": 6971.35009765625,
             "v": 292300
+          },
+          {
+            "t": 1790899200,
+            "o": 6938.27001953125,
+            "h": 7011.0400390625,
+            "l": 6927.8798828125,
+            "c": 7003.740234375,
+            "v": 239000
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 7123.275771472485,
-          "bull": 7380.619278122228,
-          "bear": 6865.932264822742,
+          "base": 7161.806375868326,
+          "bull": 7420.646245050309,
+          "bear": 6902.966506686343,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 8001.696889902223,
+          "base": 7745.900779629011,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -103118,8 +103181,8 @@
       "symbol": "^KQ11",
       "name": "KOSDAQ",
       "category": "종합 지수",
-      "price": 894.2899780273438,
-      "change": 4.484117031819134,
+      "price": 893.2899780273438,
+      "change": -0.11182055312817384,
       "source": "Yahoo Finance",
       "history": [
         854.25,
@@ -103362,7 +103425,8 @@
         846.5800170898438,
         849.7999877929688,
         855.9099731445312,
-        894.2899780273438
+        894.2899780273438,
+        893.2899780273438
       ],
       "candles": {
         "1m": [
@@ -112043,20 +112107,28 @@
             "l": 851.9199829101562,
             "c": 894.2899780273438,
             "v": 530400
+          },
+          {
+            "t": 1790899200,
+            "o": 893.219970703125,
+            "h": 903.8800048828125,
+            "l": 885.6500244140625,
+            "c": 893.2899780273438,
+            "v": 557000
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 929.4490176713814,
-          "bull": 959.0275048084649,
-          "bear": 899.8705305342979,
+          "base": 934.0742014509467,
+          "bull": 962.7771972073305,
+          "bear": 905.371205694563,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 826.7116616100161,
+          "base": 804.6798079044569,
           "trend": "하락"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -112066,8 +112138,8 @@
       "symbol": "^IXIC",
       "name": "NASDAQ Composite",
       "category": "종합 지수",
-      "price": 27190.86328125,
-      "change": 1.188108175605649,
+      "price": 27190.859375,
+      "change": 1.1880936388826524,
       "source": "Yahoo Finance",
       "history": [
         22780.509765625,
@@ -112320,7 +112392,7 @@
         26797.5390625,
         26861.060546875,
         26871.599609375,
-        27190.86328125
+        27190.859375
       ],
       "candles": {
         "1m": [
@@ -121772,25 +121844,25 @@
           },
           {
             "t": 1790947800,
-            "o": 27216.90625,
+            "o": 27216.91015625,
             "h": 27353.6796875,
             "l": 27112.240234375,
-            "c": 27190.86328125,
-            "v": 6857506000
+            "c": 27190.859375,
+            "v": 7954430000
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 27436.39415534065,
-          "bull": 27918.806234835978,
-          "bear": 26953.982075845324,
+          "base": 27436.388811357236,
+          "bull": 27918.800264293717,
+          "bear": 26953.977358420754,
           "trend": "중립"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 29437.85547125487,
+          "base": 29437.848770960183,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -131510,7 +131582,7 @@
             "h": 7754.669921875,
             "l": 7700.509765625,
             "c": 7722.72021484375,
-            "v": 3130028000
+            "v": 5277430000
           }
         ]
       },
@@ -131534,8 +131606,8 @@
       "symbol": "^SOX",
       "name": "PHLX Semiconductor Index (SOX)",
       "category": "반도체 종합",
-      "price": 13136.6748046875,
-      "change": 2.3982758179710033,
+      "price": 13136.669921875,
+      "change": 2.398237757229714,
       "source": "Yahoo Finance",
       "history": [
         6583.740234375,
@@ -131788,7 +131860,7 @@
         12629.16015625,
         12628.6201171875,
         12829.0,
-        13136.6748046875
+        13136.669921875
       ],
       "candles": {
         "1m": [
@@ -141240,10 +141312,10 @@
           },
           {
             "t": 1790947800,
-            "o": 13130.7587890625,
-            "h": 13269.333984375,
-            "l": 13082.005859375,
-            "c": 13136.6748046875,
+            "o": 13130.759765625,
+            "h": 13269.330078125,
+            "l": 13082.009765625,
+            "c": 13136.669921875,
             "v": 0
           }
         ]
@@ -141251,14 +141323,14 @@
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 13685.744608065108,
-          "bull": 14298.901442628348,
-          "bear": 13072.587773501868,
+          "base": 13685.737608097937,
+          "bull": 14298.893673902676,
+          "bear": 13072.5815422932,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 16201.344048229741,
+          "base": 16201.334201638441,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -141268,8 +141340,8 @@
       "symbol": "SOXX",
       "name": "iShares Semiconductor ETF",
       "category": "반도체 ETF",
-      "price": 576.3300170898438,
-      "change": 1.3523498598952106,
+      "price": 588.9000244140625,
+      "change": 2.181043317453864,
       "source": "Yahoo Finance",
       "history": [
         279.9599914550781,
@@ -141521,7 +141593,8 @@
         560.7899780273438,
         567.4400024414062,
         568.6400146484375,
-        576.3300170898438
+        576.3300170898438,
+        588.9000244140625
       ],
       "candles": {
         "1m": [
@@ -150970,20 +151043,28 @@
             "l": 564.0399780273438,
             "c": 576.3300170898438,
             "v": 6085800
+          },
+          {
+            "t": 1790947800,
+            "o": 590.9099731445312,
+            "h": 596.4400024414062,
+            "l": 587.25,
+            "c": 588.9000244140625,
+            "v": 6692700
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 606.1053477944936,
-          "bull": 634.8290003648475,
-          "bear": 577.3816952241397,
+          "base": 616.2731414884332,
+          "bull": 644.6610958638034,
+          "bear": 587.885187113063,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 723.7964672932873,
+          "base": 740.3857954484364,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -150993,8 +151074,8 @@
       "symbol": "SMH",
       "name": "VanEck Semiconductor ETF",
       "category": "반도체 ETF",
-      "price": 617.8099975585938,
-      "change": 1.446633425056445,
+      "price": 630.5999755859375,
+      "change": 2.070212213768965,
       "source": "Yahoo Finance",
       "history": [
         336.67999267578125,
@@ -151246,7 +151327,8 @@
         600.010009765625,
         606.9000244140625,
         609.0,
-        617.8099975585938
+        617.8099975585938,
+        630.5999755859375
       ],
       "candles": {
         "1m": [
@@ -160695,20 +160777,28 @@
             "l": 607.25,
             "c": 617.8099975585938,
             "v": 5105000
+          },
+          {
+            "t": 1790947800,
+            "o": 632.27001953125,
+            "h": 636.25,
+            "l": 628.5499877929688,
+            "c": 630.5999755859375,
+            "v": 7324900
           }
         ]
       },
       "forecast": {
         "short": {
           "period": "단기 1~4주",
-          "base": 643.3268123495312,
-          "bull": 668.4270263923952,
-          "bear": 618.2265983066673,
+          "base": 655.3525206400031,
+          "bull": 680.5582349391682,
+          "bear": 630.1468063408381,
           "trend": "상승"
         },
         "long": {
           "period": "장기 6~12개월",
-          "base": 751.5315691632736,
+          "base": 767.6438409272598,
           "trend": "상승"
         },
         "method": "최근 가격 추세와 변동성을 이용한 참고용 시나리오이며 확정적인 주가 예측이 아닙니다."
@@ -160720,6 +160810,7 @@
       "title": "[AI MY 뉴스] 뉴욕 반도체주 프리뷰...美 고용 쇼크에 엔비디아 등 반도체주 강세 - 뉴스핌",
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBQaEhfcEdTVUluOVVxZHIybVlqVGtybkhKU2ZoeFlLdVNsVlZwUjE0T29MaVZjNmdjS25jVXFGMnNrdThYQ2YxYUZ2bWp5VjBHWi1fcmVZVkVHdURV?oc=5",
       "published": "Fri, 02 Oct 2026 13:22:00 GMT",
+      "publishedAt": "2026-10-02T13:22:00+00:00",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "높음",
@@ -160729,79 +160820,58 @@
       "title": "AI 반도체 시장, 1조 달러 규모로 확대···엔비디아 외 수혜 기업은 어디? - Benzinga",
       "link": "https://news.google.com/rss/articles/CBMiwAJBVV95cUxOem5iR2U3bnB1a0pKeGowMUR3Ni1pU25QZ0MtdWNBVnVUbFBqcnhneXJaOHJwR2pRU3M5dF9GTlU1RkFBdFNMbkVfMkNnMjRGbU9odGo4WFc1V2I0LUtUM29iRTdrTnh2V2JMTUVrNS1BQTh5ZC1YZmdhell6RmxwbC14S01FWnFySUlQUXhXOE9LSVBjQWlfdkFMbDEyRnFLOEk2Nldqbm5VOXdfOTdLajlYcG0yMU9fU3AwNUN3aXJ3WGpXX1JMWGdQdEdTMXdIZXh6eXViZFc2akc3N1VJekltLWFVRXNLQ0RydjB2bFRQQ0F2MGxHbUQyclV5cHcwLXFXNlA2c2VnYjFiSG0wYXRuV202c3U0LVZfZTNObzlER29CRVJEckpUOW45a09GNWxFNWxreUR4WWs0QTNVYQ?oc=5",
       "published": "Fri, 02 Oct 2026 04:53:37 GMT",
+      "publishedAt": "2026-10-02T04:53:37+00:00",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "긍정",
       "importance": "높음",
       "relevance": 3
     },
     {
-      "title": "“HBM은 없어서 못 파는데 주가는 왜?”…마이크론 최대 실적 뒤 숨은 경고 [플러스 관심종목] - v.daum.net",
-      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1rdWozZEY5el9PZ2tqUUdPYVRVRTlWb0FkaHg2NFdUR09VZEp2RF85T0s0MktsZTZEUzhaN0JwS1RfYXFuaTBrUWxoRQ?oc=5",
-      "published": "Fri, 02 Oct 2026 12:06:00 GMT",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "긍정",
-      "importance": "높음",
-      "relevance": 2
-    },
-    {
-      "title": "[인문자의 피지컬 AI 이야기 | 인간.문화.자연] AI의 심장은 반도체지만, 피는 전기다 - 아주경제",
-      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE90Q3JvY21xenhYVGl4VjFGeTFtS21ISmZsd2VqLW0xODQ3ZmRMak54Y2tUWXNBZlNjUjBOLW9oSWJIcHlBTE1YWmlCajlTU3pyaXBwandkVUjSAVhBVV95cUxPdENyb2NtcXp4WFRpeFYxRnkxbUttSEpmbHdlai1tMTg0N2ZkTGpOeGNrVFlzQWZTY1IwTi1vaEliSHB5QUxNWFppQmo5U1N6cmlwcGp3ZFVI?oc=5",
-      "published": "Fri, 02 Oct 2026 11:00:43 GMT",
-      "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2
-    },
-    {
       "title": "HBM·낸드·CPU로…AI ETF 쪼개 담는다 - 서울경제",
       "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE4xZ1BDMzRnN2liSzZlaGU2WjNvb0RtNE5XNXdmNXNRWlBNU1kydzhrc1JWYlZFWDlSTF9rQk9kblV2MV83WkVIVXRYdWpOc0liWlHSAVNBVV95cUxNV1V5ekJZTmtOU2lUcUYybHhrRjJYMExiWkpmdGFmNzNiY1NzbEVnb2JRbjY1Q3hiSkc0dFF2ak1rbk55RFVINzFZQzVzRG5iUDdNUQ?oc=5",
       "published": "Fri, 02 Oct 2026 08:55:55 GMT",
+      "publishedAt": "2026-10-02T08:55:55+00:00",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "높음",
       "relevance": 2
     },
     {
-      "title": "나스닥 1%, 美반도체지수 2% 상승…연휴 뒤 韓증시도 따라 웃을까 - 매일경제 마켓",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5GQUJPZWpQTkRCcnBveEF1VVNJbGtadmxBVjRBNWpjU0UtODdwS2tGZGZyOFNjcFo5aEFvYnVoa1lfQldSN2RqeFhrejNvMEl5YkE?oc=5",
-      "published": "Sat, 03 Oct 2026 01:05:07 GMT",
+      "title": "HBM 이어 eSSD로 확장되는 AI 메모리 시장···솔리다임의 美 투자·성장 전략 - 스마트비즈",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE82WXdLVUpVTW5Xd0NReTJ4eHl4U3cxSDJMVnFhcEZTVThqZTF0UkNpYklXX29oZUh5emtscC1pWUdEYTNsc3h4elJrd0xkVjdscHJHNlpRNEtST0JYZnR5dzRET0htREpUZG1qWg?oc=5",
+      "published": "Fri, 02 Oct 2026 00:31:29 GMT",
+      "publishedAt": "2026-10-02T00:31:29+00:00",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1
+      "importance": "높음",
+      "relevance": 2
     },
     {
-      "title": "사파리 히트 슬롯 게임 무료 플레이 포스트 코로나 시대 디자인 패턴: 핵심 개념과 실제 응용 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5LWjVmbXRSaDFCQk1mM3NWVWlfc1dubS03d0ZVQkt4QVNqVEhKNnJud1VCam1yMkJSdXpfTEtrT2Y2MjRCYzVxeWJSUTJqY3o2ck1PRll2YWNxazRuOUJ6dHNSZjk1QTc3N1F5T3pYcEY?oc=5",
-      "published": "Fri, 02 Oct 2026 18:38:39 GMT",
+      "title": "‘AI 메모리 훈풍’에 사상 최대 실적 낸 마이크론 - 부산일보",
+      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE95MUlEbFJDREdEbmYtVVh0WHFpMlFONm8tN3F1Z29lMFhjZDZ3MHI0VDR6MmphMmpyd1pvdU9SUWJTOFZmbWJCSDBTc1dyZzdMdzhYY1lZaVI1S3JyYnlyeVk5WDZSMWMwcjNlLUhjSXJNQ1dv?oc=5",
+      "published": "Thu, 01 Oct 2026 08:36:18 GMT",
+      "publishedAt": "2026-10-01T08:36:18+00:00",
       "source": "반도체 AI HBM 한국 미국",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2
     },
     {
       "title": "경남테크노파크, 영남권 5개 기관과 튀르키예서 ‘제조 AI’ 협력망 구축 - 뉴스타운",
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE91M0RuR05yaGxzcGdxcGdHa01leFprR2hocW15QjQxZ3VzcDRta2NCNmpmblNoT1Z5S1EyeE1sMVNscGw3SGtTa2txTXNORkNsZERDZ2xLaVNCRWJjMmxpLTdkVV9HWmNtemIwWQ?oc=5",
       "published": "Fri, 02 Oct 2026 16:29:39 GMT",
+      "publishedAt": "2026-10-02T16:29:39+00:00",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "[청각 기술 스타트업 레가토, AI 청각 안경 '레가토 프레임' 출시] AI 기반 시스템이 음성 소리와 배경 소음을 구분하고, 목소리를 증폭시키면서 원치 않는 소리를 줄이는 방식 - AI넷",
-      "link": "https://news.google.com/rss/articles/CBMiQEFVX3lxTE9TMlJkVG9WT2ozY2l3ajk4Umh3QlRmWmdUTTF0RWdtcWZQSVZ2a0ZEdDhQbGsyLVE0b051ZFdwNms?oc=5",
-      "published": "Fri, 02 Oct 2026 14:27:15 GMT",
-      "source": "AI 개발 신기술",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "경운대, ‘2026 산학연협력EXPO’서 AI·항공모빌리티 혁신성과 전시 - 한국대학신문",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVZkdNMkxjamxJNlNoMnVNcThzX1dXWWVrWDhfU1BZcHMwMFc2UUVNejBTUEVRM190V1dnUGpaU0lpd2trSDBnaXhaZ1hjY2xRWEZwXzBtcFA2M2M4dlRZSXRTSmN5QQ?oc=5",
-      "published": "Fri, 02 Oct 2026 08:21:57 GMT",
-      "source": "AI 개발 신기술",
+      "title": "게임이 시작되지 않을 때 확인할 파워볼 한국 구매 이용 조건 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNSVQ0bnNpbWppZEJyTmNYSVctNF8xdy03bkRzb1RLX0tZRWxoX0I5TDB6cDNTT3BNV0F6R0ZFVDlIUGd3VkZXcFdRR3YtTFpqbTdGZzZmajZHZk90MW5wQ281TWtxdUxVV1pCNW9EeWdNWE1uTG9aT3I5V2d1SllBeWJNZXhUX3dLNF9BT2F4VlkxRk5yNkZHZmdSNTF2aG9majAwUE4xemk3bUNlM2NRaUNMQWE3Z2IzSkV5bVMyaw?oc=5",
+      "published": "Fri, 02 Oct 2026 08:24:58 GMT",
+      "publishedAt": "2026-10-02T08:24:58+00:00",
+      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160810,43 +160880,18 @@
       "title": "[미국 ETF 히든 챔피언] (56) 에이전틱 AI 시대 CPU 수혜 펀드는 - 뉴스핌",
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE93ekI0NXg2c185Z01BSXhMSUZlMlU3RHhZVFktMzlTWUx2Tm11eUFGbHhsZjY4UkJBMkxXQXl2azJ3VmQwYncyV1N3N2xHUHQtTFR6NUtmUHJCQUFv?oc=5",
       "published": "Fri, 02 Oct 2026 07:06:00 GMT",
+      "publishedAt": "2026-10-02T07:06:00+00:00",
       "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "김현 의원, ‘AI·데이터 혁신 3법’ 국회 본회의 통과 - 유스연합",
-      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9BVDFuTnBWS2tIdzJmQUVHcmloQ3czaVVNeS05RVA4ZVA1TWpJTEp2YjNtYm96dkhrV1N5aXpYU2ZfdXFJWjdqbE83RE1KTjU3eFI0?oc=5",
-      "published": "Fri, 02 Oct 2026 07:05:40 GMT",
+      "title": "비즈데이터, 글로벌우수기업연구소 육성사업 선정…산업폐수 AI 기술 개발 - 중소벤처기업신문",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBtaG1IRXo3QlNWUW1DcHJ3a25xVksta2hXREZOTl9UTUdZeHVWZG9Xemw0T0lLREdYR2hieFFkWGtXcnQtQUJBLVpjcmY4c0tpZlM1RUV6ZXBXTGFDU1Q0d0Y4YlhOdEU?oc=5",
+      "published": "Fri, 02 Oct 2026 06:52:00 GMT",
+      "publishedAt": "2026-10-02T06:52:00+00:00",
       "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다 - bizhankook.com",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5",
-      "published": "Fri, 02 Oct 2026 06:46:45 GMT",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "AI 사용료, “역사상 어떤 기술보다 빠르게 하락” - 애플경제",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9FNGMwVXZ0ZENrbGNtYjdUNXpWRnNhTzU3TUNEdGN3el9MR3REVUcxMEdCa0RoaVZpampLQ0t4YlMyMkhMa0g1dUZxd291T0N1ZXlvOXBObnpISGFxeU9UdWEyOGVLNWFUak9abDBXMVc?oc=5",
-      "published": "Fri, 02 Oct 2026 05:46:32 GMT",
-      "source": "AI 개발 신기술",
-      "impact": "부정",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "드림에이지, 게임사 본연 ‘코어’ 힘으로 글로벌 확장 가속 - 한국금융신문",
-      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9Fck5BVzRsWGJfb3Ayc0dnUUZNdW80Z21KMXhxRTJvVWR0SXN6aEx0UU8waHRKYjVTNUZIcFJzdFBNM1RWT3MxbmFiQ0hGa2dWbTZBX0pnZ2JIZUhXRy12am1LTnFONjJTeUdmQ1RSQnl0Qmdnd2NjRi1vMTU?oc=5",
-      "published": "Fri, 02 Oct 2026 05:14:57 GMT",
-      "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -160855,33 +160900,107 @@
       "title": "[뉴in] KETI 연구팀, 한국 문화ㆍ언어 이해하는 AI 'HAECHI' 개발 - 산업인뉴스",
       "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFB4WHY2TW1xaExGdFMxR0pFdmg5WktxUEdmYTVTakVVSG0zbjB6S2VvUHBySFdrSUdMdTNYOWk3OVpOdzJ1Sl9CS1EwTlZSS09sTzRaZlE4N2tkLV93c3hxWi1zakxITUZ1ZGFwYnFn?oc=5",
       "published": "Fri, 02 Oct 2026 05:06:53 GMT",
+      "publishedAt": "2026-10-02T05:06:53+00:00",
       "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - 프리미엄콘텐츠",
+      "title": "[산업분석] 게임 : BM이 다르면 다른 산업이다 - 네이버 프리미엄콘텐츠",
       "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPUmx0b0J1NEozQ0J1aTNmZUNTS212Ym5fV1VoNG5zZkswbUR5dDZGS1lBb2IxRUZaZGpkWE93VDk0YTdxblZwZTRLOWtYaHoxdkVDWE80dTNkc3Q0cjUyRW5wY3VnWHNJLVRpSEhfLWx2ZkVFRjV3a0F2NVVMdjRIQ2NNbWc5YWFlQm1XZ1dVNUN6MDE4b3BJ?oc=5",
       "published": "Fri, 02 Oct 2026 01:44:00 GMT",
+      "publishedAt": "2026-10-02T01:44:00+00:00",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "솔리다임 상장설에 흔들린 SK하닉…실적 전망은 '이상 무'[종목현미경] - 뉴스1",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1sV1FWMXQycW50VW1XQ1BEWHVEcHFWU3JBTVdUOHhmTjlpSTJLWWNZcTI3WnZLVHd3MERMM0FLQ2wzQW1UVDdIWE94UlpQeXlHVGhIeTRMNThBM3J0NkxMZUVrX2vSAWRBVV95cUxNbFdRVjF0MnFudFVtV0NQRFh1RHBxVlNyQU1XVDh4Zk45aUkyS1ljWXEyN1p2S1R3dzBETDNBS0NsM0FtVFQ3SFhPeFJaUHl5R1RoSHk0TDU4QTNydDZMTGVFa19r?oc=5",
-      "published": "Fri, 02 Oct 2026 21:00:00 GMT",
+      "title": "HBM 점유율 격차 1년 새 49%→17%…삼전·닉스 승부는 HBM4로 - 코리아리포트",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1iQlduTks5N2FQaHVrbmI0UkJoRld3RTAyRUJjbUNWZTVuOVVSS1RoYjhfYVVfUm96SlBXbk9FVG0yRVRCOENyQ3h6dlJWbF9ZaGl4ZWFIRmh6ZnV6N1NJeGlwSERkdF93ZHRPVm1NSng?oc=5",
+      "published": "Fri, 02 Oct 2026 01:02:34 GMT",
+      "publishedAt": "2026-10-02T01:02:34+00:00",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "건설연, AI 기반 교량 안전성 실시간 진단기술 개발 - 사이언스타임즈",
+      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUmlIbEIwQmtCY3lSVmNZbGZPRmJfY0FrbUc5cTl4QnVWQ09iR1EwVU9EbXdvRkVTcnVwSzZ1ZUdxdUVKR1N4dGVLOHlacG55cmo3NmQ2Qk5mZ2ctMlJ4MW10d1JtSlRNbllGa2llVkxJaU9OWk1XMUduYnRzRlhxcl9UTW9fVWhLVTA1TFV5Zw?oc=5",
+      "published": "Thu, 01 Oct 2026 22:04:50 GMT",
+      "publishedAt": "2026-10-01T22:04:50+00:00",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "게임 아트 포트폴리오 추가 기능의 사용 가능 상태 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMid0FVX3lxTE0wNmYxb3hnZ2l0RVhNQTVrdXBDZ091UlRhTEMwTnRPSnJHMnNYclpnOUFrSzlVS2ZLZi1WY1Rna09hbkRSak42N0l2b0Y2aDNBS1gxSUM0Ynd3c2RiZV9sdU9MaFBiOFRHU3hpWjlWbTRZaVlHcy1z?oc=5",
+      "published": "Thu, 01 Oct 2026 08:55:45 GMT",
+      "publishedAt": "2026-10-01T08:55:45+00:00",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "콘크리트 배합기술에 AI 기술을 활용한다고? - 전기신문",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE50YXpoTDBsT0RZc09uNVN3ZzV5RWtoY3JYMVFxVHJuUW1SWnAwbWt5cnJpRXVZTFFNN09EVXJ6SmRUeHBsWHpMcWhZYzVSUDQxNDBwMzlzekpzR0lZa2tOQlA5UVQ0VnBmWTZTMdIBcEFVX3lxTE41V3RrVThlNzNXNFUwSkpvakJDY08tSlNnLWNqRUhsd0RPVzc2c181bmNYS1VvZG5MY3J0d0FRdXVtbXBJNnp4UWlXZGxaNWJFNXNfZkM4bWFMZzY0MXpGY25ZSjhMNUplR042QUhhR3E?oc=5",
+      "published": "Thu, 01 Oct 2026 08:32:08 GMT",
+      "publishedAt": "2026-10-01T08:32:08+00:00",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "[신기술이 경쟁력] 건설연, AI로 교량 안전성 10분 만에 자동 평가 - 건설이코노미뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBVODRFM0FQQWM1V0lvX09NbmxZRjhPaW1uSkZ4Q1JIdG9VWWNEenhaazRsc2pvcnRfaVBiVmsyNE5vaGoxSXhNQTVodEtpbzVXNk0wUDNXUkM3c0VWVlRkM0Iya2RFQQ?oc=5",
+      "published": "Thu, 01 Oct 2026 06:40:27 GMT",
+      "publishedAt": "2026-10-01T06:40:27+00:00",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "[머니네버슬립] 1500억달러 자사주 매입 나선 엔비디아 : 네이버 블로그 - Naver Blog",
+      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOdXY4YkI4dlo3dEhBUVFpSnhYU01pZTBRUHR6YW90Wm85UkVVSlJIMXZlRmtvbjZ4cThYT3VFb3E2MXp5ZHZVTGhTci12Vmd0SkFRLVpFR0FvbmZ6dFRLWWh0SlZ0N0JKa1lrejNOSkpENHhHTk4yRUFtQkYtUkk3RzhVR25HMm1jay1NM3Zwdw?oc=5",
+      "published": "Thu, 01 Oct 2026 06:23:36 GMT",
+      "publishedAt": "2026-10-01T06:23:36+00:00",
+      "source": "NVIDIA AMD Intel semiconductor",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "韓·美 오가며 ‘AI 혈맹’…재계·빅테크 협력 전방위 확대 - 매일일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE8yamNWUXdwT0o3RXNHeTJWTU5RR2E3c0R6aGtBdThzd01PQTVsRzNWLUtQcFplNUhqOGlCeWdFOUIzOV9FbERYN3NhUm9OenpGNkU2S0VYYnhST2ZaWEJmZDN3OXQ?oc=5",
+      "published": "Thu, 01 Oct 2026 05:59:03 GMT",
+      "publishedAt": "2026-10-01T05:59:03+00:00",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "넥슨, 신작 ‘템빨: 오버기어드’ 사전등록 시작 - 디일렉",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFAtanNQRTE4b0gwQlAxbEswV0xDeWRENDZnUFZMTlNSRGRPOVVIOWVweWo4UXZqenA2WjVIaFVsX1NjeEhxbEpGaHppdnVVT1oySkFsNEpJUTBpTkFtSGxRQ3BFeHJ0dw?oc=5",
+      "published": "Thu, 01 Oct 2026 05:00:13 GMT",
+      "publishedAt": "2026-10-01T05:00:13+00:00",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
     },
     {
       "title": "시각 효과를 중심으로 모아보는 더굿 토토 추천인코드 테마 콘텐츠 - Calgary Roughnecks",
       "link": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOajlkRmMyWGxOQ2oxVmpuaWRvZnc3b0lYdDBjYURNX0dMOHVLS3dBaXFyVi1icXVjTmozOFN0NEVpQTd4ZzRkdW5rYWdjVTNFZllwVExOd05EdUw3SU9fUWxzRGJBNnV1a1FtTEJXQmgtT0tMWGxRNjRXVzZVdk9taGpRNkU3ZkpvS2UxbDFLc0h2OURhYUxmcTQwVXVSamZObHVPVmplTHhTSHVkMUlOMjRkSklveHFfa2Z6bXBPb3EyaVEtbER3NmhFeG41MDlQMVpSZU5XZWhGOUU?oc=5",
       "published": "Fri, 02 Oct 2026 17:59:34 GMT",
+      "publishedAt": "2026-10-02T17:59:34+00:00",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
@@ -160891,17 +161010,9 @@
       "title": "[기획] 3N 빠진 지스타…글로벌·인디로 외연 확대 - 소년한국일보",
       "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE4tSEpYMV9Kc1ZzeEV4MWZMT29JVEdaZXpFdHZSdW1oLXFNaTFUTEJrUzE1eEp2cFkyTl9DaWl1WEZ2bE1kaGd0UF8wVnU5eU1USVpaRi1CbHBaUmg2b1lpQk9JdVVHcEFXZG1lddIBcEFVX3lxTFAyMFZsNWZ2elliRUNkSko2bldYRTNwWTBBZXBMUk95ckdpZWhKNWdkbnpxLVM2N1ViNFNkcUt5ek05NHNDNUtqbkREZHBFbGdVVEtaR1NPemp1VlZkbFRhMGd6T2oyZzdVR2RaOHR1OWE?oc=5",
       "published": "Fri, 02 Oct 2026 10:28:41 GMT",
+      "publishedAt": "2026-10-02T10:28:41+00:00",
       "source": "게임 산업 신작 실적 한국",
       "impact": "긍정",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "신입 개발자 연봉, 얼마 받고 싶어요? - 잡플래닛",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1LQ0kzVVRuTmYzdWpZSjhHdjRTWVR5YU5FY1lZbHRjNXhZZTZ0VkZMc1hFUUZrLWxoOUZZMndwSWtGeWFBSUp0bDVobXNJX3NPYUpNWDl6ZzFvZw?oc=5",
-      "published": "Fri, 02 Oct 2026 08:42:02 GMT",
-      "source": "백엔드 서버 개발자 채용",
-      "impact": "중립",
       "importance": "낮음",
       "relevance": 0
     },
@@ -160909,30 +161020,96 @@
       "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
       "published": "Fri, 02 Oct 2026 07:45:02 GMT",
+      "publishedAt": "2026-10-02T07:45:02+00:00",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
     },
     {
-      "title": "[산업소식] 웹젠, 하반기 채용 연계형 인턴 모집..13개 직무 선발 - 포쓰저널",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1XNkNPajU3R2xEY2xucXpCMUw4UUwtWC10OS1OLVM5Nks5ellIMmo0TDVWSWtiU094aVhrdTRvNmltTWpkUEVIeTkwMVZxWC0xd3hyalVSVXBVQ1ZqbHB6Z3pzYVA?oc=5",
-      "published": "Fri, 02 Oct 2026 02:36:07 GMT",
-      "source": "게임 개발자 채용",
+      "title": "[모닝 리포트] 넷마블, 환율·신작 공백에 3분기 숨 고르기 - 뉴스핌",
+      "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE5EaHplTm5FaWhrM21EVGJNTUttam0xM1E0YjNlSzRhaXV4ZC1LSldMYXEzMU5xVjVjVXBtbTJwTmVMQmVEYlZMRnBVdm5DQnktR2p2REl1UG9WSVFB?oc=5",
+      "published": "Fri, 02 Oct 2026 00:31:00 GMT",
+      "publishedAt": "2026-10-02T00:31:00+00:00",
+      "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
     },
     {
-      "title": "기본 정보와 주의 사항을 함께 읽는 볼란테 토토 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5NeHlyTU9OMl9RbzBNN0d4RXRnUzd5SmtVMjQzOEY2WU1tOUR6ZlpqS1h2bTlTN3B4UHFnS3ZYbDE4UjJaX1YyaU9Cc1lmRGVFa3hHTU91V3NRaXR5YUNnZ0RXTkpjQ2s?oc=5",
-      "published": "Fri, 02 Oct 2026 01:22:09 GMT",
-      "source": "게임 개발자 채용",
+      "title": "이반토니 도박 : 위험 피하기와 보호 조치 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQMTFDX2tqclJ6clBwZXJWY0Rsek1hOHVFOFhRYU1uN1VaaWJqdFUtYUtxZHhDZjFjOV90dThlM1FzN095Sm9uM2xZRHNWT2FkeGF3RFdXd0l1YzdzRWJJNTZ5T3J3QkdHOXRxcDVTQm1yZU5yWXoyMEh2RVFPWFR2SktSTzZ2ejd4aTd1MW1XSXo0ZlBqVy1hWlZVNVdQempVRjRxQmlaY0V0RFVERElaUlRIUGZSSWYxOWY5TVBFZ01jVmc4dHh5WF9rMVBBUQ?oc=5",
+      "published": "Thu, 01 Oct 2026 20:51:58 GMT",
+      "publishedAt": "2026-10-01T20:51:58+00:00",
+      "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
     }
   ],
+  "employmentNews": [
+    {
+      "title": "[청년발언대] AI 시대, 신입 기획자는 설 자리가 있을까…\"기획력, 이제는 증명이 필요하다\" - 청년일보",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFB2LW1oUW83dmJXdXY4clNKSXJ2Tzh3WXh4UDJNUkx5bHNJYlRnRTZVUk4xX0RiVmhMSUo3V0dIc2ZLblNobUQ3eWtMN0QxUk5QTTBfaUN6TjZTa2ZXa0ViaC1qbUJ6bFU?oc=5",
+      "published": "Fri, 02 Oct 2026 23:00:00 GMT",
+      "publishedAt": "2026-10-02T23:00:00+00:00",
+      "source": "개발자 채용 공고 취업",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "현대자동차 HMAT 적성검사·인적성 후기, 준비법 - 잡플래닛",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE82cjVVdWpFaWs2YTIwVG1naDNlN2YwYWh0ZzRTZEM3RnhOT3dpM3ZtNG5wd0lVLTl4RWhiam90aXBoYTZaVWd6TnM2dDhETDlsZTNFcm9fNFlfZw?oc=5",
+      "published": "Fri, 02 Oct 2026 09:32:03 GMT",
+      "publishedAt": "2026-10-02T09:32:03+00:00",
+      "source": "개발자 채용 공고 취업",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "26년 10월 두 번째 주 추천 채용공고 - brunch.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE13T3VjQ2pLRzBUdUdic0I2M0xfbzZFRl9vcFdSMjFRSDVaSGhDeFVwbVYtNjFMMDItNlZnSk9IS2x2SW9xMmQzcGZEWGY?oc=5",
+      "published": "Fri, 02 Oct 2026 03:06:28 GMT",
+      "publishedAt": "2026-10-02T03:06:28+00:00",
+      "source": "개발자 채용 공고 취업",
+      "impact": "중립",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "[오늘의 공기업 채용정보] 대한무역투자진흥공사, 2026년도 통상직 신입직원 54명 채용 - 아웃소싱타임스",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFBLZThUcHVLb194VzIzV3hER01RRFJQYVdNZ25FeTdrbUd1TldqTEJrRDB2dTRCZW54Zy04bXBqQzhFZ2tLOG9nSUJ0c28xQ01fc3dZUWFiS25ZRjNHT1REV1Ixd0RKZ1NqX1NpdndZN21HZw?oc=5",
+      "published": "Fri, 02 Oct 2026 02:23:11 GMT",
+      "publishedAt": "2026-10-02T02:23:11+00:00",
+      "source": "개발자 채용 공고 취업",
+      "impact": "긍정",
+      "importance": "낮음",
+      "relevance": 0
+    },
+    {
+      "title": "화려한 효과와 실제 결과 표시, 한게임 머니상 구분하기 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMivwJBVV95cUxQOXBzTWFfOEJqelNYaUpyRlVDeVJmTkh1aUhFanBWeWRDZHN2MTJxeTc0V2JrajE1aS1EM1cxT05hYzlJVFlfbUNHeW5UT1VvZXMtWDZVQXJ3WkprcXVrT25MZThNU3J6Q1p0QUpoR3lLMnFCMTA3V0VXSGQwMmlDal9rWVVyQnphajlES2I2azZoQnZTc3lsWW1CXzJFbmpOaHNWZm4taXJCZUh2ZDBxX1gtNkk2bGxMcER6VWFVcWhub1B4RUNERUJCT1prUGxqYWZvR1EwRmpsSm5DMEV0MmlEd1JIaDdtanlnVDJGMWpvRzN6WjkwWkNJU3BFbmZzWERNTTk1eGpHLVVYYjFObE5HTnhGLTRPRFBDeS11WnlrN3A4Z1ZENF9uUl9ETm1oREZzM2pramxPQnZGMWo4?oc=5",
+      "published": "Thu, 01 Oct 2026 07:53:55 GMT",
+      "publishedAt": "2026-10-01T07:53:55+00:00",
+      "source": "신입 개발자 채용 게임 IT",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "\"신규 서버에 IP 콜라보까지\"…넥슨·넷마블·엔씨, 이용자 확보 전략 다변화 - 청년일보",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9iLWllRjc1MHRLUWw3dGVOWm5sTFp2ellZWE8yUk81eXI2N1hKZFB5RF9fTnA3aW9Dd094LURIV2hTdlNSTTUya0pYZDRGOGt0OVN5eW9WVmI2aW9MblYxTF9RbEcxTkp4YUE?oc=5",
+      "published": "Thu, 01 Oct 2026 07:06:58 GMT",
+      "publishedAt": "2026-10-01T07:06:58+00:00",
+      "source": "신입 개발자 채용 게임 IT",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 3
+    }
+  ],
+  "employmentUpdatedAt": "2026-10-03T04:14:16+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -160988,6 +161165,6 @@
     "quotes_ok": 17,
     "quotes_total": 17,
     "candle_ready": 17,
-    "generatedAt": "2026-10-03T01:20:35+00:00"
+    "generatedAt": "2026-10-03T04:14:16+00:00"
   }
 }
