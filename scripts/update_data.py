@@ -188,12 +188,154 @@ def rss(query,limit=6,days=2):
                 "link":item.findtext("link",""),
                 "published":pub,
                 "publishedAt":dt.isoformat() if dt else "",
+                "description":item.findtext("description",""),
                 "source":query,
                 **classify(title)
             })
     except Exception:
         pass
     return out
+
+def normalize_text(value):
+    import re
+    return re.sub(r"[^0-9a-z가-힣]+","",str(value or "").lower())
+
+def classify_job(title, description):
+    t=(title+" "+description).lower()
+    if any(x in t for x in ["인턴","intern","internship"]):
+        career="인턴"
+    elif any(x in t for x in ["신입","주니어","junior","new grad","entry level","entry-level"]):
+        career="신입"
+    elif any(x in t for x in ["신입/경력","신입·경력","신입 경력"]):
+        career="신입/경력"
+    else:
+        import re
+        m=re.search(r"(?:경력|experience)\s*(?:\(|:)?\s*(\d+)\s*[~\-]?\s*(\d+)?\s*년",t)
+        career=(m.group(1)+"년+" if m else "경력")
+    if any(x in t for x in ["클라이언트","client","unity","unreal","언리얼","c++","게임 클라이언트"]):
+        area="클라이언트"
+    elif any(x in t for x in ["서버","server","backend","back-end","백엔드","api","네트워크"]):
+        area="백엔드/서버"
+    elif any(x in t for x in ["프론트","frontend","front-end","react","vue","웹 개발"]):
+        area="프론트엔드"
+    elif any(x in t for x in ["ai","머신러닝","machine learning","ml","데이터"]):
+        area="AI/데이터"
+    else:
+        area="개발"
+    stack_candidates=[
+        ("C++","c++"),("C#","c#"),("Java","java"),("Python","python"),
+        ("JavaScript","javascript"),("TypeScript","typescript"),("Go","golang"),
+        ("Rust","rust"),("Unity","unity"),("Unreal","unreal"),
+        ("AWS","aws"),("Azure","azure"),("GCP","gcp"),("Docker","docker"),
+        ("Kubernetes","kubernetes"),("Spring","spring"),("React","react"),
+        ("Node.js","node.js"),("Redis","redis"),("MySQL","mysql"),
+        ("PostgreSQL","postgresql"),("MongoDB","mongodb"),("Git","git"),
+        ("Linux","linux")
+    ]
+    stack=[label for label,key in stack_candidates if key in t]
+    return {"area":area,"career":career,"skills":stack[:12]}
+
+def job_source(link):
+    host=urllib.parse.urlparse(link).netloc.lower()
+    if "wanted.co.kr" in host: return "원티드"
+    if "saramin.co.kr" in host: return "사람인"
+    if "jobkorea.co.kr" in host: return "잡코리아"
+    if "jumpit.saramin.co.kr" in host: return "점핏"
+    if "rocketpunch.com" in host: return "로켓펀치"
+    if "career.programmers.co.kr" in host: return "프로그래머스"
+    if "linkedin.com" in host: return "LinkedIn"
+    return host.replace("www.","") or "채용 사이트"
+
+def extract_company(title, description):
+    import re
+    patterns=[
+        r"^(.+?)\s+(?:채용|모집|공고)",
+        r"^(.+?)\s*[-|·]\s*(?:신입|경력|인턴|개발자|채용)",
+        r"(?:회사|기업)\s*[:：]\s*([^|·,]+)"
+    ]
+    for p in patterns:
+        m=re.search(p,title,re.I)
+        if m:
+            value=m.group(1).strip(" -|·")
+            if 1 < len(value) <= 60:
+                return value
+    for line in re.sub(r"<[^>]+>"," ",description or "").splitlines():
+        m=re.search(r"(?:회사|기업)\s*[:：]\s*([^|·,]+)",line,re.I)
+        if m:
+            return m.group(1).strip()
+    return ""
+
+def collect_job_postings(previous):
+    now=datetime.now(timezone.utc)
+    previous_updated=previous.get("jobPostingsUpdatedAt","")
+    try:
+        last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
+    except Exception:
+        last=datetime.min.replace(tzinfo=timezone.utc)
+    if now-last < timedelta(hours=1):
+        return previous.get("jobPostings",[]), previous_updated
+
+    sites=[
+        ("site:wanted.co.kr/view 게임 개발자 채용", "원티드"),
+        ("site:wanted.co.kr/view 서버 백엔드 개발자 채용", "원티드"),
+        ("site:saramin.co.kr/zf_user/jobs/relay/view 게임 개발자 채용", "사람인"),
+        ("site:saramin.co.kr/zf_user/jobs/relay/view 백엔드 개발자 채용", "사람인"),
+        ("site:jobkorea.co.kr/Recruit/GI_Read 게임 개발자 채용", "잡코리아"),
+        ("site:jobkorea.co.kr/Recruit/GI_Read 서버 백엔드 개발자 채용", "잡코리아"),
+        ("site:jumpit.saramin.co.kr 게임 개발자 채용", "점핏"),
+        ("site:rocketpunch.com/jobs 게임 개발자", "로켓펀치"),
+        ("site:career.programmers.co.kr 게임 개발자 채용", "프로그래머스")
+    ]
+    fresh=[]
+    for q,site_name in sites:
+        for item in rss(q,8,days=2):
+            link=item.get("link","")
+            desc=item.get("description","")
+            title=item.get("title","").strip()
+            meta=classify_job(title,desc)
+            company=extract_company(title,desc)
+            fresh.append({
+                "title":title,
+                "company":company or "기업명 확인 필요",
+                "source":site_name or job_source(link),
+                "link":link,
+                "description":desc,
+                "published":item.get("published",""),
+                "publishedAt":item.get("publishedAt",""),
+                "area":meta["area"],
+                "career":meta["career"],
+                "skills":meta["skills"],
+            })
+
+    cutoff=now-timedelta(days=2)
+    candidates=previous.get("jobPostings",[])+fresh
+    grouped={}
+    for item in candidates:
+        stamp=item.get("publishedAt","")
+        try:
+            dt=datetime.fromisoformat(stamp.replace("Z","+00:00"))
+        except Exception:
+            dt=None
+        if not dt or dt<cutoff:
+            continue
+        company=normalize_text(item.get("company",""))
+        role=normalize_text(item.get("title",""))
+        if not role:
+            continue
+        key=company+"|"+role[:120] if company and company!="기업명확인필요" else "url|"+item.get("link","")
+        if key not in grouped:
+            item=dict(item)
+            item["sources"]=[{"site":item.get("source",""),"link":item.get("link","")}]
+            grouped[key]=item
+        else:
+            existing=grouped[key]
+            existing_sources=existing.setdefault("sources",[])
+            if not any(x.get("link")==item.get("link") for x in existing_sources):
+                existing_sources.append({"site":item.get("source",""),"link":item.get("link","")})
+            existing["skills"]=sorted(set(existing.get("skills",[])+item.get("skills",[])))[:12]
+
+    items=sorted(grouped.values(),key=lambda x:x.get("publishedAt",""),reverse=True)[:100]
+    return items, now.isoformat(timespec="seconds")
 
 def collect_employment_news(previous):
     now=datetime.now(timezone.utc)
@@ -242,6 +384,7 @@ def collect_employment_news(previous):
 
 now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 employment_news, employment_updated_at=collect_employment_news(previous_data)
+job_postings, job_postings_updated_at=collect_job_postings(previous_data)
 
 
 korea=[
@@ -293,6 +436,8 @@ data={
     "news":news,
     "employmentNews":employment_news,
     "employmentUpdatedAt":employment_updated_at,
+    "jobPostings":job_postings,
+    "jobPostingsUpdatedAt":job_postings_updated_at,
     "employment":[
         {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
         {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
