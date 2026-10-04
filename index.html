@@ -11,7 +11,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </style></head>
 <body><div class="app">
 <header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
-<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장</button><button data-view="v5">채용공고</button><button data-view="v6">취업률·고용시장</button><button data-view="v3">개발 동향</button><button data-view="v4">신기술 · IT</button></nav>
+<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장·고용률</button><button data-view="v5">채용공고</button><button data-view="v3">개발 동향</button><button data-view="v4">신기술 · IT</button></nav>
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
   <div class="stock-layout">
@@ -28,36 +28,9 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     </aside>
   </div>
 </section>
-<section id="v2" class="view"><div class="grid"><div class="card"><div class="label">취업시장</div><div id="jobs"></div></div><div class="card"><div class="label">최근 채용시장 관련 정보</div><div id="jobnews"></div></div></div></section>
+<section id="v2" class="view"><div class="grid"><div class="card"><div class="label">취업시장</div><div id="jobs"></div></div><div class="card"><div class="label">최근 채용시장 관련 정보</div><div id="jobnews"></div></div></div><div class="employment-market-content"><div class="grid"><div class="card"><div class="label">청년 고용 핵심지표 · 통계청</div><div id="employmentStats" class="cards" style="margin-top:12px"></div><div id="employmentPeriod" class="mini" style="margin-top:12px"></div></div><div class="card"><div class="label">취업시장 판단</div><div id="employmentSignal" class="signal">데이터를 불러오는 중...</div></div></div><div class="employment-chart-grid"><div class="card"><div class="label">최근 고용률 · 월별</div><div id="employmentTrend"></div></div><div class="card"><div class="label">청년 고용률 · 연간</div><div id="employmentAnnual"></div></div></div><div class="card" style="margin-top:12px"><div class="label">게임·IT 취업 관점</div><div id="employmentCareer"></div></div><div class="notice">고용률과 실업률은 통계청 경제활동인구조사 기준입니다. 월별 공식 통계는 발표 시점에 따라 최신 월이 달라질 수 있으며, 아래 수치는 마지막으로 확인된 공식 발표 기준으로 표시합니다.</div></div></section>
 <section id="v5" class="view"><div class="card"><div class="label">채용공고 · 최근 30일 누적 <span class="live">● 1시간 갱신</span></div><div id="jobFilters" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><select id="jobAreaFilter"><option value="">전체 직무</option><option>클라이언트</option><option>백엔드/서버</option><option>프론트엔드</option><option>AI/데이터</option><option>개발</option></select><select id="jobCareerFilter"><option value="">전체 경력</option><option>신입</option><option>인턴</option><option>신입/경력</option><option>경력</option></select><input id="jobSkillFilter" placeholder="기술 스택 검색" style="min-width:180px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e1627;color:var(--text)"></div><div id="jobPostingList"></div></div></section>
-<section id="v6" class="view">
-  <div class="grid">
-    <div class="card">
-      <div class="label">청년 고용 핵심지표 · 통계청</div>
-      <div id="employmentStats" class="cards" style="margin-top:12px"></div>
-      <div id="employmentPeriod" class="mini" style="margin-top:12px"></div>
-    </div>
-    <div class="card">
-      <div class="label">취업시장 판단</div>
-      <div id="employmentSignal" class="signal">데이터를 불러오는 중...</div>
-    </div>
-  </div>
-  <div class="employment-chart-grid">
-    <div class="card">
-      <div class="label">최근 고용률 · 월별</div>
-      <div id="employmentTrend"></div>
-    </div>
-    <div class="card">
-      <div class="label">청년 고용률 · 연간</div>
-      <div id="employmentAnnual"></div>
-    </div>
-  </div>
-  <div class="card" style="margin-top:12px">
-    <div class="label">게임·IT 취업 관점</div>
-    <div id="employmentCareer"></div>
-  </div>
-  <div class="notice">고용률과 실업률은 통계청 경제활동인구조사 기준입니다. 월별 공식 통계는 발표 시점에 따라 최신 월이 달라질 수 있으며, 아래 수치는 마지막으로 확인된 공식 발표 기준으로 표시합니다.</div>
-</section>
+
 <section id="v3" class="view"><div class="card"><div class="label">개발 동향</div><div id="trends"></div></div></section>
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
 <div class="notice" id="notice">데이터 정책을 불러오는 중...</div></div><div id="stockModal" class="modal"><div class="modal-box"><div id="stockDetail"></div></div></div><div id="jobModal" class="modal"><div class="modal-box"><div id="jobDetail"></div></div></div>
