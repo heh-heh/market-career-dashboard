@@ -291,6 +291,73 @@ def rss(query,limit=6,days=2):
         pass
     return out
 
+def collect_stock_news(previous):
+    now=datetime.now(timezone.utc)
+    queries=[
+        '"삼성전자" 반도체 OR HBM OR 파운드리',
+        '"SK하이닉스" HBM OR 반도체 OR AI',
+        '"한미반도체" HBM OR 반도체',
+        '"엔씨소프트" 게임 OR 실적 OR 신작',
+        '"NVIDIA" OR "엔비디아" AI OR GPU OR 반도체',
+        '"AMD" AI OR GPU OR 반도체',
+        '"Intel" OR "인텔" 반도체 OR AI',
+        '"Broadcom" OR "브로드컴" AI OR 반도체',
+        '"Micron" OR "마이크론" HBM OR 메모리',
+        '"TSMC" 반도체 OR 파운드리',
+        '반도체 AI HBM 금리 환율 수출 규제',
+        '게임 업계 실적 신작 규제 한국'
+    ]
+    symbol_keys={
+        "삼성전자":["삼성전자","samsung"],
+        "SK하이닉스":["sk하이닉스","sk hynix","hynix"],
+        "한미반도체":["한미반도체"],
+        "엔씨소프트":["엔씨소프트","ncsoft"],
+        "NVIDIA":["nvidia","엔비디아"],
+        "AMD":["amd"],
+        "Intel":["intel","인텔"],
+        "Broadcom":["broadcom","브로드컴"],
+        "Micron":["micron","마이크론"],
+        "TSMC":["tsmc"]
+    }
+    fresh=[]
+    for q in queries:
+        fresh += rss(q,8,days=2)
+    merged={}
+    for item in previous.get("news",[])+fresh:
+        title=str(item.get("title",""))
+        if not title:
+            continue
+        keys=[]
+        lower=title.lower()
+        for symbol,aliases in symbol_keys.items():
+            if any(a.lower() in lower for a in aliases):
+                keys.append(symbol)
+        if not keys and re_search_any(title,["반도체","hbm","ai","금리","환율","게임","실적"]):
+            keys=["반도체/시장"]
+        item["affectedSymbols"]=keys[:6]
+        item["impactScore"]=round(
+            (2 if item.get("importance")=="높음" else 1 if item.get("importance")=="보통" else 0)
+            + (1 if item.get("impact") in ("긍정","부정") else 0), 1
+        )
+        item["impactReason"]=(
+            "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+            if keys and keys[0]!="반도체/시장"
+            else "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+        )
+        key=normalize_text(title)
+        if key:
+            merged[key]=item
+    items=sorted(
+        merged.values(),
+        key=lambda x:(x.get("impactScore",0),x.get("publishedAt","")),
+        reverse=True
+    )[:50]
+    return items, now.isoformat(timespec="seconds")
+
+def re_search_any(text, words):
+    import re
+    return any(re.search(r"(?i)"+re.escape(w), text or "") for w in words)
+
 def normalize_text(value):
     import re
     return re.sub(r"[^0-9a-z가-힣]+","",str(value or "").lower())
@@ -686,27 +753,14 @@ indices=[
 enrich_next_day_forecast(korea+us, indices)
 enrich_next_day_forecast(indices, indices)
 
-news=[]
-for q in [
-    "반도체 AI HBM 한국 미국",
-    "NVIDIA AMD Intel semiconductor",
-    "게임 산업 신작 실적 한국",
-    "AI 개발 신기술"
-]:
-    news += rss(q,6,days=2)
-
-news=sorted(
-    news,
-    key=lambda x:(x.get("importance")=="높음",x.get("relevance",0),x.get("publishedAt","")),
-    reverse=True
-)[:30]
+news, news_updated_at=collect_stock_news(previous_data)
 
 data={
     "updatedAt":now,
-    "notice":"주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
+    "notice":"뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
     "stocks":korea+us,
     "indices":indices,
-    "news":news,
+    "news":news,\n    "newsUpdatedAt":news_updated_at,
     "employmentNews":employment_news,
     "employmentUpdatedAt":employment_updated_at,
     "jobPostings":job_postings,
