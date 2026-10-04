@@ -6,7 +6,7 @@
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#182447,#080d18 45%);color:var(--text);font-family:system-ui,"Noto Sans KR",sans-serif}.app{max-width:1180px;margin:auto;padding:24px 16px 50px}
 header{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:20px}h1{margin:0;font-size:30px}.sub,.muted{color:var(--muted)}.date{text-align:right;font-size:12px;color:var(--muted)}
 nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px solid var(--line);background:#0e1627;color:var(--muted);padding:11px 15px;border-radius:11px;cursor:pointer;white-space:nowrap}button.active{background:var(--accent);color:white}
-.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stock-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}.stock-main{min-width:0}.stock-group{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:16px}.stock-group-title{font-size:13px;color:var(--muted);font-weight:700;margin:0 0 10px}.stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stock-grid .item{padding:12px;border:1px solid transparent;border-radius:10px}.stock-news-panel{position:sticky;top:12px;background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:14px;height:calc(100vh - 36px);max-height:760px;overflow:hidden}.stock-news-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:4px}.stock-news-scroll{height:calc(100% - 42px);overflow-y:auto;padding-right:5px}.stock-news-scroll::-webkit-scrollbar{width:7px}.stock-news-scroll::-webkit-scrollbar-thumb{background:#334365;border-radius:8px}.stock-news-scroll::-webkit-scrollbar-track{background:#0b1322;border-radius:8px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.card{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:17px}.label{font-size:12px;color:var(--muted)}.big{font-size:24px;font-weight:800;margin:7px 0}.up{color:var(--up)}.down{color:var(--down)}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.stock-click{cursor:pointer}.stock-click:hover{background:#18233b}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}.modal.open{display:flex;align-items:center;justify-content:center}.modal-box{width:100%;max-width:760px;max-height:calc(100dvh - 24px);overflow-y:auto;background:#111a2c;border:1px solid var(--line);border-radius:18px;padding:18px;position:relative}.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:start}.modal-close{font-size:20px;padding:5px 10px}.forecast{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.forecast-card{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:15px}.forecast-price{font-size:20px;font-weight:800;margin:8px 0}.mini{font-size:12px;color:var(--muted);line-height:1.7}@media(max-width:600px){.forecast{grid-template-columns:1fr}.modal{padding:8px}.modal-box{max-height:calc(100dvh - 16px);padding:15px;border-radius:14px}.modal-head h2{font-size:20px;margin:5px 0}.modal-close{min-width:44px;min-height:44px}.forecast-price{font-size:18px}}.item h3{font-size:14px;margin:0 0 6px}.item p{font-size:13px;line-height:1.65;color:#c6d0e4;margin:0}.tag{display:inline-block;background:#202c49;border-radius:999px;padding:5px 8px;font-size:11px;margin:4px}.chart-card{margin-top:14px}.chart-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}.chart-change{margin-left:10px;font-weight:700}.chart-ranges{display:flex;gap:5px}.chart-range{padding:7px 10px;font-size:11px}.chart-range.selected{background:var(--accent);color:#fff}.candle-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.candle-scroll svg{min-width:100%;height:420px;background:#0b1322;border-radius:12px}.candle-wick{stroke:#9aa8c4;stroke-width:1}.candle-up{fill:#43d17d;stroke:#43d17d}.candle-down{fill:#ff647c;stroke:#ff647c}.chart-stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-size:12px;color:var(--muted)}.price-chart.detailed{margin-top:6px}.price-chart.detailed svg{height:390px;background:#0b1322;border-radius:12px}.chart-axis{fill:#91a0bb;font-size:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:8 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:10 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;font-size:11px;color:#91a0bb}@media(max-width:600px){.chart-toolbar{align-items:flex-start;flex-direction:column}.chart-ranges{width:100%}.chart-range{flex:1}.price-chart.detailed svg{height:300px}.chart-axis{font-size:10px}.chart-stats{gap:10px}}.price-chart{margin-top:10px}.price-chart svg{width:100%;height:250px;display:block;background:#0b1322;border-radius:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:7 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:9 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;color:#91a0bb}.chart-empty{padding:30px;text-align:center;color:#91a0bb}.signal{background:#0d1627;border-left:3px solid var(--accent);padding:14px;border-radius:9px;line-height:1.7;color:#cbd5e9}.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.pair-box{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.pair-price{font-size:21px;font-weight:800;margin:5px 0}.pair-meta{font-size:12px;color:var(--muted);line-height:1.7}.pair-bar{height:8px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:10px}.pair-bar>i{display:block;height:100%;background:var(--accent)}@media(max-width:600px){.pair-grid{grid-template-columns:1fr}}.notice{margin-top:22px;font-size:11px;line-height:1.6;color:var(--muted)}.section-title{margin:20px 0 10px;font-size:15px}.live{font-size:11px;color:var(--up);margin-left:6px}
+.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stock-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}.stock-main{min-width:0}.stock-group{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:16px}.stock-group-title{font-size:13px;color:var(--muted);font-weight:700;margin:0 0 10px}.stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stock-grid .item{padding:12px;border:1px solid transparent;border-radius:10px}.stock-news-panel{position:sticky;top:12px;background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:14px;height:calc(100vh - 36px);max-height:760px;overflow:hidden}.stock-news-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:4px}.stock-news-scroll{height:calc(100% - 42px);overflow-y:auto;padding-right:5px}.stock-news-scroll::-webkit-scrollbar{width:7px}.stock-news-scroll::-webkit-scrollbar-thumb{background:#334365;border-radius:8px}.stock-news-scroll::-webkit-scrollbar-track{background:#0b1322;border-radius:8px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.card{background:#111a2cf0;border:1px solid var(--line);border-radius:16px;padding:17px}.label{font-size:12px;color:var(--muted)}.big{font-size:24px;font-weight:800;margin:7px 0}.up{color:var(--up)}.down{color:var(--down)}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.stock-click{cursor:pointer}.stock-click:hover{background:#18233b}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}.modal.open{display:flex;align-items:center;justify-content:center}.modal-box{width:100%;max-width:760px;max-height:calc(100dvh - 24px);overflow-y:auto;background:#111a2c;border:1px solid var(--line);border-radius:18px;padding:18px;position:relative}.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:start}.modal-close{font-size:20px;padding:5px 10px}.forecast{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.forecast-card{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:15px}.forecast-price{font-size:20px;font-weight:800;margin:8px 0}.mini{font-size:12px;color:var(--muted);line-height:1.7}@media(max-width:600px){.forecast{grid-template-columns:1fr}.modal{padding:8px}.modal-box{max-height:calc(100dvh - 16px);padding:15px;border-radius:14px}.modal-head h2{font-size:20px;margin:5px 0}.modal-close{min-width:44px;min-height:44px}.forecast-price{font-size:18px}}.item h3{font-size:14px;margin:0 0 6px}.item p{font-size:13px;line-height:1.65;color:#c6d0e4;margin:0}.tag{display:inline-block;background:#202c49;border-radius:999px;padding:5px 8px;font-size:11px;margin:4px}.chart-card{margin-top:14px}.chart-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}.chart-change{margin-left:10px;font-weight:700}.chart-ranges{display:flex;gap:5px}.chart-range{padding:7px 10px;font-size:11px}.chart-range.selected{background:var(--accent);color:#fff}.candle-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.candle-scroll svg{min-width:100%;height:420px;background:#0b1322;border-radius:12px}.candle-wick{stroke:#9aa8c4;stroke-width:1}.candle-up{fill:#43d17d;stroke:#43d17d}.candle-down{fill:#ff647c;stroke:#ff647c}.chart-stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-size:12px;color:var(--muted)}.price-chart.detailed{margin-top:6px}.price-chart.detailed svg{height:390px;background:#0b1322;border-radius:12px}.chart-axis{fill:#91a0bb;font-size:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:8 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:10 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;font-size:11px;color:#91a0bb}@media(max-width:600px){.chart-toolbar{align-items:flex-start;flex-direction:column}.chart-ranges{width:100%}.chart-range{flex:1}.price-chart.detailed svg{height:300px}.chart-axis{font-size:10px}.chart-stats{gap:10px}}.price-chart{margin-top:10px}.price-chart svg{width:100%;height:250px;display:block;background:#0b1322;border-radius:12px}.chart-grid{stroke:#263553;stroke-width:1}.chart-history{fill:none;stroke:#7c8cff;stroke-width:3}.chart-short{stroke:#43d17d;stroke-width:3;stroke-dasharray:7 6}.chart-bull{stroke:#43d17d;stroke-width:2;stroke-dasharray:5 5}.chart-bear{stroke:#ff647c;stroke-width:2;stroke-dasharray:5 5}.chart-long{stroke:#f2c14e;stroke-width:3;stroke-dasharray:9 6}.chart-dot{fill:#eef3ff}.chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;color:#91a0bb}.chart-empty{padding:30px;text-align:center;color:#91a0bb}.signal{background:#0d1627;border-left:3px solid var(--accent);padding:14px;border-radius:9px;line-height:1.7;color:#cbd5e9}.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.pair-box{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.pair-price{font-size:21px;font-weight:800;margin:5px 0}.pair-meta{font-size:12px;color:var(--muted);line-height:1.7}.pair-bar{height:8px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:10px}.pair-bar>i{display:block;height:100%;background:var(--accent)}@media(max-width:600px){.pair-grid{grid-template-columns:1fr}}.employment-chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.employment-bars{display:flex;align-items:flex-end;gap:10px;height:230px;padding:18px 6px 28px;border-bottom:1px solid var(--line)}.employment-bar-wrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;min-width:0}.employment-bar-value{font-size:11px;font-weight:800}.employment-bar{width:min(42px,72%);min-height:4px;background:var(--accent);border-radius:6px 6px 2px 2px}.employment-bar-label{font-size:10px;color:var(--muted);white-space:nowrap}.employment-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}.employment-legend span:before{content:"";display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:2px;margin-right:5px}@media(max-width:800px){.employment-chart-grid{grid-template-columns:1fr}}.notice{margin-top:22px;font-size:11px;line-height:1.6;color:var(--muted)}.section-title{margin:20px 0 10px;font-size:15px}.live{font-size:11px;color:var(--up);margin-left:6px}
 @media(max-width:800px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.stock-layout{grid-template-columns:1fr}.stock-news-panel{position:relative;top:auto;height:460px;max-height:none}.stock-grid{grid-template-columns:1fr 1fr}header{align-items:start;flex-direction:column}.date{text-align:left}}@media(max-width:450px){h1{font-size:24px}.app{padding:18px 12px}.stock-grid{grid-template-columns:1fr}.stock-news-panel{height:420px}}
 </style></head>
 <body><div class="app">
@@ -42,13 +42,15 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
       <div id="employmentSignal" class="signal">데이터를 불러오는 중...</div>
     </div>
   </div>
-  <div class="card" style="margin-top:12px">
-    <div class="label">최근 고용률 추이</div>
-    <div id="employmentTrend"></div>
-  </div>
-  <div class="card" style="margin-top:12px">
-    <div class="label">연간 고용률 추이 · 2020~2025</div>
-    <div id="employmentAnnual"></div>
+  <div class="employment-chart-grid">
+    <div class="card">
+      <div class="label">최근 고용률 · 월별</div>
+      <div id="employmentTrend"></div>
+    </div>
+    <div class="card">
+      <div class="label">고용률 · 연간</div>
+      <div id="employmentAnnual"></div>
+    </div>
   </div>
   <div class="card" style="margin-top:12px">
     <div class="label">게임·IT 취업 관점</div>
@@ -219,65 +221,54 @@ function renderJobPostings(){
 }
 function renderEmploymentMarket(d){
  const data=d.employmentMarket||{
-   period:"2025년 11월",
-   source:"통계청 경제활동인구조사",
-   youthEmploymentRate:44.3,
-   youthEmploymentYoY:-1.2,
-   youthUnemploymentRate:5.5,
-   youthUnemploymentYoY:0.0,
-   overallEmploymentRate:63.4,
-   overallEmploymentYoY:0.2,
-   overallUnemploymentRate:2.2,
-   overallUnemploymentYoY:0.0,
-   trend:[
-     {period:"2025.08",employment:45.1,unemployment:4.9},
-     {period:"2025.09",employment:45.1,unemployment:4.8},
-     {period:"2025.10",employment:44.6,unemployment:5.3},
-     {period:"2025.11",employment:44.3,unemployment:5.5}
-   ],
+   period:"2025년 11월",source:"통계청 경제활동인구조사",
+   youthEmploymentRate:44.3,youthEmploymentYoY:-1.2,youthUnemploymentRate:5.5,youthUnemploymentYoY:0,
+   overallEmploymentRate:63.4,overallEmploymentYoY:.2,overallUnemploymentRate:2.2,overallUnemploymentYoY:0,
+   trend:[{period:"2025.08",employment:45.1,unemployment:4.9},{period:"2025.09",employment:45.1,unemployment:4.8},{period:"2025.10",employment:44.6,unemployment:5.3},{period:"2025.11",employment:44.3,unemployment:5.5}],
    sourceNote:"2025년 11월 발표 고용동향"
  };
  const pct=v=>v==null?"-":Number(v).toFixed(1)+"%";
  const diff=v=>v==null?"":(Number(v)>=0?"+":"")+Number(v).toFixed(1)+"%p";
  const tone=v=>Number(v)>0?"up":Number(v)<0?"down":"muted";
  const cards=[
-   ["청년 고용률","15~29세",data.youthEmploymentRate,data.youthEmploymentYoY],
-   ["청년 실업률","15~29세",data.youthUnemploymentRate,data.youthUnemploymentYoY],
-   ["전체 고용률","15세 이상",data.overallEmploymentRate,data.overallEmploymentYoY],
-   ["전체 실업률","전체",data.overallUnemploymentRate,data.overallUnemploymentYoY]
+  ["청년 고용률","15~29세",data.youthEmploymentRate,data.youthEmploymentYoY],
+  ["청년 실업률","15~29세",data.youthUnemploymentRate,data.youthUnemploymentYoY],
+  ["전체 고용률","15세 이상",data.overallEmploymentRate,data.overallEmploymentYoY],
+  ["전체 실업률","전체",data.overallUnemploymentRate,data.overallUnemploymentYoY]
  ];
  document.getElementById("employmentStats").innerHTML=cards.map(c=>'<div class="card"><div class="label">'+c[0]+' · '+c[1]+'</div><div class="big">'+pct(c[2])+'</div><div class="'+tone(c[3])+'">'+diff(c[3])+' 전년동월비</div></div>').join("");
- document.getElementById("employmentPeriod").innerHTML="기준: <b>"+esc(data.period)+"</b> · "+esc(data.source||"통계청")+"<br>"+esc(data.sourceNote||"")+" · 실제 최신 발표월은 통계청 공표 일정에 따라 갱신됩니다.";
+ document.getElementById("employmentPeriod").innerHTML="기준: <b>"+esc(data.period)+"</b> · "+esc(data.source||"통계청")+"<br>"+esc(data.sourceNote||"");
+
+ const trend=data.trend||[];
+ const maxMonth=Math.max(...trend.map(t=>Number(t.employment)||0),1);
+ const monthBars=trend.map(t=>{
+   const h=Math.max(4,(Number(t.employment)/maxMonth)*175);
+   return '<div class="employment-bar-wrap"><div class="employment-bar-value">'+pct(t.employment)+'</div><div class="employment-bar" style="height:'+h+'px"></div><div class="employment-bar-label">'+esc(t.period)+'</div></div>';
+ }).join("");
+ document.getElementById("employmentTrend").innerHTML='<div class="employment-bars">'+monthBars+'</div><div class="employment-legend">청년 고용률 · 막대 높이는 각 월의 고용률을 비교합니다.</div>';
+
+ const annual=[
+  {year:2020,overall:60.1,youth:42.2,overall64:65.9},
+  {year:2021,overall:60.5,youth:44.2,overall64:66.5},
+  {year:2022,overall:62.1,youth:46.6,overall64:68.5},
+  {year:2023,overall:62.6,youth:46.5,overall64:69.2},
+  {year:2024,overall:62.7,youth:46.1,overall64:69.5},
+  {year:2025,overall:62.9,youth:45.0,overall64:69.8}
+ ];
+ const maxAnnual=Math.max(...annual.map(t=>Number(t.overall64)||0),1);
+ const annualBars=annual.map(t=>{
+   const h=Math.max(4,(Number(t.overall64)/maxAnnual)*175);
+   return '<div class="employment-bar-wrap"><div class="employment-bar-value">'+pct(t.overall64)+'</div><div class="employment-bar" style="height:'+h+'px"></div><div class="employment-bar-label">'+t.year+'</div></div>';
+ }).join("");
+ document.getElementById("employmentAnnual").innerHTML='<div class="employment-bars">'+annualBars+'</div><div class="employment-legend">15~64세 고용률 · 연도별 막대 비교</div>';
+
  const youth=data.youthEmploymentRate;
  const signal=youth<45?"현재 청년 고용률이 45% 아래로 내려와 있어 취업 경쟁 환경을 보수적으로 보는 것이 좋습니다.":"청년 고용률은 45% 안팎으로, 채용공고 수와 함께 추세를 보는 것이 적절합니다.";
  document.getElementById("employmentSignal").innerHTML='<b>현재 판단</b><br>'+signal+'<br><br><span class="mini">취업률 하나만으로 취업 난이도를 판단하지 않고, 청년 실업률·채용공고 수·직무별 수요를 함께 봐야 합니다.</span>';
- const trend=data.trend||[];
- document.getElementById("employmentTrend").innerHTML=trend.map((t,i)=>{
-   const prev=trend[i-1]; const e=prev?Number(t.employment)-Number(prev.employment):0; const u=prev?Number(t.unemployment)-Number(prev.unemployment):0;
-   return '<div class="item"><h3>'+esc(t.period)+'</h3><p>청년 고용률 <b>'+pct(t.employment)+'</b> · 청년 실업률 <b>'+pct(t.unemployment)+'</b>'+
-     (prev?' · 고용률 '+(e>=0?'<span class="up">▲ '+Math.abs(e).toFixed(1)+'%p</span>':'<span class="down">▼ '+Math.abs(e).toFixed(1)+'%p</span>')+
-     ' · 실업률 '+(u>=0?'<span class="down">▲ '+Math.abs(u).toFixed(1)+'%p</span>':'<span class="up">▼ '+Math.abs(u).toFixed(1)+'%p</span>'):'')+'</p></div>';
- }).join("")||'<p class="muted">추이 데이터가 없습니다.</p>';
- const annual=[
-   {year:2020,overall:60.1,youth:42.2,overall64:65.9,unemployment:4.0,youthUnemployment:9.0},
-   {year:2021,overall:60.5,youth:44.2,overall64:66.5,unemployment:3.7,youthUnemployment:7.8},
-   {year:2022,overall:62.1,youth:46.6,overall64:68.5,unemployment:2.9,youthUnemployment:6.4},
-   {year:2023,overall:62.6,youth:46.5,overall64:69.2,unemployment:2.7,youthUnemployment:5.9},
-   {year:2024,overall:62.7,youth:46.1,overall64:69.5,unemployment:2.8,youthUnemployment:5.9},
-   {year:2025,overall:62.9,youth:45.0,overall64:69.8,unemployment:2.8,youthUnemployment:6.1}
- ];
- document.getElementById("employmentAnnual").innerHTML=annual.map((t,i)=>{
-   const prev=annual[i-1];
-   const yd=prev?Number(t.youth)-Number(prev.youth):0;
-   const od=prev?Number(t.overall)-Number(prev.overall):0;
-   const ud=prev?Number(t.youthUnemployment)-Number(prev.youthUnemployment):0;
-   return '<div class="item"><h3>'+t.year+'년</h3><p>청년 고용률 <b>'+pct(t.youth)+'</b> · 전체 고용률 <b>'+pct(t.overall)+'</b> · 15~64세 <b>'+pct(t.overall64)+'</b></p><p>청년 실업률 <b>'+pct(t.youthUnemployment)+'</b> · 전체 실업률 <b>'+pct(t.unemployment)+'</b>'+(prev?' · 청년 고용률 '+(yd>=0?'<span class="up">▲ '+Math.abs(yd).toFixed(1)+'%p</span>':'<span class="down">▼ '+Math.abs(yd).toFixed(1)+'%p</span>'):'')+(prev?' · 청년 실업률 '+(ud>=0?'<span class="down">▲ '+Math.abs(ud).toFixed(1)+'%p</span>':'<span class="up">▼ '+Math.abs(ud).toFixed(1)+'%p</span>'):'')+'</p></div>';
- }).join("");
+
  const jobs=d.jobPostings||[];
- const client=jobs.filter(j=>j.area==="클라이언트").length, server=jobs.filter(j=>j.area==="백엔드/서버").length, ai=jobs.filter(j=>j.area==="AI/데이터").length;
- document.getElementById("employmentCareer").innerHTML=
-   '<div class="item"><h3>현재 대시보드 채용공고 분포</h3><p>클라이언트 <b>'+client+'건</b> · 백엔드/서버 <b>'+server+'건</b> · AI/데이터 <b>'+ai+'건</b></p></div>'+
-   '<div class="item"><h3>게임 개발 취업 전략</h3><p>청년 고용지표가 약한 시기에는 단순 지원 수보다 <b>C++/C#·Unity/Unreal·서버/네트워크</b>처럼 채용공고에서 반복되는 기술 스택을 기준으로 포트폴리오를 맞추는 편이 유리합니다.</p></div>';
+ const client=jobs.filter(j=>j.area==="클라이언트").length,server=jobs.filter(j=>j.area==="백엔드/서버").length,ai=jobs.filter(j=>j.area==="AI/데이터").length;
+ document.getElementById("employmentCareer").innerHTML='<div class="item"><h3>현재 대시보드 채용공고 분포</h3><p>클라이언트 <b>'+client+'건</b> · 백엔드/서버 <b>'+server+'건</b> · AI/데이터 <b>'+ai+'건</b></p></div><div class="item"><h3>게임 개발 취업 전략</h3><p>청년 고용지표가 약한 시기에는 단순 지원 수보다 <b>C++/C#·Unity/Unreal·서버/네트워크</b>처럼 채용공고에서 반복되는 기술 스택을 기준으로 포트폴리오를 맞추는 편이 유리합니다.</p></div>';
 }
 function render(d){
  document.getElementById("summary").innerHTML=d.stocks.slice(0,4).map(s=>'<div class="card"><div class="label">'+esc(s.name)+'</div><div class="big">'+(s.price==null?"-":Number(s.price).toLocaleString())+'</div><div class="'+cls(s.change)+'">'+(s.change==null?"데이터 없음":(s.change>=0?"+":"")+Number(s.change).toFixed(2)+"%")+'</div></div>').join("");
