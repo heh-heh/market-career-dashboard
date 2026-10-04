@@ -269,7 +269,8 @@ function render(d){
    const impactItems=news.filter(n=>Number(n.impactScore||0)>=1).slice(0,10);
    impactNews.innerHTML=impactItems.map(n=>'<div class="item"><h3><a href="'+esc(n.link)+'" target="_blank" rel="noopener">'+esc(n.title)+'</a></h3><p>'+esc(n.published)+' · '+esc((n.affectedSymbols||[]).join(", ")||"시장 전체")+' · 영향 <b>'+esc(n.impact||"중립")+'</b> · 중요도 <b>'+esc(n.importance||"보통")+'</b></p><p class="mini">'+esc(n.impactReason||"시장 영향 키워드 기반 분류")+'</p></div>').join("")||'<p class="muted">영향도 높은 뉴스가 없습니다.</p>';
  }
- renderEmploymentMarket(d);\n document.getElementById("jobnews").innerHTML=renderNews(d.employmentNews||[]);
+ renderEmploymentMarket(d);
+ document.getElementById("jobnews").innerHTML=renderNews(d.employmentNews||[]);
  renderJobPostings();
  document.getElementById("technews").innerHTML=renderNews(news.filter(n=>/AI|반도체|신기술|개발/i.test(n.title)));
  const indices=d.indices||[];
