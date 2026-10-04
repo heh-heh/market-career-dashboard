@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-04T11:04:37+00:00",
+  "updatedAt": "2026-10-04T11:08:32+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180779,6 +180779,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "삼성전자, 용인 과학축제서 '반도체가 만드는 지역 미래' 소개 - TV서울",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBHdHp0MWxrSkd4NkdQT296YjVZTFZLSWp1cTNRajUtWC1yZTA4TlR0WnRKS3pidktfYThld1oxOGVhV0ExbjRGdEszakRBMkU3MTlkQk5Eamc?oc=5",
+      "published": "Sun, 04 Oct 2026 11:04:10 GMT",
+      "publishedAt": "2026-10-04T11:04:10+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWEFVX3lxTFBHdHp0MWxrSkd4NkdQT296YjVZTFZLSWp1cTNRajUtWC1yZTA4TlR0WnRKS3pidktfYThld1oxOGVhV0ExbjRGdEszakRBMkU3MTlkQk5Eamc?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 '반도체가 만드는 지역 미래' 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">TV서울</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "한미반도체 폭등 맞힌 ‘주식 타짜’ “다음 텐배거는 이 종목” - joongang.co.kr",
       "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9EOWVoa1VNTmFMY1hKQS1heWdvN2FQdTlxWnVna0cyYVBMbk9vRElDS2dfWEJSb0R0eC1xM2M1Zy1FZDdWZ0lFWUJ4dHZ2ckRlSnkySk5R?oc=5",
       "published": "Sun, 04 Oct 2026 09:27:48 GMT",
@@ -180816,6 +180832,22 @@
       "published": "Sun, 04 Oct 2026 09:15:34 GMT",
       "publishedAt": "2026-10-04T09:15:34+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5\" target=\"_blank\">[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국경제</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개 - hankyung.com",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5",
+      "published": "Sun, 04 Oct 2026 09:15:34 GMT",
+      "publishedAt": "2026-10-04T09:15:34+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5\" target=\"_blank\">[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">hankyung.com</font>",
       "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
       "impact": "중립",
       "importance": "높음",
@@ -181341,41 +181373,9 @@
       ],
       "impactScore": 2,
       "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "AI 개발 가속화… 주목할 만한 AI·반도체 ETF는? - MTN 머니투데이방송",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE90cHlvQ2ZyMVljanF2THNVRW5YOG9oZ2ljMlJFRUR5TVMwQmRRMURubkt5TWpNRHh2SXJibng3cEpFOTFYZUM1SFZVVFFIb2RYV0RicGYyLS10RlktZEFGRUxCbFc?oc=5",
-      "published": "Sat, 03 Oct 2026 21:02:01 GMT",
-      "publishedAt": "2026-10-03T21:02:01+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE90cHlvQ2ZyMVljanF2THNVRW5YOG9oZ2ljMlJFRUR5TVMwQmRRMURubkt5TWpNRHh2SXJibng3cEpFOTFYZUM1SFZVVFFIb2RYV0RicGYyLS10RlktZEFGRUxCbFc?oc=5\" target=\"_blank\">AI 개발 가속화… 주목할 만한 AI·반도체 ETF는?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">MTN 머니투데이방송</font>",
-      "source": "NVIDIA AMD Intel semiconductor",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "반도체/시장"
-      ],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "마이크론 “내년 물량 75% 이미 계약”…삼성·SK도 5년 장기계약 경쟁 - 쿠키뉴스",
-      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFAtM1JIS0hDcExxUFR1elUxVm5HTFdyblBDNlhPREZBZFdDMEZnOGRDMFhFSFVZQWhMV01hRk5TWjRhd0Q0ZmczWkMtTWtwNnJ4ZzhDSGlPZVhWMUdiR1hPZFFzTQ?oc=5",
-      "published": "Sat, 03 Oct 2026 21:00:05 GMT",
-      "publishedAt": "2026-10-03T21:00:05+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiY0FVX3lxTFAtM1JIS0hDcExxUFR1elUxVm5HTFdyblBDNlhPREZBZFdDMEZnOGRDMFhFSFVZQWhMV01hRk5TWjRhd0Q0ZmczWkMtTWtwNnJ4ZzhDSGlPZVhWMUdiR1hPZFFzTQ?oc=5\" target=\"_blank\">마이크론 “내년 물량 75% 이미 계약”…삼성·SK도 5년 장기계약 경쟁</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">쿠키뉴스</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-04T11:07:17+00:00",
+  "newsUpdatedAt": "2026-10-04T11:10:55+00:00",
   "employmentNews": [
     {
       "title": "이전 결과가 다음 결과를 보장하나요? 미니언즈 토토 - Calgary Roughnecks",
@@ -185209,10 +185209,6 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -185597,7 +185593,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-04T11:04:37+00:00",
+  "jobPostingsUpdatedAt": "2026-10-04T11:08:32+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185653,6 +185649,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-04T11:04:37+00:00"
+    "generatedAt": "2026-10-04T11:08:32+00:00"
   }
 }
