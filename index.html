@@ -29,6 +29,12 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </div>
 <script>
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+function formatKSTDateTime(v){
+  if(!v)return "-";
+  const d=new Date(v);
+  if(Number.isNaN(d.getTime()))return String(v);
+  return new Intl.DateTimeFormat("ko-KR",{timeZone:"Asia/Seoul",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(d).replace(/\.\s?/g,"-").replace(/\./g,"").replace(/\s+/g," ");
+}
 const cls=v=>v==null?"":v>=0?"up":"down";
 function showView(id,button){document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));window.scrollTo(0,0)}
 document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b)});
@@ -200,7 +206,7 @@ function render(d){
  document.getElementById("leveragedEtfs").innerHTML=leveragedEtfs.map(stockRow).join("") || "<p class=\"muted\">SOXL/SOXS 데이터를 불러오지 못했습니다.</p>";
  document.getElementById("jobs").innerHTML=(d.employment||[]).map(j=>'<div class="item"><h3>'+esc(j.title)+'</h3><p>'+j.skills.map(esc).map(x=>'<span class="tag">'+x+'</span>').join("")+'</p></div>').join("");
  document.getElementById("trends").innerHTML=(d.trends||[]).map(t=>'<div class="item"><h3>'+esc(t.title)+'</h3><p>'+esc(t.text)+'</p></div>').join("");
- document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+esc(d.updatedAt||"-")+"</b><br>시세 수집: <b>"+esc(d.quality?.quotes_ok??"-")+"/"+esc(d.quality?.quotes_total??"-")+"</b> · 캔들 준비: <b>"+esc(d.quality?.candle_ready??"-")+"</b><br>"+esc(d.notice||"");
+ document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+formatKSTDateTime(d.updatedAt)+"</b><br>시세 수집: <b>"+esc(d.quality?.quotes_ok??"-")+"/"+esc(d.quality?.quotes_total??"-")+"</b> · 캔들 준비: <b>"+esc(d.quality?.candle_ready??"-")+"</b><br>"+esc(d.notice||"");
  document.getElementById("notice").textContent=d.notice||"";
 }
 async function liveQuotes(){
