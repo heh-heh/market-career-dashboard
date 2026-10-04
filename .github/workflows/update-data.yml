@@ -4,7 +4,7 @@ name: Update dashboard data
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "0 * * * *"
   push:
     branches: ["main"]
     paths-ignore:
