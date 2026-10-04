@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-04T11:20:56+00:00",
+  "updatedAt": "2026-10-04T11:30:36+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -181019,6 +181019,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "삼성전자 3분기 영역이익 ‘첫 100조’ 돌파할까…성과급·주주환원 쟁점 전망 - hani.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB4VXh4R2k3Mjk4N202UVRHdkk5alVJVTRNZ2VkNTdCUXlhZFZjc2lyckd0NHo4R21LaXh3OExSZXR1aGItRTByZzZVbF9oM1doWk5LUnFFWXdoX1I4VEs4YUI0NVdjb1JqOVE?oc=5",
+      "published": "Sun, 04 Oct 2026 06:03:00 GMT",
+      "publishedAt": "2026-10-04T06:03:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTFB4VXh4R2k3Mjk4N202UVRHdkk5alVJVTRNZ2VkNTdCUXlhZFZjc2lyckd0NHo4R21LaXh3OExSZXR1aGItRTByZzZVbF9oM1doWk5LUnFFWXdoX1I4VEs4YUI0NVdjb1JqOVE?oc=5\" target=\"_blank\">삼성전자 3분기 영역이익 ‘첫 100조’ 돌파할까…성과급·주주환원 쟁점 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">hani.co.kr</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "[김대호 인물] AMD 리사수... 엔비디아 쿠다(CUDA) \"게 섯거라\" - 글로벌이코노믹",
       "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPZ3FMdHhJb3IxLVpnYjFOSEQ4Z1dlc05NRUFHcHNoNnU1NjRnUW0tcmliQUJrY0NlMnU3X0dRTWw4NVRUVUVjako5WWJnLVlFajNZNzBXRnBrMDg0R3BhMEpoMHZBQjZfMlFheXNGUkJibjNzRmlCY1h5ZzltQVhENEdXWWFfLUhi?oc=5",
       "published": "Sun, 04 Oct 2026 04:47:51 GMT",
@@ -181196,6 +181212,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "엔비디아, AI 안전 논의 전면에…미국 정부와 ‘자율 규범’ 시험대 - jemin.com",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9HWk9DZjI0TnliUmVUeHpwVG5UWWYxRlRwa29IRGNWaC0yRWtNQk5pS1VZN0xaWXRqWFFZd3RqeDR4R2dlWFZLR1hyZHJEQTlId01FelJUd25ZQXBSNlpCaTJCaE50SEk?oc=5",
+      "published": "Sun, 04 Oct 2026 00:21:31 GMT",
+      "publishedAt": "2026-10-04T00:21:31+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9HWk9DZjI0TnliUmVUeHpwVG5UWWYxRlRwa29IRGNWaC0yRWtNQk5pS1VZN0xaWXRqWFFZd3RqeDR4R2dlWFZLR1hyZHJEQTlId01FelJUd25ZQXBSNlpCaTJCaE50SEk?oc=5\" target=\"_blank\">엔비디아, AI 안전 논의 전면에…미국 정부와 ‘자율 규범’ 시험대</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jemin.com</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "SK하이닉스, 나스닥 상장 뒤 40% 주가 괴리 여전∙∙∙D램 점유율 1%포인트 격차 앞 HBM 수익성 입증해야 - 한국신용신문",
       "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9MQ2hrNW9xWnNoeVRMelN0akNLR2p5WXFBa1g3M0RJYnJsTlNQSmxhQkY4TWxFbHB3VlBpU2E2bmNfYWRSbWkyS1RXSGlLXzhzZklKdDlHSnc4MkxRV0FiTVJjazhDcm9CX01R?oc=5",
       "published": "Sun, 04 Oct 2026 00:06:00 GMT",
@@ -181339,43 +181371,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "엔비디아·인텔·퀄컴 넘나든 노타…'칩 스펙' 넘어 AI 운영 설루션 속도 - 뉴스1",
-      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE94MnY4Q1NrUVVyTFBiNnZNcHVKTjNjbUhHdk1VR2NZX1JzRkNCSnpwdi1NZ193bTNSajdnc04zTGxYS1dLLWJ0aU1BVEJWWlk0eFhKc2U2WVYtemNGb2ptMzh30gFiQVVfeXFMT3gydjhDU2tRVXJMUGI2dk1wdUpOM2NtSEd2TVVHY1lfUnNGQ0JKenB2LU1nX3dtM1JqN2dzTjNMbFhLV0stYnRpTUFUQlZaWTR4WEpzZTZZVi16Y0Zvam0zOHc?oc=5",
-      "published": "Sat, 03 Oct 2026 21:10:00 GMT",
-      "publishedAt": "2026-10-03T21:10:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYkFVX3lxTE94MnY4Q1NrUVVyTFBiNnZNcHVKTjNjbUhHdk1VR2NZX1JzRkNCSnpwdi1NZ193bTNSajdnc04zTGxYS1dLLWJ0aU1BVEJWWlk0eFhKc2U2WVYtemNGb2ptMzh30gFiQVVfeXFMT3gydjhDU2tRVXJMUGI2dk1wdUpOM2NtSEd2TVVHY1lfUnNGQ0JKenB2LU1nX3dtM1JqN2dzTjNMbFhLV0stYnRpTUFUQlZaWTR4WEpzZTZZVi16Y0Zvam0zOHc?oc=5\" target=\"_blank\">엔비디아·인텔·퀄컴 넘나든 노타…'칩 스펙' 넘어 AI 운영 설루션 속도</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스1</font>",
-      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "NVIDIA",
-        "Intel"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "엔비디아·인텔·퀄컴 넘나든 노타…'칩 스펙' 넘어 AI 운영 설루션 속도 - news1.kr",
-      "link": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE94MnY4Q1NrUVVyTFBiNnZNcHVKTjNjbUhHdk1VR2NZX1JzRkNCSnpwdi1NZ193bTNSajdnc04zTGxYS1dLLWJ0aU1BVEJWWlk0eFhKc2U2WVYtemNGb2ptMzh30gFiQVVfeXFMT3gydjhDU2tRVXJMUGI2dk1wdUpOM2NtSEd2TVVHY1lfUnNGQ0JKenB2LU1nX3dtM1JqN2dzTjNMbFhLV0stYnRpTUFUQlZaWTR4WEpzZTZZVi16Y0Zvam0zOHc?oc=5",
-      "published": "Sat, 03 Oct 2026 21:10:00 GMT",
-      "publishedAt": "2026-10-03T21:10:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYkFVX3lxTE94MnY4Q1NrUVVyTFBiNnZNcHVKTjNjbUhHdk1VR2NZX1JzRkNCSnpwdi1NZ193bTNSajdnc04zTGxYS1dLLWJ0aU1BVEJWWlk0eFhKc2U2WVYtemNGb2ptMzh30gFiQVVfeXFMT3gydjhDU2tRVXJMUGI2dk1wdUpOM2NtSEd2TVVHY1lfUnNGQ0JKenB2LU1nX3dtM1JqN2dzTjNMbFhLV0stYnRpTUFUQlZaWTR4WEpzZTZZVi16Y0Zvam0zOHc?oc=5\" target=\"_blank\">엔비디아·인텔·퀄컴 넘나든 노타…'칩 스펙' 넘어 AI 운영 설루션 속도</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">news1.kr</font>",
-      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "NVIDIA",
-        "Intel"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-04T11:22:56+00:00",
+  "newsUpdatedAt": "2026-10-04T11:32:49+00:00",
   "employmentNews": [
     {
       "title": "이전 결과가 다음 결과를 보장하나요? 미니언즈 토토 - Calgary Roughnecks",
@@ -185601,7 +185599,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-04T11:20:57+00:00",
+  "jobPostingsUpdatedAt": "2026-10-04T11:30:36+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185657,6 +185655,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-04T11:20:56+00:00"
+    "generatedAt": "2026-10-04T11:30:36+00:00"
   }
 }
