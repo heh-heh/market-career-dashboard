@@ -48,7 +48,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
       <div id="employmentTrend"></div>
     </div>
     <div class="card">
-      <div class="label">고용률 · 연간</div>
+      <div class="label">청년 고용률 · 연간</div>
       <div id="employmentAnnual"></div>
     </div>
   </div>
@@ -255,12 +255,12 @@ function renderEmploymentMarket(d){
   {year:2024,overall:62.7,youth:46.1,overall64:69.5},
   {year:2025,overall:62.9,youth:45.0,overall64:69.8}
  ];
- const maxAnnual=Math.max(...annual.map(t=>Number(t.overall64)||0),1);
+ const maxAnnual=Math.max(...annual.map(t=>Number(t.youth)||0),1);
  const annualBars=annual.map(t=>{
-   const h=Math.max(4,(Number(t.overall64)/maxAnnual)*175);
-   return '<div class="employment-bar-wrap"><div class="employment-bar-value">'+pct(t.overall64)+'</div><div class="employment-bar" style="height:'+h+'px"></div><div class="employment-bar-label">'+t.year+'</div></div>';
+   const h=Math.max(4,(Number(t.youth)/maxAnnual)*175);
+   return '<div class="employment-bar-wrap"><div class="employment-bar-value">'+pct(t.youth)+'</div><div class="employment-bar" style="height:'+h+'px"></div><div class="employment-bar-label">'+t.year+'</div></div>';
  }).join("");
- document.getElementById("employmentAnnual").innerHTML='<div class="employment-bars">'+annualBars+'</div><div class="employment-legend">15~64세 고용률 · 연도별 막대 비교</div>';
+ document.getElementById("employmentAnnual").innerHTML='<div class="employment-bars">'+annualBars+'</div><div class="employment-legend">15~29세 청년 고용률 · 연도별 막대 비교</div>';
 
  const youth=data.youthEmploymentRate;
  const signal=youth<45?"현재 청년 고용률이 45% 아래로 내려와 있어 취업 경쟁 환경을 보수적으로 보는 것이 좋습니다.":"청년 고용률은 45% 안팎으로, 채용공고 수와 함께 추세를 보는 것이 적절합니다.";
