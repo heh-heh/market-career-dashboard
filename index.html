@@ -11,7 +11,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </style></head>
 <body><div class="app">
 <header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
-<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장</button><button data-view="v5">채용공고</button><button data-view="v3">개발 동향</button><button data-view="v4">신기술 · IT</button></nav>
+<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장</button><button data-view="v5">채용공고</button><button data-view="v6">취업률·고용시장</button><button data-view="v3">개발 동향</button><button data-view="v4">신기술 · IT</button></nav>
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
   <div class="stock-layout">
@@ -30,6 +30,28 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </section>
 <section id="v2" class="view"><div class="grid"><div class="card"><div class="label">취업시장</div><div id="jobs"></div></div><div class="card"><div class="label">최근 채용시장 관련 정보</div><div id="jobnews"></div></div></div></section>
 <section id="v5" class="view"><div class="card"><div class="label">채용공고 · 최근 30일 누적 <span class="live">● 1시간 갱신</span></div><div id="jobFilters" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><select id="jobAreaFilter"><option value="">전체 직무</option><option>클라이언트</option><option>백엔드/서버</option><option>프론트엔드</option><option>AI/데이터</option><option>개발</option></select><select id="jobCareerFilter"><option value="">전체 경력</option><option>신입</option><option>인턴</option><option>신입/경력</option><option>경력</option></select><input id="jobSkillFilter" placeholder="기술 스택 검색" style="min-width:180px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e1627;color:var(--text)"></div><div id="jobPostingList"></div></div></section>
+<section id="v6" class="view">
+  <div class="grid">
+    <div class="card">
+      <div class="label">청년 고용 핵심지표 · 통계청</div>
+      <div id="employmentStats" class="cards" style="margin-top:12px"></div>
+      <div id="employmentPeriod" class="mini" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <div class="label">취업시장 판단</div>
+      <div id="employmentSignal" class="signal">데이터를 불러오는 중...</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="label">최근 고용률 추이</div>
+    <div id="employmentTrend"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="label">게임·IT 취업 관점</div>
+    <div id="employmentCareer"></div>
+  </div>
+  <div class="notice">고용률과 실업률은 통계청 경제활동인구조사 기준입니다. 월별 공식 통계는 발표 시점에 따라 최신 월이 달라질 수 있으며, 아래 수치는 마지막으로 확인된 공식 발표 기준으로 표시합니다.</div>
+</section>
 <section id="v3" class="view"><div class="card"><div class="label">개발 동향</div><div id="trends"></div></div></section>
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
 <div class="notice" id="notice">데이터 정책을 불러오는 중...</div></div><div id="stockModal" class="modal"><div class="modal-box"><div id="stockDetail"></div></div></div><div id="jobModal" class="modal"><div class="modal-box"><div id="jobDetail"></div></div></div>
@@ -191,6 +213,53 @@ function renderJobPostings(){
  const filtered=list.filter(j=>(!area||j.area===area)&&(!career||j.career===career)&&(!skill||(j.skills||[]).some(s=>s.toLowerCase().includes(skill)))).slice(0,100);
  document.getElementById("jobPostingList").innerHTML='<div class="muted" style="margin-bottom:8px">총 '+filtered.length+'건 · 최근 30일 누적 · 같은 기업의 동일/유사 공고는 여러 사이트에서 하나로 묶습니다.</div>'+filtered.map(jobPostingRow).join("")||'<p class="muted">조건에 맞는 채용공고가 없습니다.</p>';
 }
+function renderEmploymentMarket(d){
+ const data=d.employmentMarket||{
+   period:"2025년 11월",
+   source:"통계청 경제활동인구조사",
+   youthEmploymentRate:44.3,
+   youthEmploymentYoY:-1.2,
+   youthUnemploymentRate:5.5,
+   youthUnemploymentYoY:0.0,
+   overallEmploymentRate:63.4,
+   overallEmploymentYoY:0.2,
+   overallUnemploymentRate:2.2,
+   overallUnemploymentYoY:0.0,
+   trend:[
+     {period:"2025.08",employment:45.1,unemployment:4.9},
+     {period:"2025.09",employment:45.1,unemployment:4.8},
+     {period:"2025.10",employment:44.6,unemployment:5.3},
+     {period:"2025.11",employment:44.3,unemployment:5.5}
+   ],
+   sourceNote:"2025년 11월 발표 고용동향"
+ };
+ const pct=v=>v==null?"-":Number(v).toFixed(1)+"%";
+ const diff=v=>v==null?"":(Number(v)>=0?"+":"")+Number(v).toFixed(1)+"%p";
+ const tone=v=>Number(v)>0?"up":Number(v)<0?"down":"muted";
+ const cards=[
+   ["청년 고용률","15~29세",data.youthEmploymentRate,data.youthEmploymentYoY],
+   ["청년 실업률","15~29세",data.youthUnemploymentRate,data.youthUnemploymentYoY],
+   ["전체 고용률","15세 이상",data.overallEmploymentRate,data.overallEmploymentYoY],
+   ["전체 실업률","전체",data.overallUnemploymentRate,data.overallUnemploymentYoY]
+ ];
+ document.getElementById("employmentStats").innerHTML=cards.map(c=>'<div class="card"><div class="label">'+c[0]+' · '+c[1]+'</div><div class="big">'+pct(c[2])+'</div><div class="'+tone(c[3])+'">'+diff(c[3])+' 전년동월비</div></div>').join("");
+ document.getElementById("employmentPeriod").innerHTML="기준: <b>"+esc(data.period)+"</b> · "+esc(data.source||"통계청")+"<br>"+esc(data.sourceNote||"")+" · 실제 최신 발표월은 통계청 공표 일정에 따라 갱신됩니다.";
+ const youth=data.youthEmploymentRate;
+ const signal=youth<45?"현재 청년 고용률이 45% 아래로 내려와 있어 취업 경쟁 환경을 보수적으로 보는 것이 좋습니다.":"청년 고용률은 45% 안팎으로, 채용공고 수와 함께 추세를 보는 것이 적절합니다.";
+ document.getElementById("employmentSignal").innerHTML='<b>현재 판단</b><br>'+signal+'<br><br><span class="mini">취업률 하나만으로 취업 난이도를 판단하지 않고, 청년 실업률·채용공고 수·직무별 수요를 함께 봐야 합니다.</span>';
+ const trend=data.trend||[];
+ document.getElementById("employmentTrend").innerHTML=trend.map((t,i)=>{
+   const prev=trend[i-1]; const e=prev?Number(t.employment)-Number(prev.employment):0; const u=prev?Number(t.unemployment)-Number(prev.unemployment):0;
+   return '<div class="item"><h3>'+esc(t.period)+'</h3><p>청년 고용률 <b>'+pct(t.employment)+'</b> · 청년 실업률 <b>'+pct(t.unemployment)+'</b>'+
+     (prev?' · 고용률 '+(e>=0?'<span class="up">▲ '+Math.abs(e).toFixed(1)+'%p</span>':'<span class="down">▼ '+Math.abs(e).toFixed(1)+'%p</span>')+
+     ' · 실업률 '+(u>=0?'<span class="down">▲ '+Math.abs(u).toFixed(1)+'%p</span>':'<span class="up">▼ '+Math.abs(u).toFixed(1)+'%p</span>'):'')+'</p></div>';
+ }).join("")||'<p class="muted">추이 데이터가 없습니다.</p>';
+ const jobs=d.jobPostings||[];
+ const client=jobs.filter(j=>j.area==="클라이언트").length, server=jobs.filter(j=>j.area==="백엔드/서버").length, ai=jobs.filter(j=>j.area==="AI/데이터").length;
+ document.getElementById("employmentCareer").innerHTML=
+   '<div class="item"><h3>현재 대시보드 채용공고 분포</h3><p>클라이언트 <b>'+client+'건</b> · 백엔드/서버 <b>'+server+'건</b> · AI/데이터 <b>'+ai+'건</b></p></div>'+
+   '<div class="item"><h3>게임 개발 취업 전략</h3><p>청년 고용지표가 약한 시기에는 단순 지원 수보다 <b>C++/C#·Unity/Unreal·서버/네트워크</b>처럼 채용공고에서 반복되는 기술 스택을 기준으로 포트폴리오를 맞추는 편이 유리합니다.</p></div>';
+}
 function render(d){
  document.getElementById("summary").innerHTML=d.stocks.slice(0,4).map(s=>'<div class="card"><div class="label">'+esc(s.name)+'</div><div class="big">'+(s.price==null?"-":Number(s.price).toLocaleString())+'</div><div class="'+cls(s.change)+'">'+(s.change==null?"데이터 없음":(s.change>=0?"+":"")+Number(s.change).toFixed(2)+"%")+'</div></div>').join("");
  const news=d.news||[], renderNews=arr=>arr.slice(0,8).map(n=>'<div class="item"><h3><a href="'+esc(n.link)+'" target="_blank" rel="noopener">'+esc(n.title)+'</a></h3><p>'+esc(n.published)+' · 중요도 <b>'+esc(n.importance||"미분류")+'</b> · 영향 <b>'+esc(n.impact||"미분류")+'</b></p></div>').join("")||'<p class="muted">뉴스 없음</p>';
@@ -200,7 +269,7 @@ function render(d){
    const impactItems=news.filter(n=>Number(n.impactScore||0)>=1).slice(0,10);
    impactNews.innerHTML=impactItems.map(n=>'<div class="item"><h3><a href="'+esc(n.link)+'" target="_blank" rel="noopener">'+esc(n.title)+'</a></h3><p>'+esc(n.published)+' · '+esc((n.affectedSymbols||[]).join(", ")||"시장 전체")+' · 영향 <b>'+esc(n.impact||"중립")+'</b> · 중요도 <b>'+esc(n.importance||"보통")+'</b></p><p class="mini">'+esc(n.impactReason||"시장 영향 키워드 기반 분류")+'</p></div>').join("")||'<p class="muted">영향도 높은 뉴스가 없습니다.</p>';
  }
- document.getElementById("jobnews").innerHTML=renderNews(d.employmentNews||[]);
+ renderEmploymentMarket(d);\n document.getElementById("jobnews").innerHTML=renderNews(d.employmentNews||[]);
  renderJobPostings();
  document.getElementById("technews").innerHTML=renderNews(news.filter(n=>/AI|반도체|신기술|개발/i.test(n.title)));
  const indices=d.indices||[];
