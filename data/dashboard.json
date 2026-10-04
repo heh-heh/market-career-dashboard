@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-04T18:52:16+00:00",
+  "updatedAt": "2026-10-04T22:03:23+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180566,6 +180566,22 @@
   ],
   "news": [
     {
+      "title": "엔비디아(NVDA), 사상 최고가 돌파...월가 목표가 '515달러'까지 상승 - 코인리더스",
+      "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE8xUTk2VmVMdDNyS0ZpZFRlTTltT3RQeDVIUnNyOU14WnJRZTNRa2VrV2VLUlhqNWR2RE80bWdMMGgtVkNCZklVQVNB?oc=5",
+      "published": "Sun, 04 Oct 2026 22:00:00 GMT",
+      "publishedAt": "2026-10-04T22:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiSkFVX3lxTE8xUTk2VmVMdDNyS0ZpZFRlTTltT3RQeDVIUnNyOU14WnJRZTNRa2VrV2VLUlhqNWR2RE80bWdMMGgtVkNCZklVQVNB?oc=5\" target=\"_blank\">엔비디아(NVDA), 사상 최고가 돌파...월가 목표가 '515달러'까지 상승</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">코인리더스</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 1,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "내년이 더 기대된다… 삼성전자, HBM4로 시장 점유율 확대 - 핀포인트뉴스",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFAxSDFESXlRTE5IT2JINUR6WlJzSzJQU1VTZXZtSGtQUmpmakJKWGpFQkRlcy1Sb3BxZm9hbXJGQ3k1UGlFcTZlMk1IVlhpdzRaTkVLOUc4NFRKcmpNSkRiSWR6NEdCNnZiMEwycFpPQ2p2TnPSAXdBVV95cUxPVExKSUpjUTBuYUFqUUxmSzZPQVppcVF4UlA1dGJfSmU0dmdrNHNkaVNFcXdGUEQzeFljUDNmLWRab2dwbDNGWmVlVlVUTTlkV1BiMWZXbHJlR1pFZ0Q4T2I5QXRpWnlmdmV4VEpHMm16NFRVNnpqUQ?oc=5",
       "published": "Sun, 04 Oct 2026 15:20:00 GMT",
@@ -180743,6 +180759,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "AMD, 라이젠 AI 맥스+ 프로 400 기반 에이전틱 PC, 전 세계 출시 - mediapic.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5CZzRTRUYxTUItZGJPcDd1dDlNVkNqZUVKc1ZYcXJ5ZWt4N0R6cHJRYTlXQm1HVEVBM0VfRS1PR0FzUERqSW1zLVktRVVUSTRRc01yZVlwNEtSWTM5QWQ0anl1NF90bmZveTBz?oc=5",
+      "published": "Sat, 03 Oct 2026 11:41:17 GMT",
+      "publishedAt": "2026-10-03T11:41:17+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE5CZzRTRUYxTUItZGJPcDd1dDlNVkNqZUVKc1ZYcXJ5ZWt4N0R6cHJRYTlXQm1HVEVBM0VfRS1PR0FzUERqSW1zLVktRVVUSTRRc01yZVlwNEtSWTM5QWQ0anl1NF90bmZveTBz?oc=5\" target=\"_blank\">AMD, 라이젠 AI 맥스+ 프로 400 기반 에이전틱 PC, 전 세계 출시</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">mediapic.co.kr</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "AMD"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "AMD Anti-Lag 2 기술이 싱글 플레이 게임의 조작 지연에 미치는 영향 - GameGPU",
       "link": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNeENUWUJ3TjliVFlScm0xS181N0hvR2hlNE1HbXBjcFJpVDg4NHpOUDM5eHdyR2dKdjJaU2VpRENrbWJpODI1RU1CUkYzdFkzc1Y2WkcyTzBjZklOYU45b1lNWVhnQ21wdmlleEMtbWs3UDliQmkxbDIwZlo3U1dFRTZPemFvUXlOYkEwRExSbzk0VGs0T1VhMlRERHVZZVZtREVHMW8tdVBXRDdtSnBPZmlJMHo?oc=5",
       "published": "Sat, 03 Oct 2026 11:12:13 GMT",
@@ -180807,11 +180839,27 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "연간 설비투자 '2배' 늘리는 마이크론…삼성·SK 압박 - 지디넷코리아",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE4tOXJGOU9JbTdjTjVTdnV2UUlxQTBRN3FKSFdMTFZmeG1lMjNrQS00anZyMFlOTy1ham9zM28ta0hqUjhMbGtQX3dfZTV5UThtUGRWdjBR?oc=5",
+      "published": "Sat, 03 Oct 2026 00:00:01 GMT",
+      "publishedAt": "2026-10-03T00:00:01+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVkFVX3lxTE4tOXJGOU9JbTdjTjVTdnV2UUlxQTBRN3FKSFdMTFZmeG1lMjNrQS00anZyMFlOTy1ham9zM28ta0hqUjhMbGtQX3dfZTV5UThtUGRWdjBR?oc=5\" target=\"_blank\">연간 설비투자 '2배' 늘리는 마이크론…삼성·SK 압박</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">지디넷코리아</font>",
+      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "Micron"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "나스닥100 '상승'...엔비디아·브로드컴 '활짝', 마이크론 '뚝' - 초이스경제",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9QbWk2eHMySVZzSW5FOTBidTRXbjByT3AzYWtZYnNrVEI0LWt5anRtWFpxWGhscnhNQjVoRU5KclJHRTVZZkUtLVRCMzJEYzc1LXRQUWFCUVRRdjhydzdOQXBwRW02YktQa0dQazVrNNIBc0FVX3lxTE1LUXZXNk1TQzVFanlTMFZVS2liSFp0MTVtQjVLekNWQkhLSlp4UlBaZlVzU3BWaGxOc1lSWHBMcHFkM1FhWkdIeVdHc18yejVRMHNGM0ZKZzFvQVJvanhGYUdNMDNIOG80dVhNbkhERHJhRGs?oc=5",
-      "published": "Fri, 02 Oct 2026 21:01:08 GMT",
-      "publishedAt": "2026-10-02T21:01:08+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMib0FVX3lxTE9QbWk2eHMySVZzSW5FOTBidTRXbjByT3AzYWtZYnNrVEI0LWt5anRtWFpxWGhscnhNQjVoRU5KclJHRTVZZkUtLVRCMzJEYzc1LXRQUWFCUVRRdjhydzdOQXBwRW02YktQa0dQazVrNNIBc0FVX3lxTE1LUXZXNk1TQzVFanlTMFZVS2liSFp0MTVtQjVLekNWQkhLSlp4UlBaZlVzU3BWaGxOc1lSWHBMcHFkM1FhWkdIeVdHc18yejVRMHNGM0ZKZzFvQVJvanhGYUdNMDNIOG80dVhNbkhERHJhRGs?oc=5\" target=\"_blank\">나스닥100 '상승'...엔비디아·브로드컴 '활짝', 마이크론 '뚝'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">초이스경제</font>",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1LUXZXNk1TQzVFanlTMFZVS2liSFp0MTVtQjVLekNWQkhLSlp4UlBaZlVzU3BWaGxOc1lSWHBMcHFkM1FhWkdIeVdHc18yejVRMHNGM0ZKZzFvQVJvanhGYUdNMDNIOG80dVhNbkhERHJhRGvSAXNBVV95cUxNS1F2VzZNU0M1RWp5UzBWVUtpYkhadDE1bUI1S3pDVkJIS0paeFJQWmZVc1NwVmhsTnNZUlhwTHBxZDNRYVpHSHlXR3NfMno1UTBzRjNGSmcxb0FSb2p4RmFHTTAzSDhvNHVYTW5IRERyYURr?oc=5",
+      "published": "Fri, 02 Oct 2026 23:21:01 GMT",
+      "publishedAt": "2026-10-02T23:21:01+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE1LUXZXNk1TQzVFanlTMFZVS2liSFp0MTVtQjVLekNWQkhLSlp4UlBaZlVzU3BWaGxOc1lSWHBMcHFkM1FhWkdIeVdHc18yejVRMHNGM0ZKZzFvQVJvanhGYUdNMDNIOG80dVhNbkhERHJhRGvSAXNBVV95cUxNS1F2VzZNU0M1RWp5UzBWVUtpYkhadDE1bUI1S3pDVkJIS0paeFJQWmZVc1NwVmhsTnNZUlhwTHBxZDNRYVpHSHlXR3NfMno1UTBzRjNGSmcxb0FSb2p4RmFHTTAzSDhvNHVYTW5IRERyYURr?oc=5\" target=\"_blank\">나스닥100 '상승'...엔비디아·브로드컴 '활짝', 마이크론 '뚝'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">초이스경제</font>",
       "source": "\"Broadcom\" OR \"브로드컴\" AI OR 반도체",
       "impact": "긍정",
       "importance": "높음",
@@ -180843,6 +180891,70 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "[기업家] LG전자 ⑭ㅣ 엔비디아 손잡고 AI 데이터센터 공략…냉각 솔루션 글로벌 영토 확장 - CBC뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9vZXJhU1A3MnkxTGtGY3hPbU9Tcm50RERORXlfNU05Tk4xNEJuZUlUbGV2RTNzVTZXSW5pZUNDOUFfMVBHZngtZHNEcElHUWI0eUlXVmV5dzh4MnBHOG1GZlhqZUZFNHVY?oc=5",
+      "published": "Sun, 04 Oct 2026 21:10:00 GMT",
+      "publishedAt": "2026-10-04T21:10:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTE9vZXJhU1A3MnkxTGtGY3hPbU9Tcm50RERORXlfNU05Tk4xNEJuZUlUbGV2RTNzVTZXSW5pZUNDOUFfMVBHZngtZHNEcElHUWI0eUlXVmV5dzh4MnBHOG1GZlhqZUZFNHVY?oc=5\" target=\"_blank\">[기업家] LG전자 ⑭ㅣ 엔비디아 손잡고 AI 데이터센터 공략…냉각 솔루션 글로벌 영토 확장</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">CBC뉴스</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나 - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1QVHZMU0xYMF9aQlN5cDdGbGpmX1l1cFRZSUd1ZEcyYk1peThENldaWEljRFUxb21zQmUxNmZCSE5mNUNXeHN1MGhub3EzNVU?oc=5",
+      "published": "Sun, 04 Oct 2026 21:01:52 GMT",
+      "publishedAt": "2026-10-04T21:01:52+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE1QVHZMU0xYMF9aQlN5cDdGbGpmX1l1cFRZSUd1ZEcyYk1peThENldaWEljRFUxb21zQmUxNmZCSE5mNUNXeHN1MGhub3EzNVU?oc=5\" target=\"_blank\">‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "\"엔씨소프트\" 게임 OR 실적 OR 신작",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "엔비디아 AI 반도체 '담보대출' 전략 성공할까, 삼성전자 SK하이닉스 실적에도 변수 - 비즈니스포스트",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5ybkt1VUk5VlZ2eFJHaW9nOXF4Vlc1WEJyaExQbVFIVVZETVpWSnFYTHhHdWdaTmdmanEtd1R4X21lSWhoREJaeHgxY2l2RVlmc3MwRjJlaFdUTk5DR3NTMlJPU1hscjhmbVo4ZWRoY193QUU?oc=5",
+      "published": "Sun, 04 Oct 2026 21:00:00 GMT",
+      "publishedAt": "2026-10-04T21:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE5ybkt1VUk5VlZ2eFJHaW9nOXF4Vlc1WEJyaExQbVFIVVZETVpWSnFYTHhHdWdaTmdmanEtd1R4X21lSWhoREJaeHgxY2l2RVlmc3MwRjJlaFdUTk5DR3NTMlJPU1hscjhmbVo4ZWRoY193QUU?oc=5\" target=\"_blank\">엔비디아 AI 반도체 '담보대출' 전략 성공할까, 삼성전자 SK하이닉스 실적에도 변수</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">비즈니스포스트</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 5,
+      "affectedSymbols": [
+        "삼성전자",
+        "SK하이닉스",
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "삼성전자, 이번주 3분기 성적표 나온다…韓기업 최초 '영업익 100조' 돌파 여부 주목 - 뉴시스",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1BbUlCRVRjS0Utb2E2bnRkLWhuVmM1SGE0UEZYTTd3LW1kNW00N2hjdmhleDZ4RVh4WW1JUGVkb0hoYURxUE5rRFZiR2FWZjFhdHR6RDE2Y0NpMldzVnI3OdIBeEFVX3lxTE9keE83b2dZMnVoWXpyd0pGTmwyZnNMZ3ZPTzVrY0doUlpRVU5UUGVxZ2g4OUVSRlZ1cnBUQ1EwT2lCQ2FiOGU4NEZYOVpUMVdheWFfdTVkTFQtSTR0d1VlMXE4Nzk1U3Nya2lMejFZN2FkTjhGYlREdA?oc=5",
+      "published": "Sun, 04 Oct 2026 20:00:00 GMT",
+      "publishedAt": "2026-10-04T20:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE1BbUlCRVRjS0Utb2E2bnRkLWhuVmM1SGE0UEZYTTd3LW1kNW00N2hjdmhleDZ4RVh4WW1JUGVkb0hoYURxUE5rRFZiR2FWZjFhdHR6RDE2Y0NpMldzVnI3OdIBeEFVX3lxTE9keE83b2dZMnVoWXpyd0pGTmwyZnNMZ3ZPTzVrY0doUlpRVU5UUGVxZ2g4OUVSRlZ1cnBUQ1EwT2lCQ2FiOGU4NEZYOVpUMVdheWFfdTVkTFQtSTR0d1VlMXE4Nzk1U3Nya2lMejFZN2FkTjhGYlREdA?oc=5\" target=\"_blank\">삼성전자, 이번주 3분기 성적표 나온다…韓기업 최초 '영업익 100조' 돌파 여부 주목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴시스</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "“메모리값 7배 뛸 수도”..립부 탄 인텔 CEO의 과감한 전망 배경은? - dailycar.co.kr",
       "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE1DeVhFVFRVWTdTR1VPNG92Ymt0T2xWc2doVlVwY3VmV1g0QWFWNjN3UVJyNkV2OVZmTXZTVjZIMHZ2SWtZeFZhVnFQQTU0eUQ1WjE2eHc3R1h4SjFPZHdFNVVUQlNtbW5BN2Z5UEkxdTBnR2psUVE?oc=5",
       "published": "Sun, 04 Oct 2026 18:47:06 GMT",
@@ -180860,10 +180972,10 @@
     },
     {
       "title": "마이크론 메모리 계약 2031년까지…AI 호황 장기화 신호 - 글로벌이코노믹",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPa2hmc1FuS0VlQU1LeDVDZ3E4aFptMUNmR3RBSU1UNHNnQVJDc2F0ZkRtdFVnYjJMWmxVYVg2MGlCN0phRkhfU0g0ZW92dk5adjVBMnJNYzVCUzBHTlltTDZxbFlrckhpMFUyRnhZRTR4TTJ5OGlHS3dyU2QtaTVHX3hpellKTGtP?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNLUhzMFNSVWkyMmhRUlVIZnJMbVVCS1pQMkxsRzFWZnJRWGFvbnNwSURodmFlVTJSYVdEZVp4TkpaMUU3Z1BjdjNIUHhTSXo5NjhMV19jc0hPbndmenh4N0xFRER6NjBtZ2xSOGxFYVY3azBrQnVDck9menRJNXdWLUxiWQ?oc=5",
       "published": "Sun, 04 Oct 2026 18:00:00 GMT",
       "publishedAt": "2026-10-04T18:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPa2hmc1FuS0VlQU1LeDVDZ3E4aFptMUNmR3RBSU1UNHNnQVJDc2F0ZkRtdFVnYjJMWmxVYVg2MGlCN0phRkhfU0g0ZW92dk5adjVBMnJNYzVCUzBHTlltTDZxbFlrckhpMFUyRnhZRTR4TTJ5OGlHS3dyU2QtaTVHX3hpellKTGtP?oc=5\" target=\"_blank\">마이크론 메모리 계약 2031년까지…AI 호황 장기화 신호</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxNLUhzMFNSVWkyMmhRUlVIZnJMbVVCS1pQMkxsRzFWZnJRWGFvbnNwSURodmFlVTJSYVdEZVp4TkpaMUU3Z1BjdjNIUHhTSXo5NjhMV19jc0hPbndmenh4N0xFRER6NjBtZ2xSOGxFYVY3azBrQnVDck9menRJNXdWLUxiWQ?oc=5\" target=\"_blank\">마이크론 메모리 계약 2031년까지…AI 호황 장기화 신호</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
       "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
       "impact": "중립",
       "importance": "높음",
@@ -180876,10 +180988,10 @@
     },
     {
       "title": "삼성전자, ‘360조 용인 반도체 산단 청사진’ 주민에 소개 - 동아일보",
-      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5qeDdDVXFHd09wUXVqRkdVa09TREZKTVJBZnhFR2tpdV8xaThPVDRrQWdLVDRrOThFbnVzdDVTVlJHdXZ6cmJPRUtEM3pIVWxOc29BaUQzR1Z1eHpfUExGWTlxRXA0c1VzY2F3VUlNZXE1ZlV3QlHSAWZBVV95cUxOeTFzSGM4TnkwbjQ4LXJxbnlMODkxZnBOUWVWT1RkUldUdGdqclFDSVVFczF2Y3M0bUNNcUxXcS02eXUzajJLVWNzWHZrYndSYkhySXlrSFVNcVlVRWkyMG4wYUpOdGc?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Z9IBZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Zw?oc=5",
       "published": "Sun, 04 Oct 2026 16:40:00 GMT",
       "publishedAt": "2026-10-04T16:40:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMidkFVX3lxTE5qeDdDVXFHd09wUXVqRkdVa09TREZKTVJBZnhFR2tpdV8xaThPVDRrQWdLVDRrOThFbnVzdDVTVlJHdXZ6cmJPRUtEM3pIVWxOc29BaUQzR1Z1eHpfUExGWTlxRXA0c1VzY2F3VUlNZXE1ZlV3QlHSAWZBVV95cUxOeTFzSGM4TnkwbjQ4LXJxbnlMODkxZnBOUWVWT1RkUldUdGdqclFDSVVFczF2Y3M0bUNNcUxXcS02eXUzajJLVWNzWHZrYndSYkhySXlrSFVNcVlVRWkyMG4wYUpOdGc?oc=5\" target=\"_blank\">삼성전자, ‘360조 용인 반도체 산단 청사진’ 주민에 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">동아일보</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Z9IBZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Zw?oc=5\" target=\"_blank\">삼성전자, ‘360조 용인 반도체 산단 청사진’ 주민에 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">동아일보</font>",
       "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
       "impact": "중립",
       "importance": "높음",
@@ -181084,6 +181196,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "마이크론 투자 확대에도…\"메모리 공급과잉 우려는 시기상조\" - 네이트",
+      "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFBlRlNPaUoyR3hPS0I0azBmc2dlaVdLaGQ4eEVPQ21jZ1RobkhrMlBwVjd2UTNyNFN5M1d5bTZ4bjgycDByTHEzV1RjNEc3Qmd4NmFR?oc=5",
+      "published": "Sun, 04 Oct 2026 09:01:00 GMT",
+      "publishedAt": "2026-10-04T09:01:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiU0FVX3lxTFBlRlNPaUoyR3hPS0I0azBmc2dlaVdLaGQ4eEVPQ21jZ1RobkhrMlBwVjd2UTNyNFN5M1d5bTZ4bjgycDByTHEzV1RjNEc3Qmd4NmFR?oc=5\" target=\"_blank\">마이크론 투자 확대에도…\"메모리 공급과잉 우려는 시기상조\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">네이트</font>",
+      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [
+        "Micron"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "마이크론 투자 확대에도…\"메모리 공급과잉 우려는 시기상조\" - ebn.co.kr",
       "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE4tNl9qaXFuY21GTzBlZUlTZENSZjNOLWdlMlhCcUQ4VmREeEoyNVI0cUdnTHRxR25FX1BnRW9MNjJpS1c5QlJLbm5NTWtLeHhKYkxkZEZVVlVMaWktOFphMW52QUNxR1cz?oc=5",
       "published": "Sun, 04 Oct 2026 09:00:00 GMT",
@@ -181165,10 +181293,10 @@
     },
     {
       "title": "삼성전자, 용인 과학축제서 ‘반도체가 만드는 지역 미래’ 소개 - 세계일보",
-      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1FbG5rUWo5OEJieU9ZZEUwMVhFLW9TdzNvR0lmQ2tmcUU0bDY4MlllMFZtUTk1OTRyd1lWYnd5VGNfdVRDVlV0RWdzT1pJeVVqd3FHatIBVEFVX3lxTE1FbG5rUWo5OEJieU9ZZEUwMVhFLW9TdzNvR0lmQ2tmcUU0bDY4MlllMFZtUTk1OTRyd1lWYnd5VGNfdVRDVlV0RWdzT1pJeVVqd3FHag?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE0wUWIwZXJVUjhNN1JXMDc5M3NiTU56eno5cnI4SGkzWVZvNUxRbk85ajdKdlI4Rmk1T3BHYzYwVUJsN0hLNHVOcS0ybjFRREFw0gFUQVVfeXFMTUVsbmtRajk4QmJ5T1lkRTAxWEUtb1N3M29HSWZDa2ZxRTRsNjgyWWUwVm1ROTU5NHJ3WVZid3lUY191VENWVXRFZ3NPWkl5VWp3cUdq?oc=5",
       "published": "Sun, 04 Oct 2026 07:25:30 GMT",
       "publishedAt": "2026-10-04T07:25:30+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVEFVX3lxTE1FbG5rUWo5OEJieU9ZZEUwMVhFLW9TdzNvR0lmQ2tmcUU0bDY4MlllMFZtUTk1OTRyd1lWYnd5VGNfdVRDVlV0RWdzT1pJeVVqd3FHatIBVEFVX3lxTE1FbG5rUWo5OEJieU9ZZEUwMVhFLW9TdzNvR0lmQ2tmcUU0bDY4MlllMFZtUTk1OTRyd1lWYnd5VGNfdVRDVlV0RWdzT1pJeVVqd3FHag?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 ‘반도체가 만드는 지역 미래’ 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">세계일보</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUEFVX3lxTE0wUWIwZXJVUjhNN1JXMDc5M3NiTU56eno5cnI4SGkzWVZvNUxRbk85ajdKdlI4Rmk1T3BHYzYwVUJsN0hLNHVOcS0ybjFRREFw0gFUQVVfeXFMTUVsbmtRajk4QmJ5T1lkRTAxWEUtb1N3M29HSWZDa2ZxRTRsNjgyWWUwVm1ROTU5NHJ3WVZid3lUY191VENWVXRFZ3NPWkl5VWp3cUdq?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 ‘반도체가 만드는 지역 미래’ 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">세계일보</font>",
       "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
       "impact": "중립",
       "importance": "높음",
@@ -181242,164 +181370,34 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[김대호 인물] AMD 리사수... 엔비디아 쿠다(CUDA) \"게 섯거라\" - 글로벌이코노믹",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPZ3FMdHhJb3IxLVpnYjFOSEQ4Z1dlc05NRUFHcHNoNnU1NjRnUW0tcmliQUJrY0NlMnU3X0dRTWw4NVRUVUVjako5WWJnLVlFajNZNzBXRnBrMDg0R3BhMEpoMHZBQjZfMlFheXNGUkJibjNzRmlCY1h5ZzltQVhENEdXWWFfLUhi?oc=5",
-      "published": "Sun, 04 Oct 2026 04:47:51 GMT",
-      "publishedAt": "2026-10-04T04:47:51+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxPZ3FMdHhJb3IxLVpnYjFOSEQ4Z1dlc05NRUFHcHNoNnU1NjRnUW0tcmliQUJrY0NlMnU3X0dRTWw4NVRUVUVjako5WWJnLVlFajNZNzBXRnBrMDg0R3BhMEpoMHZBQjZfMlFheXNGUkJibjNzRmlCY1h5ZzltQVhENEdXWWFfLUhi?oc=5\" target=\"_blank\">[김대호 인물] AMD 리사수... 엔비디아 쿠다(CUDA) \"게 섯거라\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
-      "source": "\"AMD\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA",
-        "AMD"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자, 용인 반도체 산단 ‘속도전’…2029년 10월 가동 목표 - newstomato.com",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9pNUR2bURBLVNLaVhYTUYwQnRkUFlZNTBTUmNDUjhGVU1Nb3FuYWRxdGdBTmJuU3F5aDY3dmNhN052LVRlWDNvbUhGS0JqWmJSblFibTRUZllvSUw3SnpDUg?oc=5",
-      "published": "Sun, 04 Oct 2026 04:06:14 GMT",
-      "publishedAt": "2026-10-04T04:06:14+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE9pNUR2bURBLVNLaVhYTUYwQnRkUFlZNTBTUmNDUjhGVU1Nb3FuYWRxdGdBTmJuU3F5aDY3dmNhN052LVRlWDNvbUhGS0JqWmJSblFibTRUZllvSUw3SnpDUg?oc=5\" target=\"_blank\">삼성전자, 용인 반도체 산단 ‘속도전’…2029년 10월 가동 목표</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">newstomato.com</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자, 용인 반도체 산단 ‘속도전’…2029년 10월 가동 목표 - 뉴스토마토",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1kZXBfS0pNOHZMc0NJZXlJZzBRTVBMWHZpdkt0Z01LYTZWVG9DbnBjai1uOHRLRzJkTHN3Y1pISGZtZEtob2t3SVk3Ry0yLW5UMXhDR2RyUzRuWnIxMUtFLQ?oc=5",
-      "published": "Sun, 04 Oct 2026 04:06:14 GMT",
-      "publishedAt": "2026-10-04T04:06:14+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE1kZXBfS0pNOHZMc0NJZXlJZzBRTVBMWHZpdkt0Z01LYTZWVG9DbnBjai1uOHRLRzJkTHN3Y1pISGZtZEtob2t3SVk3Ry0yLW5UMXhDR2RyUzRuWnIxMUtFLQ?oc=5\" target=\"_blank\">삼성전자, 용인 반도체 산단 ‘속도전’…2029년 10월 가동 목표</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스토마토</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "넥슨·카카오게임즈, 신작 MMORPG 베일 벗고 기대감 'UP' - 데일리한국",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5IOWkyY3pWMTlSYmZ3eHZudU53NFZHNi1yMHRTRVdzbFZlT3VrcjVpR25fak9mWGkxS3hGZVNwWFliV2dMeGJrYmdOYS05NlFRZVhEb0NnZlpjMXVfVmhCMHhMY3NLa092T04wdm9xb9IBc0FVX3lxTFBpVFZERGhIb293Z2tBVmRCNWtpN3hWaC1FdnVxX2Nlc2VfNUx6VlhZWVlPb0NiaWdhSDhyVlhuYWVKTTZGa2RfRWwxMGMtYXVqTi14a0g1UDIyNFJjcEtKclp3QmM2RmdySnQ2NzhnaVJQRjg?oc=5",
-      "published": "Sun, 04 Oct 2026 04:00:00 GMT",
-      "publishedAt": "2026-10-04T04:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMib0FVX3lxTE5IOWkyY3pWMTlSYmZ3eHZudU53NFZHNi1yMHRTRVdzbFZlT3VrcjVpR25fak9mWGkxS3hGZVNwWFliV2dMeGJrYmdOYS05NlFRZVhEb0NnZlpjMXVfVmhCMHhMY3NLa092T04wdm9xb9IBc0FVX3lxTFBpVFZERGhIb293Z2tBVmRCNWtpN3hWaC1FdnVxX2Nlc2VfNUx6VlhZWVlPb0NiaWdhSDhyVlhuYWVKTTZGa2RfRWwxMGMtYXVqTi14a0g1UDIyNFJjcEtKclp3QmM2RmdySnQ2NzhnaVJQRjg?oc=5\" target=\"_blank\">넥슨·카카오게임즈, 신작 MMORPG 베일 벗고 기대감 'UP'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">데일리한국</font>",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "반도체/시장"
-      ],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "마이크론 ‘깜짝 실적’ 다음은 삼전·하닉…반도체 랠리 이어질까[코주부] - 서울경제",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5XUkFVdjRaTVlwZTQ5Qm83QlpSNU9zU29Mb01MVmtqT3I2allGN1h3bnhzd1VscUhKRVViMDFleGtnZmU0NHliRDhWOGpDVEwyOHfSAVNBVV95cUxPMnFwakFrU3oxMUdDelc1VVByUmNkUHRJUG41VGZXQi1mN2w3NWV1M2otZS1OLXNuRTA3dXhoOU9KNWl3S3BYclhFOVlRSC1fT1Radw?oc=5",
-      "published": "Sun, 04 Oct 2026 04:00:00 GMT",
-      "publishedAt": "2026-10-04T04:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUkFVX3lxTE5XUkFVdjRaTVlwZTQ5Qm83QlpSNU9zU29Mb01MVmtqT3I2allGN1h3bnhzd1VscUhKRVViMDFleGtnZmU0NHliRDhWOGpDVEwyOHfSAVNBVV95cUxPMnFwakFrU3oxMUdDelc1VVByUmNkUHRJUG41VGZXQi1mN2w3NWV1M2otZS1OLXNuRTA3dXhoOU9KNWl3S3BYclhFOVlRSC1fT1Radw?oc=5\" target=\"_blank\">마이크론 ‘깜짝 실적’ 다음은 삼전·하닉…반도체 랠리 이어질까[코주부]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">서울경제</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "마이크론 ‘깜짝 실적’ 다음은 삼전·하닉…반도체 랠리 이어질까[코주부] - sedaily.com",
-      "link": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE5XUkFVdjRaTVlwZTQ5Qm83QlpSNU9zU29Mb01MVmtqT3I2allGN1h3bnhzd1VscUhKRVViMDFleGtnZmU0NHliRDhWOGpDVEwyOHfSAVNBVV95cUxPMnFwakFrU3oxMUdDelc1VVByUmNkUHRJUG41VGZXQi1mN2w3NWV1M2otZS1OLXNuRTA3dXhoOU9KNWl3S3BYclhFOVlRSC1fT1Radw?oc=5",
-      "published": "Sun, 04 Oct 2026 04:00:00 GMT",
-      "publishedAt": "2026-10-04T04:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiUkFVX3lxTE5XUkFVdjRaTVlwZTQ5Qm83QlpSNU9zU29Mb01MVmtqT3I2allGN1h3bnhzd1VscUhKRVViMDFleGtnZmU0NHliRDhWOGpDVEwyOHfSAVNBVV95cUxPMnFwakFrU3oxMUdDelc1VVByUmNkUHRJUG41VGZXQi1mN2w3NWV1M2otZS1OLXNuRTA3dXhoOU9KNWl3S3BYclhFOVlRSC1fT1Radw?oc=5\" target=\"_blank\">마이크론 ‘깜짝 실적’ 다음은 삼전·하닉…반도체 랠리 이어질까[코주부]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">sedaily.com</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "AMD, 임베디드 설계 및 개발 전 과정에 에이전틱 AI 역량 제공 - 미디어픽",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5hcl9OcDFEU19JQmtCdzFRZlBTWThySkxHM2FCU2FmQi1yTmdER3o0bl9sbHJfTm8tRnlTVW5NN3R2OC1HQ0RrVU51bF9MZ2dVQXg1RnMyZFliblQtNmZESUVBVVlrTUtwZFJZ?oc=5",
-      "published": "Sun, 04 Oct 2026 03:28:15 GMT",
-      "publishedAt": "2026-10-04T03:28:15+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE5hcl9OcDFEU19JQmtCdzFRZlBTWThySkxHM2FCU2FmQi1yTmdER3o0bl9sbHJfTm8tRnlTVW5NN3R2OC1HQ0RrVU51bF9MZ2dVQXg1RnMyZFliblQtNmZESUVBVVlrTUtwZFJZ?oc=5\" target=\"_blank\">AMD, 임베디드 설계 및 개발 전 과정에 에이전틱 AI 역량 제공</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">미디어픽</font>",
-      "source": "\"AMD\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "AMD"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "마이크론, 2분기 D램 시장서 2위 SK하이닉스 '턱밑' 추격 - 글로벌경제신문",
-      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5yeWFIcEp5WThRQUIzQjhZdkE4b2E4dmxWck1iNjU1eWZhaDZWNUx1VTNUX2tCMEloZW5pQnQwOXFnSjlHcmFMa2s4amdycGRTSkJZdFJRblZ2QWh1Tk5VR1hoMHlzX2YtNTRNWdIBcEFVX3lxTFBIN28xcHBQT2FoR0xJLWdYQVNPRDFuMXFJaE40djd5QV9rNnBBSFROdXY1OXBKa2E1S1FGMy1nQTg0X2JWVWtXT2hrR0NqREMyZEpqeUhIN3FHa1VwU2FGRlA2dG11SWxuTEpDTG9LeUk?oc=5",
-      "published": "Sun, 04 Oct 2026 02:57:21 GMT",
-      "publishedAt": "2026-10-04T02:57:21+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE5yeWFIcEp5WThRQUIzQjhZdkE4b2E4dmxWck1iNjU1eWZhaDZWNUx1VTNUX2tCMEloZW5pQnQwOXFnSjlHcmFMa2s4amdycGRTSkJZdFJRblZ2QWh1Tk5VR1hoMHlzX2YtNTRNWdIBcEFVX3lxTFBIN28xcHBQT2FoR0xJLWdYQVNPRDFuMXFJaE40djd5QV9rNnBBSFROdXY1OXBKa2E1S1FGMy1nQTg0X2JWVWtXT2hrR0NqREMyZEpqeUhIN3FHa1VwU2FGRlA2dG11SWxuTEpDTG9LeUk?oc=5\" target=\"_blank\">마이크론, 2분기 D램 시장서 2위 SK하이닉스 '턱밑' 추격</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌경제신문</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "SK하이닉스",
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-04T18:54:20+00:00",
+  "newsUpdatedAt": "2026-10-04T22:05:36+00:00",
   "employmentNews": [
     {
-      "title": "이전 결과가 다음 결과를 보장하나요? 미니언즈 토토 - calgaryroughnecks.com",
+      "title": "이전 결과가 다음 결과를 보장하나요? 미니언즈 토토 - Calgary Roughnecks",
       "link": "https://news.google.com/rss/articles/CBMi_wFBVV95cUxNdWkxak1QTzRSSXMwOFhxTXNkaEpRd0VDbEd5QnlNNjB6Vmo3d2dGc0dOVTNHWVVHRUtyN005WGFSa0VCV1lOaEZtNGVYTUpTZkthZmIwMTZ1MkpRTEQzMXIxZXB6N3FUVGd6WnRuc3Z3amVGcHdRd05KYXNBQ0NYa3VRbUVmZGV0a25xNktZRTk4bFlDSDhMbUE5d2o5TlNOR2MydXM0c2R2dUF1QnlpZFlhazUzYmsyQVBsX0NMYm40UHViMG40ell5bnNVYVAzNU5mSzFOX1BVZHVxSXlKYWtNTGppQVJwbWlVTkNHemQzUk1qUFFLVjNuLWUxVDQ?oc=5",
       "published": "Sat, 03 Oct 2026 11:52:10 GMT",
       "publishedAt": "2026-10-03T11:52:10+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi_wFBVV95cUxNdWkxak1QTzRSSXMwOFhxTXNkaEpRd0VDbEd5QnlNNjB6Vmo3d2dGc0dOVTNHWVVHRUtyN005WGFSa0VCV1lOaEZtNGVYTUpTZkthZmIwMTZ1MkpRTEQzMXIxZXB6N3FUVGd6WnRuc3Z3amVGcHdRd05KYXNBQ0NYa3VRbUVmZGV0a25xNktZRTk4bFlDSDhMbUE5d2o5TlNOR2MydXM0c2R2dUF1QnlpZFlhazUzYmsyQVBsX0NMYm40UHViMG40ell5bnNVYVAzNU5mSzFOX1BVZHVxSXlKYWtNTGppQVJwbWlVTkNHemQzUk1qUFFLVjNuLWUxVDQ?oc=5\" target=\"_blank\">이전 결과가 다음 결과를 보장하나요? 미니언즈 토토</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi_wFBVV95cUxNdWkxak1QTzRSSXMwOFhxTXNkaEpRd0VDbEd5QnlNNjB6Vmo3d2dGc0dOVTNHWVVHRUtyN005WGFSa0VCV1lOaEZtNGVYTUpTZkthZmIwMTZ1MkpRTEQzMXIxZXB6N3FUVGd6WnRuc3Z3amVGcHdRd05KYXNBQ0NYa3VRbUVmZGV0a25xNktZRTk4bFlDSDhMbUE5d2o5TlNOR2MydXM0c2R2dUF1QnlpZFlhazUzYmsyQVBsX0NMYm40UHViMG40ell5bnNVYVAzNU5mSzFOX1BVZHVxSXlKYWtNTGppQVJwbWlVTkNHemQzUk1qUFFLVjNuLWUxVDQ?oc=5\" target=\"_blank\">이전 결과가 다음 결과를 보장하나요? 미니언즈 토토</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "신입 개발자 채용 게임 IT",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
     },
     {
-      "title": "[청년발언대] AI 시대, 신입 기획자는 설 자리가 있을까…\"기획력, 이제는 증명이 필요하다\" - youthdaily.co.kr",
+      "title": "[청년발언대] AI 시대, 신입 기획자는 설 자리가 있을까…\"기획력, 이제는 증명이 필요하다\" - 청년일보",
       "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFB2LW1oUW83dmJXdXY4clNKSXJ2Tzh3WXh4UDJNUkx5bHNJYlRnRTZVUk4xX0RiVmhMSUo3V0dIc2ZLblNobUQ3eWtMN0QxUk5QTTBfaUN6TjZTa2ZXa0ViaC1qbUJ6bFU?oc=5",
       "published": "Fri, 02 Oct 2026 23:00:00 GMT",
       "publishedAt": "2026-10-02T23:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFB2LW1oUW83dmJXdXY4clNKSXJ2Tzh3WXh4UDJNUkx5bHNJYlRnRTZVUk4xX0RiVmhMSUo3V0dIc2ZLblNobUQ3eWtMN0QxUk5QTTBfaUN6TjZTa2ZXa0ViaC1qbUJ6bFU?oc=5\" target=\"_blank\">[청년발언대] AI 시대, 신입 기획자는 설 자리가 있을까…\"기획력, 이제는 증명이 필요하다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">youthdaily.co.kr</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTFB2LW1oUW83dmJXdXY4clNKSXJ2Tzh3WXh4UDJNUkx5bHNJYlRnRTZVUk4xX0RiVmhMSUo3V0dIc2ZLblNobUQ3eWtMN0QxUk5QTTBfaUN6TjZTa2ZXa0ViaC1qbUJ6bFU?oc=5\" target=\"_blank\">[청년발언대] AI 시대, 신입 기획자는 설 자리가 있을까…\"기획력, 이제는 증명이 필요하다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">청년일보</font>",
       "source": "개발자 채용 공고 취업",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     }
   ],
-  "employmentUpdatedAt": "2026-10-04T18:52:16+00:00",
+  "employmentUpdatedAt": "2026-10-04T22:03:23+00:00",
   "jobPostings": [
     {
       "title": "[경력] UI 디자이너",
@@ -181497,6 +181495,26 @@
       "source": "사람인",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1kbEU2Sjd6WkpaWEdFaVdQTTQ5MUR0dEdMNGlJRnZDalFqbW94UGpZSFEwYUd5Z0JYMURRbDRqRjkwQ1kyWlZXRE9TcVptWmNNbkhVMUYzdms0QQ?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE1kbEU2Sjd6WkpaWEdFaVdQTTQ5MUR0dEdMNGlJRnZDalFqbW94UGpZSFEwYUd5Z0JYMURRbDRqRjkwQ1kyWlZXRE9TcVptWmNNbkhVMUYzdms0QQ?oc=5\" target=\"_blank\">[E-7/F-2 비자 지원] 임베디드 펌웨어 개발자 채용 - 정규직 | KoMate |</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Sat, 03 Oct 2026 16:02:13 GMT",
+      "publishedAt": "2026-10-03T16:02:13+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1kbEU2Sjd6WkpaWEdFaVdQTTQ5MUR0dEdMNGlJRnZDalFqbW94UGpZSFEwYUd5Z0JYMURRbDRqRjkwQ1kyWlZXRE9TcVptWmNNbkhVMUYzdms0QQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[E-7/F-2 비자 지원] 임베디드 펌웨어 개발자 채용 - 정규직 | KoMate | - komate.saramin.co.kr",
+      "company": "[E-7/F-2 비자 지원] 임베디드 펌웨어 개발자",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1kbEU2Sjd6WkpaWEdFaVdQTTQ5MUR0dEdMNGlJRnZDalFqbW94UGpZSFEwYUd5Z0JYMURRbDRqRjkwQ1kyWlZXRE9TcVptWmNNbkhVMUYzdms0QQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE1kbEU2Sjd6WkpaWEdFaVdQTTQ5MUR0dEdMNGlJRnZDalFqbW94UGpZSFEwYUd5Z0JYMURRbDRqRjkwQ1kyWlZXRE9TcVptWmNNbkhVMUYzdms0QQ?oc=5\" target=\"_blank\">[E-7/F-2 비자 지원] 임베디드 펌웨어 개발자 채용 - 정규직 | KoMate |</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">komate.saramin.co.kr</font>",
       "published": "Sat, 03 Oct 2026 16:02:13 GMT",
       "publishedAt": "2026-10-03T16:02:13+00:00",
       "area": "개발",
@@ -183465,6 +183483,26 @@
       "detailText": "Google News"
     },
     {
+      "title": "운우 채용 - [신규런칭/5만유저] 대기업 풀스택 엔지니어 - jobkorea.co.kr",
+      "company": "운우",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iQ0ZDV3NWYVo5cU5FNEF2WnpLSXRFNER0RlRfWXNGNWF5LVJ0NHoxdFJhTXRTRy1GYVNYRnFVZ1pSQklvbERLVjZOMldSY3l0a3plZnhyNFV0V3ZVV3U0cURjRVFtVjA?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iQ0ZDV3NWYVo5cU5FNEF2WnpLSXRFNER0RlRfWXNGNWF5LVJ0NHoxdFJhTXRTRy1GYVNYRnFVZ1pSQklvbERLVjZOMldSY3l0a3plZnhyNFV0V3ZVV3U0cURjRVFtVjA?oc=5\" target=\"_blank\">운우 채용 - [신규런칭/5만유저] 대기업 풀스택 엔지니어</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jobkorea.co.kr</font>",
+      "published": "Thu, 01 Oct 2026 21:45:43 GMT",
+      "publishedAt": "2026-10-01T21:45:43+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iQ0ZDV3NWYVo5cU5FNEF2WnpLSXRFNER0RlRfWXNGNWF5LVJ0NHoxdFJhTXRTRy1GYVNYRnFVZ1pSQklvbERLVjZOMldSY3l0a3plZnhyNFV0V3ZVV3U0cURjRVFtVjA?oc=5"
+        }
+      ]
+    },
+    {
       "title": "주식회사스마일게이트 채용 - [스마일게이트] [정보보안] 게임 보안 SDK 개발 담당 - 잡코리아",
       "company": "주식회사스마일게이트",
       "source": "잡코리아",
@@ -184809,10 +184847,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1yVFB0elNIa0h5cEZ0dnZreVpmVXh3NDVJZWRaeFJZaW8xUEU2eTU4cExVbzY4Q2ViWElVRnpHdGpzTWNkWExzM0pudHA0X1NrdnM0VWROSG1ZX1ZEOU44eVdPbG93Ykp2VVlIYjIxbUFIQ2xEbkwwOXRWQVRZZw?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBVTFd1TjRhY1BNbFZXUGw3VFZzaGdpbWdiQzdhQVY5RUo3S1lpOGtQV1h3WkFlWU5ISk5HZHRoNHNJLVYtRXV2Z01nQ2Y0a0l6MzRPaF9zX3ZLQQ?oc=5"
         }
       ]
     },
@@ -185201,10 +185235,6 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -185547,49 +185577,9 @@
           "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOaGF3Znc3WjRkaWpCN21HdENYX3Z5VmM5WWViQmI4QW92UFhoWHlLSGdpUUNrYzM0TFdueXRPZENRdW9nSW1fYzNRdWJmUFFxZDBTVFZYaUZTazRVeW5NSnNuemxvMjcxVUVoV2RNcm9Rdl9tdUFkZVBmUUZKTG9kMlNQbFgzRGRa?oc=5"
         }
       ]
-    },
-    {
-      "title": "Bioinformatics Research Scientist - jumpit.saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "점핏",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5\" target=\"_blank\">Bioinformatics Research Scientist</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Tue, 29 Sep 2026 23:17:55 GMT",
-      "publishedAt": "2026-09-29T23:17:55+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "점핏",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "Bioinformatics Research Scientist - 점핏",
-      "company": "기업명 확인 필요",
-      "source": "점핏",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5\" target=\"_blank\">Bioinformatics Research Scientist</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
-      "published": "Tue, 29 Sep 2026 23:17:55 GMT",
-      "publishedAt": "2026-09-29T23:17:55+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "점핏",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1fQ0d5RTAzQU9mYlhXNEtvbUZtX19ldUptQlhlY3Vwbmo2aTJ3RWRFOHdfempfVF84QmZGU0VzVlZjMkpKU0haQTJfM1VTVGk2YzZEVU1HVHVKQQ?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-04T18:52:17+00:00",
+  "jobPostingsUpdatedAt": "2026-10-04T22:03:24+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185645,6 +185635,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-04T18:52:16+00:00"
+    "generatedAt": "2026-10-04T22:03:23+00:00"
   }
 }
