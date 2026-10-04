@@ -47,6 +47,10 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div id="employmentTrend"></div>
   </div>
   <div class="card" style="margin-top:12px">
+    <div class="label">연간 고용률 추이 · 2020~2025</div>
+    <div id="employmentAnnual"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
     <div class="label">게임·IT 취업 관점</div>
     <div id="employmentCareer"></div>
   </div>
@@ -254,6 +258,21 @@ function renderEmploymentMarket(d){
      (prev?' · 고용률 '+(e>=0?'<span class="up">▲ '+Math.abs(e).toFixed(1)+'%p</span>':'<span class="down">▼ '+Math.abs(e).toFixed(1)+'%p</span>')+
      ' · 실업률 '+(u>=0?'<span class="down">▲ '+Math.abs(u).toFixed(1)+'%p</span>':'<span class="up">▼ '+Math.abs(u).toFixed(1)+'%p</span>'):'')+'</p></div>';
  }).join("")||'<p class="muted">추이 데이터가 없습니다.</p>';
+ const annual=[
+   {year:2020,overall:60.1,youth:42.2,overall64:65.9,unemployment:4.0,youthUnemployment:9.0},
+   {year:2021,overall:60.5,youth:44.2,overall64:66.5,unemployment:3.7,youthUnemployment:7.8},
+   {year:2022,overall:62.1,youth:46.6,overall64:68.5,unemployment:2.9,youthUnemployment:6.4},
+   {year:2023,overall:62.6,youth:46.5,overall64:69.2,unemployment:2.7,youthUnemployment:5.9},
+   {year:2024,overall:62.7,youth:46.1,overall64:69.5,unemployment:2.8,youthUnemployment:5.9},
+   {year:2025,overall:62.9,youth:45.0,overall64:69.8,unemployment:2.8,youthUnemployment:6.1}
+ ];
+ document.getElementById("employmentAnnual").innerHTML=annual.map((t,i)=>{
+   const prev=annual[i-1];
+   const yd=prev?Number(t.youth)-Number(prev.youth):0;
+   const od=prev?Number(t.overall)-Number(prev.overall):0;
+   const ud=prev?Number(t.youthUnemployment)-Number(prev.youthUnemployment):0;
+   return '<div class="item"><h3>'+t.year+'년</h3><p>청년 고용률 <b>'+pct(t.youth)+'</b> · 전체 고용률 <b>'+pct(t.overall)+'</b> · 15~64세 <b>'+pct(t.overall64)+'</b></p><p>청년 실업률 <b>'+pct(t.youthUnemployment)+'</b> · 전체 실업률 <b>'+pct(t.unemployment)+'</b>'+(prev?' · 청년 고용률 '+(yd>=0?'<span class="up">▲ '+Math.abs(yd).toFixed(1)+'%p</span>':'<span class="down">▼ '+Math.abs(yd).toFixed(1)+'%p</span>'):'')+(prev?' · 청년 실업률 '+(ud>=0?'<span class="down">▲ '+Math.abs(ud).toFixed(1)+'%p</span>':'<span class="up">▼ '+Math.abs(ud).toFixed(1)+'%p</span>'):'')+'</p></div>';
+ }).join("");
  const jobs=d.jobPostings||[];
  const client=jobs.filter(j=>j.area==="클라이언트").length, server=jobs.filter(j=>j.area==="백엔드/서버").length, ai=jobs.filter(j=>j.area==="AI/데이터").length;
  document.getElementById("employmentCareer").innerHTML=
