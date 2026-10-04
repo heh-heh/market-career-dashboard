@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03T22:47:08+00:00",
+  "updatedAt": "2026-10-04T02:28:46+00:00",
   "notice": "주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180588,6 +180588,39 @@
       "relevance": 3
     },
     {
+      "title": "“AI 반도체, 지금 사도 될까?”…ETF 이름보다 ‘무엇을 담았나’부터 봐야 [머니카운터] - 경인방송 뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE94ZEZhc0QtNnk3akVvcWNXSnY2UEVqaV9ScTFNeXh6b05VSzdpRjQ0eEktWWlLbjdkTzVxN3FLaU8xSmxYaXY1X2MzRHhGRzdwLWZobEtOOGxUNHJfbnBEVXEyQdIBaEFVX3lxTE9IaG9MYmpLZFlHempUV2tfbDNZOWVZM0NpZVZKZGREejN0VnVMSFA5b2tnN2lJcF90aV8zbjkwNXEwWHV3aTdQQ1oteF81MHc0ZTNfNGd5YUFRZzdEclpzOHIxQ2VKRF9l?oc=5",
+      "published": "Sun, 04 Oct 2026 00:30:00 GMT",
+      "publishedAt": "2026-10-04T00:30:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiY0FVX3lxTE94ZEZhc0QtNnk3akVvcWNXSnY2UEVqaV9ScTFNeXh6b05VSzdpRjQ0eEktWWlLbjdkTzVxN3FLaU8xSmxYaXY1X2MzRHhGRzdwLWZobEtOOGxUNHJfbnBEVXEyQdIBaEFVX3lxTE9IaG9MYmpLZFlHempUV2tfbDNZOWVZM0NpZVZKZGREejN0VnVMSFA5b2tnN2lJcF90aV8zbjkwNXEwWHV3aTdQQ1oteF81MHc0ZTNfNGd5YUFRZzdEclpzOHIxQ2VKRF9l?oc=5\" target=\"_blank\">“AI 반도체, 지금 사도 될까?”…ETF 이름보다 ‘무엇을 담았나’부터 봐야 [머니카운터]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">경인방송 뉴스</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
+    },
+    {
+      "title": "SK하이닉스, 나스닥 상장 뒤 40% 주가 괴리 여전∙∙∙D램 점유율 1%포인트 격차 앞 HBM 수익성 입증해야 - 한국신용신문",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9MQ2hrNW9xWnNoeVRMelN0akNLR2p5WXFBa1g3M0RJYnJsTlNQSmxhQkY4TWxFbHB3VlBpU2E2bmNfYWRSbWkyS1RXSGlLXzhzZklKdDlHSnc4MkxRV0FiTVJjazhDcm9CX01R?oc=5",
+      "published": "Sun, 04 Oct 2026 00:06:00 GMT",
+      "publishedAt": "2026-10-04T00:06:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE9MQ2hrNW9xWnNoeVRMelN0akNLR2p5WXFBa1g3M0RJYnJsTlNQSmxhQkY4TWxFbHB3VlBpU2E2bmNfYWRSbWkyS1RXSGlLXzhzZklKdDlHSnc4MkxRV0FiTVJjazhDcm9CX01R?oc=5\" target=\"_blank\">SK하이닉스, 나스닥 상장 뒤 40% 주가 괴리 여전∙∙∙D램 점유율 1%포인트 격차 앞 HBM 수익성 입증해야</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국신용신문</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
+    },
+    {
+      "title": "[글로벌 주간 브리핑] AI에 돈 쏟아붓는 빅테크…미·중은 반도체 넘어 항공기까지 ‘공급망 전쟁’ - 월요신문",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9BZnlNNHlYRlhDdTBlTkczbTFyanF1WWc0N1RfejdLUWFJTHRXY05uNjZpZnNqSVRzWXhFYUY3aEprOTdmMDVlMGdmdTdCZHlTQ3ROcHhKVHZOVlF3NWhzblBzZW1LMm9MaUE?oc=5",
+      "published": "Sat, 03 Oct 2026 23:57:33 GMT",
+      "publishedAt": "2026-10-03T23:57:33+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTE9BZnlNNHlYRlhDdTBlTkczbTFyanF1WWc0N1RfejdLUWFJTHRXY05uNjZpZnNqSVRzWXhFYUY3aEprOTdmMDVlMGdmdTdCZHlTQ3ROcHhKVHZOVlF3NWhzblBzZW1LMm9MaUE?oc=5\" target=\"_blank\">[글로벌 주간 브리핑] AI에 돈 쏟아붓는 빅테크…미·중은 반도체 넘어 항공기까지 ‘공급망 전쟁’</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">월요신문</font>",
+      "source": "반도체 AI HBM 한국 미국",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2
+    },
+    {
       "title": "\"신작도 뚫렸다\"…끝나지 않는 게임 사설서버 - 뉴스핌",
       "link": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1Pa3dhVzhRaDdCYXNmUzBGN2pqaWJhR2VTRUhJdEJORkhtR3NBUW9SbUdrd0JDZ0hCc2N5Zkx4M01RMXppeXlFb3g3aEtrTXQxN1lScnh6eHlDRHh0?oc=5",
       "published": "Sat, 03 Oct 2026 22:00:00 GMT",
@@ -180610,23 +180643,34 @@
       "relevance": 2
     },
     {
-      "title": "마이크론 호실적에도 잠잠한 삼성·하이닉스…쟁점은 수익성 - Naver Blog",
-      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNaTN3eDd4VW9ldzhnd2hDZXNpRGRlYTRfTXYzN2JyUkdWS3RaQnNWTDdMc0VDbEN1QlFrV2psZlFxWGZoMXBLaDBNSGdIQW5VY1g1SDFmUy14SnMxNjMxX21CRlQ1VWdfcG5fdUFYMjUtR196dmN3SGV4VmNzaExTNDhPSE9LbzF6STk1bG9hMA?oc=5",
-      "published": "Sat, 03 Oct 2026 05:12:10 GMT",
-      "publishedAt": "2026-10-03T05:12:10+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxNaTN3eDd4VW9ldzhnd2hDZXNpRGRlYTRfTXYzN2JyUkdWS3RaQnNWTDdMc0VDbEN1QlFrV2psZlFxWGZoMXBLaDBNSGdIQW5VY1g1SDFmUy14SnMxNjMxX21CRlQ1VWdfcG5fdUFYMjUtR196dmN3SGV4VmNzaExTNDhPSE9LbzF6STk1bG9hMA?oc=5\" target=\"_blank\">마이크론 호실적에도 잠잠한 삼성·하이닉스…쟁점은 수익성</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
-      "source": "반도체 AI HBM 한국 미국",
+      "title": "AI 개발 가속화… 주목할 만한 AI·반도체 ETF는? - MTN 머니투데이방송",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE90cHlvQ2ZyMVljanF2THNVRW5YOG9oZ2ljMlJFRUR5TVMwQmRRMURubkt5TWpNRHh2SXJibng3cEpFOTFYZUM1SFZVVFFIb2RYV0RicGYyLS10RlktZEFGRUxCbFc?oc=5",
+      "published": "Sat, 03 Oct 2026 21:02:01 GMT",
+      "publishedAt": "2026-10-03T21:02:01+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE90cHlvQ2ZyMVljanF2THNVRW5YOG9oZ2ljMlJFRUR5TVMwQmRRMURubkt5TWpNRHh2SXJibng3cEpFOTFYZUM1SFZVVFFIb2RYV0RicGYyLS10RlktZEFGRUxCbFc?oc=5\" target=\"_blank\">AI 개발 가속화… 주목할 만한 AI·반도체 ETF는?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">MTN 머니투데이방송</font>",
+      "source": "NVIDIA AMD Intel semiconductor",
       "impact": "중립",
       "importance": "높음",
       "relevance": 2
     },
     {
-      "title": "'몸값 2백조원' 솔리다임의 화려한 부활…SK하이닉스 빅피처는 - 파이낸셜포스트",
-      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1kTGYtVGJubDFQQ1ZwR0ZfSzE3dV8xZkxfbnczT1oyeV9RWnFVNFFEYkFzWDRNamNJNmpuUnU2NDZQVkU3MWx6WUMyUTVmQlFfaGRDemhqc0M2NGVGV0JqcGZ1R3Z4YVR6ZWN5em9ETjdsWXJE?oc=5",
-      "published": "Sat, 03 Oct 2026 20:00:00 GMT",
-      "publishedAt": "2026-10-03T20:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE1kTGYtVGJubDFQQ1ZwR0ZfSzE3dV8xZkxfbnczT1oyeV9RWnFVNFFEYkFzWDRNamNJNmpuUnU2NDZQVkU3MWx6WUMyUTVmQlFfaGRDemhqc0M2NGVGV0JqcGZ1R3Z4YVR6ZWN5em9ETjdsWXJE?oc=5\" target=\"_blank\">'몸값 2백조원' 솔리다임의 화려한 부활…SK하이닉스 빅피처는</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">파이낸셜포스트</font>",
-      "source": "반도체 AI HBM 한국 미국",
+      "title": "[율곡로] 하고 싶어도 쉽지 않은 'AI 속도조절' - yna.co.kr",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1FUTZDeVlxWk1vemNxZWh5cDh3QXdJdG91cnU4ZDFkR2hza05pYW52aEtFc2JDeHU3NUlOOThZR3pneDllQmY0aUtULXpaT09lVTAyRGFSejU1MnFKX1BxbtIBYEFVX3lxTE1FUTZDeVlxWk1vemNxZWh5cDh3QXdJdG91cnU4ZDFkR2hza05pYW52aEtFc2JDeHU3NUlOOThZR3pneDllQmY0aUtULXpaT09lVTAyRGFSejU1MnFKX1Bxbg?oc=5",
+      "published": "Sun, 04 Oct 2026 00:00:04 GMT",
+      "publishedAt": "2026-10-04T00:00:04+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE1FUTZDeVlxWk1vemNxZWh5cDh3QXdJdG91cnU4ZDFkR2hza05pYW52aEtFc2JDeHU3NUlOOThZR3pneDllQmY0aUtULXpaT09lVTAyRGFSejU1MnFKX1BxbtIBYEFVX3lxTE1FUTZDeVlxWk1vemNxZWh5cDh3QXdJdG91cnU4ZDFkR2hza05pYW52aEtFc2JDeHU3NUlOOThZR3pneDllQmY0aUtULXpaT09lVTAyRGFSejU1MnFKX1Bxbg?oc=5\" target=\"_blank\">[율곡로] 하고 싶어도 쉽지 않은 'AI 속도조절'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">yna.co.kr</font>",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "AI 개발 중단은 불가능…한국, '글로벌 브로커' 돼야 : 기업·산업 - 재경일보",
+      "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5MYjlfdTAza1d1dFZheDk2QUR6bGJTTGw3YjBsWWN1Q0hKV3VQb2V1NWc0eHhkSXNWakc0R1RUeEo1SzdwMDJrZmVTSQ?oc=5",
+      "published": "Sat, 03 Oct 2026 23:00:00 GMT",
+      "publishedAt": "2026-10-03T23:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiS0FVX3lxTE5MYjlfdTAza1d1dFZheDk2QUR6bGJTTGw3YjBsWWN1Q0hKV3VQb2V1NWc0eHhkSXNWakc0R1RUeEo1SzdwMDJrZmVTSQ?oc=5\" target=\"_blank\">AI 개발 중단은 불가능…한국, '글로벌 브로커' 돼야 : 기업·산업</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">재경일보</font>",
+      "source": "AI 개발 신기술",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -180643,34 +180687,34 @@
       "relevance": 1
     },
     {
+      "title": "화면의 강조 효과가 뜻하는 카톡 사다리게임 상태 변화 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMihwJBVV95cUxQdncyZ0NRTERFd2tWVWpVOXd3U0VfVWVPUWFZSmkwWVRMZVN6emRWNTVuRUszOGJHdnFCVXRtS2EtM2FTdjhmN3VWTXZ5MG11RUxOb2l6aUFnQ1M5MWt5U0RDWHlkcmU5X1ZoVHNPNmVETE10Sk51SE4xaWdjeTJOZ2hWaHJmVlhPU01sSnZKcDRmN0toN2YtSE1PVmE3RG9uLWdyM2RlMDRMYVc0MWRZSWVWWkpzTjRwdnpxXzF2S0otblNhMXZjM1Q3b0lJX0pLTDlwd29ZbGNZalB6V2xhMXRWNUNYYjY4RjdDeVNqVnZ5RG1EMDgzdEt2Z3NROTF5bFJhSEl0MA?oc=5",
+      "published": "Sat, 03 Oct 2026 10:01:29 GMT",
+      "publishedAt": "2026-10-03T10:01:29+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMihwJBVV95cUxQdncyZ0NRTERFd2tWVWpVOXd3U0VfVWVPUWFZSmkwWVRMZVN6emRWNTVuRUszOGJHdnFCVXRtS2EtM2FTdjhmN3VWTXZ5MG11RUxOb2l6aUFnQ1M5MWt5U0RDWHlkcmU5X1ZoVHNPNmVETE10Sk51SE4xaWdjeTJOZ2hWaHJmVlhPU01sSnZKcDRmN0toN2YtSE1PVmE3RG9uLWdyM2RlMDRMYVc0MWRZSWVWWkpzTjRwdnpxXzF2S0otblNhMXZjM1Q3b0lJX0pLTDlwd29ZbGNZalB6V2xhMXRWNUNYYjY4RjdDeVNqVnZ5RG1EMDgzdEt2Z3NROTF5bFJhSEl0MA?oc=5\" target=\"_blank\">화면의 강조 효과가 뜻하는 카톡 사다리게임 상태 변화</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "AI 개발 신기술",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
+      "title": "어떤 내용을 다루는 게임인지 궁금한 한국 블록 체인 산업 협회 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iNnJjcFZUVFBtMU1JV1RCVHp5MEdKZFhPLUpMRDAwSXFUWDFjN0hCTVVHeXpqdnpUdUhRZHVfVG5ZeG9BeHBTTnQ0MThNcWliSW1UQlB6OWI5ZHZWYk9ibjhYQ1ZGdms?oc=5",
+      "published": "Sat, 03 Oct 2026 06:51:48 GMT",
+      "publishedAt": "2026-10-03T06:51:48+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9iNnJjcFZUVFBtMU1JV1RCVHp5MEdKZFhPLUpMRDAwSXFUWDFjN0hCTVVHeXpqdnpUdUhRZHVfVG5ZeG9BeHBTTnQ0MThNcWliSW1UQlB6OWI5ZHZWYk9ibjhYQ1ZGdms?oc=5\" target=\"_blank\">어떤 내용을 다루는 게임인지 궁금한 한국 블록 체인 산업 협회</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
+      "importance": "보통",
+      "relevance": 1
+    },
+    {
       "title": "[금주의인물] 다리오 아모데이 앤트로픽CEO \"AI 신기술, 안전성 확보할 '속도' 조절해야\" - 주간한국",
       "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1RTUc5WGExOWxNYUhWMG5pRlRiaVNDSDZpQnl1RlZER0pfOVdtLXJDem5nZzlCRFQ4RjhoR2p0YjZRLVVQOGNlOVdnUGNvdlQyaEt2YXp2ZEVtNkNoWXdrR2tvcC1QbTN3TGVjZGFrUDJPVXdU0gF0QVVfeXFMTVFNRzlYYTE5bE1hSFYwbmlGVGJpU0NINmlCeXVGVkRHSl85V20tckN6bmdnOUJEVDhGOGhHanRiNlEtVVA4Y2U5V2dQY292VDJoS3ZhenZkRW02Q2hZd2tHa29wLVBtM3dMZWNkYWtQMk9Vd1Q?oc=5",
       "published": "Sat, 03 Oct 2026 06:51:12 GMT",
       "publishedAt": "2026-10-03T06:51:12+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTE1RTUc5WGExOWxNYUhWMG5pRlRiaVNDSDZpQnl1RlZER0pfOVdtLXJDem5nZzlCRFQ4RjhoR2p0YjZRLVVQOGNlOVdnUGNvdlQyaEt2YXp2ZEVtNkNoWXdrR2tvcC1QbTN3TGVjZGFrUDJPVXdU0gF0QVVfeXFMTVFNRzlYYTE5bE1hSFYwbmlGVGJpU0NINmlCeXVGVkRHSl85V20tckN6bmdnOUJEVDhGOGhHanRiNlEtVVA4Y2U5V2dQY292VDJoS3ZhenZkRW02Q2hZd2tHa29wLVBtM3dMZWNkYWtQMk9Vd1Q?oc=5\" target=\"_blank\">[금주의인물] 다리오 아모데이 앤트로픽CEO \"AI 신기술, 안전성 확보할 '속도' 조절해야\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">주간한국</font>",
       "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "원전 설비 건전성 관리, AI 검사·해외 운영경험 접목 - 에너지신문",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFB1QkMwQy03WW0yaXVUQmswSjc5b3JiRGRqZE85TV9QV1YySF85aVhqYWJtaEhvZTE1bFFnbFpZOWMwbzlVZmpUR1hjZXZ0eEpKWjNTelJwR3NsWHR2b1ZkRjNIM2xPcXFEcHBrUHdfRV9RQQ?oc=5",
-      "published": "Sat, 03 Oct 2026 03:36:25 GMT",
-      "publishedAt": "2026-10-03T03:36:25+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMickFVX3lxTFB1QkMwQy03WW0yaXVUQmswSjc5b3JiRGRqZE85TV9QV1YySF85aVhqYWJtaEhvZTE1bFFnbFpZOWMwbzlVZmpUR1hjZXZ0eEpKWjNTelJwR3NsWHR2b1ZkRjNIM2xPcXFEcHBrUHdfRV9RQQ?oc=5\" target=\"_blank\">원전 설비 건전성 관리, AI 검사·해외 운영경험 접목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">에너지신문</font>",
-      "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "10년물 국채 5% 뚫은 AI와 석유… 빅테크와 정유주만 웃었다 - 글로벌이코노믹",
-      "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOU1Z6SWR4ZE5URlJUbHplY0xqdS0zcVExdXlLY0JELWlsYjBFOHFISjVfY0JaTFgwaF9lOTFEUk9wSFhYVmpZdmlfVDhDeFVNZGp2WGhjb2M1bGcwNUcyYTcyUURUQThoak1kVWdxYm5nYm9Ya2dnOXRkN25PMVJMMmVYNkdMaVU?oc=5",
-      "published": "Sat, 03 Oct 2026 03:10:22 GMT",
-      "publishedAt": "2026-10-03T03:10:22+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMihwFBVV95cUxOU1Z6SWR4ZE5URlJUbHplY0xqdS0zcVExdXlLY0JELWlsYjBFOHFISjVfY0JaTFgwaF9lOTFEUk9wSFhYVmpZdmlfVDhDeFVNZGp2WGhjb2M1bGcwNUcyYTcyUURUQThoak1kVWdxYm5nYm9Ya2dnOXRkN25PMVJMMmVYNkdMaVU?oc=5\" target=\"_blank\">10년물 국채 5% 뚫은 AI와 석유… 빅테크와 정유주만 웃었다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
-      "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
@@ -180698,24 +180742,24 @@
       "relevance": 1
     },
     {
-      "title": "“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다 - 비즈한국",
+      "title": "“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다 - bizhankook.com",
       "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5",
       "published": "Fri, 02 Oct 2026 06:46:45 GMT",
       "publishedAt": "2026-10-02T06:46:45+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5\" target=\"_blank\">“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">비즈한국</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTFBydktyQUh1M3gtR3daS2FkYmR5OGVvQWhIbXhlaWJjc2x0TVhnNXdENWtzYkdJczFPaWpYM0lmSzBWczU1ODhvZ1FfZWZkMzhUYmlQb2RjeEJKcklPX0hxOTdnM2NVTW9V?oc=5\" target=\"_blank\">“언제까지 리니지, 메이플이냐” K게임 ‘새 간판’이 안 보인다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">bizhankook.com</font>",
       "source": "게임 산업 신작 실적 한국",
       "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
     {
-      "title": "AI 사용료, “역사상 어떤 기술보다 빠르게 하락” - 애플경제",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9FNGMwVXZ0ZENrbGNtYjdUNXpWRnNhTzU3TUNEdGN3el9MR3REVUcxMEdCa0RoaVZpampLQ0t4YlMyMkhMa0g1dUZxd291T0N1ZXlvOXBObnpISGFxeU9UdWEyOGVLNWFUak9abDBXMVc?oc=5",
-      "published": "Fri, 02 Oct 2026 05:46:32 GMT",
-      "publishedAt": "2026-10-02T05:46:32+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE9FNGMwVXZ0ZENrbGNtYjdUNXpWRnNhTzU3TUNEdGN3el9MR3REVUcxMEdCa0RoaVZpampLQ0t4YlMyMkhMa0g1dUZxd291T0N1ZXlvOXBObnpISGFxeU9UdWEyOGVLNWFUak9abDBXMVc?oc=5\" target=\"_blank\">AI 사용료, “역사상 어떤 기술보다 빠르게 하락”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">애플경제</font>",
-      "source": "AI 개발 신기술",
-      "impact": "부정",
+      "title": "드림에이지, 게임사 본연 ‘코어’ 힘으로 글로벌 확장 가속 - 한국금융신문",
+      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9Fck5BVzRsWGJfb3Ayc0dnUUZNdW80Z21KMXhxRTJvVWR0SXN6aEx0UU8waHRKYjVTNUZIcFJzdFBNM1RWT3MxbmFiQ0hGa2dWbTZBX0pnZ2JIZUhXRy12am1LTnFONjJTeUdmQ1RSQnl0Qmdnd2NjRi1vMTU?oc=5",
+      "published": "Fri, 02 Oct 2026 05:14:57 GMT",
+      "publishedAt": "2026-10-02T05:14:57+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifEFVX3lxTE9Fck5BVzRsWGJfb3Ayc0dnUUZNdW80Z21KMXhxRTJvVWR0SXN6aEx0UU8waHRKYjVTNUZIcFJzdFBNM1RWT3MxbmFiQ0hGa2dWbTZBX0pnZ2JIZUhXRy12am1LTnFONjJTeUdmQ1RSQnl0Qmdnd2NjRi1vMTU?oc=5\" target=\"_blank\">드림에이지, 게임사 본연 ‘코어’ 힘으로 글로벌 확장 가속</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국금융신문</font>",
+      "source": "게임 산업 신작 실적 한국",
+      "impact": "중립",
       "importance": "보통",
       "relevance": 1
     },
@@ -180731,44 +180775,22 @@
       "relevance": 1
     },
     {
-      "title": "일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5",
-      "published": "Fri, 02 Oct 2026 00:41:05 GMT",
-      "publishedAt": "2026-10-02T00:41:05+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMieEFVX3lxTE9KcXFSck5ETmlIU2NTTjVicWFPMUpUODJWMEkxNHVxQkxQX3FROEVBdW4xWVBlbHNTZFZMdVQyb3hZUDNKVmhaNllsWlpLeEY0aWhZaEprYWV5cEVhUXZ0V19ZTnZERWY5VnJRWjFlSE81ZDZWc3Q5Ug?oc=5\" target=\"_blank\">일본 게임쇼 수준|도쿄 게임쇼 비즈니스 데이</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
-      "source": "NVIDIA AMD Intel semiconductor",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "건설연, AI 기반 교량 안전성 실시간 진단기술 개발 - 사이언스타임즈",
-      "link": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPQlIyMGJtakZLeWNWeDZ2NU9NT1h0UkNYVFgzRFQzRWhJTl9PNDNMMUN4M0FrVE0yQ3JSaTREbm43SzBJdkdMVFMwVkJJcGl2SVhoNjgzZmtJZVUtS1VibGNZcS1nRm1ncFpVVTdXMVlWVkNieXBfa1ZKcU5zN3ZqbFNsc2cxRlhZWkMtVHZhcmt3SmlPWjVYc040Nko4Ty15LXROeHpzVXJVM094c2NsdEZRek8xc05pWmN1WERBZjNYanM?oc=5",
-      "published": "Thu, 01 Oct 2026 23:31:13 GMT",
-      "publishedAt": "2026-10-01T23:31:13+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiwwFBVV95cUxPQlIyMGJtakZLeWNWeDZ2NU9NT1h0UkNYVFgzRFQzRWhJTl9PNDNMMUN4M0FrVE0yQ3JSaTREbm43SzBJdkdMVFMwVkJJcGl2SVhoNjgzZmtJZVUtS1VibGNZcS1nRm1ncFpVVTdXMVlWVkNieXBfa1ZKcU5zN3ZqbFNsc2cxRlhZWkMtVHZhcmt3SmlPWjVYc040Nko4Ty15LXROeHpzVXJVM094c2NsdEZRek8xc05pWmN1WERBZjNYanM?oc=5\" target=\"_blank\">건설연, AI 기반 교량 안전성 실시간 진단기술 개발</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사이언스타임즈</font>",
-      "source": "AI 개발 신기술",
-      "impact": "중립",
-      "importance": "보통",
-      "relevance": 1
-    },
-    {
-      "title": "추가 라운드가 끝난 뒤의 토토 플핸 뜻 진행 순서 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxNVkRlOTdwUTJCRmh0VFdHQnh6ZkM4TGctaWh2RFFBSEd3SUlOSGZ1anFiMGpvdUNoYmZYbzB0WVdFdWZRWVFLb3hFWGJRcDBidlZIanJyVUdEdlpURy1GVjNIaWc4N3ZNOFZnQ29CVmYxMVdoRmFXT19sUk1SYXdlNkJBZE9OODRlQ19PdUp6Ykp4NDNRVENnUGtZWkhlUVVfbGw1aEcwVVl0MzZuNkZoamg4amdzbjl2QmdqN2hzUVM5eTlMbENVQlZDTGVjWHVwWU85cHBvb0Q5ZVFEclF3?oc=5",
-      "published": "Sat, 03 Oct 2026 11:40:48 GMT",
-      "publishedAt": "2026-10-03T11:40:48+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi3wFBVV95cUxNVkRlOTdwUTJCRmh0VFdHQnh6ZkM4TGctaWh2RFFBSEd3SUlOSGZ1anFiMGpvdUNoYmZYbzB0WVdFdWZRWVFLb3hFWGJRcDBidlZIanJyVUdEdlpURy1GVjNIaWc4N3ZNOFZnQ29CVmYxMVdoRmFXT19sUk1SYXdlNkJBZE9OODRlQ19PdUp6Ykp4NDNRVENnUGtZWkhlUVVfbGw1aEcwVVl0MzZuNkZoamg4amdzbjl2QmdqN2hzUVM5eTlMbENVQlZDTGVjWHVwWU85cHBvb0Q5ZVFEclF3?oc=5\" target=\"_blank\">추가 라운드가 끝난 뒤의 토토 플핸 뜻 진행 순서</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "title": "글로벌 신작부터 투자·강연까지···지스타, 행사 외연 넓힌다 - 시사저널e",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE4yZmpDQXNlTnhhMGdRWEdfTDFhaklQZTA5b3RCUzh3Wnd6WU9md2lRS0pyN0F4TDJrT09IU1kzMWZrbUhtQ0lkUFJFYkZYblFXN2pCV1pnRzgtTm9QMVp1VV9uclhiS1MzOFhDVUFuRmFpZ9IBdkFVX3lxTFBadVYyOU5TYlkwamhFb2I4YVplUHRtcnl2cnhZa0k3UVBOZE01RFYyNlV3VERKUFpFMlZvZDZhRm4teGVlM0VaNWpZdlNRLXY1U3BrdDVPWXhWTl9ydTQ0YzB4Y0RfcmNVUmlVRUh3UVprZDFHZHc?oc=5",
+      "published": "Sun, 04 Oct 2026 00:00:00 GMT",
+      "publishedAt": "2026-10-04T00:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMickFVX3lxTE4yZmpDQXNlTnhhMGdRWEdfTDFhaklQZTA5b3RCUzh3Wnd6WU9md2lRS0pyN0F4TDJrT09IU1kzMWZrbUhtQ0lkUFJFYkZYblFXN2pCV1pnRzgtTm9QMVp1VV9uclhiS1MzOFhDVUFuRmFpZ9IBdkFVX3lxTFBadVYyOU5TYlkwamhFb2I4YVplUHRtcnl2cnhZa0k3UVBOZE01RFYyNlV3VERKUFpFMlZvZDZhRm4teGVlM0VaNWpZdlNRLXY1U3BrdDVPWXhWTl9ydTQ0YzB4Y0RfcmNVUmlVRUh3UVprZDFHZHc?oc=5\" target=\"_blank\">글로벌 신작부터 투자·강연까지···지스타, 행사 외연 넓힌다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">시사저널e</font>",
       "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
+      "impact": "긍정",
       "importance": "낮음",
       "relevance": 0
     },
     {
-      "title": "규칙 읽기에 익숙해지는 카지노 점유율 입문 노트 - Calgary Roughnecks",
-      "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxNU3BUYWtmdTU4TDRRQjJtbEhMOEoxbS11cl93c3VNYkRheE9HZ2gtdmhpWjRCXzNVbUoySFRuVWFIMmVldFYxdTAxSlF1clUzSWN0ZTF3MWMyVHkzVWdjcmZBN0c3d1lSdmhSUmotZDJjZUc5aC1QaURMbTdLRzlyUjJERnhqX3FXYTROVzRXQkcwS1o0czFSOG1NbHhZaENldEpuZmpXbGxoSDFLam16R0Z1R1NCNWRpMDhZYU9nMkpIQUZhTndhU0Q4T3VDbk93d3lwbzRLVExCVDhJd2JWdWxvSXE2QVAya2RDQU5xZDhYUUdnTzhrd1haR1J1QXFjY05BOHdER08?oc=5",
-      "published": "Sat, 03 Oct 2026 09:18:40 GMT",
-      "publishedAt": "2026-10-03T09:18:40+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAJBVV95cUxNU3BUYWtmdTU4TDRRQjJtbEhMOEoxbS11cl93c3VNYkRheE9HZ2gtdmhpWjRCXzNVbUoySFRuVWFIMmVldFYxdTAxSlF1clUzSWN0ZTF3MWMyVHkzVWdjcmZBN0c3d1lSdmhSUmotZDJjZUc5aC1QaURMbTdLRzlyUjJERnhqX3FXYTROVzRXQkcwS1o0czFSOG1NbHhZaENldEpuZmpXbGxoSDFLam16R0Z1R1NCNWRpMDhZYU9nMkpIQUZhTndhU0Q4T3VDbk93d3lwbzRLVExCVDhJd2JWdWxvSXE2QVAya2RDQU5xZDhYUUdnTzhrd1haR1J1QXFjY05BOHdER08?oc=5\" target=\"_blank\">규칙 읽기에 익숙해지는 카지노 점유율 입문 노트</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
+      "title": "화면에 남은 심벌을 해석하는 toto 사이트 유지 기능 안내 - Calgary Roughnecks",
+      "link": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9xYmlNZVJwR0daZW1nSUVVYWZxblY4bi1sRVNnQVY2X2lyT2s0M0FuSko2R1hRRTZ4T3FzbGlfTzhrWkVVaFZMOW9Rd2h1V0U3SlViNm9nRktzZFdFbmhoRU50V29sZHFZVk54WTdIV3NXaTBHWm8ybQ?oc=5",
+      "published": "Sat, 03 Oct 2026 21:46:51 GMT",
+      "publishedAt": "2026-10-03T21:46:51+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMieEFVX3lxTE9xYmlNZVJwR0daZW1nSUVVYWZxblY4bi1sRVNnQVY2X2lyT2s0M0FuSko2R1hRRTZ4T3FzbGlfTzhrWkVVaFZMOW9Rd2h1V0U3SlViNm9nRktzZFdFbmhoRU50V29sZHFZVk54WTdIV3NXaTBHWm8ybQ?oc=5\" target=\"_blank\">화면에 남은 심벌을 해석하는 toto 사이트 유지 기능 안내</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "반도체 AI HBM 한국 미국",
       "impact": "중립",
       "importance": "낮음",
@@ -180806,28 +180828,6 @@
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
-    },
-    {
-      "title": "시프트업, 신작 아직인데···3분기 영업이익 반토막 전망 - 증권경제신문",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5",
-      "published": "Fri, 02 Oct 2026 07:45:02 GMT",
-      "publishedAt": "2026-10-02T07:45:02+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE9MQi1lZ1k0cXZBeTdHUkczOUtOMWxkanVyUzkzY29iVDZ3MmhKU3A3Yzl4TUFuVUx3dWxaaWwzLXVxUmQyS1hlYV9SUjlTYVJqZk5JbFBDOVhZYUFKd3cyb1ZzV0FOQlIxczlNTGpLeGN4UlXSAXZBVV95cUxPOFpfWmNqUTI2YlhzQ1c1d1VsLXY5VjhwbVhVUUJvYUo2dmlrcEQ3cFZCd3NuUlBmcmtBYmNISjNxWElTcldDNF9YYWl5aTJzOUladkl4Qm45WExxR1d3cFF6dWpRUld1NU9OQmNxelYzbTlNb19R?oc=5\" target=\"_blank\">시프트업, 신작 아직인데···3분기 영업이익 반토막 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">증권경제신문</font>",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
-    },
-    {
-      "title": "메리츠證 \"넷마블 3분기 실적 시장 기대치 밑돌아\"…목표가 10%↓ - 뉴스웍스",
-      "link": "https://news.google.com/rss/articles/CBMib0FVX3lxTE01N2hNTzlXUFR6WFFickhtRHdWVWN4NXpoa1pheU9FLXgxS19KMXFFbE5OOXl4UDJLZE51bjUtcjlfeTNhbDVkdFBmb2pjQmZGS1NKSjFPVURtTzc0emtvUjlBa0t3ZHNXb0pkSjdvaw?oc=5",
-      "published": "Fri, 02 Oct 2026 00:31:43 GMT",
-      "publishedAt": "2026-10-02T00:31:43+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMib0FVX3lxTE01N2hNTzlXUFR6WFFickhtRHdWVWN4NXpoa1pheU9FLXgxS19KMXFFbE5OOXl4UDJLZE51bjUtcjlfeTNhbDVkdFBmb2pjQmZGS1NKSjFPVURtTzc0emtvUjlBa0t3ZHNXb0pkSjdvaw?oc=5\" target=\"_blank\">메리츠證 \"넷마블 3분기 실적 시장 기대치 밑돌아\"…목표가 10%↓</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스웍스</font>",
-      "source": "게임 산업 신작 실적 한국",
-      "impact": "중립",
-      "importance": "낮음",
-      "relevance": 0
     }
   ],
   "employmentNews": [
@@ -180854,22 +180854,22 @@
       "relevance": 1
     },
     {
-      "title": "강원 랜드 바카라 추천 의 역사와 발전: 과거에서 현재까지 - 전문가의 관점에서 - calgaryroughnecks.com",
+      "title": "강원 랜드 바카라 추천 의 역사와 발전: 과거에서 현재까지 - 전문가의 관점에서 - Calgary Roughnecks",
       "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxNQ25YUHotTEVPakJzMFVCMHV1OGpFR0p3RkNGOG9oWHN5WlVFS3phejdON1N3YlRHb0lsbElDd3pZdEVFTkpDbGlGSHh3ejNFdklHaFJFajdEaW5QOWNjZWZTVFBOcTQ4ZkdaU1NWNEFyd1VyYzZHeHpWcHFXdUt1OFU2S3FCeVhmQWw3M1RIUXh2OU1xSHVuQUdCc0xCc25CSkVGS3FSeUdNSmZRV2JwYXdGeHZEWk1iQVB0a0hna3FZNmhWY3oyR3lQelJoTHJOeDFyRg?oc=5",
       "published": "Fri, 02 Oct 2026 12:13:07 GMT",
       "publishedAt": "2026-10-02T12:13:07+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi1AFBVV95cUxNQ25YUHotTEVPakJzMFVCMHV1OGpFR0p3RkNGOG9oWHN5WlVFS3phejdON1N3YlRHb0lsbElDd3pZdEVFTkpDbGlGSHh3ejNFdklHaFJFajdEaW5QOWNjZWZTVFBOcTQ4ZkdaU1NWNEFyd1VyYzZHeHpWcHFXdUt1OFU2S3FCeVhmQWw3M1RIUXh2OU1xSHVuQUdCc0xCc25CSkVGS3FSeUdNSmZRV2JwYXdGeHZEWk1iQVB0a0hna3FZNmhWY3oyR3lQelJoTHJOeDFyRg?oc=5\" target=\"_blank\">강원 랜드 바카라 추천 의 역사와 발전: 과거에서 현재까지 - 전문가의 관점에서</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">calgaryroughnecks.com</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi1AFBVV95cUxNQ25YUHotTEVPakJzMFVCMHV1OGpFR0p3RkNGOG9oWHN5WlVFS3phejdON1N3YlRHb0lsbElDd3pZdEVFTkpDbGlGSHh3ejNFdklHaFJFajdEaW5QOWNjZWZTVFBOcTQ4ZkdaU1NWNEFyd1VyYzZHeHpWcHFXdUt1OFU2S3FCeVhmQWw3M1RIUXh2OU1xSHVuQUdCc0xCc25CSkVGS3FSeUdNSmZRV2JwYXdGeHZEWk1iQVB0a0hna3FZNmhWY3oyR3lQelJoTHJOeDFyRg?oc=5\" target=\"_blank\">강원 랜드 바카라 추천 의 역사와 발전: 과거에서 현재까지 - 전문가의 관점에서</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Calgary Roughnecks</font>",
       "source": "신입 개발자 채용 게임 IT",
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
     },
     {
-      "title": "현대자동차 HMAT 적성검사·인적성 후기, 준비법 - 잡플래닛",
+      "title": "현대자동차 HMAT 적성검사·인적성 후기, 준비법 - jobplanet.co.kr",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE82cjVVdWpFaWs2YTIwVG1naDNlN2YwYWh0ZzRTZEM3RnhOT3dpM3ZtNG5wd0lVLTl4RWhiam90aXBoYTZaVWd6TnM2dDhETDlsZTNFcm9fNFlfZw?oc=5",
       "published": "Fri, 02 Oct 2026 09:32:03 GMT",
       "publishedAt": "2026-10-02T09:32:03+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE82cjVVdWpFaWs2YTIwVG1naDNlN2YwYWh0ZzRTZEM3RnhOT3dpM3ZtNG5wd0lVLTl4RWhiam90aXBoYTZaVWd6TnM2dDhETDlsZTNFcm9fNFlfZw?oc=5\" target=\"_blank\">현대자동차 HMAT 적성검사·인적성 후기, 준비법</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡플래닛</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE82cjVVdWpFaWs2YTIwVG1naDNlN2YwYWh0ZzRTZEM3RnhOT3dpM3ZtNG5wd0lVLTl4RWhiam90aXBoYTZaVWd6TnM2dDhETDlsZTNFcm9fNFlfZw?oc=5\" target=\"_blank\">현대자동차 HMAT 적성검사·인적성 후기, 준비법</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jobplanet.co.kr</font>",
       "source": "개발자 채용 공고 취업",
       "impact": "중립",
       "importance": "낮음",
@@ -180885,21 +180885,32 @@
       "impact": "중립",
       "importance": "낮음",
       "relevance": 0
-    },
-    {
-      "title": "[오늘의 공기업 채용정보] 대한무역투자진흥공사, 2026년도 통상직 신입직원 54명 채용 - 아웃소싱타임스",
-      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTFBLZThUcHVLb194VzIzV3hER01RRFJQYVdNZ25FeTdrbUd1TldqTEJrRDB2dTRCZW54Zy04bXBqQzhFZ2tLOG9nSUJ0c28xQ01fc3dZUWFiS25ZRjNHT1REV1Ixd0RKZ1NqX1NpdndZN21HZw?oc=5",
-      "published": "Fri, 02 Oct 2026 02:23:11 GMT",
-      "publishedAt": "2026-10-02T02:23:11+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMickFVX3lxTFBLZThUcHVLb194VzIzV3hER01RRFJQYVdNZ25FeTdrbUd1TldqTEJrRDB2dTRCZW54Zy04bXBqQzhFZ2tLOG9nSUJ0c28xQ01fc3dZUWFiS25ZRjNHT1REV1Ixd0RKZ1NqX1NpdndZN21HZw?oc=5\" target=\"_blank\">[오늘의 공기업 채용정보] 대한무역투자진흥공사, 2026년도 통상직 신입직원 54명 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">아웃소싱타임스</font>",
-      "source": "개발자 채용 공고 취업",
-      "impact": "긍정",
-      "importance": "낮음",
-      "relevance": 0
     }
   ],
-  "employmentUpdatedAt": "2026-10-03T22:47:08+00:00",
+  "employmentUpdatedAt": "2026-10-04T02:28:46+00:00",
   "jobPostings": [
+    {
+      "title": "[민트로켓] ’반쵸 더 셰프’ 기획자",
+      "company": "14|dynamisone|285514\">채용공고 스크랩 경력5년↑ 학력무관 서울 > 서초구 모바일게임 정규직 채용시 2일 전 등록 민트로켓 <a",
+      "source": "게임잡",
+      "sourceSite": "게임잡",
+      "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=284429",
+      "description": "서울 > 서초구 모바일게임 정규직 채용시 2일 전 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] ’반쵸 더 셰프’ 기획자 성남시 분당구'));\" data-value=\"284429|mintrocket|284429\">채용공고 스크랩 경력2년↑ 학력무관 경기 > 성남시 웹게임, 콘솔게임 정규직 채용시 08/31(월) 등록 민트로켓",
+      "published": "2026-10-04",
+      "publishedAt": "2026-10-04T02:28:49+00:00",
+      "area": "클라이언트",
+      "career": "2년 이상",
+      "skills": [],
+      "employmentType": "정규직",
+      "deadline": "채용시 마감 지원하기 스크랩 2026-08-31 21:19 등록 2026-10-02 12:",
+      "detailText": "[민트로켓] ’반쵸 더 셰프’ 기획자 게임 직업이 되다 - 게임잡 성남시 분당구 입니다.\"> --> 성남시 분당구\" /> 민트로켓 공유하기 인쇄하기 전달하기 [민트로켓] ’반쵸 더 셰프’ 기획자 모집분야 게임기획 툴팁기능 게임기획 툴팁닫기 키워드 모바일, 게임기획, 시나리오, 밸런스기획, 컨텐츠, 유료화 툴팁기능 모바일, 게임기획, 시나리오, 밸런스기획, 컨텐츠, 유료화 툴팁닫기 대표게임 데이브 더 다이버 툴팁기능 데이브 더 다이버 툴팁닫기 게임분야 웹게임, 콘솔게임 Casual, Simulation 툴팁기능 디바이스: 웹게임, 콘솔게임 장르: Casual, Simulation 툴팁닫기 경력 경력 2년 이상 고용형태 정규직 학력 학력무관 직급/직책 주임/계장, 대리, 과장 모집인원 O명 급여 회사내규에 따름 / 면접 시 협의 연봉검색 마감일 채용시 마감 지원하기 스크랩 2026-08-31 21:19 등록 2026-10-02 12:35 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 근무지역 경기 > 성남시 분당구 신분당선 판교역 4번 출구 1km 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험, 퇴직연금 휴무·휴가 주5일근무, 연차, 월차, 정기 휴가 보상제도 장기근속자 포상 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 채용시 마감 시작일 2026-08-31(월) 지원방법 [당사 홈페이지] 전형절차 서류전형 → 면접전형 → 최종합격 제출서류 이력서, 경력기술서, 포트폴리오 등 담당자 정예진(담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 민트로켓 연봉정보 대표자명 황재호 설립연도 2024년 사원수 70 명 대표게임 데이브 더 다이버 툴팁기능 데이브 더 다이버 툴팁닫기 기업형태 비상장(대기업 계열사·자회사) 주요사업 온라인 게임 개발 및 서비스 기업뉴스 더보기 민트로켓 ‘데이브 더 다이버’ 모바일 버전 글로벌 출시 민트로켓(대표 황재호)은 17일 '데이브 더 다이버' 모바일 버전을 글로벌 시장에 선보였다.이 작품은 패키지 게임 '데이브 더 다이버'를 모바일 버전으로 이식한 게임이다. 해양 탐험 어드벤처 요소와 초밥집 운영을 결합한 독특한 재미 요소를 갖췄다는 평이다.앞서 출시된 중국에서 판매량 100만건을 달성했으며 현지 앱스토어 유료 게임 차트 1위, 탭탭 유료 게임 차트 1위 등에 오르기도 했다.[더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-09-17 [금주의쟁점] 도쿄게임쇼 韓 게임업체들 대거 참가 엔씨 넷마블 넥슨 등 주요 업체 출사표일본 컴퓨터 엔터테인먼트 협회(CESA)가 오는 17일부터 21일까지 5일 간 일본 지바현 마쿠하리 멧세에서 개최하는 '도쿄게임쇼 2026'에 국내 업체들이 대거 참가해 눈길을 끌고 있다.올 30주년을 맞이한 도쿄게임쇼는 처음으로 행사 일정을 하루 더 연장해 5일 간 열리며, 51개국 759개 업체가 참가한다. 이 가운데 넥슨 넷마블 엔씨 스마일게이트 등 주요 게임업체들도 대거 이름을 올려 눈길을 끌고 있다.넥슨은 '마비노기 모바일'의 일본 진출에 적극 나선다. 이와 더불어 넥슨게임즈의 서브컬처 신작 '프로젝트 RX'로 주목을 받았던 '파레이돌리아'를 출품한다.엔씨에서 퍼블리싱하는 '아스트라에 오라티오'의 개발사인 디나미스원도 이번 행사에 참가한다. 특히 엔씨는 삼성전자와 게임 시연 및 전시에 협업하며 현지 관람객들의 눈길을 사로잡겠다는 계획이다.넷마블은 '샹그릴라 프론티어 : 일곱 최강종' '나 혼자만 레벨업 : 카르마' '펄인블루' 등 3개작을 출품한다. 특히 '샹그릴라 프론티어'와 '펄인블루'는 첫 시연 버전을 공개한다.스마일게이트는 '미래시 : 보이지 않는 미래'와 '데드 어카운트 : 두 개의 푸른 불꽃' 두 작품을 선보인다. NHN은 일본 모바일 게임 자회사 NHN플레이아트를 통해 참가, '도검난무파즈기리' '환상세계 푸치포용' '오버 러시' 등 신작을 포함 7개작으로 부스를 구성한다.이밖에 시프트업 드림에이지 프로젝트문 아이언메이스 마상소프트 등의 업체들도 부스를 마련하거나 타이틀 시연에 나설 예정이다. 그라비티도 일본 지사를 통해 인디 게임 전시회 '도쿄 게임 던전'에 참가한다.이밖에 행사 주최 측에서 엄선한 인디 게임 전시 구역에 국내 작품들도 다수 출품된다. 케세라게임즈 키위웍스 써니사이드업 스튜디오두달 자라나는씨앗 등의 업체들이 목록에 이름을 올렸다.아시안게임 대비 'LOL' 미국ㆍ베트남과 평가전한국e스포츠협회는 '2026 아이치-나고야 아시안게임'을 앞두고 대한민국 '리그 오브 레전드(이하 LOL)' 국가대표팀의 실전 경기력을 점검하는 평가전을 부산에서 개최한다. 평가전은 이달 19~20일 양일간 영화의전당에서 열리며 미국과 베트남 국가대표팀이 대한민국 대표팀의 상대가 된다.'한화생명 초청 리그 오브 레전드 국가대표 평가전'은 아시안게임과 동일한 경기 패치를 적용해 국제대회와 유사한 환경에서 진행된다. 이번 아시안게임이 짧은 준비 기간이 주어진 만큼 각 챔피언들간의 티어 선수 간 호흡 등을 점검하는 데 초점을 맞출 예정이다.이달 19일에는 미국, 20일에는 베트남과 각각 5전 3선승제(Bo5)로 경기를 치른다. 베트남은 아이치-나고야 아시안게임 출전 국가대표 선수단이 참가하며, 미국도 국제무대 경험을 갖춘 선수들을 중심으로 대표팀을 구성한 것으로 알려졌다.국내 전문가들은 한국 대표팀이 강력한 우승 후보인 만큼 미국 대표팀과 베트남 대표팀을 상대로 압도적인 승리를 거둘 것이라 예상하면서도, 여러 챔피언들의 성능을 시험해보는 시험대가 될 것이라는 예측을 내비췄다.민트로켓, 해양 어드벤처 게임 모바일 버전 론칭넥슨의 자회사인 민트로켓은 이달 17일 '데이브 더 다이버' 모바일 버전을 글로벌 출시한다. 이 작품은 하이브리드 해양 어드벤처 게임인 '데이드 더 다이버'를 모바일 플랫폼으로 이식한 게임이다. 시장에서는 이 작품의 흥행 가능성을 매우 높게 보고 있다. 원작이 누적 판매량 1000만장을 돌파하는 등 큰 인기를 얻었기 때문이다. 또한 앞서 중국에 출시된 작품 모바일 버전이 100만 장 이상 판매된 점도 기대감을 높이는 요인이다. 이 작품을 통해 넥슨만의 독창적인 창의력과 개발력이 글로벌 시장에서 부각될 것으로 전망된다. 기존에 이 회사의 작품을 몰랐던 유저들도 '데이브 더 다이버'를 계기로 관심을 높여날 것으로 기대된다. 업계의 한 관계자는 \"'데이브 더 다이버'는 국산 싱글 패키지 게임 중 처음으로 1000만장 판매를 돌파한 기념비적인 작품\"이라며 \"이번 모바일 버전 출시를 통해 작품의 성과는 더욱 커질 것\"이라고 말했다. [더게임스데일리 온라인 뉴스팀 tgon@tgdaily.co.kr] 2026-09-14 ‘데이브 더 다이버’ 누적 판매 1천만 장 돌파 민트로켓(대표 황재호)은 '데이브 더 다이버(이하 '데이브')'가 국내 싱글 패키지 작품 사상 최초로 글로벌 누적 판매 1000만 장을 돌파했다고 9일 밝혔다.'데이브'는 블루홀을 탐험하는 어드벤처 요소와 초밥집 운영을 결합한 하이브리드 해양 어드벤처 작품으로, 낮에는 해양 생물을 채집하고, 밤에는 채집한 재료로 초밥집을 운영하는 독창적인 탐험·수집·경영 요소가 높은 몰입감을 선사하며 전 세계 유저들의 꾸준한 사랑을 받아왔다.이번 1000만 장 돌파는 판매 기록을 넘어, 독창적인 게임성을 기반으로 전 세계 시장에서의 저력을 증명해 온 여정의 결과다. 정식 출시 3년이 지난 시점에도 신규 콘텐츠, 플랫폼 확장, 다양한 판권(IP)과의 협업을 통해 판매량이 꾸준히 증가했다는 점에서 '데이브'가 장기 흥행 IP로 자리매김했음을 보여준다.한편, 이 회사는 1000만 장 돌파를 기념해 다양한 사내 행사도 준비했다. 전 구성원에게 순금으로 제작한 기념 카드를 지급하고, 축하 케이터링과 함께 게임 속 초밥집 '반쵸 스시'의 콘셉트를 살려 전문 셰프가 방문해 참치를 직접 손질하는 참치 해체쇼도 진행했다. [더게임스데일리 한동연 기자 bronzek@tgdaily.co.kr] 2026-09-09 민트로켓 '데이브 더 다이버' 모바일 버전 내달 론칭 민트로켓(대표 황재호)은 내달 17일 '데이브 더 다이버'의 모바일 버전을 글로벌 구글 플레이와 애플 앱스토어를 통해 선보인다.이 작품은 '블루홀'을 탐험하는 어드벤처 요소와 초밥집 운영을 결합한 하이브리드 해양 어드벤처 게임이다. 낮에는 블루홀을 탐험하며 해양 생물을 채집하고, 밤에는 그 재료로 초밥집을 운영하는 탐험 · 수집 · 경영 요소를 즐길 수 있다.이 작품은 앞서 스팀 및 콘솔 출시를 통해 호평을 받으며 판매량 800만장을 기록했다. 지난 2월 중국에서 먼저 론칭된 모바일 버전도 판매량 100만장을 넘어서는 등 인기를 끌고 있다.모바일 버전은 원작의 손맛을 재현하는 가운데 세밀한 편의 기능도 추가했다. 자이로센서를 활용한 기울임 조작으로 녹차를 따르는 등 모바일 환경의 재미를 더했다.또 플레이 환경에 맞춰 3단계로 시야 거리를 설정할 수 있도록 하고, '어인족 마을'에서의 빠른 이동 기능을 통해 편의성을 높였다. 또한 낚시 어드벤처 게임 '드렛지' 컬래버레이션 콘텐츠와 DLC(추가 다운로드 콘텐츠) '인 더 정글' 등을 모바일 버전에서도 제공한다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-08-13 본 채용정보는 게임잡의 동의없이 무단전재, 재배포, 재가공할 수 없으며, 구직활동 이외의 용도로 사용될 수 없습니다. 불법/허위/과장/오류 신고 본 정보는 민트로켓 에서 제공한 자료로 게임잡의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용될 수 없습니다. 게임잡은 민트로켓 에서 게재한 자료에 대한 오류와 사용자가 이를 신뢰하여 취한 조치에 대해 책임을 지지 않습니다. 민트로켓 에서 진행중인 채용 정보확인해 보세요! 12 건 전체보기 민트로켓 스크랩 [민트로켓] 커뮤니티 매니저 (시니어) 게임운영+ 경력 5년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’고질라 디펜스 포스 X’ UI 디자이너 인터페이스 디자인 경력 3년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’고질라 디펜스 포스 X’ 클라이언트 프로그래머 게임개발(클라이언트)+ 경력 5년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’고질라 디펜스 포스 X’ 서버 프로그래머 게임개발(모바일)+ 경력 5년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [신규 PC/콘솔] 컨셉 아티스트 원화 경력 3년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’반쵸 더 셰프’ 캐릭터 모델러 모델링 경력무관 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 배너 공지사항 공지사항 개인정보처리방침 개정 안내 2026.09.30 2026년 추석 연휴 유료서비스 연장적용 및 고객지원 안내 2026.09.15 화성시·인천·전남광주 행정구역 개편에 따른 근무지역 정보 업데이트 안내 2026.07.15 [시스템 점검 공지] 7/15(수) AM 00시-06시 2026.07.03 [시스템 점검 공지] 6/18(목) AM 00시-05시 2026.06.17 서비스 전체보기 GAMEJOB 고객센터 (월~금 09:00~18:00) 일반문의 02-3466-5310, FAX : 02-565-9351, E-Mail : help@gamejob.co.kr 상품문의 02-3466-5266, FAX : 0504-981-3752, E-Mail : ad@gamejob.co.kr copyright © GAMEJOB Corp. All Right Reserved",
+      "sources": [
+        {
+          "site": "게임잡",
+          "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=284429"
+        }
+      ]
+    },
     {
       "title": "히든몬스터 채용 - [경력 1년 이상] 모바일 게임 운영 매니저 모집 (언어 가능자) - 잡코리아",
       "company": "히든몬스터",
@@ -181031,6 +181042,26 @@
         {
           "site": "게임잡",
           "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=285514"
+        }
+      ]
+    },
+    {
+      "title": "NCC-DaaS 솔루션 개발자 - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qeG1TMFZNSGdEeFRCRWRxc21iakFQdHhXOWF0ZEhEeTF4LUp3d25MZW1mNVpsVVpDcVZRSjBleUp0YTFSWEw5cU9PcEhmNlhkaFZYZG41cUM3dw?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qeG1TMFZNSGdEeFRCRWRxc21iakFQdHhXOWF0ZEhEeTF4LUp3d25MZW1mNVpsVVpDcVZRSjBleUp0YTFSWEw5cU9PcEhmNlhkaFZYZG41cUM3dw?oc=5\" target=\"_blank\">NCC-DaaS 솔루션 개발자</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Sat, 03 Oct 2026 06:24:12 GMT",
+      "publishedAt": "2026-10-03T06:24:12+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9qeG1TMFZNSGdEeFRCRWRxc21iakFQdHhXOWF0ZEhEeTF4LUp3d25MZW1mNVpsVVpDcVZRSjBleUp0YTFSWEw5cU9PcEhmNlhkaFZYZG41cUM3dw?oc=5"
         }
       ]
     },
@@ -182284,6 +182315,27 @@
       ],
       "sourceSite": "원티드",
       "detailText": "Google News",
+      "sources": [
+        {
+          "site": "원티드",
+          "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9hV0VFMEdpdW1ZSWcycG9GcWlVbGg3VnNRQnFWNEUyM0xhczU4cGpqZlZ2cFRpVDg3TXNWSV9QZ1BiY3dmWlpob3NxSnhFUlZmdlZnZXVXRQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "[상주] [서울역] Kotlin/Java 금융권 캐피탈 채널계 운영 유지보수 백엔드 개발 - Java, Kotlin - 원티드",
+      "company": "기업명 확인 필요",
+      "source": "원티드",
+      "link": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE9hV0VFMEdpdW1ZSWcycG9GcWlVbGg3VnNRQnFWNEUyM0xhczU4cGpqZlZ2cFRpVDg3TXNWSV9QZ1BiY3dmWlpob3NxSnhFUlZmdlZnZXVXRQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiV0FVX3lxTE9hV0VFMEdpdW1ZSWcycG9GcWlVbGg3VnNRQnFWNEUyM0xhczU4cGpqZlZ2cFRpVDg3TXNWSV9QZ1BiY3dmWlpob3NxSnhFUlZmdlZnZXVXRQ?oc=5\" target=\"_blank\">[상주] [서울역] Kotlin/Java 금융권 캐피탈 채널계 운영 유지보수 백엔드 개발 - Java, Kotlin</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">원티드</font>",
+      "published": "Fri, 02 Oct 2026 11:40:10 GMT",
+      "publishedAt": "2026-10-02T11:40:10+00:00",
+      "area": "백엔드/서버",
+      "career": "경력",
+      "skills": [
+        "Java"
+      ],
+      "sourceSite": "원티드",
       "sources": [
         {
           "site": "원티드",
@@ -185011,69 +185063,9 @@
           "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE8xcm5JcWFpYnMyTk5Iakt5VENhV3puWjU1WlF2UDYxSXpVNVE3MW9handuRHhVM0E4WEp6VWpFZFVYelBxZElsOWN3?oc=5"
         }
       ]
-    },
-    {
-      "title": "[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입·경력) (D-32) - saramin.co.kr",
-      "company": "[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5\" target=\"_blank\">[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입·경력) (D-32)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Tue, 29 Sep 2026 08:30:09 GMT",
-      "publishedAt": "2026-09-29T08:30:09+00:00",
-      "area": "개발",
-      "career": "신입/경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입·경력) (D-32) - 사람인",
-      "company": "[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5\" target=\"_blank\">[(주)식스스타스] 철도·항공 관제시스템 분야 소프트웨어 개발자(신입·경력) (D-32)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
-      "published": "Tue, 29 Sep 2026 08:30:09 GMT",
-      "publishedAt": "2026-09-29T08:30:09+00:00",
-      "area": "개발",
-      "career": "신입/경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcGtIZk1aVGtGN1dWYWw2TVAtTExwVElVaUxVQ2t4ejNsRkZ5MEZIRFlvY3haaE91aU9JQ2NJdHNZMERWVVkxVWg0UkttRGt4RW5VT1UtVWkzeW1pdk1QVEVkU1RuLUZkLVpOX1ktQzZpOUMtZnIzLUNwc0FJUXg0U2NuMGpkWlgw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "[(주)페이타랩] Windows개발자 (신입) (D-29) - saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5\" target=\"_blank\">[(주)페이타랩] Windows개발자 (신입) (D-29)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Tue, 29 Sep 2026 08:30:07 GMT",
-      "publishedAt": "2026-09-29T08:30:07+00:00",
-      "area": "개발",
-      "career": "신입",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZVVMejlZVWVWekRzeVkwQ2FjTUQ3SE9nSUNZb2UzV1U1LW9hQlRUeW1xTWp2S3F6cTdtWVZtNnhfVUc2LTRFbWJxbFlEdnFGQTV4TDBGVUItSnFnSmg3NV9EaDktc3B4WnpYcGJJYjZaYTBwVXRjU2JmUzlSdmZNWlA2Z1VDQnZx?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-03T22:47:09+00:00",
+  "jobPostingsUpdatedAt": "2026-10-04T02:28:47+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185129,6 +185121,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-03T22:47:08+00:00"
+    "generatedAt": "2026-10-04T02:28:46+00:00"
   }
 }
