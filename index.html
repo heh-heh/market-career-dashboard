@@ -74,31 +74,19 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
       <div class="label">서버 관리자 로그인</div>
       <div id="settingsLogin" class="settings-form" style="margin-top:12px">
         <label>관리자 비밀번호
-          <input id="adminPassword" type="password" autocomplete="current-password" placeholder="EC2 .env의 ADMIN_PASSWORD">
+          <input id="adminPassword" type="password" autocomplete="current-password" placeholder="관리자 비밀번호">
         </label>
         <div class="settings-actions"><button id="settingsLoginBtn" type="button">로그인</button></div>
       </div>
-      <div id="settingsPanel" class="settings-form" style="display:none;margin-top:12px">
-        <label>Toss Securities App Key
-          <input id="tossAppKey" type="password" autocomplete="off" placeholder="App Key">
-        </label>
-        <label>Toss Securities App Secret
-          <input id="tossAppSecret" type="password" autocomplete="off" placeholder="App Secret">
-        </label>
-        <label>기타 API Key
-          <input id="genericApiKey" type="password" autocomplete="off" placeholder="API Key">
-        </label>
-        <div class="settings-actions">
-          <button id="settingsSaveBtn" type="button">서버에 저장</button>
-          <button id="settingsLogoutBtn" type="button">로그아웃</button>
-        </div>
-        <div class="secret-note">API 키 원문은 GitHub나 브라우저 저장소에 저장하지 않고 EC2 서버에만 보관합니다.</div>
+      <div id="settingsLoggedIn" style="display:none;margin-top:12px">
+        <div class="signal">관리자 인증 완료</div>
+        <div class="settings-actions" style="margin-top:12px"><button id="settingsLogoutBtn" type="button">로그아웃</button></div>
       </div>
       <div id="settingsStatus" class="signal settings-status">로그인 상태를 확인하는 중...</div>
     </div>
     <div class="card">
       <div class="label">서버 연결 상태</div>
-      <div class="signal">EC2 API: <b>https://35.79.235.14</b><br>관리자 로그인 후 API 키를 서버에 주입할 수 있습니다.</div>
+      <div class="signal">EC2 API: <b>https://35.79.235.14</b><br>시세·실시간 데이터와 자동매매 설정은 각 기능 탭에서 관리합니다.</div>
     </div>
   </div>
 </section>
@@ -132,16 +120,22 @@ function settingsMessage(msg,ok=true){
 }
 async function loadSettings(){
  const token=localStorage.getItem(SETTINGS_TOKEN_KEY);
- if(!token)return;
+ if(!token){
+  document.getElementById("settingsLogin").style.display="block";
+  document.getElementById("settingsLoggedIn").style.display="none";
+  settingsMessage("관리자 로그인이 필요합니다.");
+  return;
+ }
  try{
-  const d=await settingsRequest("/api/settings");
+  await settingsRequest("/api/settings");
   document.getElementById("settingsLogin").style.display="none";
-  document.getElementById("settingsPanel").style.display="block";
-  settingsMessage("로그인됨 · Toss Securities: "+(d.providers?.toss?.configured?"설정됨":"미설정")+" · 기타 API: "+(d.providers?.generic?.configured?"설정됨":"미설정"));
+  document.getElementById("settingsLoggedIn").style.display="block";
+  settingsMessage("관리자 인증이 유지되고 있습니다.");
  }catch(e){
   localStorage.removeItem(SETTINGS_TOKEN_KEY);
   document.getElementById("settingsLogin").style.display="block";
-  document.getElementById("settingsPanel").style.display="none";
+  document.getElementById("settingsLoggedIn").style.display="none";
+  settingsMessage("로그인이 만료되었습니다. 다시 로그인하세요.",false);
  }
 }
 async function loginSettings(){
@@ -155,21 +149,11 @@ async function loginSettings(){
   settingsMessage("로그인되었습니다.");
  }catch(e){settingsMessage(e.message,false);}
 }
-async function saveSettings(){
- try{
-  const body={toss:{app_key:document.getElementById("tossAppKey").value,app_secret:document.getElementById("tossAppSecret").value},generic:{api_key:document.getElementById("genericApiKey").value}};
-  const d=await settingsRequest("/api/settings",{method:"POST",body:JSON.stringify(body)});
-  document.getElementById("tossAppKey").value="";
-  document.getElementById("tossAppSecret").value="";
-  document.getElementById("genericApiKey").value="";
-  settingsMessage(d.message+" 원문 키는 다시 표시하지 않습니다.");
- }catch(e){settingsMessage(e.message,false);}
-}
 async function logoutSettings(){
  try{await settingsRequest("/api/logout",{method:"POST"});}catch(e){}
  localStorage.removeItem(SETTINGS_TOKEN_KEY);
  document.getElementById("settingsLogin").style.display="block";
- document.getElementById("settingsPanel").style.display="none";
+ document.getElementById("settingsLoggedIn").style.display="none";
  settingsMessage("로그아웃되었습니다.");
 }
 async function tradingRequest(path,options={}){
@@ -275,7 +259,7 @@ function showView(id,button){document.querySelectorAll("nav button").forEach(x=>
 setInterval(()=>{if(localStorage.getItem(SETTINGS_TOKEN_KEY))refreshLiveTrading();},10000);
 document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b);if(b.dataset.view==="v7")loadSettings();if(b.dataset.view==="v8")refreshTrading()});
 document.getElementById("settingsLoginBtn")?.addEventListener("click",loginSettings);
-document.getElementById("settingsSaveBtn")?.addEventListener("click",saveSettings);
+
 document.getElementById("settingsLogoutBtn")?.addEventListener("click",logoutSettings);
 document.getElementById("adminPassword")?.addEventListener("keydown",e=>{if(e.key==="Enter")loginSettings()});
 
