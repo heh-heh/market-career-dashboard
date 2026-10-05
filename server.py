@@ -45,29 +45,125 @@ def update_data():
             print("update error:",e,flush=True)
         time.sleep(INTERVAL)
 
+TOSS_TOKEN_URL="https://openapi.tossinvest.com/oauth2/token"
+TOSS_API_BASE="https://openapi.tossinvest.com"
+TOSS_TOKEN_LOCK=threading.Lock()
+TOSS_TOKEN={"access_token":"","expires_at":0.0}
+
+def toss_symbol(symbol):
+    # Toss Securities uses six-digit KRX symbols for Korean equities.
+    if len(symbol)==9 and symbol[6:] in (".KS",".KQ") and symbol[:6].isdigit():
+        return symbol[:6]
+    return symbol
+
+def toss_access_token(cfg):
+    toss=cfg.get("toss",{}) if isinstance(cfg,dict) else {}
+    client_id=str(toss.get("app_key") or "").strip()
+    client_secret=str(toss.get("app_secret") or "").strip()
+    if not client_id or not client_secret:
+        return ""
+    now=time.time()
+    with TOSS_TOKEN_LOCK:
+        if TOSS_TOKEN["access_token"] and now < TOSS_TOKEN["expires_at"]-60:
+            return TOSS_TOKEN["access_token"]
+        body=urllib.parse.urlencode({"grant_type":"client_credentials"}).encode()
+        auth=(client_id+":"+client_secret).encode()
+        req=urllib.request.Request(
+            TOSS_TOKEN_URL,
+            data=body,
+            headers={
+                "Authorization":"Basic "+__import__("base64").b64encode(auth).decode(),
+                "Content-Type":"application/x-www-form-urlencoded",
+                "User-Agent":"market-career-dashboard/1.3"
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req,timeout=8) as r:
+            obj=json.loads(r.read())
+        token=str(obj.get("access_token") or "")
+        if not token:
+            raise RuntimeError("Toss OAuth response did not contain access_token")
+        expires=int(obj.get("expires_in") or 3600)
+        TOSS_TOKEN["access_token"]=token
+        TOSS_TOKEN["expires_at"]=now+max(expires,120)
+        return token
+
+def toss_quotes(cfg, items):
+    token=toss_access_token(cfg)
+    if not token or not items:
+        return {}
+    # The Open API supports up to 200 symbols per prices request.
+    symbol_map={toss_symbol(x.get("symbol","")):x.get("symbol","") for x in items if x.get("symbol")}
+    requested=list(symbol_map)
+    out={}
+    for start in range(0,len(requested),200):
+        chunk=requested[start:start+200]
+        qs=urllib.parse.urlencode({"symbols":",".join(chunk)})
+        url=TOSS_API_BASE+"/api/v1/prices?"+qs
+        req=urllib.request.Request(
+            url,
+            headers={
+                "Authorization":"Bearer "+token,
+                "User-Agent":"market-career-dashboard/1.3"
+            }
+        )
+        with urllib.request.urlopen(req,timeout=8) as r:
+            obj=json.loads(r.read())
+        for row in obj.get("result",[]) or []:
+            toss_sym=str(row.get("symbol") or "")
+            original=symbol_map.get(toss_sym,toss_sym)
+            price=float(row["lastPrice"]) if row.get("lastPrice") is not None else None
+            out[original]={
+                "price":price,
+                "change":None,
+                "live":True,
+                "provider":"toss",
+                "timestamp":row.get("timestamp")
+            }
+    return out
+
+def yahoo_quote(symbol):
+    url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
+    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 market-career-dashboard/1.3"})
+    with urllib.request.urlopen(req,timeout=5) as r:
+        obj=json.loads(r.read())
+    meta=obj["chart"]["result"][0]["meta"]
+    price=meta.get("regularMarketPrice")
+    prev=meta.get("previousClose")
+    change=((price/prev)-1)*100 if price is not None and prev else None
+    return {"price":price,"change":change,"live":True,"provider":"yahoo"}
+
 def live_quotes():
     try:
         data=json.loads(DATA.read_text(encoding="utf-8"))
-        items=data.get("stocks",[])+data.get("indices",[])
+        stock_items=data.get("stocks",[])
+        index_items=data.get("indices",[])
         out={}
-        for item in items:
+        cfg=load_secrets()
+        # Use the user's Toss Open API for equities/ETFs when configured.
+        try:
+            toss_items=[x for x in stock_items if x.get("symbol")]
+            out.update(toss_quotes(cfg,toss_items))
+        except Exception as e:
+            print("toss quote error:",e,flush=True)
+
+        # Keep Yahoo as fallback for any stock Toss could not return, and for indices
+        # because the dashboard also tracks KOSPI/KOSDAQ/NASDAQ/S&P/SOX symbols.
+        fallback_items=index_items+[x for x in stock_items if x.get("symbol") not in out]
+        for item in fallback_items:
             symbol=item.get("symbol")
             if not symbol: continue
-            url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
-            req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 market-career-dashboard/1.2"})
             try:
-                with urllib.request.urlopen(req,timeout=5) as r:
-                    obj=json.loads(r.read())
-                meta=obj["chart"]["result"][0]["meta"]
-                price=meta.get("regularMarketPrice")
-                prev=meta.get("previousClose")
-                change=((price/prev)-1)*100 if price is not None and prev else None
-                out[symbol]={"price":price,"change":change,"live":True}
+                out[symbol]=yahoo_quote(symbol)
             except Exception:
                 continue
-        return {"updatedAt":time.time(),"quotes":out}
+        return {
+            "updatedAt":time.time(),
+            "quotes":out,
+            "provider":"toss+yahoo" if out else "none"
+        }
     except Exception as e:
-        return {"updatedAt":time.time(),"quotes":{},"error":str(e)}
+        return {"updatedAt":time.time(),"quotes":{},"provider":"none","error":str(e)}
 
 class Handler(BaseHTTPRequestHandler):
     def send_json(self,obj,status=200):
