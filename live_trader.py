@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Guarded Toss US trading-amount auto trader. Live mode is OFF by default."""
+"""Guarded Toss US auto trader with regular and extended-hours support. Live mode is OFF by default."""
 from __future__ import annotations
-import base64, json, os, secrets, threading, time, urllib.error, urllib.parse, urllib.request
+import base64, json, math, os, secrets, threading, time, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 KST = timezone(timedelta(hours=9))
@@ -179,22 +180,32 @@ class LiveAutoTrader:
         return obj.get("result", obj) if isinstance(obj, dict) else obj
 
     def _calendar(self):
-        today = datetime.now(KST).date().isoformat()
-        obj = self._api("GET", "/api/v1/market-calendar/US", {"date": today}, account=False)
+        # Toss API's `date` parameter is the US-local calendar date, not KST.
+        us_date = datetime.now(ZoneInfo("America/New_York")).date().isoformat()
+        obj = self._api("GET", "/api/v1/market-calendar/US", {"date": us_date}, account=False)
         today_obj = obj.get("today") if isinstance(obj, dict) else None
         if not today_obj:
             return "UNKNOWN", "미국 장 운영 정보 없음"
-        reg = today_obj.get("regularMarket")
-        if not reg:
-            return "CLOSED", "오늘 미국 정규장 휴장"
+
         now = datetime.now(KST)
-        start = datetime.fromisoformat(reg["startTime"]).astimezone(KST)
-        end = datetime.fromisoformat(reg["endTime"]).astimezone(KST)
-        if start <= now <= end:
-            if now <= end - timedelta(hours=1):
-                return "REGULAR", "정규장 자동주문 가능"
-            return "REGULAR_ENDING", "정규장 종료 1시간 이내 · 신규 자동주문 중지"
-        return "CLOSED", "정규장 외 시간 · 신규 자동주문 중지"
+        sessions = [
+            ("DAY", today_obj.get("dayMarket"), "데이마켓 자동주문 가능"),
+            ("PRE", today_obj.get("preMarket"), "프리마켓 자동주문 가능"),
+            ("REGULAR", today_obj.get("regularMarket"), "정규장 자동주문 가능"),
+            ("AFTER", today_obj.get("afterMarket"), "애프터마켓 자동주문 가능"),
+        ]
+        for name, window, message in sessions:
+            if not window:
+                continue
+            try:
+                start = datetime.fromisoformat(window["startTime"]).astimezone(KST)
+                end = datetime.fromisoformat(window["endTime"]).astimezone(KST)
+                if start <= now <= end:
+                    return name, message
+            except Exception:
+                continue
+
+        return "CLOSED", "현재 미국 거래 세션이 아닙니다."
 
     def _rankings(self):
         return self._api(
@@ -337,22 +348,46 @@ class LiveAutoTrader:
         for o in self._open_orders():
             if str(o.get("symbol") or "").upper() == c["symbol"]:
                 return
+
         bp = self._buying_power()
         amount = min(self.max_order_usd, bp * 0.95)
+        price = float(c.get("price") or 0)
         if amount < 10:
             self.last_error = "USD 매수 가능금액 부족"
             return
-        result = self._api("POST", "/api/v1/orders", body={
-            "clientOrderId": "mktdash-" + secrets.token_hex(10),
-            "symbol": c["symbol"], "side": "BUY", "orderType": "MARKET",
-            "orderAmount": "%.2f" % amount,
-        }, account=True)
+
+        # Toss only accepts US amount-based/fractional orders during regular hours.
+        # Outside regular hours use a whole-share market order so the bot can trade
+        # during DAY/PRE/AFTER sessions without sending a known-invalid orderAmount.
+        if self.session == "REGULAR":
+            body = {
+                "clientOrderId": "mktdash-" + secrets.token_hex(10),
+                "symbol": c["symbol"], "side": "BUY", "orderType": "MARKET",
+                "orderAmount": "%.2f" % amount,
+            }
+            action_text = "BUY_SUBMITTED %s $%.2f" % (c["symbol"], amount)
+        else:
+            if price <= 0:
+                self.last_error = "매수 가격을 확인할 수 없습니다."
+                return
+            quantity = math.floor(amount / price)
+            if quantity < 1:
+                self.last_error = "시간외 매수 불가: 최대 주문금액으로 1주도 살 수 없습니다."
+                return
+            body = {
+                "clientOrderId": "mktdash-" + secrets.token_hex(10),
+                "symbol": c["symbol"], "side": "BUY", "orderType": "MARKET",
+                "quantity": str(quantity),
+            }
+            action_text = "BUY_SUBMITTED %s %d주 · %s" % (c["symbol"], quantity, self.session)
+
+        result = self._api("POST", "/api/v1/orders", body=body, account=True)
         oid = result.get("orderId")
         if not oid:
             raise RuntimeError("매수 주문 ID가 없습니다.")
         self.managed_symbol, self.entry_price = c["symbol"], None
         self.pending_order_id, self.pending_side = oid, "BUY"
-        self.last_action = "BUY_SUBMITTED %s $%.2f" % (c["symbol"], amount)
+        self.last_action = action_text
         self._save_state()
 
     def _submit_sell(self, price, reason):
@@ -362,16 +397,30 @@ class LiveAutoTrader:
         if qty <= 0:
             self.last_error = "매도 가능 수량이 없습니다."
             return
+
+        # Outside regular hours Toss only permits whole-share quantity for a
+        # market sell. Do not partially unwind a fractional bot position.
+        if self.session != "REGULAR":
+            whole_qty = math.floor(qty)
+            if whole_qty < 1 or abs(qty - whole_qty) > 1e-9:
+                self.last_error = "시간외 매도 대기: 소수점 보유분은 정규장에서만 전량 매도합니다."
+                return
+            qty_text = str(whole_qty)
+            session_text = " · " + self.session
+        else:
+            qty_text = ("%.6f" % qty).rstrip("0").rstrip(".")
+            session_text = ""
+
         result = self._api("POST", "/api/v1/orders", body={
             "clientOrderId": "mktdash-" + secrets.token_hex(10),
             "symbol": self.managed_symbol, "side": "SELL", "orderType": "MARKET",
-            "quantity": ("%.6f" % qty).rstrip("0").rstrip("."),
+            "quantity": qty_text,
         }, account=True)
         oid = result.get("orderId")
         if not oid:
             raise RuntimeError("매도 주문 ID가 없습니다.")
         self.pending_order_id, self.pending_side = oid, "SELL"
-        self.last_action = "SELL_SUBMITTED %s reason=%s price=%.2f" % (self.managed_symbol, reason, price)
+        self.last_action = "SELL_SUBMITTED %s reason=%s price=%.2f%s" % (self.managed_symbol, reason, price, session_text)
         self._save_state()
 
     def scan(self, allow_orders=False):
@@ -401,7 +450,7 @@ class LiveAutoTrader:
                     managed["entryPrice"] = self.entry_price
                     managed["pnlPct"] = round(pnl, 3)
                     self.candidate = managed
-                    if allow_orders and self.session == "REGULAR" and not self.pending_order_id:
+                    if allow_orders and self.session in {"DAY", "PRE", "REGULAR", "AFTER"} and not self.pending_order_id:
                         reason = None
                         if pnl <= -float(os.getenv("AUTO_STOP_LOSS_PCT", "1.0")):
                             reason = "stop_loss"
@@ -414,7 +463,7 @@ class LiveAutoTrader:
                     self._save_state()
                     return self.status()
 
-                if allow_orders and self.session == "REGULAR" and not self.live_halted and not self.pending_order_id:
+                if allow_orders and self.session in {"DAY", "PRE", "REGULAR", "AFTER"} and not self.live_halted and not self.pending_order_id:
                     buy = next((x for x in candidates if x.get("signal") == "BUY"), None)
                     if buy:
                         self._submit_buy(buy)
