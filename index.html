@@ -16,7 +16,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <section id="v1" class="view">
   <div class="stock-layout">
     <div class="stock-main">
-      <div class="stock-group"><div class="stock-group-title">종합 지수 <span class="live">● 실시간 갱신</span></div><div id="indices" class="stock-grid"></div></div>
+      <div class="stock-group"><div class="stock-group-title">종합 지수 <span id="realtimeStatus" class="live">● WebSocket 연결 중</span></div><div id="indices" class="stock-grid"></div></div>
       <div class="stock-group"><div class="stock-group-title">한국 주식</div><div id="koreaStocks" class="stock-grid"></div></div>
       <div class="stock-group"><div class="stock-group-title">미국 · 글로벌 반도체</div><div id="usStocks" class="stock-grid"></div></div>
       <div class="stock-group"><div class="stock-group-title">반도체 ETF</div><div id="etfs" class="stock-grid"></div></div>
@@ -367,29 +367,85 @@ function render(d){
  document.getElementById("status").innerHTML="마지막 데이터 갱신: <b>"+formatKSTDateTime(d.updatedAt)+"</b><br>시세 수집: <b>"+esc(d.quality?.quotes_ok??"-")+"/"+esc(d.quality?.quotes_total??"-")+"</b> · 캔들 준비: <b>"+esc(d.quality?.candle_ready??"-")+"</b><br>"+esc(d.notice||"");
  document.getElementById("notice").textContent=d.notice||"";
 }
-async function liveQuotes(){
- try{
-  if(!AWS_API_BASE){
-   const fresh=await fetch("data/dashboard.json?"+Date.now()).then(r=>r.json());
-   cached=fresh;
-  }else{
-   if(!cached){
-    cached=await fetch(AWS_API_BASE+"/api/dashboard?"+Date.now()).then(r=>r.json());
-   }
-   const q=await fetch(AWS_API_BASE+"/api/quotes?"+Date.now()).then(r=>r.json());
-   const maps=new Map(Object.entries(q.quotes||{}));
-   for(const group of ["stocks","indices"]){
-    for(const item of (cached[group]||[])){
-     const live=maps.get(item.symbol);
-     if(live){item.price=live.price;item.change=live.change;item.live=true;}
-    }
-   }
-   cached.updatedAt=new Date(q.updatedAt*1000).toISOString();
+function updateRealtimeStatus(message,ok=false){
+ const el=document.getElementById("realtimeStatus");
+ if(!el)return;
+ el.textContent=(ok?"● ":"○ ")+message;
+ el.className="live "+(ok?"":"down");
+}
+function updateLiveStockNode(symbol){
+ const s=findStock(symbol);
+ if(!s)return;
+ const node=document.querySelector('.stock-click[data-symbol="'+CSS.escape(symbol)+'"]');
+ if(node)node.outerHTML=stockRow(s);
+ if(symbol==="SOXL"||symbol==="SOXS")renderLeveragedPair(cached);
+}
+function applyRealtimeQuote(symbol,quote){
+ const item=findStock(symbol);
+ if(!item)return;
+ if(quote.price!=null)item.price=quote.price;
+ if(quote.change!=null)item.change=quote.change;
+ item.live=true;
+ item.provider=quote.provider||"toss_ws";
+ if(quote.timestamp)item.liveTimestamp=quote.timestamp;
+ updateLiveStockNode(symbol);
+ if(currentStock&&currentStock.symbol===symbol){
+  currentStock=item;
+  openStock(currentStock);
+ }
+}
+function startRealtime(){
+ if(!AWS_API_BASE){
+  updateRealtimeStatus("로컬 데이터 모드",false);
+  return;
+ }
+ const wsUrl=AWS_API_BASE.replace(/^http/i,"ws")+"/ws";
+ let retryMs=1000;
+ let stopped=false;
+ const connect=()=>{
+  if(stopped)return;
+  updateRealtimeStatus("WebSocket 연결 중",false);
+  let ws;
+  try{ws=new WebSocket(wsUrl);}
+  catch(e){
+   updateRealtimeStatus("연결 실패",false);
+   setTimeout(connect,retryMs);
+   retryMs=Math.min(retryMs*2,15000);
+   return;
   }
-  render(cached);
- }catch(e){}
+  ws.addEventListener("open",()=>{
+   retryMs=1000;
+   updateRealtimeStatus("실시간 스트리밍",true);
+  });
+  ws.addEventListener("message",event=>{
+   try{
+    const msg=JSON.parse(event.data);
+    if(msg.type==="status"){
+     if(msg.connected)updateRealtimeStatus("실시간 스트리밍",true);
+     else updateRealtimeStatus("재연결 중",false);
+     return;
+    }
+    if(msg.type==="snapshot"){
+     Object.entries(msg.quotes||{}).forEach(([symbol,quote])=>applyRealtimeQuote(symbol,quote));
+     if(msg.connected)updateRealtimeStatus("실시간 스트리밍",true);
+     return;
+    }
+    if(msg.type==="quote")applyRealtimeQuote(msg.symbol,msg);
+   }catch(e){}
+  });
+  ws.addEventListener("close",()=>{
+   updateRealtimeStatus("재연결 중",false);
+   if(!stopped){
+    setTimeout(connect,retryMs);
+    retryMs=Math.min(retryMs*2,15000);
+   }
+  });
+  ws.addEventListener("error",()=>{updateRealtimeStatus("연결 오류 · 재시도",false);});
+ };
+ connect();
+ window.addEventListener("beforeunload",()=>{stopped=true;try{ws&&ws.close();}catch(e){}},{once:true});
 }
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 loadData();
-setInterval(liveQuotes,10000);
+startRealtime();
 </script></body></html>
