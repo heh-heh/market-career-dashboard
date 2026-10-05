@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Collect historical 1-minute OHLCV candles from Toss Securities Open API."""
-import argparse, csv, gzip, json, time, base64
+import argparse, csv, gzip, json, time, base64, sys
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
-from toss_auth import get_token as shared_toss_token
 
 ROOT=Path(__file__).resolve().parents[1]
 SECRETS=ROOT/"server_secrets.json"
+sys.path.insert(0,str(ROOT))
+from toss_auth import get_token as shared_toss_token
 BASE="https://openapi.tossinvest.com"
 TOKEN_URL=BASE+"/oauth2/token"
 DEFAULT_SYMBOLS=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
