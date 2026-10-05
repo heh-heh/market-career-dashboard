@@ -434,7 +434,12 @@ class Handler(BaseHTTPRequestHandler):
                 tail="\n".join(lines[-100:])
                 symbols=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
                 progress_path=ROOT/"data"/"toss_1m_progress.json"
+                watchdog_path=ROOT/"data"/"toss_hybrid_watchdog.json"
                 live_progress={}
+                watchdog={}
+                if watchdog_path.exists():
+                    try: watchdog=json.loads(watchdog_path.read_text(encoding="utf-8"))
+                    except Exception: watchdog={}
                 if progress_path.exists():
                     try: live_progress=json.loads(progress_path.read_text(encoding="utf-8"))
                     except Exception: live_progress={}
@@ -476,7 +481,18 @@ class Handler(BaseHTTPRequestHandler):
                     else:
                         phase="waiting"; progress=0
                 running=bool(subprocess.run(["pgrep","-af","[c]ollect_toss_1m.py|[b]in/backtest_toss_v5|[b]uild_backtest_cpp.sh"],capture_output=True,text=True).stdout.strip())
-                self.send_json({"ok":True,"phase":phase,"progress":progress,"running":running,
+                if watchdog.get("phase"):
+                    phase=watchdog.get("phase",phase)
+                    if phase=="completed":
+                        progress=100
+                    elif phase=="backtest":
+                        progress=max(progress,90)
+                    elif phase in ("collecting","retrying"):
+                        progress=max(progress, min(88, progress))
+                    elif phase=="building":
+                        progress=max(progress,5)
+                self.send_json({"ok":True,"phase":phase,"progress":progress,"running":running or bool(watchdog.get("phase") in ("starting","building","collecting","retrying","backtest","retrying_backtest")),
+                    "watchdog":watchdog,
                     "symbols":list(stats.values()),"completedSymbols":completed,
                     "currentSymbol":current,"currentPage":current_stats["page"] if current_stats else None,
                     "totalPages":current_stats["pages"] if current_stats else None,
