@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T03:31:24+00:00",
+  "updatedAt": "2026-10-05T05:53:09+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -39308,7 +39308,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.1999969482422,
+            "o": 232.2100067138672,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -39908,9 +39908,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
-            "l": 230.83999633789062,
+            "l": 230.47999572753906,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42862,7 +42862,7 @@
           },
           {
             "t": 1789565400,
-            "o": 213.72000122070312,
+            "o": 214.13999938964844,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43198,7 +43198,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.64999389648438,
+            "o": 222.11599731445312,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43254,7 +43254,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.25,
+            "o": 225.14999389648438,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43366,7 +43366,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.875,
+            "o": 230.9949951171875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -49035,7 +49035,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -49658,8 +49658,8 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
-            "h": 615.0598754882812,
+            "o": 616.9600219726562,
+            "h": 617.5700073242188,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52948,9 +52948,9 @@
           },
           {
             "t": 1790256600,
-            "o": 605.344970703125,
+            "o": 600.7550048828125,
             "h": 624.8400268554688,
-            "l": 604.35400390625,
+            "l": 599.3499755859375,
             "c": 617.25,
             "v": 8101441
           },
@@ -53004,7 +53004,7 @@
           },
           {
             "t": 1790343000,
-            "o": 634.610107421875,
+            "o": 635.0679931640625,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -53061,7 +53061,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 629.5,
+            "h": 628.7650146484375,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53116,7 +53116,7 @@
           },
           {
             "t": 1790688600,
-            "o": 614.0,
+            "o": 616.9600219726562,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59409,7 +59409,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62419,9 +62419,9 @@
           },
           {
             "t": 1789651800,
-            "o": 105.75,
+            "o": 104.77999877929688,
             "h": 109.83999633789062,
-            "l": 104.87030029296875,
+            "l": 104.69999694824219,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62699,9 +62699,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.01000213623047,
+            "o": 120.61000061035156,
             "h": 125.91999816894531,
-            "l": 119.94999694824219,
+            "l": 119.55000305175781,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62867,7 +62867,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.25,
+            "o": 116.86000061035156,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -69159,9 +69159,9 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
-            "l": 357.4100036621094,
+            "l": 355.9775085449219,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72169,9 +72169,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.30999755859375,
+            "o": 346.07000732421875,
             "h": 349.94000244140625,
-            "l": 346.1597900390625,
+            "l": 345.30999755859375,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72617,7 +72617,7 @@
           },
           {
             "t": 1790688600,
-            "o": 358.92999267578125,
+            "o": 357.0799865722656,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -81584,7 +81584,7 @@
           },
           {
             "t": 1788960600,
-            "o": 1003.1777954101562,
+            "o": 999.3499755859375,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81920,9 +81920,9 @@
           },
           {
             "t": 1789651800,
-            "o": 961.3300170898438,
+            "o": 954.9979858398438,
             "h": 986.2000122070312,
-            "l": 961.1303100585938,
+            "l": 953.5,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -98412,8 +98412,8 @@
           },
           {
             "t": 1790688600,
-            "o": 148.5,
-            "h": 148.85000610351562,
+            "o": 148.93499755859375,
+            "h": 149.38999938964844,
             "l": 146.25,
             "c": 146.49240112304688,
             "v": 10628861
@@ -100974,7 +100974,7 @@
           },
           {
             "t": 1788528600,
-            "o": 110.37999725341797,
+            "o": 111.22000122070312,
             "h": 117.86000061035156,
             "l": 109.7300033569336,
             "c": 116.95999908447266,
@@ -101086,9 +101086,9 @@
           },
           {
             "t": 1788960600,
-            "o": 123.37999725341797,
+            "o": 121.23999786376953,
             "h": 128.47999572753906,
-            "l": 122.58000183105469,
+            "l": 121.23999786376953,
             "c": 127.15499877929688,
             "v": 19020541
           },
@@ -101198,7 +101198,7 @@
           },
           {
             "t": 1789133400,
-            "o": 119.75,
+            "o": 120.70999908447266,
             "h": 123.19999694824219,
             "l": 117.8656005859375,
             "c": 122.41999816894531,
@@ -101870,7 +101870,7 @@
           },
           {
             "t": 1790688600,
-            "o": 148.5,
+            "o": 148.93499755859375,
             "h": 151.7198944091797,
             "l": 145.49000549316406,
             "c": 151.24000549316406,
@@ -110667,9 +110667,9 @@
         "1h": [
           {
             "t": 1788442200,
-            "o": 53.66999816894531,
+            "o": 53.494998931884766,
             "h": 55.689998626708984,
-            "l": 53.48500061035156,
+            "l": 53.279998779296875,
             "c": 54.22999954223633,
             "v": 18731325
           },
@@ -110723,7 +110723,7 @@
           },
           {
             "t": 1788528600,
-            "o": 49.91999816894531,
+            "o": 49.560001373291016,
             "h": 50.209999084472656,
             "l": 46.2599983215332,
             "c": 46.70100021362305,
@@ -132092,7 +132092,7 @@
           },
           {
             "t": 1790947860,
-            "o": 27195.884765625,
+            "o": 27197.251953125,
             "h": 27197.251953125,
             "l": 27175.92578125,
             "c": 27179.453125,
@@ -151588,8 +151588,8 @@
           },
           {
             "t": 1790947860,
-            "o": 13110.154296875,
-            "h": 13110.154296875,
+            "o": 13107.7958984375,
+            "h": 13108.1064453125,
             "l": 13090.056640625,
             "c": 13091.6328125,
             "v": 0
@@ -154712,7 +154712,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12584.86328125,
+            "l": 12585.8232421875,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -164461,7 +164461,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9000244140625,
+            "l": 566.9099731445312,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -165083,8 +165083,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
-            "h": 569.6950073242188,
+            "o": 569.8699951171875,
+            "h": 570.4299926757812,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -168373,7 +168373,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.8300170898438,
+            "o": 554.9650268554688,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -168541,7 +168541,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.0700073242188,
+            "o": 569.8699951171875,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -180566,6 +180566,38 @@
   ],
   "news": [
     {
+      "title": "인텔 반도체 소송에 미국 대중음악 '최악의 립싱크' 사태가 소환된 이유 - 한국일보",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1WU0tWb2lmdVhrNEVyMkJWcFM3cnRyVUNlZXVuT1daUVpxdGJNMTFBaTl0MlRaaDhMc1BfRGNYNV9teGhMcUFFZzZQb01qSzNHdUJmanF0cXNaTzNEeTMzMExUV0ZIaVF0eFlMdW130gFzQVVfeXFMT1NHV0U3S3RQbE1jemsyd3hydDNsVk1VUlUtMFhEM2RJOTQ3OUMwNUZxR1NsZFRnc2FnTFFWblp5V0JKMzF0c1dSZnJXZWV5NG9IN3dCZWFJb0tCSHlteEswNUN3MEJMVVc1YUNrbjU1d0Vzbw?oc=5",
+      "published": "Mon, 05 Oct 2026 05:00:00 GMT",
+      "publishedAt": "2026-10-05T05:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibkFVX3lxTE1WU0tWb2lmdVhrNEVyMkJWcFM3cnRyVUNlZXVuT1daUVpxdGJNMTFBaTl0MlRaaDhMc1BfRGNYNV9teGhMcUFFZzZQb01qSzNHdUJmanF0cXNaTzNEeTMzMExUV0ZIaVF0eFlMdW130gFzQVVfeXFMT1NHV0U3S3RQbE1jemsyd3hydDNsVk1VUlUtMFhEM2RJOTQ3OUMwNUZxR1NsZFRnc2FnTFFWblp5V0JKMzF0c1dSZnJXZWV5NG9IN3dCZWFJb0tCSHlteEswNUN3MEJMVVc1YUNrbjU1d0Vzbw?oc=5\" target=\"_blank\">인텔 반도체 소송에 미국 대중음악 '최악의 립싱크' 사태가 소환된 이유</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국일보</font>",
+      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
+      "impact": "부정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "Intel"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "투자 시계 빨라진 삼성⋯이재용, 글로벌 네트워크 강화 AI 주도권 정조준 - 브릿지경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE94dXVLd0w1YW1PNmJleUhvWWh6ejFYVkt0YkQySmN0NmM1ckRNLUhVZWppOVNqRy1Ja0dSeTh6N3F0R2FZY2FSOEZXRE5tNl9mRXQyaDIzZUp1Zw?oc=5",
+      "published": "Mon, 05 Oct 2026 04:22:00 GMT",
+      "publishedAt": "2026-10-05T04:22:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE94dXVLd0w1YW1PNmJleUhvWWh6ejFYVkt0YkQySmN0NmM1ckRNLUhVZWppOVNqRy1Ja0dSeTh6N3F0R2FZY2FSOEZXRE5tNl9mRXQyaDIzZUp1Zw?oc=5\" target=\"_blank\">투자 시계 빨라진 삼성⋯이재용, 글로벌 네트워크 강화 AI 주도권 정조준</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">브릿지경제</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 3,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
       "title": "[K자 성장 ①] 반도체 2분기 영업익 89조…자동차 조선은 체질 개선 - 자본시장뉴스",
       "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1ES3EtT3EyaXFXVjdhN1RQUDJqZS1PckNCWTdzWktrbUh4Y3lJS2FDOXltaFFCVDhoMk1lQ1kxaHk2dG9NcGdHWTlGN19ydFIyZW1qZEgzcGpfQUctRlVySmxwenZ1eWs?oc=5",
       "published": "Mon, 05 Oct 2026 03:00:00 GMT",
@@ -180667,6 +180699,22 @@
       "published": "Sun, 04 Oct 2026 10:56:24 GMT",
       "publishedAt": "2026-10-04T10:56:24+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTFB4d3VYT1psTXRKU0VERzlpRWthdDJYdFVWN1lFOXpPTE9ZU3dPZ3JaY3VNWUpqeEdGTTJscllqRFNtdndleTYxeWFRUU4xX29FWkNNd3hEUm12ODVXeEs5VA?oc=5\" target=\"_blank\">SK하이닉스, AI 투자 확대에 솔리다임 자금조달 ‘고심’</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴스토마토</font>",
+      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "SK하이닉스"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "SK하이닉스, AI 투자 확대에 솔리다임 자금조달 ‘고심’ - newstomato.com",
+      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFB4d3VYT1psTXRKU0VERzlpRWthdDJYdFVWN1lFOXpPTE9ZU3dPZ3JaY3VNWUpqeEdGTTJscllqRFNtdndleTYxeWFRUU4xX29FWkNNd3hEUm12ODVXeEs5VA?oc=5",
+      "published": "Sun, 04 Oct 2026 10:56:24 GMT",
+      "publishedAt": "2026-10-04T10:56:24+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTFB4d3VYT1psTXRKU0VERzlpRWthdDJYdFVWN1lFOXpPTE9ZU3dPZ3JaY3VNWUpqeEdGTTJscllqRFNtdndleTYxeWFRUU4xX29FWkNNd3hEUm12ODVXeEs5VA?oc=5\" target=\"_blank\">SK하이닉스, AI 투자 확대에 솔리다임 자금조달 ‘고심’</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">newstomato.com</font>",
       "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
       "impact": "긍정",
       "importance": "높음",
@@ -181020,6 +181068,134 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "삼성·SK하이닉스 3분기 영업익 188조 전망…메모리 고객 \"값 깎기보다 물량 먼저\" 현금 맡긴다 - 솔루션뉴스",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE50ZDdBM093MHBMZXR1Zlc5bXV4MENFa3hxODZ1YV9VaGdlVURSdm1LSmVsbkdqbzVYRE5qTGVoUnIzVE43UTZzWTNsU05uQ3NiSHBIZlVDQWJCQy1zQ2YyNWM0eVJqdnFDRkFB?oc=5",
+      "published": "Mon, 05 Oct 2026 05:39:36 GMT",
+      "publishedAt": "2026-10-05T05:39:36+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE50ZDdBM093MHBMZXR1Zlc5bXV4MENFa3hxODZ1YV9VaGdlVURSdm1LSmVsbkdqbzVYRE5qTGVoUnIzVE43UTZzWTNsU05uQ3NiSHBIZlVDQWJCQy1zQ2YyNWM0eVJqdnFDRkFB?oc=5\" target=\"_blank\">삼성·SK하이닉스 3분기 영업익 188조 전망…메모리 고객 \"값 깎기보다 물량 먼저\" 현금 맡긴다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">솔루션뉴스</font>",
+      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "SK하이닉스"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "삼성전자 반도체 성과급 세부안, 노노갈등 뇌관 되나 - 동행미디어 시대",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1EOFl0bDZQaVZYYTQ2YWVwcVl2M3o4czZLbEluUnUyT2xaWWZoOV9QbUhrckt3X1R5VkF3WThiU2ZqZU1LdzAyVnB3NDBWMlB3aGFHSEtRR053bENkbGc?oc=5",
+      "published": "Mon, 05 Oct 2026 05:33:46 GMT",
+      "publishedAt": "2026-10-05T05:33:46+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE1EOFl0bDZQaVZYYTQ2YWVwcVl2M3o4czZLbEluUnUyT2xaWWZoOV9QbUhrckt3X1R5VkF3WThiU2ZqZU1LdzAyVnB3NDBWMlB3aGFHSEtRR053bENkbGc?oc=5\" target=\"_blank\">삼성전자 반도체 성과급 세부안, 노노갈등 뇌관 되나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">동행미디어 시대</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "초고수의 선택은 삼성전자...\"매크로 불확실성의 도피처는 반도체\" - 한국경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE41YUZPVTVTcE5xRzFlc2k1R0paR1hnaDFRLXBqaUFwV29XZG1CbFEySXdKbzl6U0JxbWJUM1AyRldBcENXc2lXbkpHM1ZGYzVDVmRhUVpnV1Rpdw?oc=5",
+      "published": "Mon, 05 Oct 2026 05:23:13 GMT",
+      "publishedAt": "2026-10-05T05:23:13+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE41YUZPVTVTcE5xRzFlc2k1R0paR1hnaDFRLXBqaUFwV29XZG1CbFEySXdKbzl6U0JxbWJUM1AyRldBcENXc2lXbkpHM1ZGYzVDVmRhUVpnV1Rpdw?oc=5\" target=\"_blank\">초고수의 선택은 삼성전자...\"매크로 불확실성의 도피처는 반도체\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국경제</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원 - 조선일보",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5",
+      "published": "Mon, 05 Oct 2026 04:40:50 GMT",
+      "publishedAt": "2026-10-05T04:40:50+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5\" target=\"_blank\">칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "반도체·AI 신상품 72개 상표명칭 고시…내년부터 공식 반영 - 핀포인트뉴스",
+      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1Tam9GYXVVVnIwYmpjbzNJcWxSbmFuUDdpZURQS3ZpeTlhVVlEblNfX3BrWlFIYWVSVTNmV3VndmFnYVV3NVlwdXFkckZHS1lEQ2xkeXI3dTVadlY4Y0lhY01rTUhnVVJadnEtbjVva2ZkTEXSAXdBVV95cUxQT0kwNkh6RzVvcnRrV3BMSzhzZ0ZzdmNGSGVUb3N2TXJ5QWtRZkV0Mk1KRFlaTnF0MlpPai03Z2E5czRncWhwX1ItZWVvRWZlY2dzVGZnNWZMODJCTG1YSzd4VVplSEhrN3JsZTRHX0JUMG85bm5uOA?oc=5",
+      "published": "Mon, 05 Oct 2026 04:32:01 GMT",
+      "publishedAt": "2026-10-05T04:32:01+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE1Tam9GYXVVVnIwYmpjbzNJcWxSbmFuUDdpZURQS3ZpeTlhVVlEblNfX3BrWlFIYWVSVTNmV3VndmFnYVV3NVlwdXFkckZHS1lEQ2xkeXI3dTVadlY4Y0lhY01rTUhnVVJadnEtbjVva2ZkTEXSAXdBVV95cUxQT0kwNkh6RzVvcnRrV3BMSzhzZ0ZzdmNGSGVUb3N2TXJ5QWtRZkV0Mk1KRFlaTnF0MlpPai03Z2E5czRncWhwX1ItZWVvRWZlY2dzVGZnNWZMODJCTG1YSzd4VVplSEhrN3JsZTRHX0JUMG85bm5uOA?oc=5\" target=\"_blank\">반도체·AI 신상품 72개 상표명칭 고시…내년부터 공식 반영</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">핀포인트뉴스</font>",
+      "source": "\"한미반도체\" HBM OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "삼성전자, 용인과학축제서 국가산단 청사진 등 ‘반도체와 지역이 함께 만드는 미래’ 제시해 인기 몰이 - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE8wSENyUmxQYV9GMzV4MmZmOWxfY0pOU0NWXzNidmdoTHVqRWk2VkVqZjdBNHhTVEwwa3pBVFd6SC1HaEFLM1gtTXJMWjZQQkk?oc=5",
+      "published": "Mon, 05 Oct 2026 04:27:04 GMT",
+      "publishedAt": "2026-10-05T04:27:04+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE8wSENyUmxQYV9GMzV4MmZmOWxfY0pOU0NWXzNidmdoTHVqRWk2VkVqZjdBNHhTVEwwa3pBVFd6SC1HaEFLM1gtTXJMWjZQQkk?oc=5\" target=\"_blank\">삼성전자, 용인과학축제서 국가산단 청사진 등 ‘반도체와 지역이 함께 만드는 미래’ 제시해 인기 몰이</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "[기획]AI 중심 리더십 재정비…삼성 기술 쇄신·SK 반도체 올인 - 매일일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5UZTdPb1ZwSW5xZXd2bUtOamlzY1pMcFNobWpManZrZGhvSWtNXzRRLXNTZHRzLTJqVXJiWkRZNndGdXc4Ny1ZeUVRSmY2YU5lNGU2SHg3ekQ5NEFmaVlnQ1oyRkU?oc=5",
+      "published": "Mon, 05 Oct 2026 04:00:00 GMT",
+      "publishedAt": "2026-10-05T04:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE5UZTdPb1ZwSW5xZXd2bUtOamlzY1pMcFNobWpManZrZGhvSWtNXzRRLXNTZHRzLTJqVXJiWkRZNndGdXc4Ny1ZeUVRSmY2YU5lNGU2SHg3ekQ5NEFmaVlnQ1oyRkU?oc=5\" target=\"_blank\">[기획]AI 중심 리더십 재정비…삼성 기술 쇄신·SK 반도체 올인</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 3,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "삼성·SK, 3Q 영업익 ‘180조’ 넘나…‘차세대 HBM’으로 호황 잇는다 - 매일일보",
+      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9PN3U0ZGRoNHFONlloR3ZrVDBrd19FcW9yT2sweGVyQzNwSVJlczd3bXVpZFo1bmhmeDl1ZDhydU5kV0hRdTJBTW5iVWMtSWpTVlJCcml0djhyakpqRkxNY1Y4dlU?oc=5",
+      "published": "Mon, 05 Oct 2026 04:00:00 GMT",
+      "publishedAt": "2026-10-05T04:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE9PN3U0ZGRoNHFONlloR3ZrVDBrd19FcW9yT2sweGVyQzNwSVJlczd3bXVpZFo1bmhmeDl1ZDhydU5kV0hRdTJBTW5iVWMtSWpTVlJCcml0djhyakpqRkxNY1Y4dlU?oc=5\" target=\"_blank\">삼성·SK, 3Q 영업익 ‘180조’ 넘나…‘차세대 HBM’으로 호황 잇는다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
+      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
       "title": "엔비디아 AI 노트북 OLED 한국이 독점 - thelec.kr",
       "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5",
       "published": "Mon, 05 Oct 2026 03:26:15 GMT",
@@ -181031,6 +181207,38 @@
       "relevance": 2,
       "affectedSymbols": [
         "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "엔비디아 AI 노트북 OLED 한국이 독점 - 디일렉",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5",
+      "published": "Mon, 05 Oct 2026 03:26:15 GMT",
+      "publishedAt": "2026-10-05T03:26:15+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5\" target=\"_blank\">엔비디아 AI 노트북 OLED 한국이 독점</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">디일렉</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "삼성전자, 용인 과학축제서 반도체 국가산단 청사진 공개 - 디일렉",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9QbnVTQVBZaEpTTkxTMVEtS1JXLUw3X1VEd1JmYWlRRDJ2SFl0UE5Xb2N0YzlaU1Q4UU5fVWFnT3VuQzJUdGZiUFFCeVYyOEpLaGpRZ0hUZXU1Y1ZuQ0NGX0wtRWozZw?oc=5",
+      "published": "Mon, 05 Oct 2026 03:12:32 GMT",
+      "publishedAt": "2026-10-05T03:12:32+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE9QbnVTQVBZaEpTTkxTMVEtS1JXLUw3X1VEd1JmYWlRRDJ2SFl0UE5Xb2N0YzlaU1Q4UU5fVWFnT3VuQzJUdGZiUFFCeVYyOEpLaGpRZ0hUZXU1Y1ZuQ0NGX0wtRWozZw?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 반도체 국가산단 청사진 공개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">디일렉</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
@@ -181050,27 +181258,11 @@
       "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
     },
     {
-      "title": "칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원 - 조선일보",
-      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5",
-      "published": "Mon, 05 Oct 2026 02:47:44 GMT",
-      "publishedAt": "2026-10-05T02:47:44+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5\" target=\"_blank\">칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
-      "source": "\"Broadcom\" OR \"브로드컴\" AI OR 반도체",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [
-        "반도체/시장"
-      ],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "딥시크·화웨이 AI 칩 SW 맞손…“엔비디아 의존 낮춰” - 한국경제",
+      "title": "딥시크·화웨이, AI 칩 SW 맞손…\"엔비디아 의존 낮춰\" - 한국경제",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2REMwQ1Rrak9ucGRGOHZCMHZrZktXd3JDU1FhaWVzcC1FM0JxT1pMdHM3TGRsc2ZCQkh6YnplSlJaRlRRVll6dHJ3Y3Jpb2xSRWNYVGVFMTJkZw?oc=5",
       "published": "Mon, 05 Oct 2026 02:16:37 GMT",
       "publishedAt": "2026-10-05T02:16:37+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2REMwQ1Rrak9ucGRGOHZCMHZrZktXd3JDU1FhaWVzcC1FM0JxT1pMdHM3TGRsc2ZCQkh6YnplSlJaRlRRVll6dHJ3Y3Jpb2xSRWNYVGVFMTJkZw?oc=5\" target=\"_blank\">딥시크·화웨이 AI 칩 SW 맞손…“엔비디아 의존 낮춰”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국경제</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2REMwQ1Rrak9ucGRGOHZCMHZrZktXd3JDU1FhaWVzcC1FM0JxT1pMdHM3TGRsc2ZCQkh6YnplSlJaRlRRVll6dHJ3Y3Jpb2xSRWNYVGVFMTJkZw?oc=5\" target=\"_blank\">딥시크·화웨이, AI 칩 SW 맞손…\"엔비디아 의존 낮춰\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국경제</font>",
       "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
       "impact": "중립",
       "importance": "높음",
@@ -181177,201 +181369,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "\"ESS 없인 AI 팩토리 못 돌린다\"… 엔비디아, BESS '공식 표준 인증' 편입 - 글로벌이코노믹",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZl96Nk5WaldhT2hvU3N1V0pQWHBYOUQ5dGJVTVhKUWt6VGQtNlcxWjJhcm1qRkZIMld1aUZVVXllTkczMllleVJqRVhBeEdSX0FSa2J5b2RqUG1qdlNMcGtjZTdaSFZnemFiUWJ2eWEtbmc4WTBKZVpHbXpRNDN3U3JUZEN6NVo4?oc=5",
-      "published": "Sun, 04 Oct 2026 23:29:52 GMT",
-      "publishedAt": "2026-10-04T23:29:52+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZl96Nk5WaldhT2hvU3N1V0pQWHBYOUQ5dGJVTVhKUWt6VGQtNlcxWjJhcm1qRkZIMld1aUZVVXllTkczMllleVJqRVhBeEdSX0FSa2J5b2RqUG1qdlNMcGtjZTdaSFZnemFiUWJ2eWEtbmc4WTBKZVpHbXpRNDN3U3JUZEN6NVo4?oc=5\" target=\"_blank\">\"ESS 없인 AI 팩토리 못 돌린다\"… 엔비디아, BESS '공식 표준 인증' 편입</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "美국채 금리 뛰는데 엔비디아는 신고가…‘AI 버팀목’ 언제까지 - 경북매일",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9UVXFRZUg5QUlNc09nVXA5dXQ2ekdycV82NEVNeDc2T2pHTDFTN3hPalFjbHhUS0Z3OGJBbW1JZ2RJU3Yyaml0a2tnZjZiS0k0MjFudmstT1FsZw?oc=5",
-      "published": "Sun, 04 Oct 2026 23:29:00 GMT",
-      "publishedAt": "2026-10-04T23:29:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9UVXFRZUg5QUlNc09nVXA5dXQ2ekdycV82NEVNeDc2T2pHTDFTN3hPalFjbHhUS0Z3OGJBbW1JZ2RJU3Yyaml0a2tnZjZiS0k0MjFudmstT1FsZw?oc=5\" target=\"_blank\">美국채 금리 뛰는데 엔비디아는 신고가…‘AI 버팀목’ 언제까지</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">경북매일</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "마이크론이 보여준 메모리 호황…글로벌 D램 투자해볼까 - 데일리안",
-      "link": "https://news.google.com/rss/articles/CBMimAJBVV95cUxOOHB6MHRad29zWWdQWWhaNzZ2dmVmOGJpZ3B1T1FGMWtYNk55b2ZFUEhuWTdmZ2ZSVUgyOVpoWEZzbWJ3QWtSejNjcE5qUDVRc1VJMi1YOWE2RXFPVkNDY3FJTFRLM1lPLUZCN0NOc2g5Q0dVdkZ0T3dxQXRzNnduNk5rOG8yWmdCSk1DUXJ0TEdLMXUtTS1IRDJwRGtHdTdEeHZqN2ZsOTZEVm50VXg0bnkzNExhSmRnUkQ1RU1jbkozOHZKaVVSbXNuUnZVRlFtTUFyMl9pYUM2eTEtZ2hJczFscVBIaUt3VWtqdTdfWHh4bGd3d1oxVVJ2ejdxS1U5Unp3aThuemFwdzd3cmQ5T2lzclNXcDZQ?oc=5",
-      "published": "Sun, 04 Oct 2026 23:00:00 GMT",
-      "publishedAt": "2026-10-04T23:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMimAJBVV95cUxOOHB6MHRad29zWWdQWWhaNzZ2dmVmOGJpZ3B1T1FGMWtYNk55b2ZFUEhuWTdmZ2ZSVUgyOVpoWEZzbWJ3QWtSejNjcE5qUDVRc1VJMi1YOWE2RXFPVkNDY3FJTFRLM1lPLUZCN0NOc2g5Q0dVdkZ0T3dxQXRzNnduNk5rOG8yWmdCSk1DUXJ0TEdLMXUtTS1IRDJwRGtHdTdEeHZqN2ZsOTZEVm50VXg0bnkzNExhSmRnUkQ1RU1jbkozOHZKaVVSbXNuUnZVRlFtTUFyMl9pYUM2eTEtZ2hJczFscVBIaUt3VWtqdTdfWHh4bGd3d1oxVVJ2ejdxS1U5Unp3aThuemFwdzd3cmQ5T2lzclNXcDZQ?oc=5\" target=\"_blank\">마이크론이 보여준 메모리 호황…글로벌 D램 투자해볼까</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">데일리안</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\" - blog.naver.com",
-      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5",
-      "published": "Sun, 04 Oct 2026 22:00:26 GMT",
-      "publishedAt": "2026-10-04T22:00:26+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5\" target=\"_blank\">[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">blog.naver.com</font>",
-      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "Intel"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\" - Naver Blog",
-      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5",
-      "published": "Sun, 04 Oct 2026 22:00:26 GMT",
-      "publishedAt": "2026-10-04T22:00:26+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5\" target=\"_blank\">[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
-      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "Intel"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[기업家] LG전자 ⑭ㅣ 엔비디아 손잡고 AI 데이터센터 공략…냉각 솔루션 글로벌 영토 확장 - CBC뉴스",
-      "link": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9vZXJhU1A3MnkxTGtGY3hPbU9Tcm50RERORXlfNU05Tk4xNEJuZUlUbGV2RTNzVTZXSW5pZUNDOUFfMVBHZngtZHNEcElHUWI0eUlXVmV5dzh4MnBHOG1GZlhqZUZFNHVY?oc=5",
-      "published": "Sun, 04 Oct 2026 21:10:00 GMT",
-      "publishedAt": "2026-10-04T21:10:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiaEFVX3lxTE9vZXJhU1A3MnkxTGtGY3hPbU9Tcm50RERORXlfNU05Tk4xNEJuZUlUbGV2RTNzVTZXSW5pZUNDOUFfMVBHZngtZHNEcElHUWI0eUlXVmV5dzh4MnBHOG1GZlhqZUZFNHVY?oc=5\" target=\"_blank\">[기업家] LG전자 ⑭ㅣ 엔비디아 손잡고 AI 데이터센터 공략…냉각 솔루션 글로벌 영토 확장</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">CBC뉴스</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나 - v.daum.net",
-      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1QVHZMU0xYMF9aQlN5cDdGbGpmX1l1cFRZSUd1ZEcyYk1peThENldaWEljRFUxb21zQmUxNmZCSE5mNUNXeHN1MGhub3EzNVU?oc=5",
-      "published": "Sun, 04 Oct 2026 21:01:52 GMT",
-      "publishedAt": "2026-10-04T21:01:52+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE1QVHZMU0xYMF9aQlN5cDdGbGpmX1l1cFRZSUd1ZEcyYk1peThENldaWEljRFUxb21zQmUxNmZCSE5mNUNXeHN1MGhub3EzNVU?oc=5\" target=\"_blank\">‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
-      "source": "\"엔씨소프트\" 게임 OR 실적 OR 신작",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "엔비디아 AI 반도체 '담보대출' 전략 성공할까, 삼성전자 SK하이닉스 실적에도 변수 - 비즈니스포스트",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE5ybkt1VUk5VlZ2eFJHaW9nOXF4Vlc1WEJyaExQbVFIVVZETVpWSnFYTHhHdWdaTmdmanEtd1R4X21lSWhoREJaeHgxY2l2RVlmc3MwRjJlaFdUTk5DR3NTMlJPU1hscjhmbVo4ZWRoY193QUU?oc=5",
-      "published": "Sun, 04 Oct 2026 21:00:00 GMT",
-      "publishedAt": "2026-10-04T21:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE5ybkt1VUk5VlZ2eFJHaW9nOXF4Vlc1WEJyaExQbVFIVVZETVpWSnFYTHhHdWdaTmdmanEtd1R4X21lSWhoREJaeHgxY2l2RVlmc3MwRjJlaFdUTk5DR3NTMlJPU1hscjhmbVo4ZWRoY193QUU?oc=5\" target=\"_blank\">엔비디아 AI 반도체 '담보대출' 전략 성공할까, 삼성전자 SK하이닉스 실적에도 변수</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">비즈니스포스트</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 5,
-      "affectedSymbols": [
-        "삼성전자",
-        "SK하이닉스",
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "'메모리 슈퍼사이클' 어디까지 가나…삼성·SK 실적에 쏠린 눈 - pointdaily.co.kr",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1jeDhjcFl4Y051d2Q3WGZhQUtxcTROY1ZxcUN4bDRlUEc5TTVzSEZEemZaTGRya194Yk5MVFNoSUxsdFZMWDQ2RmlZWkdrYnU0UEIxS1NaaTdRTU9MQUlFcVEzSk5lMjVXZWJUVDlPR1TSAXRBVV95cUxOUjhybnY3ZC1UUG5wRzBfMldMTEYwVkRPcHA1X2J0UUExQ1NSUE16azVnTS1QV2gwNlFvZUd3eEpWam5QSzhCM0VkckJUYWc0MllXZlRyaHU5RTRFak1DbEE5Z1c1dWZhSTNLVjBrWEs5aXZRSQ?oc=5",
-      "published": "Sun, 04 Oct 2026 21:00:00 GMT",
-      "publishedAt": "2026-10-04T21:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE1jeDhjcFl4Y051d2Q3WGZhQUtxcTROY1ZxcUN4bDRlUEc5TTVzSEZEemZaTGRya194Yk5MVFNoSUxsdFZMWDQ2RmlZWkdrYnU0UEIxS1NaaTdRTU9MQUlFcVEzSk5lMjVXZWJUVDlPR1TSAXRBVV95cUxOUjhybnY3ZC1UUG5wRzBfMldMTEYwVkRPcHA1X2J0UUExQ1NSUE16azVnTS1QV2gwNlFvZUd3eEpWam5QSzhCM0VkckJUYWc0MllXZlRyaHU5RTRFak1DbEE5Z1c1dWZhSTNLVjBrWEs5aXZRSQ?oc=5\" target=\"_blank\">'메모리 슈퍼사이클' 어디까지 가나…삼성·SK 실적에 쏠린 눈</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">pointdaily.co.kr</font>",
-      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "반도체/시장"
-      ],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "삼성전자, 이번주 3분기 성적표 나온다…韓기업 최초 '영업익 100조' 돌파 여부 주목 - 뉴시스",
-      "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1BbUlCRVRjS0Utb2E2bnRkLWhuVmM1SGE0UEZYTTd3LW1kNW00N2hjdmhleDZ4RVh4WW1JUGVkb0hoYURxUE5rRFZiR2FWZjFhdHR6RDE2Y0NpMldzVnI3OdIBeEFVX3lxTE9keE83b2dZMnVoWXpyd0pGTmwyZnNMZ3ZPTzVrY0doUlpRVU5UUGVxZ2g4OUVSRlZ1cnBUQ1EwT2lCQ2FiOGU4NEZYOVpUMVdheWFfdTVkTFQtSTR0d1VlMXE4Nzk1U3Nya2lMejFZN2FkTjhGYlREdA?oc=5",
-      "published": "Sun, 04 Oct 2026 20:00:00 GMT",
-      "publishedAt": "2026-10-04T20:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE1BbUlCRVRjS0Utb2E2bnRkLWhuVmM1SGE0UEZYTTd3LW1kNW00N2hjdmhleDZ4RVh4WW1JUGVkb0hoYURxUE5rRFZiR2FWZjFhdHR6RDE2Y0NpMldzVnI3OdIBeEFVX3lxTE9keE83b2dZMnVoWXpyd0pGTmwyZnNMZ3ZPTzVrY0doUlpRVU5UUGVxZ2g4OUVSRlZ1cnBUQ1EwT2lCQ2FiOGU4NEZYOVpUMVdheWFfdTVkTFQtSTR0d1VlMXE4Nzk1U3Nya2lMejFZN2FkTjhGYlREdA?oc=5\" target=\"_blank\">삼성전자, 이번주 3분기 성적표 나온다…韓기업 최초 '영업익 100조' 돌파 여부 주목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">뉴시스</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "“메모리값 7배 뛸 수도”..립부 탄 인텔 CEO의 과감한 전망 배경은? - dailycar.co.kr",
-      "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE1DeVhFVFRVWTdTR1VPNG92Ymt0T2xWc2doVlVwY3VmV1g0QWFWNjN3UVJyNkV2OVZmTXZTVjZIMHZ2SWtZeFZhVnFQQTU0eUQ1WjE2eHc3R1h4SjFPZHdFNVVUQlNtbW5BN2Z5UEkxdTBnR2psUVE?oc=5",
-      "published": "Sun, 04 Oct 2026 18:47:06 GMT",
-      "publishedAt": "2026-10-04T18:47:06+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMidkFVX3lxTE1DeVhFVFRVWTdTR1VPNG92Ymt0T2xWc2doVlVwY3VmV1g0QWFWNjN3UVJyNkV2OVZmTXZTVjZIMHZ2SWtZeFZhVnFQQTU0eUQ1WjE2eHc3R1h4SjFPZHdFNVVUQlNtbW5BN2Z5UEkxdTBnR2psUVE?oc=5\" target=\"_blank\">“메모리값 7배 뛸 수도”..립부 탄 인텔 CEO의 과감한 전망 배경은?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">dailycar.co.kr</font>",
-      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "Intel"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "AMD, 'AI 대모' 페이페이 리 월드랩스 82억달러에 인수 - 미주조선일보",
-      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOOGVvQW9tZ211U2lPVHFERk1GZW1VbHk5dWIwZFJZS1A1aGlxOE42OGhtZkJubWhmS1BJcnV4bGplbE9LN2RhdVp5WkdkUldBWmw3RFozX0QyU1M1MW41WHBCN3dTMXA5aHBXaG56NHZMRDZhQ0E1X1F3T1dFVThzVmJXTXp2QzktQm9ndnppTl9EQlNtM0hXNFpTZ0c5OEQ3N1lUcEJ2WkVXaXhhSG9STFNRUjNMLWE2aXlMLXFiRQ?oc=5",
-      "published": "Sun, 04 Oct 2026 18:04:24 GMT",
-      "publishedAt": "2026-10-04T18:04:24+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMivwFBVV95cUxOOGVvQW9tZ211U2lPVHFERk1GZW1VbHk5dWIwZFJZS1A1aGlxOE42OGhtZkJubWhmS1BJcnV4bGplbE9LN2RhdVp5WkdkUldBWmw3RFozX0QyU1M1MW41WHBCN3dTMXA5aHBXaG56NHZMRDZhQ0E1X1F3T1dFVThzVmJXTXp2QzktQm9ndnppTl9EQlNtM0hXNFpTZ0c5OEQ3N1lUcEJ2WkVXaXhhSG9STFNRUjNMLWE2aXlMLXFiRQ?oc=5\" target=\"_blank\">AMD, 'AI 대모' 페이페이 리 월드랩스 82억달러에 인수</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">미주조선일보</font>",
-      "source": "\"AMD\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "AMD"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T03:33:52+00:00",
+  "newsUpdatedAt": "2026-10-05T05:55:19+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -181396,7 +181396,7 @@
       "relevance": 0
     }
   ],
-  "employmentUpdatedAt": "2026-10-05T03:24:37+00:00",
+  "employmentUpdatedAt": "2026-10-05T05:53:09+00:00",
   "jobPostings": [
     {
       "title": "[민트로켓] ’반쵸 더 셰프’ 기획자",
@@ -185072,10 +185072,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1yVFB0elNIa0h5cEZ0dnZreVpmVXh3NDVJZWRaeFJZaW8xUEU2eTU4cExVbzY4Q2ViWElVRnpHdGpzTWNkWExzM0pudHA0X1NrdnM0VWROSG1ZX1ZEOU44eVdPbG93Ykp2VVlIYjIxbUFIQ2xEbkwwOXRWQVRZZw?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBVTFd1TjRhY1BNbFZXUGw3VFZzaGdpbWdiQzdhQVY5RUo3S1lpOGtQV1h3WkFlWU5ISk5HZHRoNHNJLVYtRXV2Z01nQ2Y0a0l6MzRPaF9zX3ZLQQ?oc=5"
         }
       ]
     },
@@ -185592,7 +185588,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T03:31:24+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T05:53:09+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185648,6 +185644,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T03:31:24+00:00"
+    "generatedAt": "2026-10-05T05:53:09+00:00"
   }
 }
