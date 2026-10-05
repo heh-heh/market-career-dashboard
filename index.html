@@ -48,7 +48,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <div class="bt-progress"><i id="btProgressBar"></i></div>
 <div class="bt-grid"><div class="bt-stat"><div class="label">전체 진행률</div><div class="v" id="btOverall">-</div></div><div class="bt-stat"><div class="label">현재 종목</div><div class="v" id="btCurrent">-</div></div><div class="bt-stat"><div class="label">현재 페이지</div><div class="v" id="btPage">-</div></div><div class="bt-stat"><div class="label">현재 저장 봉</div><div class="v" id="btStored">-</div></div></div></div>
 <div class="card" style="margin-top:12px"><div class="label">Toss 수집기 현황</div><div id="btSymbols" class="bt-symbols"></div></div>
-<div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
+<div class="card" style="margin-top:12px"><div class="label">자동 복구 감시</div><div id="btWatchdog" class="signal">감시 상태 확인 중...</div></div><div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
 <div class="card" style="margin-top:12px"><div class="label">실시간 로그 · 최근 100줄</div><div id="btLog" class="bt-log">로그를 불러오는 중...</div></div>
 </section><section id="v8" class="view">
   <div class="grid">
@@ -676,6 +676,7 @@ async function loadBacktestMonitor(){
    const cl=x.status==="completed"?"bt-ok":x.status==="collecting"?"up":x.status==="error"?"down":"bt-wait";
    return '<div class="bt-symbol"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(x.symbol)+'</b><span class="'+cl+'">'+st+'</span></div><div class="bt-symbol-pct">'+pct.toFixed(1)+'%</div><div class="bt-mini-progress"><i style="width:'+pct+'%"></i></div><div class="mini" style="margin-top:7px">저장 '+Number(x.stored||0).toLocaleString()+'봉 · API 페이지 '+Number(x.page||0)+' / '+Number(x.pages||10000)+'</div><div class="mini">현재 범위: '+esc(x.oldestTimestamp?formatKSTDateTime(x.oldestTimestamp):"-")+' · 시작: '+esc(x.latestTimestamp?formatKSTDateTime(x.latestTimestamp):"-")+'</div></div>'
   }).join("");
+  const wd=d.watchdog||{};const wdEl=document.getElementById("btWatchdog");if(wdEl)wdEl.innerHTML="<b>"+esc(btPhaseNames[wd.phase]||wd.phase||"대기")+"</b> · "+esc(wd.message||"")+(wd.attempt?" · 재시도 "+wd.attempt+"회":"");
   const result=document.getElementById("btResult");
   if(result)result.innerHTML=d.resultReady?'<b class="bt-ok">✓ 백테스트 결과 생성 완료</b>':'<span class="muted">'+(d.running?(phase==="backtest"?"C++ Train/Test 계산 중입니다.":"Toss 과거 데이터를 수집 중입니다."):"아직 실행 중인 백테스트가 없습니다.")+'</span>';
   const log=document.getElementById("btLog");if(log)log.textContent=d.log||"로그 없음";
