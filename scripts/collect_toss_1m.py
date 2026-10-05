@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Collect historical 1-minute OHLCV candles from Toss Securities Open API."""
-import argparse, csv, gzip, json, time, base64, sys
+import argparse, csv, gzip, json, time, base64, sys, os
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -13,6 +13,7 @@ from toss_auth import get_token as shared_toss_token
 BASE="https://openapi.tossinvest.com"
 TOKEN_URL=BASE+"/oauth2/token"
 DEFAULT_SYMBOLS=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
+PROGRESS=ROOT/"data"/"toss_1m_progress.json"
 
 def token(force=False):
     cfg=json.loads(SECRETS.read_text(encoding="utf-8"))
@@ -44,15 +45,37 @@ def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
                     continue
             raise RuntimeError(f"Toss candles HTTP {e.code}: {body[:300]}")
 
+
+def write_progress(symbol, payload):
+    PROGRESS.parent.mkdir(parents=True, exist_ok=True)
+    current = {}
+    if PROGRESS.exists():
+        try:
+            current = json.loads(PROGRESS.read_text(encoding="utf-8"))
+        except Exception:
+            current = {}
+    current[symbol] = payload
+    tmp = PROGRESS.with_suffix(".tmp")
+    tmp.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.chmod(tmp, 0o600)
+    os.replace(tmp, PROGRESS)
+
 def collect(symbol,since,pages,sleep_s):
     tok=token()
     rows={}
     before=None
     refresh=lambda: token(force=True)
+    started=time.time()
+    latest_ts=None
+    write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":0,"fetched":0,"coveragePct":0,"latestTimestamp":None,"oldestTimestamp":None,"since":since,"startedAt":started,"updatedAt":started})
     for n in range(pages):
         obj=fetch_page(tok,symbol,before,refresh_token=refresh)
         candles=obj.get("candles") or []
         if not candles: break
+        page_ts=[str(x.get("timestamp") or "") for x in candles if x.get("timestamp")]
+        if page_ts and latest_ts is None:
+            latest_ts=max(page_ts)
+        oldest_ts=min(page_ts) if page_ts else None
         for c in candles:
             ts=str(c.get("timestamp") or "")
             if not ts: continue
@@ -61,6 +84,18 @@ def collect(symbol,since,pages,sleep_s):
                       "low":c.get("lowPrice"),"close":c.get("closePrice"),
                       "volume":c.get("volume"),"currency":c.get("currency")}
         next_before=obj.get("nextBefore")
+        coverage=0.0
+        if latest_ts and oldest_ts and since:
+            try:
+                import datetime as _dt
+                a=_dt.datetime.fromisoformat(since.replace("Z","+00:00")).timestamp()
+                b=_dt.datetime.fromisoformat(latest_ts.replace("Z","+00:00")).timestamp()
+                o=_dt.datetime.fromisoformat(oldest_ts.replace("Z","+00:00")).timestamp()
+                if b>a:
+                    coverage=max(0.0,min(100.0,((b-o)/(b-a))*100.0))
+            except Exception:
+                pass
+        write_progress(symbol,{"symbol":symbol,"status":"collecting","page":n+1,"pages":pages,"stored":len(rows),"fetched":len(candles),"coveragePct":round(coverage,2),"latestTimestamp":latest_ts,"oldestTimestamp":oldest_ts,"since":since,"startedAt":started,"updatedAt":time.time()})
         print(f"{symbol}: page {n+1}/{pages}, fetched={len(candles)}, stored={len(rows)}",flush=True)
         if since and next_before and next_before < since: break
         if not next_before or next_before==before: break
@@ -78,6 +113,7 @@ def collect(symbol,since,pages,sleep_s):
     with gzip.open(path,"wt",newline="",encoding="utf-8") as f:
         w=csv.DictWriter(f,fieldnames=["timestamp","open","high","low","close","volume","currency"])
         w.writeheader(); w.writerows(ordered)
+    write_progress(symbol,{"symbol":symbol,"status":"completed","page":n+1 if 'n' in locals() else 0,"pages":pages,"stored":len(ordered),"fetched":len(ordered),"coveragePct":100,"latestTimestamp":latest_ts,"oldestTimestamp":ordered[0]["timestamp"] if ordered else None,"since":since,"startedAt":started,"updatedAt":time.time()})
     print(f"{symbol}: total saved {len(ordered)} -> {path}",flush=True)
 
 def main():
