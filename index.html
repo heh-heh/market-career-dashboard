@@ -443,7 +443,7 @@ function startRealtime(){
   ws.addEventListener("error",()=>{updateRealtimeStatus("연결 오류 · 재시도",false);});
  };
  connect();
- window.addEventListener("beforeunload",()=>{stopped=true;try{ws&&ws.close();}catch(e){}},{once:true});
+ window.addEventListener("beforeunload",()=>{stopped=true;},{once:true});
 }
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 loadData();
