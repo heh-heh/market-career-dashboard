@@ -2,6 +2,7 @@
 import asyncio, json, os, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from trading import paper as paper_broker, strategy as trading_strategy
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -10,8 +11,22 @@ HOST=os.getenv("HOST","0.0.0.0")
 PORT=int(os.getenv("PORT","8080"))
 INTERVAL=int(os.getenv("UPDATE_INTERVAL","300"))
 ADMIN_PASSWORD=os.getenv("ADMIN_PASSWORD","")
-SESSIONS=set()
+SESSIONS={}
+SESSION_TTL=int(os.getenv("SESSION_TTL","1800"))
 SESSION_LOCK=threading.Lock()
+TRADING_MODE=os.getenv("TRADING_MODE","paper").lower()
+LIVE_TRADING_ENABLED=os.getenv("LIVE_TRADING_ENABLED","false").lower()=="true"
+MAX_ORDER_KRW=int(os.getenv("MAX_ORDER_KRW","100000"))
+MAX_DAILY_LOSS_KRW=int(os.getenv("MAX_DAILY_LOSS_KRW","50000"))
+TRADING_STATE={
+    "engine_enabled":False,
+    "live_armed":False,
+    "live_auto_enabled":False,
+    "live_halted":False,
+    "last_order_id":None,
+    "last_error":None,
+}
+TRADING_LOCK=threading.Lock()
 
 def load_secrets():
     if not SECRETS.exists():
@@ -34,8 +49,27 @@ def auth_token(handler):
 
 def authorized(handler):
     token=auth_token(handler)
+    now=time.time()
     with SESSION_LOCK:
-        return bool(token and token in SESSIONS)
+        expires=SESSIONS.get(token,0)
+        if token and expires>now:
+            return True
+        if token:
+            SESSIONS.pop(token,None)
+        return False
+
+def trading_authorized(handler):
+    return authorized(handler)
+
+def trading_status():
+    with TRADING_LOCK:
+        return {
+            **TRADING_STATE,
+            "mode":TRADING_MODE,
+            "liveTradingEnabled":LIVE_TRADING_ENABLED,
+            "maxOrderKrw":MAX_ORDER_KRW,
+            "dailyLossLimitKrw":MAX_DAILY_LOSS_KRW,
+        }
 
 def update_data():
     while True:
@@ -369,7 +403,7 @@ class Handler(BaseHTTPRequestHandler):
         raw=json.dumps(obj,ensure_ascii=False).encode()
         self.send_response(status)
         self.send_header("Content-Type","application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin","*")
+        self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
         self.send_header("Access-Control-Allow-Headers","Content-Type, Authorization")
         self.send_header("Access-Control-Allow-Methods","GET, POST, OPTIONS")
         self.send_header("Cache-Control","no-store")
@@ -385,6 +419,24 @@ class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_json({"ok":True})
 
+    def do_GET(self):
+        path=self.path.split("?")[0]
+        if path=="/api/trading/status":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({"ok":True,**trading_status()}); return
+        if path=="/api/trading/paper/portfolio":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                prices={}
+                data=json.loads(DATA.read_text(encoding="utf-8"))
+                for item in data.get("stocks",[])+data.get("indices",[]):
+                    if item.get("symbol") and item.get("price") is not None:
+                        prices[item["symbol"]]=float(item["price"])
+                self.send_json({"ok":True,"portfolio":paper_broker.snapshot(prices)}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":"paper portfolio unavailable"},503); return
     def do_GET(self):
         path=self.path.split("?")[0]
         if path=="/api/health":
@@ -416,6 +468,44 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path=="/api/trading/engine":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            body=self.read_json()
+            with TRADING_LOCK:
+                TRADING_STATE["engine_enabled"]=bool(body.get("enabled"))
+                if not TRADING_STATE["engine_enabled"]:
+                    TRADING_STATE["live_auto_enabled"]=False
+            self.send_json({"ok":True,**trading_status()}); return
+        if path=="/api/trading/paper/order":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            body=self.read_json()
+            try:
+                side=str(body.get("side","")).upper()
+                symbol=str(body.get("symbol","")).upper().strip()
+                quantity=int(body.get("quantity",0))
+                price=float(body.get("price",0))
+                if side not in {"BUY","SELL"} or not symbol or quantity<=0 or price<=0:
+                    raise ValueError("invalid paper order")
+                notional=quantity*price
+                if notional>MAX_ORDER_KRW:
+                    raise ValueError("MAX_ORDER_KRW exceeded")
+                trade=paper_broker.trade(symbol,side,quantity,price)
+                self.send_json({"ok":True,"mode":"paper","trade":trade,"portfolio":paper_broker.snapshot({symbol:price})}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/trading/paper/reset":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            paper_broker.reset()
+            self.send_json({"ok":True,"portfolio":paper_broker.snapshot()}); return
+        if path=="/api/trading/live/arm":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({"ok":False,"error":"live trading is deliberately disabled in this integration stage"},403); return
+    def do_POST(self):
+        path=self.path.split("?")[0]
         if path=="/api/login":
             try:
                 body=self.read_json()
@@ -427,12 +517,12 @@ class Handler(BaseHTTPRequestHandler):
             if not secrets.compare_digest(password,ADMIN_PASSWORD):
                 self.send_json({"ok":False,"error":"invalid credentials"},401); return
             token=secrets.token_urlsafe(32)
-            with SESSION_LOCK: SESSIONS.add(token)
-            self.send_json({"ok":True,"token":token},200)
+            with SESSION_LOCK: SESSIONS[token]=time.time()+SESSION_TTL
+            self.send_json({"ok":True,"token":token,"expiresIn":SESSION_TTL},200)
             return
         if path=="/api/logout":
             token=auth_token(self)
-            with SESSION_LOCK: SESSIONS.discard(token)
+            with SESSION_LOCK: SESSIONS.pop(token,None)
             self.send_json({"ok":True}); return
         if path=="/api/settings":
             if not authorized(self):
