@@ -4,6 +4,8 @@ set -euo pipefail
 APP="/home/ubuntu/market-career-dashboard"
 UNIT_SRC="$APP/market-career-dashboard.service"
 UNIT_DST="/etc/systemd/system/market-career-dashboard.service"
+WATCHDOG_SRC="$APP/backtest-hybrid-watchdog.service"
+WATCHDOG_DST="/etc/systemd/system/backtest-hybrid-watchdog.service"
 
 if [ ! -d "$APP/.git" ]; then
   echo "[ERROR] Git repository not found: $APP" >&2
@@ -27,8 +29,13 @@ fi
 sudo "$APP/.venv/bin/python" -m pip install --upgrade pip
 sudo "$APP/.venv/bin/python" -m pip install -r "$APP/requirements.txt"
 
-echo "[5/8] Install current systemd unit"
+echo "[5/8] Install current systemd units"
+if ! command -v g++ >/dev/null 2>&1; then
+  sudo apt-get update -y
+  sudo apt-get install -y g++
+fi
 sudo install -m 644 "$UNIT_SRC" "$UNIT_DST"
+sudo install -m 644 "$WATCHDOG_SRC" "$WATCHDOG_DST"
 sudo systemctl daemon-reload
 
 echo "[6/8] Start service"
