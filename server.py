@@ -462,8 +462,8 @@ class Handler(BaseHTTPRequestHandler):
                 tail="\n".join(lines[-100:])
                 symbols=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
                 stats={s:{"symbol":s,"page":0,"pages":10000,"fetched":0,"stored":0,"status":"waiting"} for s in symbols}
-                page_re=re.compile(r"^(\\w+): page (\\d+)/(\\d+), fetched=(\\d+), stored=(\\d+)")
-                saved_re=re.compile(r"^(\\w+): total saved (\\d+)")
+                page_re=re.compile(r"^(\w+): page (\d+)/(\d+), fetched=(\d+), stored=(\d+)")
+                saved_re=re.compile(r"^(\w+): total saved (\d+)")
                 for line in lines:
                     m=page_re.search(line)
                     if m and m.group(1) in stats:
