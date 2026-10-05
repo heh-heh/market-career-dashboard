@@ -213,13 +213,19 @@ async function paperTrade(side){
  const quantity=Number(prompt("수량","1")); const found=findStock(symbol.toUpperCase()); const price=found?.price;
  if(!(quantity>0)||!(price>0)){alert("현재 대시보드에서 가격을 찾지 못했습니다.");return;}
  try{await tradingRequest("/api/trading/paper/order",{method:"POST",body:JSON.stringify({symbol:symbol.toUpperCase(),side,quantity,price})});await refreshPaper();alert("모의 "+(side==="BUY"?"매수":"매도")+" 완료");}catch(e){alert(e.message);}
-}document.getElementById("tradingLoginBtn")?.addEventListener("click",()=>{showView("v7",document.querySelector('nav button[data-view="v7"]'));document.getElementById("adminPassword")?.focus();});
+}document.getElementById("liveArmBtn")?.addEventListener("click",async()=>{const phrase=prompt("서버에 설정한 LIVE_ARM_PHRASE를 입력하세요.");if(!phrase)return;try{await tradingRequest("/api/trading/live/arm",{method:"POST",body:JSON.stringify({phrase})});await refreshLiveTrading();alert("실거래 ARM 완료");}catch(e){alert(e.message);}});
+document.getElementById("liveDisarmBtn")?.addEventListener("click",async()=>{try{await tradingRequest("/api/trading/live/disarm",{method:"POST",body:"{}"});await refreshLiveTrading();}catch(e){alert(e.message);}});
+document.getElementById("liveEngineBtn")?.addEventListener("click",async()=>{try{const st=await tradingRequest("/api/trading/live/status");await tradingRequest("/api/trading/live/engine",{method:"POST",body:JSON.stringify({enabled:!st.engineEnabled})});await refreshLiveTrading();}catch(e){alert(e.message);}});
+document.getElementById("liveAutoBtn")?.addEventListener("click",async()=>{try{const st=await tradingRequest("/api/trading/live/status");await tradingRequest("/api/trading/live/auto",{method:"POST",body:JSON.stringify({enabled:!st.liveAutoEnabled})});await refreshLiveTrading();}catch(e){alert(e.message);}});
+document.getElementById("liveScanBtn")?.addEventListener("click",async()=>{try{await tradingRequest("/api/trading/live/scan",{method:"POST",body:"{}"});await refreshLiveTrading();}catch(e){alert(e.message);}});
+document.getElementById("tradingLoginBtn")?.addEventListener("click",()=>{showView("v7",document.querySelector('nav button[data-view="v7"]'));document.getElementById("adminPassword")?.focus();});
 document.getElementById("tradingLogoutBtn")?.addEventListener("click",logoutSettings);
 document.getElementById("tradingEngineBtn")?.addEventListener("click",async()=>{try{const st=await tradingRequest("/api/trading/status");await tradingRequest("/api/trading/engine",{method:"POST",body:JSON.stringify({enabled:!st.engine_enabled})});await refreshTrading();}catch(e){alert(e.message);}});
 document.getElementById("paperBuyBtn")?.addEventListener("click",()=>paperTrade("BUY"));
 document.getElementById("paperSellBtn")?.addEventListener("click",()=>paperTrade("SELL"));
 document.getElementById("paperResetBtn")?.addEventListener("click",async()=>{if(!confirm("모의 계좌를 초기화할까요?"))return;try{await tradingRequest("/api/trading/paper/reset",{method:"POST",body:"{}"});await refreshPaper();}catch(e){alert(e.message);}});
 function showView(id,button){document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));window.scrollTo(0,0)}
+setInterval(()=>{if(localStorage.getItem(SETTINGS_TOKEN_KEY))refreshLiveTrading();},10000);
 document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b);if(b.dataset.view==="v7")loadSettings();if(b.dataset.view==="v8")refreshTrading()});
 document.getElementById("settingsLoginBtn")?.addEventListener("click",loginSettings);
 document.getElementById("settingsSaveBtn")?.addEventListener("click",saveSettings);
