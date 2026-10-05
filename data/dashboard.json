@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T07:57:39+00:00",
+  "updatedAt": "2026-10-05T08:04:05+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -181100,6 +181100,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "SK·엔비디아도 점찍은 K-스타트업 “AI 보안으로 ‘로봇 도둑’ 원천 차단” - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5CTGxQaVExcHUwQzBHY1dEZ0dpVHZFS1lTZk1UYmpiR0FQYlpJcGc0d3B4clNiUFNpdGRmSFVVbHBkT0d4NDJqb2Y0YnpzSWc?oc=5",
+      "published": "Mon, 05 Oct 2026 07:42:11 GMT",
+      "publishedAt": "2026-10-05T07:42:11+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE5CTGxQaVExcHUwQzBHY1dEZ0dpVHZFS1lTZk1UYmpiR0FQYlpJcGc0d3B4clNiUFNpdGRmSFVVbHBkT0d4NDJqb2Y0YnpzSWc?oc=5\" target=\"_blank\">SK·엔비디아도 점찍은 K-스타트업 “AI 보안으로 ‘로봇 도둑’ 원천 차단”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "SK·엔비디아도 점찍은 K-스타트업…AI 보안으로 ‘로봇 도둑’ 원천 차단 - dt.co.kr",
       "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9xZVJ4dUhTWW5qT1hfejJjaDRhQ1hzYXhOaXM0RVFGcGhiRHB2Zmk0UnBHZlRPaXEtOTJuOWFMMk93aE03NjUtUnBwRS0wQQ?oc=5",
       "published": "Mon, 05 Oct 2026 07:40:10 GMT",
@@ -181352,25 +181368,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자, 용인 과학축제서 반도체 국가산단 청사진 공개 - 디일렉",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9QbnVTQVBZaEpTTkxTMVEtS1JXLUw3X1VEd1JmYWlRRDJ2SFl0UE5Xb2N0YzlaU1Q4UU5fVWFnT3VuQzJUdGZiUFFCeVYyOEpLaGpRZ0hUZXU1Y1ZuQ0NGX0wtRWozZw?oc=5",
-      "published": "Mon, 05 Oct 2026 03:12:32 GMT",
-      "publishedAt": "2026-10-05T03:12:32+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE9QbnVTQVBZaEpTTkxTMVEtS1JXLUw3X1VEd1JmYWlRRDJ2SFl0UE5Xb2N0YzlaU1Q4UU5fVWFnT3VuQzJUdGZiUFFCeVYyOEpLaGpRZ0hUZXU1Y1ZuQ0NGX0wtRWozZw?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 반도체 국가산단 청사진 공개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">디일렉</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T07:59:38+00:00",
+  "newsUpdatedAt": "2026-10-05T08:06:47+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -181462,6 +181462,26 @@
         {
           "site": "게임잡",
           "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=284429"
+        }
+      ]
+    },
+    {
+      "title": "네오제이피엘 채용정보 - 게임잡",
+      "company": "네오제이피엘",
+      "source": "게임잡",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBkanNTYTBFNUc1OF9pN1oxZzYwdmlJWWVDSmVINjBUWEp1ajFoeW5DSGE4RGZkVDF4UGt2NGFPUkRyc1NncmdITy1SZnpkMWZ1VkxIWlp4dXQ1a21pMVdvVzFicXdmZEJkQWc?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTFBkanNTYTBFNUc1OF9pN1oxZzYwdmlJWWVDSmVINjBUWEp1ajFoeW5DSGE4RGZkVDF4UGt2NGFPUkRyc1NncmdITy1SZnpkMWZ1VkxIWlp4dXQ1a21pMVdvVzFicXdmZEJkQWc?oc=5\" target=\"_blank\">네오제이피엘 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
+      "published": "Sun, 04 Oct 2026 09:52:49 GMT",
+      "publishedAt": "2026-10-04T09:52:49+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "게임잡",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBkanNTYTBFNUc1OF9pN1oxZzYwdmlJWWVDSmVINjBUWEp1ajFoeW5DSGE4RGZkVDF4UGt2NGFPUkRyc1NncmdITy1SZnpkMWZ1VkxIWlp4dXQ1a21pMVdvVzFicXdmZEJkQWc?oc=5"
         }
       ]
     },
@@ -185571,29 +185591,9 @@
           "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBjVmZCWHp0NE5qd2dmdXNNTi15bFlJTDVkdzFoWkduUTFqdkgyZ1B3TzZoUmJ1MFN1Zm1raVJQQUVTMDB4Qk1KNUx4NmlYejMwbndiTmNjRzJKa3VoRzJkR2tUU2MyLXd0VjAw?oc=5"
         }
       ]
-    },
-    {
-      "title": "HW 회로설계 엔지니어 차장급 채용 - jumpit.saramin.co.kr",
-      "company": "HW 회로설계 엔지니어 차장급",
-      "source": "점핏",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5\" target=\"_blank\">HW 회로설계 엔지니어 차장급 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Wed, 30 Sep 2026 04:57:40 GMT",
-      "publishedAt": "2026-09-30T04:57:40+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "점핏",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBDYmcydXVJdE9qOEFSQUs3UGVrMnVDSFBHS01qOXp4eVdFOXVuZ18tZWRmbzJZWlhCSlZmaGh6YmpLTno2WUp2cG5RQlg4eHU1WHFQV3hSR3Y4UQ?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T07:57:39+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T08:04:05+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185649,6 +185649,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T07:57:39+00:00"
+    "generatedAt": "2026-10-05T08:04:05+00:00"
   }
 }
