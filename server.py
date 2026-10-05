@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
 from live_trader import LiveAutoTrader
+from toss_auth import get_token as shared_toss_token
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -93,37 +94,8 @@ def toss_symbol(symbol):
         return symbol[:6]
     return symbol
 
-def toss_access_token(cfg):
-    toss=cfg.get("toss",{}) if isinstance(cfg,dict) else {}
-    client_id=str(toss.get("app_key") or "").strip()
-    client_secret=str(toss.get("app_secret") or "").strip()
-    if not client_id or not client_secret:
-        return ""
-    now=time.time()
-    with TOSS_TOKEN_LOCK:
-        if TOSS_TOKEN["access_token"] and now < TOSS_TOKEN["expires_at"]-60:
-            return TOSS_TOKEN["access_token"]
-        body=urllib.parse.urlencode({"grant_type":"client_credentials"}).encode()
-        auth=(client_id+":"+client_secret).encode()
-        req=urllib.request.Request(
-            TOSS_TOKEN_URL,
-            data=body,
-            headers={
-                "Authorization":"Basic "+__import__("base64").b64encode(auth).decode(),
-                "Content-Type":"application/x-www-form-urlencoded",
-                "User-Agent":"market-career-dashboard/1.3"
-            },
-            method="POST",
-        )
-        with urllib.request.urlopen(req,timeout=8) as r:
-            obj=json.loads(r.read())
-        token=str(obj.get("access_token") or "")
-        if not token:
-            raise RuntimeError("Toss OAuth response did not contain access_token")
-        expires=int(obj.get("expires_in") or 3600)
-        TOSS_TOKEN["access_token"]=token
-        TOSS_TOKEN["expires_at"]=now+max(expires,120)
-        return token
+def toss_access_token(cfg, force=False):
+    return shared_toss_token(cfg, force=force)
 
 def toss_quotes(cfg, items):
     token=toss_access_token(cfg)
