@@ -1,11 +1,12 @@
 [Unit]
 Description=Market Career Dashboard API
 After=network.target
+Wants=network-online.target
 
 [Service]
 Type=simple
 WorkingDirectory=/home/ubuntu/market-career-dashboard
-ExecStart=/usr/bin/python3 /home/ubuntu/market-career-dashboard/server.py
+ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python /home/ubuntu/market-career-dashboard/server.py
 Restart=always
 RestartSec=5
 EnvironmentFile=-/home/ubuntu/market-career-dashboard/.env
