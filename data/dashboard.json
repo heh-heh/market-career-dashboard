@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T01:21:43+00:00",
+  "updatedAt": "2026-10-05T03:24:37+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180566,6 +180566,38 @@
   ],
   "news": [
     {
+      "title": "[K자 성장 ①] 반도체 2분기 영업익 89조…자동차 조선은 체질 개선 - 자본시장뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1ES3EtT3EyaXFXVjdhN1RQUDJqZS1PckNCWTdzWktrbUh4Y3lJS2FDOXltaFFCVDhoMk1lQ1kxaHk2dG9NcGdHWTlGN19ydFIyZW1qZEgzcGpfQUctRlVySmxwenZ1eWs?oc=5",
+      "published": "Mon, 05 Oct 2026 03:00:00 GMT",
+      "publishedAt": "2026-10-05T03:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1ES3EtT3EyaXFXVjdhN1RQUDJqZS1PckNCWTdzWktrbUh4Y3lJS2FDOXltaFFCVDhoMk1lQ1kxaHk2dG9NcGdHWTlGN19ydFIyZW1qZEgzcGpfQUctRlVySmxwenZ1eWs?oc=5\" target=\"_blank\">[K자 성장 ①] 반도체 2분기 영업익 89조…자동차 조선은 체질 개선</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">자본시장뉴스</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 1,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 3,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "‘AI·반도체’ 열풍에… 4대 과기원 수시 지원자 수 ‘역대 최대’ - 조선비즈 - Chosunbiz",
+      "link": "https://news.google.com/rss/articles/CBMiigFBVV95cUxQdXIyMlFsdTM0b3NQQ2wtNW1oUXRnYno5RWtqSGFIV002RlhsN0pNTVpSSlNaUG9IOFAyT211N2xUbk04M3AxRTdleWdFblMydjJYTnNteHNGa2I2NV83RHFDRmV5UmdZUzBVNGNOTW5vbDRTbmJGRExYXzZsZmJNdlF2bFRkNEpmZXfSAZ4BQVVfeXFMTjdGVGNWR1cwa0VXWEp1a0hBNGhhYlJsd1N5V3czbkc1U1YyVUgzTV8xcjFMYW1WWjN4ZFdnNzNTTkJaRHRwR0tCSFQ4cmQtS1N2V3JrSjFueDIwMjBza2FvRTE0Ui1BcjVTNXBtWmp0VF95TTVUYXg0M0ZPVENvR0didnU5LTFscjNTV2lNVk5wbjFvOVp0aV95eFU3NUE?oc=5",
+      "published": "Mon, 05 Oct 2026 01:39:00 GMT",
+      "publishedAt": "2026-10-05T01:39:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiigFBVV95cUxQdXIyMlFsdTM0b3NQQ2wtNW1oUXRnYno5RWtqSGFIV002RlhsN0pNTVpSSlNaUG9IOFAyT211N2xUbk04M3AxRTdleWdFblMydjJYTnNteHNGa2I2NV83RHFDRmV5UmdZUzBVNGNOTW5vbDRTbmJGRExYXzZsZmJNdlF2bFRkNEpmZXfSAZ4BQVVfeXFMTjdGVGNWR1cwa0VXWEp1a0hBNGhhYlJsd1N5V3czbkc1U1YyVUgzTV8xcjFMYW1WWjN4ZFdnNzNTTkJaRHRwR0tCSFQ4cmQtS1N2V3JrSjFueDIwMjBza2FvRTE0Ui1BcjVTNXBtWmp0VF95TTVUYXg0M0ZPVENvR0didnU5LTFscjNTV2lNVk5wbjFvOVp0aV95eFU3NUE?oc=5\" target=\"_blank\">‘AI·반도체’ 열풍에… 4대 과기원 수시 지원자 수 ‘역대 최대’ - 조선비즈</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Chosunbiz</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 3,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
       "title": "엔비디아(NVDA), 사상 최고가 돌파...월가 목표가 '515달러'까지 상승 - 코인리더스",
       "link": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE8xUTk2VmVMdDNyS0ZpZFRlTTltT3RQeDVIUnNyOU14WnJRZTNRa2VrV2VLUlhqNWR2RE80bWdMMGgtVkNCZklVQVNB?oc=5",
       "published": "Sun, 04 Oct 2026 22:00:00 GMT",
@@ -180577,6 +180609,22 @@
       "relevance": 1,
       "affectedSymbols": [
         "NVIDIA"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "\"성장세는 계속\"…SK하이닉스, 3분기도 HBM 효과 톡톡 - 굿모닝경제",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9kbGppTnM5eWtTamkzVV9ER2d3WVV1QXNwTXF1eFlKVHRTT0NQNE5FLWllOEpxZV9hVWVhaG0zTXhQbGRHWkRqMzB4YnNiaW43dHhEM1pCSkRMOU1mQm5FX29id0szaHhQOEVVaA?oc=5",
+      "published": "Sun, 04 Oct 2026 21:30:00 GMT",
+      "publishedAt": "2026-10-04T21:30:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE9kbGppTnM5eWtTamkzVV9ER2d3WVV1QXNwTXF1eFlKVHRTT0NQNE5FLWllOEpxZV9hVWVhaG0zTXhQbGRHWkRqMzB4YnNiaW43dHhEM1pCSkRMOU1mQm5FX29id0szaHhQOEVVaA?oc=5\" target=\"_blank\">\"성장세는 계속\"…SK하이닉스, 3분기도 HBM 효과 톡톡</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">굿모닝경제</font>",
+      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "SK하이닉스"
       ],
       "impactScore": 3,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
@@ -180856,6 +180904,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "한미반도체, 스페이스X에 500억원 투자…“테라팹 프로젝트 선제 베팅” - kukinews.com",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBOekhma29uVFZwTjdUZEE5ZlJCc0tEcE93Zl9VZTE1S04xR3p1TkVqcHEyMGQyd2k0WTJtalpvaGw1SnB3ak1OMGZIMFJLdlJ5UTlIX2hOaDdwa2NPY1VCcFZxZw?oc=5",
+      "published": "Sat, 03 Oct 2026 06:36:58 GMT",
+      "publishedAt": "2026-10-03T06:36:58+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiY0FVX3lxTFBOekhma29uVFZwTjdUZEE5ZlJCc0tEcE93Zl9VZTE1S04xR3p1TkVqcHEyMGQyd2k0WTJtalpvaGw1SnB3ak1OMGZIMFJLdlJ5UTlIX2hOaDdwa2NPY1VCcFZxZw?oc=5\" target=\"_blank\">한미반도체, 스페이스X에 500억원 투자…“테라팹 프로젝트 선제 베팅”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">kukinews.com</font>",
+      "source": "\"한미반도체\" HBM OR 반도체",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "한미반도체"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "한미반도체 투자분석 2026. 10. 02 - 주달",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBuRTN0YzBFRkRDd2JUc2tueTJXcWpkbDhxbkUtV2x0N2l3OEwtLUxrYWFRZWpsRjQ4bVRKVHlacVRxYVd0cGlWMmdrVmNHSnFMTzlKalBVeUlKTWllanNrV1FENU43c25jSzYyWTFFc093Q00?oc=5",
       "published": "Sat, 03 Oct 2026 02:01:39 GMT",
@@ -180953,6 +181017,69 @@
         "Micron"
       ],
       "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나 - 조선일보",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5",
+      "published": "Mon, 05 Oct 2026 02:47:44 GMT",
+      "publishedAt": "2026-10-05T02:47:44+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5\" target=\"_blank\">‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
+      "source": "\"엔씨소프트\" 게임 OR 실적 OR 신작",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원 - 조선일보",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5",
+      "published": "Mon, 05 Oct 2026 02:47:44 GMT",
+      "publishedAt": "2026-10-05T02:47:44+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5\" target=\"_blank\">칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
+      "source": "\"Broadcom\" OR \"브로드컴\" AI OR 반도체",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "딥시크·화웨이 AI 칩 SW 맞손…“엔비디아 의존 낮춰” - 한국경제",
+      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2REMwQ1Rrak9ucGRGOHZCMHZrZktXd3JDU1FhaWVzcC1FM0JxT1pMdHM3TGRsc2ZCQkh6YnplSlJaRlRRVll6dHJ3Y3Jpb2xSRWNYVGVFMTJkZw?oc=5",
+      "published": "Mon, 05 Oct 2026 02:16:37 GMT",
+      "publishedAt": "2026-10-05T02:16:37+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2REMwQ1Rrak9ucGRGOHZCMHZrZktXd3JDU1FhaWVzcC1FM0JxT1pMdHM3TGRsc2ZCQkh6YnplSlJaRlRRVll6dHJ3Y3Jpb2xSRWNYVGVFMTJkZw?oc=5\" target=\"_blank\">딥시크·화웨이 AI 칩 SW 맞손…“엔비디아 의존 낮춰”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국경제</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "지난주 화제의 주식: 마이크론, 나이키, 메타, 알파벳 및 AMD - Benzinga",
+      "link": "https://news.google.com/rss/articles/CBMi2gJBVV95cUxQSE9UNUF3QU9QYlQ3SVk2ZnIzbnJJQUZOUER3UlhRT3hsM2ZWSnhqeFVKazU0Z013LXo4QkxVakF0U1U5c2I5OUlyMzk2amNoRlVoX19LSEhVdHg1bU9zUkJlRngySFV6eDFCcjZFRUUzeGM1X2tkU2NfZzBpaVUzX2w3TWVTZXc1RUp2eUtub2R5aDZ0d2ZMRkJEWEx1bkMwVDY2Wi1BSDViQzNMWk1pbEQ4b1QwSVZId2NZMzBldkozWG9hR2hrS18yMWVSekRxR0l3TUxQUnBidVZLNGJsOUNlUlM2S2MxZzgwYnoxa3RoSlB1aFlxcVkyZ2pBMDNTYVR1cGtrSS0wZ3FVelVfSDkxMFhIQkNocGNiX1RUQkV4U3RkLXY2R205Z0c4eFBWd2NrVzVYc1dmS1ZQZWRPNThjNkhHRVZuYXRtdnNIcnNGRHNtZzBLTjFB?oc=5",
+      "published": "Mon, 05 Oct 2026 02:03:11 GMT",
+      "publishedAt": "2026-10-05T02:03:11+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi2gJBVV95cUxQSE9UNUF3QU9QYlQ3SVk2ZnIzbnJJQUZOUER3UlhRT3hsM2ZWSnhqeFVKazU0Z013LXo4QkxVakF0U1U5c2I5OUlyMzk2amNoRlVoX19LSEhVdHg1bU9zUkJlRngySFV6eDFCcjZFRUUzeGM1X2tkU2NfZzBpaVUzX2w3TWVTZXc1RUp2eUtub2R5aDZ0d2ZMRkJEWEx1bkMwVDY2Wi1BSDViQzNMWk1pbEQ4b1QwSVZId2NZMzBldkozWG9hR2hrS18yMWVSekRxR0l3TUxQUnBidVZLNGJsOUNlUlM2S2MxZzgwYnoxa3RoSlB1aFlxcVkyZ2pBMDNTYVR1cGtrSS0wZ3FVelVfSDkxMFhIQkNocGNiX1RUQkV4U3RkLXY2R205Z0c4eFBWd2NrVzVYc1dmS1ZQZWRPNThjNkhHRVZuYXRtdnNIcnNGRHNtZzBLTjFB?oc=5\" target=\"_blank\">지난주 화제의 주식: 마이크론, 나이키, 메타, 알파벳 및 AMD</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Benzinga</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "AMD",
+        "Micron"
+      ],
+      "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
@@ -181242,138 +181369,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자, ‘360조 용인 반도체 산단 청사진’ 주민에 소개 - 동아일보",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Z9IBZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Zw?oc=5",
-      "published": "Sun, 04 Oct 2026 16:40:00 GMT",
-      "publishedAt": "2026-10-04T16:40:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Z9IBZkFVX3lxTE55MXNIYzhOeTBuNDgtcnFueUw4OTFmcE5RZVZPVGRSV1R0Z2pyUUNJVUVzMXZjczRtQ01xTFdxLTZ5dTNqMktVY3NYdmtid1JiSHJJeWtIVU1xWVVFaTIwbjBhSk50Zw?oc=5\" target=\"_blank\">삼성전자, ‘360조 용인 반도체 산단 청사진’ 주민에 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">동아일보</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성 HBM4 수율 80% 반전···내년 상반기 SK하이닉스 잡나 - 여성경제신문",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE03c1hQLWJIVExSZEJkaHdkTUtzdGRIM0RlZ3d4dHU2T0pGR3daQ3NaZGw2YUpURjdXODB0bjllNjlvdXEtSG5UMW91YjdjazFVQ3VydGZKNnVKNjFhQVJKVEozcjZSdURzWERkYlI5b0pyNTTSAXdBVV95cUxOXzVaR2dGREU3V1d1bTF6bFNhZVhIa1NvQUE0Y1JkZTUzVlIwUkRmUEJfa2NXLWFHT0V4eEQwTXN6NGdQR094THk0c29taERzSnpVZmh6Nzl1enVIREhEVVV0NjV1Rjc1cjhWY2F5R2xmLUJoREkxOA?oc=5",
-      "published": "Sun, 04 Oct 2026 13:01:22 GMT",
-      "publishedAt": "2026-10-04T13:01:22+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE03c1hQLWJIVExSZEJkaHdkTUtzdGRIM0RlZ3d4dHU2T0pGR3daQ3NaZGw2YUpURjdXODB0bjllNjlvdXEtSG5UMW91YjdjazFVQ3VydGZKNnVKNjFhQVJKVEozcjZSdURzWERkYlI5b0pyNTTSAXdBVV95cUxOXzVaR2dGREU3V1d1bTF6bFNhZVhIa1NvQUE0Y1JkZTUzVlIwUkRmUEJfa2NXLWFHT0V4eEQwTXN6NGdQR094THk0c29taERzSnpVZmh6Nzl1enVIREhEVVV0NjV1Rjc1cjhWY2F5R2xmLUJoREkxOA?oc=5\" target=\"_blank\">삼성 HBM4 수율 80% 반전···내년 상반기 SK하이닉스 잡나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">여성경제신문</font>",
-      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "SK하이닉스"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "투자할 곳 많은 SK하이닉스…솔리다임 자금조달 '고심' - v.daum.net",
-      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFAtcXFLeEdlcnhSZF9oNEw4YXd4eGdmSXdQNlFselM4dVFoZ3phY2R4TVRuLUFCODhmdVVlZlJWUUZfVndqR0ZuM1ZXcXpkSG5YdllwdA?oc=5",
-      "published": "Sun, 04 Oct 2026 12:03:13 GMT",
-      "publishedAt": "2026-10-04T12:03:13+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVEFVX3lxTFAtcXFLeEdlcnhSZF9oNEw4YXd4eGdmSXdQNlFselM4dVFoZ3phY2R4TVRuLUFCODhmdVVlZlJWUUZfVndqR0ZuM1ZXcXpkSG5YdllwdA?oc=5\" target=\"_blank\">투자할 곳 많은 SK하이닉스…솔리다임 자금조달 '고심'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
-      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [
-        "SK하이닉스"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "마이크론이 먼저 확인한 메모리 호황…삼성·SK하이닉스는 '비용 변수' - v.daum.net",
-      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1SRHJidmNTdUlYZGpycmw2cUpzMXJwM1FSLUJkUWN4MkdXRklBOGdfdGxySzlKYTA5RXhsa3haMWFBRTBlQ0xZVExnWUVIUFE?oc=5",
-      "published": "Sun, 04 Oct 2026 11:42:12 GMT",
-      "publishedAt": "2026-10-04T11:42:12+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE1SRHJidmNTdUlYZGpycmw2cUpzMXJwM1FSLUJkUWN4MkdXRklBOGdfdGxySzlKYTA5RXhsa3haMWFBRTBlQ0xZVExnWUVIUFE?oc=5\" target=\"_blank\">마이크론이 먼저 확인한 메모리 호황…삼성·SK하이닉스는 '비용 변수'</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "SK하이닉스",
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자 3분기 영역이익 ‘첫 100조’ 돌파할까…성과급·주주환원 쟁점 전망 - 한겨레",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB4VXh4R2k3Mjk4N202UVRHdkk5alVJVTRNZ2VkNTdCUXlhZFZjc2lyckd0NHo4R21LaXh3OExSZXR1aGItRTByZzZVbF9oM1doWk5LUnFFWXdoX1I4VEs4YUI0NVdjb1JqOVE?oc=5",
-      "published": "Sun, 04 Oct 2026 11:15:00 GMT",
-      "publishedAt": "2026-10-04T11:15:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTFB4VXh4R2k3Mjk4N202UVRHdkk5alVJVTRNZ2VkNTdCUXlhZFZjc2lyckd0NHo4R21LaXh3OExSZXR1aGItRTByZzZVbF9oM1doWk5LUnFFWXdoX1I4VEs4YUI0NVdjb1JqOVE?oc=5\" target=\"_blank\">삼성전자 3분기 영역이익 ‘첫 100조’ 돌파할까…성과급·주주환원 쟁점 전망</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한겨레</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자, 용인 과학축제서 '반도체가 만드는 지역 미래' 소개 - TV서울",
-      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBHdHp0MWxrSkd4NkdQT296YjVZTFZLSWp1cTNRajUtWC1yZTA4TlR0WnRKS3pidktfYThld1oxOGVhV0ExbjRGdEszakRBMkU3MTlkQk5Eamc?oc=5",
-      "published": "Sun, 04 Oct 2026 11:04:10 GMT",
-      "publishedAt": "2026-10-04T11:04:10+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWEFVX3lxTFBHdHp0MWxrSkd4NkdQT296YjVZTFZLSWp1cTNRajUtWC1yZTA4TlR0WnRKS3pidktfYThld1oxOGVhV0ExbjRGdEszakRBMkU3MTlkQk5Eamc?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 '반도체가 만드는 지역 미래' 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">TV서울</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "삼성전자, 용인 과학축제서 '반도체가 만드는 지역 미래' 소개 - tvseoul.kr",
-      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBHdHp0MWxrSkd4NkdQT296YjVZTFZLSWp1cTNRajUtWC1yZTA4TlR0WnRKS3pidktfYThld1oxOGVhV0ExbjRGdEszakRBMkU3MTlkQk5Eamc?oc=5",
-      "published": "Sun, 04 Oct 2026 11:04:10 GMT",
-      "publishedAt": "2026-10-04T11:04:10+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWEFVX3lxTFBHdHp0MWxrSkd4NkdQT296YjVZTFZLSWp1cTNRajUtWC1yZTA4TlR0WnRKS3pidktfYThld1oxOGVhV0ExbjRGdEszakRBMkU3MTlkQk5Eamc?oc=5\" target=\"_blank\">삼성전자, 용인 과학축제서 '반도체가 만드는 지역 미래' 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">tvseoul.kr</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "한미반도체 폭등 맞힌 ‘주식 타짜’ “다음 텐배거는 이 종목” - joongang.co.kr",
-      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9EOWVoa1VNTmFMY1hKQS1heWdvN2FQdTlxWnVna0cyYVBMbk9vRElDS2dfWEJSb0R0eC1xM2M1Zy1FZDdWZ0lFWUJ4dHZ2ckRlSnkySk5R?oc=5",
-      "published": "Sun, 04 Oct 2026 09:27:48 GMT",
-      "publishedAt": "2026-10-04T09:27:48+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVkFVX3lxTE9EOWVoa1VNTmFMY1hKQS1heWdvN2FQdTlxWnVna0cyYVBMbk9vRElDS2dfWEJSb0R0eC1xM2M1Zy1FZDdWZ0lFWUJ4dHZ2ckRlSnkySk5R?oc=5\" target=\"_blank\">한미반도체 폭등 맞힌 ‘주식 타짜’ “다음 텐배거는 이 종목”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">joongang.co.kr</font>",
-      "source": "\"한미반도체\" HBM OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "한미반도체"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T01:25:04+00:00",
+  "newsUpdatedAt": "2026-10-05T03:27:05+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -181398,8 +181396,30 @@
       "relevance": 0
     }
   ],
-  "employmentUpdatedAt": "2026-10-05T00:58:53+00:00",
+  "employmentUpdatedAt": "2026-10-05T03:24:37+00:00",
   "jobPostings": [
+    {
+      "title": "[민트로켓] ’반쵸 더 셰프’ 기획자",
+      "company": "14|dynamisone|285514\">채용공고 스크랩 경력5년↑ 학력무관 서울 > 서초구 모바일게임 정규직 채용시 3일 전 등록 민트로켓 <a",
+      "source": "게임잡",
+      "sourceSite": "게임잡",
+      "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=284429",
+      "description": "서울 > 서초구 모바일게임 정규직 채용시 3일 전 등록 민트로켓 성남시 분당구'));\" target=\"_blank\"> [민트로켓] ’반쵸 더 셰프’ 기획자 성남시 분당구'));\" data-value=\"284429|mintrocket|284429\">채용공고 스크랩 경력2년↑ 학력무관 경기 > 성남시 웹게임, 콘솔게임 정규직 채용시 08/31(월) 등록 민트로켓",
+      "published": "2026-10-05",
+      "publishedAt": "2026-10-05T03:24:40+00:00",
+      "area": "클라이언트",
+      "career": "2년 이상",
+      "skills": [],
+      "employmentType": "정규직",
+      "deadline": "채용시 마감 지원하기 스크랩 2026-08-31 21:19 등록 2026-10-02 12:",
+      "detailText": "[민트로켓] ’반쵸 더 셰프’ 기획자 게임 직업이 되다 - 게임잡 성남시 분당구 입니다.\"> --> 성남시 분당구\" /> 민트로켓 공유하기 인쇄하기 전달하기 [민트로켓] ’반쵸 더 셰프’ 기획자 모집분야 게임기획 툴팁기능 게임기획 툴팁닫기 키워드 모바일, 게임기획, 시나리오, 밸런스기획, 컨텐츠, 유료화 툴팁기능 모바일, 게임기획, 시나리오, 밸런스기획, 컨텐츠, 유료화 툴팁닫기 대표게임 데이브 더 다이버 툴팁기능 데이브 더 다이버 툴팁닫기 게임분야 웹게임, 콘솔게임 Casual, Simulation 툴팁기능 디바이스: 웹게임, 콘솔게임 장르: Casual, Simulation 툴팁닫기 경력 경력 2년 이상 고용형태 정규직 학력 학력무관 직급/직책 주임/계장, 대리, 과장 모집인원 O명 급여 회사내규에 따름 / 면접 시 협의 연봉검색 마감일 채용시 마감 지원하기 스크랩 2026-08-31 21:19 등록 2026-10-02 12:35 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 근무지역 경기 > 성남시 분당구 신분당선 판교역 4번 출구 1km 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험, 퇴직연금 휴무·휴가 주5일근무, 연차, 월차, 정기 휴가 보상제도 장기근속자 포상 건강관리 지원 건강검진, 본인/가족 의료비 지원 생활안정 지원 직원대출제도 생활편의 지원 사원식당, 통근버스 운행, 중식제공, 석식제공 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 사내 동호회 운영, 자기계발비 지원 접수안내 남은기간 채용시 마감 시작일 2026-08-31(월) 지원방법 [당사 홈페이지] 전형절차 서류전형 → 면접전형 → 최종합격 제출서류 이력서, 경력기술서, 포트폴리오 등 담당자 정예진(담당자) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 민트로켓 연봉정보 대표자명 황재호 설립연도 2024년 사원수 70 명 대표게임 데이브 더 다이버 툴팁기능 데이브 더 다이버 툴팁닫기 기업형태 비상장(대기업 계열사·자회사) 주요사업 온라인 게임 개발 및 서비스 기업뉴스 더보기 민트로켓 ‘데이브 더 다이버’ 모바일 버전 글로벌 출시 민트로켓(대표 황재호)은 17일 '데이브 더 다이버' 모바일 버전을 글로벌 시장에 선보였다.이 작품은 패키지 게임 '데이브 더 다이버'를 모바일 버전으로 이식한 게임이다. 해양 탐험 어드벤처 요소와 초밥집 운영을 결합한 독특한 재미 요소를 갖췄다는 평이다.앞서 출시된 중국에서 판매량 100만건을 달성했으며 현지 앱스토어 유료 게임 차트 1위, 탭탭 유료 게임 차트 1위 등에 오르기도 했다.[더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-09-17 [금주의쟁점] 도쿄게임쇼 韓 게임업체들 대거 참가 엔씨 넷마블 넥슨 등 주요 업체 출사표일본 컴퓨터 엔터테인먼트 협회(CESA)가 오는 17일부터 21일까지 5일 간 일본 지바현 마쿠하리 멧세에서 개최하는 '도쿄게임쇼 2026'에 국내 업체들이 대거 참가해 눈길을 끌고 있다.올 30주년을 맞이한 도쿄게임쇼는 처음으로 행사 일정을 하루 더 연장해 5일 간 열리며, 51개국 759개 업체가 참가한다. 이 가운데 넥슨 넷마블 엔씨 스마일게이트 등 주요 게임업체들도 대거 이름을 올려 눈길을 끌고 있다.넥슨은 '마비노기 모바일'의 일본 진출에 적극 나선다. 이와 더불어 넥슨게임즈의 서브컬처 신작 '프로젝트 RX'로 주목을 받았던 '파레이돌리아'를 출품한다.엔씨에서 퍼블리싱하는 '아스트라에 오라티오'의 개발사인 디나미스원도 이번 행사에 참가한다. 특히 엔씨는 삼성전자와 게임 시연 및 전시에 협업하며 현지 관람객들의 눈길을 사로잡겠다는 계획이다.넷마블은 '샹그릴라 프론티어 : 일곱 최강종' '나 혼자만 레벨업 : 카르마' '펄인블루' 등 3개작을 출품한다. 특히 '샹그릴라 프론티어'와 '펄인블루'는 첫 시연 버전을 공개한다.스마일게이트는 '미래시 : 보이지 않는 미래'와 '데드 어카운트 : 두 개의 푸른 불꽃' 두 작품을 선보인다. NHN은 일본 모바일 게임 자회사 NHN플레이아트를 통해 참가, '도검난무파즈기리' '환상세계 푸치포용' '오버 러시' 등 신작을 포함 7개작으로 부스를 구성한다.이밖에 시프트업 드림에이지 프로젝트문 아이언메이스 마상소프트 등의 업체들도 부스를 마련하거나 타이틀 시연에 나설 예정이다. 그라비티도 일본 지사를 통해 인디 게임 전시회 '도쿄 게임 던전'에 참가한다.이밖에 행사 주최 측에서 엄선한 인디 게임 전시 구역에 국내 작품들도 다수 출품된다. 케세라게임즈 키위웍스 써니사이드업 스튜디오두달 자라나는씨앗 등의 업체들이 목록에 이름을 올렸다.아시안게임 대비 'LOL' 미국ㆍ베트남과 평가전한국e스포츠협회는 '2026 아이치-나고야 아시안게임'을 앞두고 대한민국 '리그 오브 레전드(이하 LOL)' 국가대표팀의 실전 경기력을 점검하는 평가전을 부산에서 개최한다. 평가전은 이달 19~20일 양일간 영화의전당에서 열리며 미국과 베트남 국가대표팀이 대한민국 대표팀의 상대가 된다.'한화생명 초청 리그 오브 레전드 국가대표 평가전'은 아시안게임과 동일한 경기 패치를 적용해 국제대회와 유사한 환경에서 진행된다. 이번 아시안게임이 짧은 준비 기간이 주어진 만큼 각 챔피언들간의 티어 선수 간 호흡 등을 점검하는 데 초점을 맞출 예정이다.이달 19일에는 미국, 20일에는 베트남과 각각 5전 3선승제(Bo5)로 경기를 치른다. 베트남은 아이치-나고야 아시안게임 출전 국가대표 선수단이 참가하며, 미국도 국제무대 경험을 갖춘 선수들을 중심으로 대표팀을 구성한 것으로 알려졌다.국내 전문가들은 한국 대표팀이 강력한 우승 후보인 만큼 미국 대표팀과 베트남 대표팀을 상대로 압도적인 승리를 거둘 것이라 예상하면서도, 여러 챔피언들의 성능을 시험해보는 시험대가 될 것이라는 예측을 내비췄다.민트로켓, 해양 어드벤처 게임 모바일 버전 론칭넥슨의 자회사인 민트로켓은 이달 17일 '데이브 더 다이버' 모바일 버전을 글로벌 출시한다. 이 작품은 하이브리드 해양 어드벤처 게임인 '데이드 더 다이버'를 모바일 플랫폼으로 이식한 게임이다. 시장에서는 이 작품의 흥행 가능성을 매우 높게 보고 있다. 원작이 누적 판매량 1000만장을 돌파하는 등 큰 인기를 얻었기 때문이다. 또한 앞서 중국에 출시된 작품 모바일 버전이 100만 장 이상 판매된 점도 기대감을 높이는 요인이다. 이 작품을 통해 넥슨만의 독창적인 창의력과 개발력이 글로벌 시장에서 부각될 것으로 전망된다. 기존에 이 회사의 작품을 몰랐던 유저들도 '데이브 더 다이버'를 계기로 관심을 높여날 것으로 기대된다. 업계의 한 관계자는 \"'데이브 더 다이버'는 국산 싱글 패키지 게임 중 처음으로 1000만장 판매를 돌파한 기념비적인 작품\"이라며 \"이번 모바일 버전 출시를 통해 작품의 성과는 더욱 커질 것\"이라고 말했다. [더게임스데일리 온라인 뉴스팀 tgon@tgdaily.co.kr] 2026-09-14 ‘데이브 더 다이버’ 누적 판매 1천만 장 돌파 민트로켓(대표 황재호)은 '데이브 더 다이버(이하 '데이브')'가 국내 싱글 패키지 작품 사상 최초로 글로벌 누적 판매 1000만 장을 돌파했다고 9일 밝혔다.'데이브'는 블루홀을 탐험하는 어드벤처 요소와 초밥집 운영을 결합한 하이브리드 해양 어드벤처 작품으로, 낮에는 해양 생물을 채집하고, 밤에는 채집한 재료로 초밥집을 운영하는 독창적인 탐험·수집·경영 요소가 높은 몰입감을 선사하며 전 세계 유저들의 꾸준한 사랑을 받아왔다.이번 1000만 장 돌파는 판매 기록을 넘어, 독창적인 게임성을 기반으로 전 세계 시장에서의 저력을 증명해 온 여정의 결과다. 정식 출시 3년이 지난 시점에도 신규 콘텐츠, 플랫폼 확장, 다양한 판권(IP)과의 협업을 통해 판매량이 꾸준히 증가했다는 점에서 '데이브'가 장기 흥행 IP로 자리매김했음을 보여준다.한편, 이 회사는 1000만 장 돌파를 기념해 다양한 사내 행사도 준비했다. 전 구성원에게 순금으로 제작한 기념 카드를 지급하고, 축하 케이터링과 함께 게임 속 초밥집 '반쵸 스시'의 콘셉트를 살려 전문 셰프가 방문해 참치를 직접 손질하는 참치 해체쇼도 진행했다. [더게임스데일리 한동연 기자 bronzek@tgdaily.co.kr] 2026-09-09 민트로켓 '데이브 더 다이버' 모바일 버전 내달 론칭 민트로켓(대표 황재호)은 내달 17일 '데이브 더 다이버'의 모바일 버전을 글로벌 구글 플레이와 애플 앱스토어를 통해 선보인다.이 작품은 '블루홀'을 탐험하는 어드벤처 요소와 초밥집 운영을 결합한 하이브리드 해양 어드벤처 게임이다. 낮에는 블루홀을 탐험하며 해양 생물을 채집하고, 밤에는 그 재료로 초밥집을 운영하는 탐험 · 수집 · 경영 요소를 즐길 수 있다.이 작품은 앞서 스팀 및 콘솔 출시를 통해 호평을 받으며 판매량 800만장을 기록했다. 지난 2월 중국에서 먼저 론칭된 모바일 버전도 판매량 100만장을 넘어서는 등 인기를 끌고 있다.모바일 버전은 원작의 손맛을 재현하는 가운데 세밀한 편의 기능도 추가했다. 자이로센서를 활용한 기울임 조작으로 녹차를 따르는 등 모바일 환경의 재미를 더했다.또 플레이 환경에 맞춰 3단계로 시야 거리를 설정할 수 있도록 하고, '어인족 마을'에서의 빠른 이동 기능을 통해 편의성을 높였다. 또한 낚시 어드벤처 게임 '드렛지' 컬래버레이션 콘텐츠와 DLC(추가 다운로드 콘텐츠) '인 더 정글' 등을 모바일 버전에서도 제공한다.[더게임스데일리 이주환 기자 ejohn@tgdaily.co.kr] 2026-08-13 본 채용정보는 게임잡의 동의없이 무단전재, 재배포, 재가공할 수 없으며, 구직활동 이외의 용도로 사용될 수 없습니다. 불법/허위/과장/오류 신고 본 정보는 민트로켓 에서 제공한 자료로 게임잡의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용될 수 없습니다. 게임잡은 민트로켓 에서 게재한 자료에 대한 오류와 사용자가 이를 신뢰하여 취한 조치에 대해 책임을 지지 않습니다. 민트로켓 에서 진행중인 채용 정보확인해 보세요! 12 건 전체보기 민트로켓 스크랩 [민트로켓] 커뮤니티 매니저 (시니어) 게임운영+ 경력 5년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’고질라 디펜스 포스 X’ UI 디자이너 인터페이스 디자인 경력 3년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’고질라 디펜스 포스 X’ 클라이언트 프로그래머 게임개발(클라이언트)+ 경력 5년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’고질라 디펜스 포스 X’ 서버 프로그래머 게임개발(모바일)+ 경력 5년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [신규 PC/콘솔] 컨셉 아티스트 원화 경력 3년↑ 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 민트로켓 스크랩 [민트로켓] ’반쵸 더 셰프’ 캐릭터 모델러 모델링 경력무관 경기 > 성남시 분당구 채용시 마감 홈페이지 지원 배너 공지사항 공지사항 개인정보처리방침 개정 안내 2026.09.30 2026년 추석 연휴 유료서비스 연장적용 및 고객지원 안내 2026.09.15 화성시·인천·전남광주 행정구역 개편에 따른 근무지역 정보 업데이트 안내 2026.07.15 [시스템 점검 공지] 7/15(수) AM 00시-06시 2026.07.03 [시스템 점검 공지] 6/18(목) AM 00시-05시 2026.06.17 서비스 전체보기 GAMEJOB 고객센터 (월~금 09:00~18:00) 일반문의 02-3466-5310, FAX : 02-565-9351, E-Mail : help@gamejob.co.kr 상품문의 02-3466-5266, FAX : 0504-981-3752, E-Mail : ad@gamejob.co.kr copyright © GAMEJOB Corp. All Right Reserved",
+      "sources": [
+        {
+          "site": "게임잡",
+          "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=284429"
+        }
+      ]
+    },
     {
       "title": "[경력] UI 디자이너",
       "company": "ames|285532\">채용공고 스크랩 신입 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 2일 전 등록 ㈜이스트게임즈 <a",
@@ -182945,6 +182965,10 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5"
+        },
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE43RnNCWkxqa2p1Zmt3NkNseC1leWlLY3h4NUh3bEZTX3ZhSlhsSE9XejdpbUlscmx0NW1LWjFDRnJhVUN3LXlRVW9BR3VTWHY1Y3JYTEhHQThhdW9Nam5kQnQ3eWptbWM?oc=5"
         }
       ]
     },
@@ -182965,10 +182989,6 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE43RnNCWkxqa2p1Zmt3NkNseC1leWlLY3h4NUh3bEZTX3ZhSlhsSE9XejdpbUlscmx0NW1LWjFDRnJhVUN3LXlRVW9BR3VTWHY1Y3JYTEhHQThhdW9Nam5kQnQ3eWptbWM?oc=5"
         }
       ]
     },
@@ -183190,6 +183210,26 @@
       ]
     },
     {
+      "title": "㈜스프레드잇 채용정보 - 게임잡",
+      "company": "㈜스프레드잇",
+      "source": "게임잡",
+      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0waEFxZi1ETXdJVHdmMkxEbkFkaTU4ckRERkZhOWhIMlhZX29IaGRGMkVJeEVna2MxVjVYMmRyZTBIdEFNZHRmMWFwcERSV0ZJRWhJY0wyUTl4QkxTZDRoc0dHcmFERnhpT0E?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTE0waEFxZi1ETXdJVHdmMkxEbkFkaTU4ckRERkZhOWhIMlhZX29IaGRGMkVJeEVna2MxVjVYMmRyZTBIdEFNZHRmMWFwcERSV0ZJRWhJY0wyUTl4QkxTZDRoc0dHcmFERnhpT0E?oc=5\" target=\"_blank\">㈜스프레드잇 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
+      "published": "Fri, 02 Oct 2026 11:32:43 GMT",
+      "publishedAt": "2026-10-02T11:32:43+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "게임잡",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE0waEFxZi1ETXdJVHdmMkxEbkFkaTU4ckRERkZhOWhIMlhZX29IaGRGMkVJeEVna2MxVjVYMmRyZTBIdEFNZHRmMWFwcERSV0ZJRWhJY0wyUTl4QkxTZDRoc0dHcmFERnhpT0E?oc=5"
+        }
+      ]
+    },
+    {
       "title": "모라이 채용정보 - 게임잡",
       "company": "모라이",
       "source": "게임잡",
@@ -183288,6 +183328,26 @@
         {
           "site": "게임잡",
           "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB3Z2luWGh4UDc4aXZoY0ROem9yTmpxMU9FMXRmS1FaMDJFNlNRWmNOYlIzbXI0TVBrM0xHdk5yUnVZLUwyM0JmWlhJZjZjc3hmaktxR0pldlB4OGJPUktBUlVpUG9DMkk2MlE?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "㈜이스트게임즈 채용정보 - 게임잡",
+      "company": "㈜이스트게임즈",
+      "source": "게임잡",
+      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9EX0hQdUtFMzFkMHJCYUhsWS1paURGY2RoU2EzMUNadERIZk00RE9kWXlFRDZXUjNYNlMxQjdaVTc4QjJNbFYtajFRVTBHaWV1d2xKZWR5VExQWkZGYURNMVBtUFdxSERtc01J?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTE9EX0hQdUtFMzFkMHJCYUhsWS1paURGY2RoU2EzMUNadERIZk00RE9kWXlFRDZXUjNYNlMxQjdaVTc4QjJNbFYtajFRVTBHaWV1d2xKZWR5VExQWkZGYURNMVBtUFdxSERtc01J?oc=5\" target=\"_blank\">㈜이스트게임즈 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
+      "published": "Fri, 02 Oct 2026 09:18:00 GMT",
+      "publishedAt": "2026-10-02T09:18:00+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "게임잡",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "게임잡",
+          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9EX0hQdUtFMzFkMHJCYUhsWS1paURGY2RoU2EzMUNadERIZk00RE9kWXlFRDZXUjNYNlMxQjdaVTc4QjJNbFYtajFRVTBHaWV1d2xKZWR5VExQWkZGYURNMVBtUFdxSERtc01J?oc=5"
         }
       ]
     },
@@ -183644,6 +183704,26 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBCcG1lV2NUMV9BbnpvN1ZFSkJkbmxBNHd3NkJydWh4eDdpc2VFR2lkMnVWZWkzN2sweWlFNUdfdkl1ZC1ubUU0RU5kQWlxRHl3bVhYS2xQN3BfR3F5WHVzOVVFODk1aGM?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "Physical Design Engineer - 점핏",
+      "company": "기업명 확인 필요",
+      "source": "점핏",
+      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBNQ2o0ckw4MlN0UTFrRVR2Unp6eFUybmIxcWxtZnZPeEJvOXVwaXJUS1hQOWVVZzVCN1J6cXk2eVhWV01kbXh6NDRPdllTZElFTi1qNmhtMU8wQkUtRUZMdUFrX3p6dVdEeEtUUC1CbXMwY3ZqYjVzTFNIM2pyQQ?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTFBNQ2o0ckw4MlN0UTFrRVR2Unp6eFUybmIxcWxtZnZPeEJvOXVwaXJUS1hQOWVVZzVCN1J6cXk2eVhWV01kbXh6NDRPdllTZElFTi1qNmhtMU8wQkUtRUZMdUFrX3p6dVdEeEtUUC1CbXMwY3ZqYjVzTFNIM2pyQQ?oc=5\" target=\"_blank\">Physical Design Engineer</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
+      "published": "Thu, 01 Oct 2026 19:32:13 GMT",
+      "publishedAt": "2026-10-01T19:32:13+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "점핏",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBNQ2o0ckw4MlN0UTFrRVR2Unp6eFUybmIxcWxtZnZPeEJvOXVwaXJUS1hQOWVVZzVCN1J6cXk2eVhWV01kbXh6NDRPdllTZElFTi1qNmhtMU8wQkUtRUZMdUFrX3p6dVdEeEtUUC1CbXMwY3ZqYjVzTFNIM2pyQQ?oc=5"
         }
       ]
     },
@@ -184812,10 +184892,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iS2gzRzRBYnVaUkZubGd3VzJmdHlkYzVpRi03NjNuVVBoQUFRUE9FOUNKN0ZpSVEyeVJ4YTJ6R2VXeW02bjF1dHdmb1p1bWVDVWtVazJiY2ZGZw?oc=5"
         }
       ]
     },
@@ -184956,10 +185032,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1yVFB0elNIa0h5cEZ0dnZreVpmVXh3NDVJZWRaeFJZaW8xUEU2eTU4cExVbzY4Q2ViWElVRnpHdGpzTWNkWExzM0pudHA0X1NrdnM0VWROSG1ZX1ZEOU44eVdPbG93Ykp2VVlIYjIxbUFIQ2xEbkwwOXRWQVRZZw?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBVTFd1TjRhY1BNbFZXUGw3VFZzaGdpbWdiQzdhQVY5RUo3S1lpOGtQV1h3WkFlWU5ISk5HZHRoNHNJLVYtRXV2Z01nQ2Y0a0l6MzRPaF9zX3ZLQQ?oc=5"
         }
       ]
     },
@@ -184980,6 +185052,10 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1yVFB0elNIa0h5cEZ0dnZreVpmVXh3NDVJZWRaeFJZaW8xUEU2eTU4cExVbzY4Q2ViWElVRnpHdGpzTWNkWExzM0pudHA0X1NrdnM0VWROSG1ZX1ZEOU44eVdPbG93Ykp2VVlIYjIxbUFIQ2xEbkwwOXRWQVRZZw?oc=5"
+        },
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBVTFd1TjRhY1BNbFZXUGw3VFZzaGdpbWdiQzdhQVY5RUo3S1lpOGtQV1h3WkFlWU5ISk5HZHRoNHNJLVYtRXV2Z01nQ2Y0a0l6MzRPaF9zX3ZLQQ?oc=5"
         }
       ]
     },
@@ -185368,6 +185444,10 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
+        },
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -185510,89 +185590,9 @@
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5tQVI3QkxHckpUVjdDYXZ5SkRPMEpmcnB3LV9JSGFxQzBpN0xFc2lqRm1jcDh1bzVubmozR0ZfVHUtT0c5QkI1RGVOYl8ybjRyMFA4U3N1TGNTUG1DaldOb3gzUzBIOXZJRF8yNnZ5Nk4zdkxDZG9lNkdyY05UQQ?oc=5"
         }
       ]
-    },
-    {
-      "title": "AI Product Builder - jumpit.saramin.co.kr",
-      "company": "기업명 확인 필요",
-      "source": "점핏",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9zUldJNWNHRnpPWlRHNVU4VnhheUVqN2I2VkNheUFyXzVHSDB5c0ZNb2xLXzQtRHYwMTZIMmsxREE3WmlYbXZkTEt2Zk1ZTmtaajlxSTZ5SzFSdw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE9zUldJNWNHRnpPWlRHNVU4VnhheUVqN2I2VkNheUFyXzVHSDB5c0ZNb2xLXzQtRHYwMTZIMmsxREE3WmlYbXZkTEt2Zk1ZTmtaajlxSTZ5SzFSdw?oc=5\" target=\"_blank\">AI Product Builder</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Wed, 30 Sep 2026 03:55:31 GMT",
-      "publishedAt": "2026-09-30T03:55:31+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "점핏",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9zUldJNWNHRnpPWlRHNVU4VnhheUVqN2I2VkNheUFyXzVHSDB5c0ZNb2xLXzQtRHYwMTZIMmsxREE3WmlYbXZkTEt2Zk1ZTmtaajlxSTZ5SzFSdw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "풀스텍 개발자-경력 - jumpit.saramin.co.kr",
-      "company": "풀스텍 개발자",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5\" target=\"_blank\">풀스텍 개발자-경력</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jumpit.saramin.co.kr</font>",
-      "published": "Wed, 30 Sep 2026 03:40:56 GMT",
-      "publishedAt": "2026-09-30T03:40:56+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "풀스텍 개발자-경력 - 점핏",
-      "company": "풀스텍 개발자",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5\" target=\"_blank\">풀스텍 개발자-경력</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
-      "published": "Wed, 30 Sep 2026 03:40:56 GMT",
-      "publishedAt": "2026-09-30T03:40:56+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5xVG5uMnBKSmxTTm50MGdQSTExZ3JwYllCMDF0WDFMaFVBRnE2c2V3cTJRNmlqdHMyV0pqZnF2T0dZdTFCeGhlLVNfUEpFRk1ERzQwWEo4TURXZw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다 - saramin.co.kr",
-      "company": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5\" target=\"_blank\">스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">saramin.co.kr</font>",
-      "published": "Wed, 30 Sep 2026 03:00:00 GMT",
-      "publishedAt": "2026-09-30T03:00:00+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T01:21:43+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T03:24:38+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185648,6 +185648,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T01:21:43+00:00"
+    "generatedAt": "2026-10-05T03:24:37+00:00"
   }
 }
