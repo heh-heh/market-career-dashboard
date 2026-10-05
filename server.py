@@ -131,7 +131,7 @@ def toss_quotes(cfg, items):
             }
     return out
 
-LIVE_TRADER.set_token_provider(lambda: toss_access_token(load_secrets()))
+LIVE_TRADER.set_token_provider(lambda force=False: toss_access_token(load_secrets(), force=force))
 
 def yahoo_quote(symbol):
     url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
