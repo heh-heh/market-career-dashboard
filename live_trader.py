@@ -57,6 +57,18 @@ class LiveAutoTrader:
     def scan_interval(self):
         return max(15, int(os.getenv("AUTO_SCAN_INTERVAL_SEC", "30")))
 
+    @property
+    def min_us_price(self):
+        return max(1.0, float(os.getenv("AUTO_US_MIN_PRICE", "5")))
+
+    @property
+    def max_us_price(self):
+        return max(self.min_us_price, float(os.getenv("AUTO_US_MAX_PRICE", "100")))
+
+    @property
+    def min_us_volume(self):
+        return max(1.0, float(os.getenv("AUTO_US_MIN_TRADING_VOLUME", "1000000")))
+
     def _day(self):
         return datetime.now(KST).date().isoformat()
 
@@ -210,7 +222,7 @@ class LiveAutoTrader:
     def _rankings(self):
         return self._api(
             "GET", "/api/v1/rankings",
-            {"type": "MARKET_TRADING_AMOUNT", "marketCountry": "US", "duration": "realtime",
+            {"type": "MARKET_TRADING_VOLUME", "marketCountry": "US", "duration": "realtime",
              "excludeInvestmentCaution": "true", "count": "100"},
             account=False,
         )
@@ -252,7 +264,7 @@ class LiveAutoTrader:
         buy = sma5 > sma20 * 1.001 and 48 <= rsi <= 72 and surge >= 1.10 and close[-1] >= sma5
         sell = sma5 < sma20 * 0.999 or rsi < 35
         signal = "BUY" if buy else "SELL" if sell else "HOLD"
-        reason = "거래대금 상위 + SMA5>SMA20 + RSI + 거래량 확인" if buy else "SMA5/SMA20 또는 RSI 약세" if sell else "추세 확인 대기"
+        reason = "거래량 상위 + SMA5>SMA20 + RSI + 1분 거래량 급증 확인" if buy else "SMA5/SMA20 또는 RSI 약세" if sell else "추세 확인 대기"
         return {"signal": signal, "reason": reason, "price": close[-1],
                 "sma5": round(sma5, 4), "sma20": round(sma20, 4),
                 "rsi14": round(rsi, 2), "volumeSurge": round(surge, 2)}
@@ -270,25 +282,26 @@ class LiveAutoTrader:
             p = item.get("price") or {}
             try:
                 price = float(p.get("lastPrice"))
+                volume = float(item.get("tradingVolume") or 0)
                 amount = float(item.get("tradingAmount") or 0)
                 change = float(p.get("changeRate") or 0) * 100
             except Exception:
                 continue
             if info.get("securityType") != "STOCK" or info.get("isCommonShare") is not True or info.get("status") != "ACTIVE":
                 continue
-            if str(info.get("currency") or "").upper() != "USD" or price < max(1, float(os.getenv("AUTO_US_MIN_PRICE", "10"))):
+            if str(info.get("currency") or "").upper() != "USD" or not (self.min_us_price <= price <= self.max_us_price):
                 continue
-            if amount < float(os.getenv("AUTO_US_MIN_TRADING_AMOUNT_USD", "10000000")):
+            if volume < self.min_us_volume:
                 continue
             a = self._analyze(self._candles(sym))
             out.append({"rank": item.get("rank"), "symbol": sym,
                         "name": info.get("name") or info.get("englishName") or sym,
+                        "tradingVolume": volume,
                         "tradingAmountUsd": round(amount, 2),
-                        "tradingVolume": float(item.get("tradingVolume") or 0),
                         "price": price, "changePct": round(change, 3), **a})
             if len(out) >= 8:
                 break
-        out.sort(key=lambda x: x["tradingAmountUsd"], reverse=True)
+        out.sort(key=lambda x: x["tradingVolume"], reverse=True)
         return out
 
     def _holdings(self, symbol=None):
@@ -423,6 +436,61 @@ class LiveAutoTrader:
         self.last_action = "SELL_SUBMITTED %s reason=%s price=%.2f%s" % (self.managed_symbol, reason, price, session_text)
         self._save_state()
 
+    def account_snapshot(self):
+        """Return live wallet, holdings and recent order history for the dashboard."""
+        with self.lock:
+            holdings = self._holdings()
+            try:
+                krw_power = self._api("GET", "/api/v1/buying-power", {"currency": "KRW"}, account=True)
+            except Exception:
+                krw_power = {}
+            try:
+                usd_power = self._api("GET", "/api/v1/buying-power", {"currency": "USD"}, account=True)
+            except Exception:
+                usd_power = {}
+            recent_orders = []
+            open_orders = []
+            try:
+                closed = self._api("GET", "/api/v1/orders", {"status": "CLOSED", "limit": "50"}, account=True)
+                if isinstance(closed, dict):
+                    recent_orders = closed.get("orders", []) or []
+            except Exception as exc:
+                self.last_error = "주문내역 조회 실패: " + str(exc)
+            try:
+                opened = self._api("GET", "/api/v1/orders", {"status": "OPEN"}, account=True)
+                if isinstance(opened, dict):
+                    open_orders = opened.get("orders", []) or []
+            except Exception:
+                pass
+
+            def num(path, default=0.0):
+                cur = holdings
+                for key in path:
+                    cur = cur.get(key) if isinstance(cur, dict) else None
+                try:
+                    return float(cur or default)
+                except (TypeError, ValueError):
+                    return float(default)
+
+            return {
+                "wallet": {
+                    "krwBuyingPower": float(krw_power.get("cashBuyingPower") or 0),
+                    "usdBuyingPower": float(usd_power.get("cashBuyingPower") or 0),
+                    "totalPurchaseKrw": num(("totalPurchaseAmount", "krw")),
+                    "totalPurchaseUsd": num(("totalPurchaseAmount", "usd")),
+                    "marketValueKrw": num(("marketValue", "amount", "krw")),
+                    "marketValueUsd": num(("marketValue", "amount", "usd")),
+                    "profitLossKrw": num(("profitLoss", "amount", "krw")),
+                    "profitLossUsd": num(("profitLoss", "amount", "usd")),
+                    "profitLossRate": num(("profitLoss", "rate")) * 100,
+                    "dailyProfitLossKrw": num(("dailyProfitLoss", "amount", "krw")),
+                    "dailyProfitLossUsd": num(("dailyProfitLoss", "amount", "usd")),
+                },
+                "holdings": holdings.get("items", []) if isinstance(holdings, dict) else [],
+                "openOrders": open_orders,
+                "recentOrders": recent_orders,
+            }
+
     def scan(self, allow_orders=False):
         with self.lock:
             self._ensure_day()
@@ -544,5 +612,9 @@ class LiveAutoTrader:
                     "maxDailyLossKrw": self.max_loss_krw,
                     "takeProfitPct": float(os.getenv("AUTO_TAKE_PROFIT_PCT", "1.5")),
                     "stopLossPct": float(os.getenv("AUTO_STOP_LOSS_PCT", "1.0")),
+                    "minUsPrice": self.min_us_price,
+                    "maxUsPrice": self.max_us_price,
+                    "minUsVolume": self.min_us_volume,
+                    "rankingBasis": "MARKET_TRADING_VOLUME",
                 },
             }
