@@ -3,6 +3,7 @@ import asyncio, json, os, secrets, subprocess, sys, threading, time, urllib.pars
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
+from live_trader import LiveAutoTrader
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -27,6 +28,7 @@ TRADING_STATE={
     "last_error":None,
 }
 TRADING_LOCK=threading.Lock()
+LIVE_TRADER=LiveAutoTrader(ROOT)
 
 def load_secrets():
     if not SECRETS.exists():
@@ -69,6 +71,7 @@ def trading_status():
             "liveTradingEnabled":LIVE_TRADING_ENABLED,
             "maxOrderKrw":MAX_ORDER_KRW,
             "dailyLossLimitKrw":MAX_DAILY_LOSS_KRW,
+            "live":LIVE_TRADER.status(),
         }
 
 def update_data():
@@ -425,6 +428,10 @@ class Handler(BaseHTTPRequestHandler):
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             self.send_json({"ok":True,**trading_status()}); return
+        if path=="/api/trading/live/status":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({"ok":True,**LIVE_TRADER.status()}); return
         if path=="/api/trading/paper/portfolio":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -500,7 +507,38 @@ class Handler(BaseHTTPRequestHandler):
         if path=="/api/trading/live/arm":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
-            self.send_json({"ok":False,"error":"live trading is deliberately disabled in this integration stage"},403); return
+            try:
+                body=self.read_json()
+                self.send_json({"ok":True,**LIVE_TRADER.arm(body.get("phrase"))}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},403); return
+        if path=="/api/trading/live/disarm":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({"ok":True,**LIVE_TRADER.disarm()}); return
+        if path=="/api/trading/live/auto":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                self.send_json({"ok":True,**LIVE_TRADER.set_auto(bool(body.get("enabled")))}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/trading/live/engine":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                self.send_json({"ok":True,**LIVE_TRADER.set_engine(bool(body.get("enabled")))}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/trading/live/scan":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**LIVE_TRADER.scan(False)}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/login":
             try:
                 body=self.read_json()
@@ -553,6 +591,7 @@ if __name__=="__main__":
     DATA.parent.mkdir(parents=True,exist_ok=True)
     threading.Thread(target=update_data,daemon=True).start()
     threading.Thread(target=start_realtime,daemon=True).start()
+    LIVE_TRADER.start()
     print(f"API listening on {HOST}:{PORT}; update interval={INTERVAL}s",flush=True)
     if not ADMIN_PASSWORD:
         print("WARNING: ADMIN_PASSWORD is not set; /api/login is disabled.",flush=True)
