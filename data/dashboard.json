@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T08:04:05+00:00",
+  "updatedAt": "2026-10-05T08:30:05+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -39308,7 +39308,7 @@
           },
           {
             "t": 1790603100,
-            "o": 232.2100067138672,
+            "o": 232.1999969482422,
             "h": 232.92930603027344,
             "l": 231.80999755859375,
             "c": 232.7100067138672,
@@ -39908,9 +39908,9 @@
           },
           {
             "t": 1790688600,
-            "o": 230.9949951171875,
+            "o": 230.875,
             "h": 232.82000732421875,
-            "l": 230.47999572753906,
+            "l": 230.83999633789062,
             "c": 231.48129272460938,
             "v": 9059701
           },
@@ -42862,7 +42862,7 @@
           },
           {
             "t": 1789565400,
-            "o": 214.13999938964844,
+            "o": 213.72000122070312,
             "h": 215.3000030517578,
             "l": 213.30999755859375,
             "c": 215.02000427246094,
@@ -43198,7 +43198,7 @@
           },
           {
             "t": 1790256600,
-            "o": 222.11599731445312,
+            "o": 222.64999389648438,
             "h": 223.2299041748047,
             "l": 221.09080505371094,
             "c": 222.46499633789062,
@@ -43254,7 +43254,7 @@
           },
           {
             "t": 1790343000,
-            "o": 225.14999389648438,
+            "o": 225.25,
             "h": 226.94000244140625,
             "l": 223.21299743652344,
             "c": 223.27000427246094,
@@ -43366,7 +43366,7 @@
           },
           {
             "t": 1790688600,
-            "o": 230.9949951171875,
+            "o": 230.875,
             "h": 232.82000732421875,
             "l": 229.22000122070312,
             "c": 230.49000549316406,
@@ -49035,7 +49035,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 628.7650146484375,
+            "h": 629.5,
             "l": 621.0,
             "c": 622.5750122070312,
             "v": 1596465
@@ -49658,8 +49658,8 @@
           },
           {
             "t": 1790688600,
-            "o": 616.9600219726562,
-            "h": 617.5700073242188,
+            "o": 614.0,
+            "h": 615.0598754882812,
             "l": 608.9127197265625,
             "c": 609.4199829101562,
             "v": 1346900
@@ -52948,9 +52948,9 @@
           },
           {
             "t": 1790256600,
-            "o": 600.7550048828125,
+            "o": 605.344970703125,
             "h": 624.8400268554688,
-            "l": 599.3499755859375,
+            "l": 604.35400390625,
             "c": 617.25,
             "v": 8101441
           },
@@ -53004,7 +53004,7 @@
           },
           {
             "t": 1790343000,
-            "o": 635.0679931640625,
+            "o": 634.610107421875,
             "h": 638.9500122070312,
             "l": 629.6199951171875,
             "c": 629.8294067382812,
@@ -53061,7 +53061,7 @@
           {
             "t": 1790602200,
             "o": 624.89501953125,
-            "h": 628.7650146484375,
+            "h": 629.5,
             "l": 606.75,
             "c": 608.0,
             "v": 6025359
@@ -53116,7 +53116,7 @@
           },
           {
             "t": 1790688600,
-            "o": 616.9600219726562,
+            "o": 614.0,
             "h": 624.1300048828125,
             "l": 607.6950073242188,
             "c": 615.2650146484375,
@@ -59409,7 +59409,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.86000061035156,
+            "o": 116.25,
             "h": 117.0,
             "l": 115.30000305175781,
             "c": 115.51820373535156,
@@ -62419,9 +62419,9 @@
           },
           {
             "t": 1789651800,
-            "o": 104.77999877929688,
+            "o": 105.75,
             "h": 109.83999633789062,
-            "l": 104.69999694824219,
+            "l": 104.87030029296875,
             "c": 109.43049621582031,
             "v": 53204387
           },
@@ -62699,9 +62699,9 @@
           },
           {
             "t": 1790256600,
-            "o": 120.61000061035156,
+            "o": 120.01000213623047,
             "h": 125.91999816894531,
-            "l": 119.55000305175781,
+            "l": 119.94999694824219,
             "c": 124.29000091552734,
             "v": 37943678
           },
@@ -62867,7 +62867,7 @@
           },
           {
             "t": 1790688600,
-            "o": 116.86000061035156,
+            "o": 116.25,
             "h": 117.23739624023438,
             "l": 113.97000122070312,
             "c": 117.0199966430664,
@@ -69159,9 +69159,9 @@
           },
           {
             "t": 1790688600,
-            "o": 357.0799865722656,
+            "o": 358.92999267578125,
             "h": 361.260009765625,
-            "l": 355.9775085449219,
+            "l": 357.4100036621094,
             "c": 357.6499938964844,
             "v": 1985588
           },
@@ -72169,9 +72169,9 @@
           },
           {
             "t": 1789651800,
-            "o": 346.07000732421875,
+            "o": 346.30999755859375,
             "h": 349.94000244140625,
-            "l": 345.30999755859375,
+            "l": 346.1597900390625,
             "c": 349.6499938964844,
             "v": 5409834
           },
@@ -72617,7 +72617,7 @@
           },
           {
             "t": 1790688600,
-            "o": 357.0799865722656,
+            "o": 358.92999267578125,
             "h": 361.260009765625,
             "l": 355.7900085449219,
             "c": 360.3900146484375,
@@ -81584,7 +81584,7 @@
           },
           {
             "t": 1788960600,
-            "o": 999.3499755859375,
+            "o": 1003.1777954101562,
             "h": 1042.4000244140625,
             "l": 992.2966918945312,
             "c": 1034.0,
@@ -81920,9 +81920,9 @@
           },
           {
             "t": 1789651800,
-            "o": 954.9979858398438,
+            "o": 961.3300170898438,
             "h": 986.2000122070312,
-            "l": 953.5,
+            "l": 961.1303100585938,
             "c": 976.4600219726562,
             "v": 9037931
           },
@@ -98412,8 +98412,8 @@
           },
           {
             "t": 1790688600,
-            "o": 148.93499755859375,
-            "h": 149.38999938964844,
+            "o": 148.5,
+            "h": 148.85000610351562,
             "l": 146.25,
             "c": 146.49240112304688,
             "v": 10628861
@@ -100974,7 +100974,7 @@
           },
           {
             "t": 1788528600,
-            "o": 111.22000122070312,
+            "o": 110.37999725341797,
             "h": 117.86000061035156,
             "l": 109.7300033569336,
             "c": 116.95999908447266,
@@ -101086,9 +101086,9 @@
           },
           {
             "t": 1788960600,
-            "o": 121.23999786376953,
+            "o": 123.37999725341797,
             "h": 128.47999572753906,
-            "l": 121.23999786376953,
+            "l": 122.58000183105469,
             "c": 127.15499877929688,
             "v": 19020541
           },
@@ -101198,7 +101198,7 @@
           },
           {
             "t": 1789133400,
-            "o": 120.70999908447266,
+            "o": 119.75,
             "h": 123.19999694824219,
             "l": 117.8656005859375,
             "c": 122.41999816894531,
@@ -101870,7 +101870,7 @@
           },
           {
             "t": 1790688600,
-            "o": 148.93499755859375,
+            "o": 148.5,
             "h": 151.7198944091797,
             "l": 145.49000549316406,
             "c": 151.24000549316406,
@@ -110667,9 +110667,9 @@
         "1h": [
           {
             "t": 1788442200,
-            "o": 53.494998931884766,
+            "o": 53.66999816894531,
             "h": 55.689998626708984,
-            "l": 53.279998779296875,
+            "l": 53.48500061035156,
             "c": 54.22999954223633,
             "v": 18731325
           },
@@ -110723,7 +110723,7 @@
           },
           {
             "t": 1788528600,
-            "o": 49.560001373291016,
+            "o": 49.91999816894531,
             "h": 50.209999084472656,
             "l": 46.2599983215332,
             "c": 46.70100021362305,
@@ -132092,7 +132092,7 @@
           },
           {
             "t": 1790947860,
-            "o": 27197.251953125,
+            "o": 27195.884765625,
             "h": 27197.251953125,
             "l": 27175.92578125,
             "c": 27179.453125,
@@ -151588,8 +151588,8 @@
           },
           {
             "t": 1790947860,
-            "o": 13107.7958984375,
-            "h": 13108.1064453125,
+            "o": 13110.154296875,
+            "h": 13110.154296875,
             "l": 13090.056640625,
             "c": 13091.6328125,
             "v": 0
@@ -154712,7 +154712,7 @@
             "t": 1790602200,
             "o": 12598.5224609375,
             "h": 12661.8671875,
-            "l": 12585.8232421875,
+            "l": 12584.86328125,
             "c": 12601.3310546875,
             "v": 0
           },
@@ -164461,7 +164461,7 @@
             "t": 1790602200,
             "o": 568.5999755859375,
             "h": 570.8499755859375,
-            "l": 566.9099731445312,
+            "l": 566.9000244140625,
             "c": 567.469970703125,
             "v": 566969
           },
@@ -165083,8 +165083,8 @@
           },
           {
             "t": 1790688600,
-            "o": 569.8699951171875,
-            "h": 570.4299926757812,
+            "o": 569.0700073242188,
+            "h": 569.6950073242188,
             "l": 566.3599853515625,
             "c": 566.7899780273438,
             "v": 595804
@@ -168373,7 +168373,7 @@
           },
           {
             "t": 1790256600,
-            "o": 554.9650268554688,
+            "o": 554.8300170898438,
             "h": 561.9099731445312,
             "l": 553.239990234375,
             "c": 558.9400024414062,
@@ -168541,7 +168541,7 @@
           },
           {
             "t": 1790688600,
-            "o": 569.8699951171875,
+            "o": 569.0700073242188,
             "h": 573.5,
             "l": 565.2999877929688,
             "c": 572.8800048828125,
@@ -181100,6 +181100,54 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "리사 수 AMD 회장, 7개월 만에 한국 방문…AI 협력 논의 주목 - 스페셜타임스",
+      "link": "https://news.google.com/rss/articles/CBMickFVX3lxTE5yQVItMVRmVldlbUJtVlIyWmtCall2blFnQnY4akc0UlJkUi1DN2R1dXlEeHh3b2p2c2hBVm8wMHYyeXU5MVgxRnBTcmlZZEZoNWxRZ0NjbkE5X1ZxdHgzQ2lLY0xCN2V1WFBIbFNvT19Idw?oc=5",
+      "published": "Mon, 05 Oct 2026 08:23:27 GMT",
+      "publishedAt": "2026-10-05T08:23:27+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMickFVX3lxTE5yQVItMVRmVldlbUJtVlIyWmtCall2blFnQnY4akc0UlJkUi1DN2R1dXlEeHh3b2p2c2hBVm8wMHYyeXU5MVgxRnBTcmlZZEZoNWxRZ0NjbkE5X1ZxdHgzQ2lLY0xCN2V1WFBIbFNvT19Idw?oc=5\" target=\"_blank\">리사 수 AMD 회장, 7개월 만에 한국 방문…AI 협력 논의 주목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">스페셜타임스</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "AMD"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "리사 수 AMD 회장 7개월 만에 방한…'AI 동맹' 넓히나(종합) - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE11Y2NVOFlIdUduLXZQaXBhenB0Qklka3B3ZENFNGt0ejN5V2c5WlFOd0QxcEFzVTNjSExJblpHdGVySXFuM05fcEFsdUliVVU?oc=5",
+      "published": "Mon, 05 Oct 2026 08:23:04 GMT",
+      "publishedAt": "2026-10-05T08:23:04+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE11Y2NVOFlIdUduLXZQaXBhenB0Qklka3B3ZENFNGt0ejN5V2c5WlFOd0QxcEFzVTNjSExJblpHdGVySXFuM05fcEFsdUliVVU?oc=5\" target=\"_blank\">리사 수 AMD 회장 7개월 만에 방한…'AI 동맹' 넓히나(종합)</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "AMD"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "리사 수 AMD 회장, 7일 용산 '게이머데이' 참석…삼성·SK와 'AI 메모리 동맹' 강화 주목 - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE43eTJLUmtxYUJzSFB1NlpIcUw2bTYycUJrdmxxWFBpdERZVndJNEdQZW4welBDb3dHd0RIaFNjbkRCSVJObG1pSEJNdU0wc2s?oc=5",
+      "published": "Mon, 05 Oct 2026 08:03:43 GMT",
+      "publishedAt": "2026-10-05T08:03:43+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE43eTJLUmtxYUJzSFB1NlpIcUw2bTYycUJrdmxxWFBpdERZVndJNEdQZW4welBDb3dHd0RIaFNjbkRCSVJObG1pSEJNdU0wc2s?oc=5\" target=\"_blank\">리사 수 AMD 회장, 7일 용산 '게이머데이' 참석…삼성·SK와 'AI 메모리 동맹' 강화 주목</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 3,
+      "affectedSymbols": [
+        "AMD"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "SK·엔비디아도 점찍은 K-스타트업 “AI 보안으로 ‘로봇 도둑’ 원천 차단” - v.daum.net",
       "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5CTGxQaVExcHUwQzBHY1dEZ0dpVHZFS1lTZk1UYmpiR0FQYlpJcGc0d3B4clNiUFNpdGRmSFVVbHBkT0d4NDJqb2Y0YnpzSWc?oc=5",
       "published": "Mon, 05 Oct 2026 07:42:11 GMT",
@@ -181212,6 +181260,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "삼성전자 반도체 성과급 세부안, 노노갈등 뇌관 되나 - sidae.com",
+      "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1EOFl0bDZQaVZYYTQ2YWVwcVl2M3o4czZLbEluUnUyT2xaWWZoOV9QbUhrckt3X1R5VkF3WThiU2ZqZU1LdzAyVnB3NDBWMlB3aGFHSEtRR053bENkbGc?oc=5",
+      "published": "Mon, 05 Oct 2026 05:33:46 GMT",
+      "publishedAt": "2026-10-05T05:33:46+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiXkFVX3lxTE1EOFl0bDZQaVZYYTQ2YWVwcVl2M3o4czZLbEluUnUyT2xaWWZoOV9QbUhrckt3X1R5VkF3WThiU2ZqZU1LdzAyVnB3NDBWMlB3aGFHSEtRR053bENkbGc?oc=5\" target=\"_blank\">삼성전자 반도체 성과급 세부안, 노노갈등 뇌관 되나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">sidae.com</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "초고수의 선택은 삼성전자...\"매크로 불확실성의 도피처는 반도체\" - 한국경제",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE41YUZPVTVTcE5xRzFlc2k1R0paR1hnaDFRLXBqaUFwV29XZG1CbFEySXdKbzl6U0JxbWJUM1AyRldBcENXc2lXbkpHM1ZGYzVDVmRhUVpnV1Rpdw?oc=5",
       "published": "Mon, 05 Oct 2026 05:23:13 GMT",
@@ -181304,73 +181368,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[기획]AI 중심 리더십 재정비…삼성 기술 쇄신·SK 반도체 올인 - 매일일보",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5UZTdPb1ZwSW5xZXd2bUtOamlzY1pMcFNobWpManZrZGhvSWtNXzRRLXNTZHRzLTJqVXJiWkRZNndGdXc4Ny1ZeUVRSmY2YU5lNGU2SHg3ekQ5NEFmaVlnQ1oyRkU?oc=5",
-      "published": "Mon, 05 Oct 2026 04:00:00 GMT",
-      "publishedAt": "2026-10-05T04:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE5UZTdPb1ZwSW5xZXd2bUtOamlzY1pMcFNobWpManZrZGhvSWtNXzRRLXNTZHRzLTJqVXJiWkRZNndGdXc4Ny1ZeUVRSmY2YU5lNGU2SHg3ekQ5NEFmaVlnQ1oyRkU?oc=5\" target=\"_blank\">[기획]AI 중심 리더십 재정비…삼성 기술 쇄신·SK 반도체 올인</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "반도체/시장"
-      ],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "삼성·SK, 3Q 영업익 ‘180조’ 넘나…‘차세대 HBM’으로 호황 잇는다 - 매일일보",
-      "link": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9PN3U0ZGRoNHFONlloR3ZrVDBrd19FcW9yT2sweGVyQzNwSVJlczd3bXVpZFo1bmhmeDl1ZDhydU5kV0hRdTJBTW5iVWMtSWpTVlJCcml0djhyakpqRkxNY1Y4dlU?oc=5",
-      "published": "Mon, 05 Oct 2026 04:00:00 GMT",
-      "publishedAt": "2026-10-05T04:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZEFVX3lxTE9PN3U0ZGRoNHFONlloR3ZrVDBrd19FcW9yT2sweGVyQzNwSVJlczd3bXVpZFo1bmhmeDl1ZDhydU5kV0hRdTJBTW5iVWMtSWpTVlJCcml0djhyakpqRkxNY1Y4dlU?oc=5\" target=\"_blank\">삼성·SK, 3Q 영업익 ‘180조’ 넘나…‘차세대 HBM’으로 호황 잇는다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">매일일보</font>",
-      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "반도체/시장"
-      ],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
-      "title": "엔비디아 AI 노트북 OLED 한국이 독점 - thelec.kr",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5",
-      "published": "Mon, 05 Oct 2026 03:26:15 GMT",
-      "publishedAt": "2026-10-05T03:26:15+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5\" target=\"_blank\">엔비디아 AI 노트북 OLED 한국이 독점</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">thelec.kr</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "엔비디아 AI 노트북 OLED 한국이 독점 - 디일렉",
-      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5",
-      "published": "Mon, 05 Oct 2026 03:26:15 GMT",
-      "publishedAt": "2026-10-05T03:26:15+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5\" target=\"_blank\">엔비디아 AI 노트북 OLED 한국이 독점</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">디일렉</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T08:06:47+00:00",
+  "newsUpdatedAt": "2026-10-05T08:32:30+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -181395,8 +181395,30 @@
       "relevance": 0
     }
   ],
-  "employmentUpdatedAt": "2026-10-05T07:41:07+00:00",
+  "employmentUpdatedAt": "2026-10-05T08:30:05+00:00",
   "jobPostings": [
+    {
+      "title": "[경력] UI 디자이너",
+      "company": "ames|285532\">채용공고 스크랩 신입 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 3일 전 등록 ㈜이스트게임즈 <a",
+      "source": "게임잡",
+      "sourceSite": "게임잡",
+      "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=285531",
+      "description": "> 서초구 온라인PC게임, 모바일게임 정규직 채용시 3일 전 등록 ㈜이스트게임즈 서초구'));\" target=\"_blank\"> [경력] UI 디자이너 서초구'));\" data-value=\"285531|estgames|285531\">채용공고 스크랩 경력1년↑ 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 3일 전 등록 (주)크래프톤",
+      "published": "2026-10-05",
+      "publishedAt": "2026-10-05T08:30:08+00:00",
+      "area": "클라이언트",
+      "career": "1년 이상",
+      "skills": [],
+      "employmentType": "정규직",
+      "deadline": "채용시 마감 지원하기 스크랩 2026-10-02 15:24 등록 2026-10-02 15:",
+      "detailText": "[경력] UI 디자이너 게임 직업이 되다 - 게임잡 서초구 입니다.\"> --> 서초구\" /> ㈜이스트게임즈 공유하기 인쇄하기 전달하기 [경력] UI 디자이너 모집분야 인터페이스 디자인 툴팁기능 인터페이스 디자인 툴팁닫기 키워드 인터페이스, UX·UI 툴팁기능 인터페이스, UX·UI 툴팁닫기 대표게임 카발RED, 카발온라인, 카발모바일, 고양이다방 툴팁기능 카발RED, 카발온라인, 카발모바일, 고양이다방 툴팁닫기 게임분야 온라인PC게임, 모바일게임 RPG 툴팁기능 디바이스: 온라인PC게임, 모바일게임 장르: RPG 툴팁닫기 경력 경력 1년 이상 고용형태 정규직 학력 학력무관 직급/직책 사원, 대리 모집인원 O명 급여 회사내규에 따름 연봉검색 마감일 채용시 마감 지원하기 스크랩 2026-10-02 15:24 등록 2026-10-02 15:24 수정 모집요강 근무환경 접수안내 기업정보 담당업무 자격조건 우대사항 우대조건 국가유공자, 장애인 근무지역 서울 > 서초구 3호선 남부터미널역 5번 출구 800m 이내 복리후생 연금·보험 국민연금, 고용보험, 산재보험, 건강보험, 퇴직연금 휴무·휴가 주5일근무, 연차 보상제도 장기근속자 포상, 스톡옵션 건강관리 지원 건강검진 경조사 지원 각종 경조금, 경조휴가제 교육·여가 지원 교육비 지원 접수안내 남은기간 채용시 마감 시작일 2026-10-02(금) 지원방법 [당사 홈페이지] 전형절차 서류심사> 과제전형> 실무면접> 최종면접> 최종합격 제출서류 이력서, 포트폴리오 담당자 채용담당자(경영지원팀) 마감일은 기업의 사정으로 인해 조기 마감 또는 변경될 수 있습니다 기업정보 기업정보 상세보기 ㈜이스트게임즈 연봉정보 대표자명 김장중 설립연도 2011년 사원수 130 명 대표게임 카발RED, 카발온라인, 카발모바일, 고양이다방 툴팁기능 카발RED, 카발온라인, 카발모바일, 고양이다방 툴팁닫기 기업형태 비상장(중소기업(300명미만)) 주요사업 게임소프트웨어 개발 기업뉴스 더보기 [X파일] '던파' 아주센 방송에 유저들 분노 ... 왜? 유튜브 영상 갈무리.최근 넥슨의 '던전앤파이터' 유튜브 채널 아라드주민센터 방송이 재개된 가운데, 유저들의 질타가 쏟아지고 있는데...이 방송은 지난 2024년 유저 비하 논란으로 2년여간 방송이 중단됐다가, 갑작스럽게 다시 방송이 시작된 것이다. 문제는 유저들의 반응이었다. 방송이 재개되자 유저들은 \" 무슨 낯짝으로 방송을 다시 하느냐\"며 매서운 비난을 쏟아냈다. 이같은 반응이 나오자 방송 진행자는 \"저 원래 낯짝이 두껍다\"며 자신의 볼을 두드리는 모습을 드러냈다. 방송 진행자가 이같은 태도를 보이자 유저들의 거센 비난이 쇄도했다. 시청자(유저)에게 보일 태도가 아니라는 것이었다. 결국 다시 방송은 중단되고 말았는데... 이에 대해 업계의 한 관계자는 \"방송 진행자가 보일 태도가 아니었다\"면서 \"그럼으로써 유저와의 소통채널이 끝내는 불통 방송이 되지 않았느냐\"며 안하느니만 못한 게 됐다며 안타까움을 피력.키움 DRX 사옥 앞에서 진행된 트럭 시위 - 키움 DRX 트럭 시위 공식 X 채널.\"이같이 초라한 성적으론 곤란하다\" 키움 DRX 팬들 강력 반발키움 DRX의 '리그 오브 레전드' 팬들의 분노가 극에 달하고 있다 하는데... 그 사연의 배경은 이렇다. 키움 DRX '리그 오브 레전드'의 정규리그 성적이 올해를 포함해 무려 5년간 연속 9위에 머무르고 있다는 것이다. 특히 올 시즌에는 시즌 도중에 팀 내 원거리 딜러 '지우'(정지우)를 내주고 KT 롤스터서 '에이밍'(김하람)을 데려오는 트레이드를 단행했는데, 맞아 떨어지는 트레이드가 아니라는 것. 더욱이 지난해 국내 2부 리그인 'LCK 챌린저스 리그'에서 최고의 퍼포먼스를 보여준 정글러 '빈센조'를 원거리 딜러로 포지션을 변경한 데 대해서도 이해 할 수 없는 조치라는 등 팬들은 여러 의문을 제기.이에 키움 DRX 측은 '조커'(조재읍) 감독을 내세워 트레이드 건을 비롯한 선수 기용에 대한 입장문을 내놓았지만 팬들은 납득하기 어렵다는 반응이 지배적.키움 DRX 팬측은 이대로는 곤란하다며 구단측에 유망주 육성 로드맵 등 특단의 대책을 요구하는 등 맹공을 펼치고 있는데, 구단측은 아직까지 뚜렷한 방안을 제시하지 못한 상태. 이에 대해 e스포츠계의 한 관계자는 \" 현재의 성적부진을 타개하기 위한 방안 마련도 중요하지만, 중장기적인 로드맵 마련도 필요해 보인다\"면서 \" 더욱이 팬들의 건설적인 요구라면 이를 수용하는 방향으로 가는 게 옳지 않겠냐\"며 한마디.'고양이 다방'팬들의 아쉬움 속에 역사속으로 사라진 '고양이 다방' 이스트게임즈가 11년 만에 '고양이 다방' 서비스를 종료키로 해 눈길.이 작품은 카페 경영 시뮬레이션과 고양이 키우기 소재를 결합한 SNG다. 다양한 고양이와 꾸미기 요소들이 호평을 받으며 다운로드 130만건을 넘어서는 등 성과를 거두기도 했다.이 회사는 지난 2023년 후속작 '고양이 다방 2 포레스트'를 선보이며 주목을 끌었다. 하지만 전작과 차별화된 풀 3D 그래픽 등을 내세운 노력도 허사였다. 약 1년 2개월 만에 서비스를 마무리했다.이 같은 후속작의 실패 이후에도 '고양이 다방'은 3년 넘게 서비스가 이어져 왔으나, 이번에 끝내 시장 철수란 운명을 맞이하게 된 것이다. 이에따라 회사측은 내달 23일 마켓 다운로드를 차단하는 등 28일 서비스를 완전 종료할 예정이다.지난 2015년부터 장기 서비스가 이어져 온 만큼 이번 회사측의 서비스 종료 결정에 대해 상당수 팬들은 아쉬움을 나타내고 있다. 하지만 회사 측은 유감 표명과 함께 마지막까지 최선을 다하겠다는 입장만 밝히기도. [더게임스데일리 온라인 뉴스팀 tgon@tgdaily.co.kr] 2026-09-18 이스트게임즈 ‘카발 레드’ 새턴 서버 오픈 이스트게임즈(대표 김장중)는 4일 '카발 레드'에 새 서버 새턴을 오픈했다.이번에 오픈한 새턴 서버는 유저의 초기 성장 부담을 낮추기 위해 핫타임 경험치와 도감 혜택을 각각 200% 제공한다. 또한 특별 미션을 통해 영웅 3종 소환카드도 확정적으로 얻을 수 있다.이와 함께 새 캐릭터(클래스) 포스 거너도 도입됐다. 이 캐릭터는 연속 공격과 기동성을 갖춘 원거리 클래스다. 이 회사는 향후 두 번째 서버 이전과 세닐리스 텍툼 카오스 필드 등 다양한 콘텐츠를 작품에 순차적으로 도입할 계획이다. .[더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-08-04 이스트 ‘카발 온라인’ 여름 업데이트 선봬 이스트게임즈(대표 김장중)는 29일 '카발 온라인'에 여름 업데이트 시니스&덱사를 선보였다.이번 업데이트를 통해 기존 전투 콘텐츠인 미션전쟁이 그간 고정된 국가 간 대결 방식에서 진영 시스템으로 개편된다. 해당 콘텐츠를 즐기는 유저의 전투력을 기준으로 시니스와 덱사 진영에 균등하게 배정된다. 또한 미션전쟁 승리 보상도 실제 콘텐츠를 즐긴 유저만이 받을 수 있도록 바뀐다. 이와 함께 신규 콘텐츠 포스 정제소가 도입된다. 포스의 힘이 깃든 다양한 아이템을 재료로 활용해 캐릭터에 능력치와 버프 효과를 얻을 수 있다. 이 외에도 초월급 장비에 새 강화 시스템이 업데이트 되는 등 다양한 콘텐츠가 보강됐다.[더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-07-29 이스트 ‘카발 레드’ 새 서버 오픈 사전예약 이스트게임즈(대표 김장중)는 15일 '카발 레드'의 새턴 서버 오픈 사전예약을 시작했다.이번 사전예약은 내달 서버 오픈 전까지이며, 관련 홈페이지를 통해 신청할 수 있다. 참여 유저에 대해 희귀 등급 소환카드 등을 지급한다.서버 오픈과 함께 새 클래스 포스 거너도 도입된다. 포스 거너는 마력탄을 활용해 강력한 원거리 공격을 펼치는 원거리 공격형 클래스다.[더게임스데일리 강인석 기자 kang12@tgdaily.co.kr] 2026-07-15 본 채용정보는 게임잡의 동의없이 무단전재, 재배포, 재가공할 수 없으며, 구직활동 이외의 용도로 사용될 수 없습니다. 불법/허위/과장/오류 신고 본 정보는 ㈜이스트게임즈 에서 제공한 자료로 게임잡의 동의없이 무단전재 또는 재배포, 재가공할 수 없으며, 게재된 채용기업과 채용담당자의 정보는 구직활동 이외의 용도로 사용될 수 없습니다. 게임잡은 ㈜이스트게임즈 에서 게재한 자료에 대한 오류와 사용자가 이를 신뢰하여 취한 조치에 대해 책임을 지지 않습니다. ㈜이스트게임즈 에서 진행중인 채용 정보확인해 보세요! 10 건 전체보기 ㈜이스트게임즈 스크랩 [신입] UI 디자이너 인터페이스 디자인 신입 서울 > 서초구 채용시 마감 홈페이지 지원 ㈜이스트게임즈 스크랩 [신입] MMORPG 콘텐츠 및 시스템 기획자 게임기획 신입 서울 > 서초구 채용시 마감 홈페이지 지원 ㈜이스트게임즈 스크랩 [경력] MMORPG 콘텐츠 및 시스템 기획자 게임기획 경력 1년↑ 서울 > 서초구 채용시 마감 홈페이지 지원 ㈜이스트게임즈 스크랩 [신입] 모바일 RTS 서버 프로그래머 게임개발(모바일)+ 신입 서울 > 서초구 채용시 마감 홈페이지 지원 ㈜이스트게임즈 스크랩 [경력] 모바일 RTS 서버 프로그래머 게임개발(모바일)+ 경력 3년↑ 서울 > 서초구 채용시 마감 홈페이지 지원 ㈜이스트게임즈 스크랩 [신입] MMORPG 온라인/모바일 게임 클라이언트 프로그래머 게임개발(클라이언트)+ 신입 서울 > 서초구 채용시 마감 홈페이지 지원 배너 공지사항 공지사항 개인정보처리방침 개정 안내 2026.09.30 2026년 추석 연휴 유료서비스 연장적용 및 고객지원 안내 2026.09.15 화성시·인천·전남광주 행정구역 개편에 따른 근무지역 정보 업데이트 안내 2026.07.15 [시스템 점검 공지] 7/15(수) AM 00시-06시 2026.07.03 [시스템 점검 공지] 6/18(목) AM 00시-05시 2026.06.17 서비스 전체보기 GAMEJOB 고객센터 (월~금 09:00~18:00) 일반문의 02-3466-5310, FAX : 02-565-9351, E-Mail : help@gamejob.co.kr 상품문의 02-3466-5266, FAX : 0504-981-3752, E-Mail : ad@gamejob.co.kr copyright © GAMEJOB Corp. All Right Reserved",
+      "sources": [
+        {
+          "site": "게임잡",
+          "link": "https://www.gamejob.co.kr/Recruit/GI_Read/View?GI_No=285531"
+        }
+      ]
+    },
     {
       "title": "[Flyway Games] Jazz & Juice - Animator (1년 이상)",
       "company": "s|285531\">채용공고 스크랩 경력1년↑ 학력무관 서울 > 서초구 온라인PC게임, 모바일게임 정규직 채용시 3일 전 등록 (주)크래프톤 <a",
@@ -185177,6 +185199,10 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1yVFB0elNIa0h5cEZ0dnZreVpmVXh3NDVJZWRaeFJZaW8xUEU2eTU4cExVbzY4Q2ViWElVRnpHdGpzTWNkWExzM0pudHA0X1NrdnM0VWROSG1ZX1ZEOU44eVdPbG93Ykp2VVlIYjIxbUFIQ2xEbkwwOXRWQVRZZw?oc=5"
+        },
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBVTFd1TjRhY1BNbFZXUGw3VFZzaGdpbWdiQzdhQVY5RUo3S1lpOGtQV1h3WkFlWU5ISk5HZHRoNHNJLVYtRXV2Z01nQ2Y0a0l6MzRPaF9zX3ZLQQ?oc=5"
         }
       ]
     },
@@ -185571,29 +185597,9 @@
           "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
-    },
-    {
-      "title": "티쓰리엔터테인먼트 채용정보 - 게임잡",
-      "company": "티쓰리엔터테인먼트",
-      "source": "게임잡",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBjVmZCWHp0NE5qd2dmdXNNTi15bFlJTDVkdzFoWkduUTFqdkgyZ1B3TzZoUmJ1MFN1Zm1raVJQQUVTMDB4Qk1KNUx4NmlYejMwbndiTmNjRzJKa3VoRzJkR2tUU2MyLXd0VjAw?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMia0FVX3lxTFBjVmZCWHp0NE5qd2dmdXNNTi15bFlJTDVkdzFoWkduUTFqdkgyZ1B3TzZoUmJ1MFN1Zm1raVJQQUVTMDB4Qk1KNUx4NmlYejMwbndiTmNjRzJKa3VoRzJkR2tUU2MyLXd0VjAw?oc=5\" target=\"_blank\">티쓰리엔터테인먼트 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">게임잡</font>",
-      "published": "Wed, 30 Sep 2026 05:12:26 GMT",
-      "publishedAt": "2026-09-30T05:12:26+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "게임잡",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "게임잡",
-          "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBjVmZCWHp0NE5qd2dmdXNNTi15bFlJTDVkdzFoWkduUTFqdkgyZ1B3TzZoUmJ1MFN1Zm1raVJQQUVTMDB4Qk1KNUx4NmlYejMwbndiTmNjRzJKa3VoRzJkR2tUU2MyLXd0VjAw?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T08:04:05+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T08:30:06+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185649,6 +185655,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T08:04:05+00:00"
+    "generatedAt": "2026-10-05T08:30:05+00:00"
   }
 }
