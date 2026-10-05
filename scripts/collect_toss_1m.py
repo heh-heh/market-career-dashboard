@@ -28,29 +28,36 @@ def token():
     if not obj.get("access_token"): raise RuntimeError("Toss OAuth token was not returned")
     return obj["access_token"]
 
-def fetch_page(tok,symbol,before=None,count=200):
+def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
     q={"symbol":symbol,"interval":"1m","count":str(count),"adjusted":"true"}
     if before: q["before"]=before
     url=BASE+"/api/v1/candles?"+urlencode(q)
-    for attempt in range(6):
+    for attempt in range(8):
         try:
             req=Request(url,headers={"Authorization":"Bearer "+tok,
                                      "User-Agent":"market-career-dashboard/history-collector"})
             with urlopen(req,timeout=20) as r:
                 return json.loads(r.read()).get("result",{})
         except HTTPError as e:
-            if e.code==429 and attempt<5:
-                time.sleep(2**attempt)
-                continue
             body=e.read().decode("utf-8","ignore")
+            if e.code==429 and attempt<7:
+                time.sleep(min(30,2**attempt))
+                continue
+            if e.code==401 and attempt<2 and refresh_token is not None:
+                msg=body.lower()
+                if "token-revoked" in msg or "unauthorized" in msg:
+                    tok=refresh_token()
+                    time.sleep(0.5)
+                    continue
             raise RuntimeError(f"Toss candles HTTP {e.code}: {body[:300]}")
 
 def collect(symbol,since,pages,sleep_s):
     tok=token()
     rows={}
     before=None
+    refresh=lambda: token()
     for n in range(pages):
-        obj=fetch_page(tok,symbol,before)
+        obj=fetch_page(tok,symbol,before,refresh_token=refresh)
         candles=obj.get("candles") or []
         if not candles: break
         for c in candles:
