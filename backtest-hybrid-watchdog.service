@@ -1,0 +1,16 @@
+[Unit]
+Description=Toss Hybrid Backtest Watchdog
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/market-career-dashboard
+ExecStart=/home/ubuntu/market-career-dashboard/scripts/run_hybrid_watchdog.sh
+Restart=always
+RestartSec=10
+Environment=HOME=/root
+Environment=TOSS_BACKTEST_MIN_DAYS=100
+
+[Install]
+WantedBy=multi-user.target
