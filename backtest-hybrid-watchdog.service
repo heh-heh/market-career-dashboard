@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/home/ubuntu/market-career-dashboard
 ExecStart=/home/ubuntu/market-career-dashboard/scripts/run_hybrid_watchdog.sh
-Restart=always
+Restart=on-failure
 RestartSec=10
 Environment=HOME=/root
 Environment=TOSS_BACKTEST_MIN_DAYS=100
