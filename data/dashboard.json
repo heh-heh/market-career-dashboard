@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T00:58:53+00:00",
+  "updatedAt": "2026-10-05T01:21:43+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180840,6 +180840,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "한미반도체, 스페이스X에 500억원 투자…“테라팹 프로젝트 선제 베팅” - 쿠키뉴스",
+      "link": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBOekhma29uVFZwTjdUZEE5ZlJCc0tEcE93Zl9VZTE1S04xR3p1TkVqcHEyMGQyd2k0WTJtalpvaGw1SnB3ak1OMGZIMFJLdlJ5UTlIX2hOaDdwa2NPY1VCcFZxZw?oc=5",
+      "published": "Sat, 03 Oct 2026 06:36:58 GMT",
+      "publishedAt": "2026-10-03T06:36:58+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiY0FVX3lxTFBOekhma29uVFZwTjdUZEE5ZlJCc0tEcE93Zl9VZTE1S04xR3p1TkVqcHEyMGQyd2k0WTJtalpvaGw1SnB3ak1OMGZIMFJLdlJ5UTlIX2hOaDdwa2NPY1VCcFZxZw?oc=5\" target=\"_blank\">한미반도체, 스페이스X에 500억원 투자…“테라팹 프로젝트 선제 베팅”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">쿠키뉴스</font>",
+      "source": "\"한미반도체\" HBM OR 반도체",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "한미반도체"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "한미반도체 투자분석 2026. 10. 02 - 주달",
       "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBuRTN0YzBFRkRDd2JUc2tueTJXcWpkbDhxbkUtV2x0N2l3OEwtLUxrYWFRZWpsRjQ4bVRKVHlacVRxYVd0cGlWMmdrVmNHSnFMTzlKalBVeUlKTWllanNrV1FENU43c25jSzYyWTFFc093Q00?oc=5",
       "published": "Sat, 03 Oct 2026 02:01:39 GMT",
@@ -180937,6 +180953,22 @@
         "Micron"
       ],
       "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "삼성전자, 분기 영업익 100조 첫 돌파하나…이번 주 3분기 성적표 공개 - 스페셜경제",
+      "link": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9wTkwteS1hcExFcFZzX1RqczlQYTdsWFowMXhvSG1HbUM5WEhuNXdkdnFWa0tucUVlSmxFX3VKVm9rTHBfelhleHRGNnMtUU51U3pnT2l5X3pObS1fZzUxY1lsUnN2UDg5blpvNw?oc=5",
+      "published": "Mon, 05 Oct 2026 01:12:37 GMT",
+      "publishedAt": "2026-10-05T01:12:37+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibEFVX3lxTE9wTkwteS1hcExFcFZzX1RqczlQYTdsWFowMXhvSG1HbUM5WEhuNXdkdnFWa0tucUVlSmxFX3VKVm9rTHBfelhleHRGNnMtUU51U3pnT2l5X3pObS1fZzUxY1lsUnN2UDg5blpvNw?oc=5\" target=\"_blank\">삼성전자, 분기 영업익 100조 첫 돌파하나…이번 주 3분기 성적표 공개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">스페셜경제</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
@@ -181041,6 +181073,22 @@
       "published": "Sun, 04 Oct 2026 22:00:26 GMT",
       "publishedAt": "2026-10-04T22:00:26+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5\" target=\"_blank\">[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">blog.naver.com</font>",
+      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 3,
+      "affectedSymbols": [
+        "Intel"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\" - Naver Blog",
+      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5",
+      "published": "Sun, 04 Oct 2026 22:00:26 GMT",
+      "publishedAt": "2026-10-04T22:00:26+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5\" target=\"_blank\">[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
       "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
       "impact": "중립",
       "importance": "높음",
@@ -181164,6 +181212,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "AMD, 'AI 대모' 페이페이 리 월드랩스 82억달러에 인수 - chosundaily.com",
+      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOOGVvQW9tZ211U2lPVHFERk1GZW1VbHk5dWIwZFJZS1A1aGlxOE42OGhtZkJubWhmS1BJcnV4bGplbE9LN2RhdVp5WkdkUldBWmw3RFozX0QyU1M1MW41WHBCN3dTMXA5aHBXaG56NHZMRDZhQ0E1X1F3T1dFVThzVmJXTXp2QzktQm9ndnppTl9EQlNtM0hXNFpTZ0c5OEQ3N1lUcEJ2WkVXaXhhSG9STFNRUjNMLWE2aXlMLXFiRQ?oc=5",
+      "published": "Sun, 04 Oct 2026 18:04:24 GMT",
+      "publishedAt": "2026-10-04T18:04:24+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMivwFBVV95cUxOOGVvQW9tZ211U2lPVHFERk1GZW1VbHk5dWIwZFJZS1A1aGlxOE42OGhtZkJubWhmS1BJcnV4bGplbE9LN2RhdVp5WkdkUldBWmw3RFozX0QyU1M1MW41WHBCN3dTMXA5aHBXaG56NHZMRDZhQ0E1X1F3T1dFVThzVmJXTXp2QzktQm9ndnppTl9EQlNtM0hXNFpTZ0c5OEQ3N1lUcEJ2WkVXaXhhSG9STFNRUjNMLWE2aXlMLXFiRQ?oc=5\" target=\"_blank\">AMD, 'AI 대모' 페이페이 리 월드랩스 82억달러에 인수</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">chosundaily.com</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "AMD"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "마이크론 메모리 계약 2031년까지…AI 호황 장기화 신호 - 글로벌이코노믹",
       "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNLUhzMFNSVWkyMmhRUlVIZnJMbVVCS1pQMkxsRzFWZnJRWGFvbnNwSURodmFlVTJSYVdEZVp4TkpaMUU3Z1BjdjNIUHhTSXo5NjhMV19jc0hPbndmenh4N0xFRER6NjBtZ2xSOGxFYVY3azBrQnVDck9menRJNXdWLUxiWQ?oc=5",
       "published": "Sun, 04 Oct 2026 18:00:00 GMT",
@@ -181191,22 +181255,6 @@
       "relevance": 2,
       "affectedSymbols": [
         "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\" - Naver Blog",
-      "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5",
-      "published": "Sun, 04 Oct 2026 16:00:26 GMT",
-      "publishedAt": "2026-10-04T16:00:26+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxNZVlkTU8tYm91UXE2N3UxYkNlTWZZOGxXT0lpRHZCaktkZDRyd2tOWXM0d1Z5bWNsem9qbWNHSFRwVW5Ea2RESDAxVEFodFhCVHVXNXJQLXdKVkVmZ3hYNGtCQVdXd2VaWWZKTExHaU45aUNOczY2MTVwdVkwUm9PNFZTZjYyRXQtR21RSHlEbw?oc=5\" target=\"_blank\">[경영전략 써밋 2026] 문종민 인텔 상무 \"에이전틱 AI, 반도체 지정학 바꾼다\"</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Naver Blog</font>",
-      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 3,
-      "affectedSymbols": [
-        "Intel"
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
@@ -181323,57 +181371,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "한미반도체 폭등 맞힌 ‘주식 타짜’ “다음 텐배거는 이 종목” - 중앙일보",
-      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9EOWVoa1VNTmFMY1hKQS1heWdvN2FQdTlxWnVna0cyYVBMbk9vRElDS2dfWEJSb0R0eC1xM2M1Zy1FZDdWZ0lFWUJ4dHZ2ckRlSnkySk5R?oc=5",
-      "published": "Sun, 04 Oct 2026 09:27:48 GMT",
-      "publishedAt": "2026-10-04T09:27:48+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVkFVX3lxTE9EOWVoa1VNTmFMY1hKQS1heWdvN2FQdTlxWnVna0cyYVBMbk9vRElDS2dfWEJSb0R0eC1xM2M1Zy1FZDdWZ0lFWUJ4dHZ2ckRlSnkySk5R?oc=5\" target=\"_blank\">한미반도체 폭등 맞힌 ‘주식 타짜’ “다음 텐배거는 이 종목”</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">중앙일보</font>",
-      "source": "\"한미반도체\" HBM OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "한미반도체"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개 - 한국경제",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5",
-      "published": "Sun, 04 Oct 2026 09:15:34 GMT",
-      "publishedAt": "2026-10-04T09:15:34+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5\" target=\"_blank\">[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국경제</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개 - hankyung.com",
-      "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5",
-      "published": "Sun, 04 Oct 2026 09:15:34 GMT",
-      "publishedAt": "2026-10-04T09:15:34+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWkFVX3lxTFBIYWhwMlF4ajVBN1AwZWFYemxNRHZES1pmX3hHUVRRRWtyb2tiX2RHRy1EWDcwRVpwdUdlcWxtXzVMMFY3QkpLMU1zT0pxTy1TYzJLN3dtbzJ0UQ?oc=5\" target=\"_blank\">[포토] 삼성전자, 지역민에 ‘용인 반도체산단’ 미래 모습 소개</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">hankyung.com</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "삼성전자"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T01:01:21+00:00",
+  "newsUpdatedAt": "2026-10-05T01:25:04+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -182934,6 +182934,26 @@
       "source": "잡코리아",
       "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5\" target=\"_blank\">이카운트 개발자 신입채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">잡코리아</font>",
+      "published": "Fri, 02 Oct 2026 15:54:59 GMT",
+      "publishedAt": "2026-10-02T15:54:59+00:00",
+      "area": "개발",
+      "career": "신입",
+      "skills": [],
+      "sourceSite": "잡코리아",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "잡코리아",
+          "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "이카운트 개발자 신입채용 - jobkorea.co.kr",
+      "company": "기업명 확인 필요",
+      "source": "잡코리아",
+      "link": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1mT3VVWDVtWmVvTlFWQ1ROazFMY0dBaUNLOENqZ29ibnNoMTY0elI2VUx2T21yVXdBYzRyc0d1UHF1a2NoMmZ5RnhIamliTW5iRE9SZGF4UkkzeUZwNFpTYWtLN212MUE?oc=5\" target=\"_blank\">이카운트 개발자 신입채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">jobkorea.co.kr</font>",
       "published": "Fri, 02 Oct 2026 15:54:59 GMT",
       "publishedAt": "2026-10-02T15:54:59+00:00",
       "area": "개발",
@@ -184792,6 +184812,10 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
+        },
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iS2gzRzRBYnVaUkZubGd3VzJmdHlkYzVpRi03NjNuVVBoQUFRUE9FOUNKN0ZpSVEyeVJ4YTJ6R2VXeW02bjF1dHdmb1p1bWVDVWtVazJiY2ZGZw?oc=5"
         }
       ]
     },
@@ -185344,10 +185368,6 @@
         {
           "site": "잡코리아",
           "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE90U1ljX0xJa2JNM29vMW8wWGJNRll6MXFNRFlwREliR1RvRGpHdkplbzdxRGFDY2E2RlMxZW5fR2lXTGN3Ty16cVBzSmx1OFpQWThRaWo2QU0tY0xmcjlOOQ?oc=5"
-        },
-        {
-          "site": "잡코리아",
-          "link": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE93dFBaTVVwbG1LSFllclZ6U0pTclBIOEdIdlEwekRud3dTV25UaDVIcjhMSU83bUhlNzdsd3FYQXhfUzBVc0FSQlJRV0VxR3VBUnE2NVQzY0JGV2pGT0E?oc=5"
         }
       ]
     },
@@ -185570,29 +185590,9 @@
           "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5"
         }
       ]
-    },
-    {
-      "title": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다 - 사람인",
-      "company": "스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자",
-      "source": "사람인",
-      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5\" target=\"_blank\">스탠탑비뇨의학과의원 CRM 프로그램 AI 고도화 개발자 채용합니다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
-      "published": "Wed, 30 Sep 2026 03:00:00 GMT",
-      "publishedAt": "2026-09-30T03:00:00+00:00",
-      "area": "AI/데이터",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "사람인",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "사람인",
-          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQV21OelNVRFBpRk1WTjZKd2JkZl9aVGxYWDEwdkZ4RDhTbXQ4bHhyLWxoRFFDdjBJTTNoRDBJcEgzN2JONVpEc0hKVWt3c0Zqb2hCSnROWTNTREFtdGhZMkpPbjFoR25zMDlHY3IyU3Uxel9TZnZHc2lwWTBZY3pLaFBud3J1RWZq?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T00:58:54+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T01:21:43+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185648,6 +185648,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T00:58:53+00:00"
+    "generatedAt": "2026-10-05T01:21:43+00:00"
   }
 }
