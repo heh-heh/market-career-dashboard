@@ -1,0 +1,131 @@
+{
+  "symbols": {
+    "NVDA": {
+      "available": true,
+      "days": 5,
+      "bars_3m": 631,
+      "train_days": 3,
+      "test_days": 2,
+      "optimized_params": {
+        "rvol": 1.2,
+        "rsi_hi": 65,
+        "atr_gap": 0.6,
+        "stop_atr": 1.2,
+        "rr": 1.0,
+        "max_risk_pct": 0.012
+      },
+      "train": {
+        "trades": 0
+      },
+      "test": {
+        "trades": 5,
+        "win_rate_pct": 60.0,
+        "avg_ret_pct": 0.0254,
+        "median_ret_pct": 0.1518,
+        "profit_factor": 1.303,
+        "total_ret_pct": 0.127,
+        "max_drawdown_pct": -0.213,
+        "stop_rate_pct": 40.0
+      }
+    },
+    "AMD": {
+      "available": true,
+      "days": 5,
+      "bars_3m": 631,
+      "train_days": 3,
+      "test_days": 2,
+      "optimized_params": {
+        "rvol": 1.2,
+        "rsi_hi": 65,
+        "atr_gap": 0.6,
+        "stop_atr": 1.2,
+        "rr": 1.0,
+        "max_risk_pct": 0.012
+      },
+      "train": {
+        "trades": 1,
+        "win_rate_pct": 0.0,
+        "avg_ret_pct": -1.0786,
+        "median_ret_pct": -1.0786,
+        "profit_factor": 0.0,
+        "total_ret_pct": -1.079,
+        "max_drawdown_pct": 0.0,
+        "stop_rate_pct": 100.0
+      },
+      "test": {
+        "trades": 0
+      }
+    },
+    "INTC": {
+      "available": false
+    },
+    "SOXL": {
+      "available": true,
+      "days": 5,
+      "bars_3m": 631,
+      "train_days": 3,
+      "test_days": 2,
+      "optimized_params": {
+        "rvol": 1.2,
+        "rsi_hi": 75,
+        "atr_gap": 1.2,
+        "stop_atr": 1.2,
+        "rr": 1.2,
+        "max_risk_pct": 0.012
+      },
+      "train": {
+        "trades": 5,
+        "win_rate_pct": 60.0,
+        "avg_ret_pct": 0.1654,
+        "median_ret_pct": 0.4023,
+        "profit_factor": 1.609,
+        "total_ret_pct": 0.827,
+        "max_drawdown_pct": -1.358,
+        "stop_rate_pct": 40.0
+      },
+      "test": {
+        "trades": 2,
+        "win_rate_pct": 0.0,
+        "avg_ret_pct": -0.7311,
+        "median_ret_pct": -0.7311,
+        "profit_factor": 0.0,
+        "total_ret_pct": -1.462,
+        "max_drawdown_pct": -0.507,
+        "stop_rate_pct": 100.0
+      }
+    },
+    "SOXS": {
+      "available": false
+    },
+    "TQQQ": {
+      "available": true,
+      "days": 5,
+      "bars_3m": 631,
+      "train_days": 3,
+      "test_days": 2,
+      "optimized_params": {
+        "rvol": 1.2,
+        "rsi_hi": 65,
+        "atr_gap": 0.6,
+        "stop_atr": 1.2,
+        "rr": 1.0,
+        "max_risk_pct": 0.012
+      },
+      "train": {
+        "trades": 0
+      },
+      "test": {
+        "trades": 2,
+        "win_rate_pct": 0.0,
+        "avg_ret_pct": -0.5121,
+        "median_ret_pct": -0.5121,
+        "profit_factor": 0.0,
+        "total_ret_pct": -1.024,
+        "max_drawdown_pct": -0.568,
+        "stop_rate_pct": 100.0
+      }
+    }
+  },
+  "source": "MarketParquet free intraday sample pack",
+  "formula": "V3 next-open execution, 3-minute bars"
+}
