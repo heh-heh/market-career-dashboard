@@ -33,12 +33,12 @@ def summarize(rows):
         out.append({
             "pattern":pattern,
             "signals":len(items),
-            "avg3mReturnPct":pct(returns3),
-            "win3mPct":win(returns3),
-            "avg5mReturnPct":pct(returns5),
-            "win5mPct":win(returns5),
-            "avg10mReturnPct":pct(returns10),
-            "win10mPct":win(returns10),
+            "avg9mReturnPct":pct(returns3),
+            "win9mPct":win(returns3),
+            "avg15mReturnPct":pct(returns5),
+            "win15mPct":win(returns5),
+            "avg30mReturnPct":pct(returns10),
+            "win30mPct":win(returns10),
             "stopWithin10BarsPct":round(sum(bool(x["stopWithin10Bars"]) for x in items)/len(items)*100,1) if items else None,
         })
     return out
@@ -100,9 +100,9 @@ def main():
     for r in report["summary"]:
         print(
             f'{r["pattern"]}: signals={r["signals"]} '
-            f'avg3={r["avg3mReturnPct"]}% win3={r["win3mPct"]}% '
-            f'avg5={r["avg5mReturnPct"]}% win5={r["win5mPct"]}% '
-            f'avg10={r["avg10mReturnPct"]}% win10={r["win10mPct"]}% '
+            f'avg9m={r["avg9mReturnPct"]}% win9m={r["win9mPct"]}% '
+            f'avg15m={r["avg15mReturnPct"]}% win15m={r["win15mPct"]}% '
+            f'avg30m={r["avg30mReturnPct"]}% win30m={r["win30mPct"]}% '
             f'stop10={r["stopWithin10BarsPct"]}%'
         )
 
