@@ -434,6 +434,13 @@ class Handler(BaseHTTPRequestHandler):
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             self.send_json({"ok":True,**LIVE_TRADER.status()}); return
+        if path=="/api/trading/live/account":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**LIVE_TRADER.account_snapshot()}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/trading/paper/portfolio":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
