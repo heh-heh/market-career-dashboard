@@ -36,7 +36,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <section id="v8" class="view">
   <div class="grid">
     <div class="card"><div class="label">자동매매 인증</div><div id="tradingAuthState" class="signal">로그인 상태 확인 중...</div><div class="settings-actions" style="margin-top:12px"><button id="tradingLoginBtn" type="button">설정 로그인 사용</button><button id="tradingLogoutBtn" type="button">로그아웃</button></div></div>
-    <div class="card"><div class="label">실거래 게이트</div><div id="tradingLiveLock" class="signal">서버 상태 확인 중...</div><div class="settings-actions" style="margin-top:12px"><button id="liveArmBtn" type="button" class="danger">실거래 ARM</button><button id="liveDisarmBtn" type="button" class="secondary">ARM 해제</button><button id="liveEngineBtn" type="button">엔진 시작</button><button id="liveAutoBtn" type="button" class="secondary">자동매매 ON</button><button id="liveScanBtn" type="button" class="secondary">분석 갱신</button></div></div>
+    <div class="card"><div class="label">실거래 게이트</div><div id="tradingLiveLock" class="signal">서버 상태 확인 중...</div><div class="grid" style="margin-top:12px"><div class="signal"><b>ARM</b><br><span id="liveArmState">OFF</span></div><div class="signal"><b>엔진</b><br><span id="liveEngineState">OFF</span></div><div class="signal"><b>자동매매</b><br><span id="liveAutoState">OFF</span></div></div><div class="settings-actions" style="margin-top:12px"><button id="liveArmBtn" type="button" class="danger">ARM</button><button id="liveDisarmBtn" type="button" class="secondary">ARM 해제</button><button id="liveEngineBtn" type="button">엔진 ON/OFF</button><button id="liveAutoBtn" type="button" class="secondary">자동매매 ON/OFF</button><button id="liveScanBtn" type="button" class="secondary">분석 갱신</button></div></div>
   </div>
   <div id="liveTradingPanel" style="display:none">
     <div class="grid">
@@ -197,7 +197,14 @@ async function refreshLiveTrading(){
   document.getElementById("livePosition").textContent=d.managedSymbol?(d.managedSymbol+" · 진입가 "+(d.entryPrice?"$"+Number(d.entryPrice).toFixed(2):"체결 대기")+" · 미체결 "+(d.pendingSide||"없음")):"관리 중인 자동매매 포지션 없음";
   document.getElementById("liveLastAction").textContent="최근 스캔: "+(d.lastScanAt||"-")+" · "+(d.lastAction||"실행 없음");
   document.getElementById("liveLastError").textContent=d.lastError?("오류: "+d.lastError):"";
-  document.getElementById("liveEngineBtn").textContent=d.engineEnabled?"실거래 엔진 중지":"실거래 엔진 시작";
+  document.getElementById("liveArmState").textContent=d.liveArmed?"ON":"OFF";
+  document.getElementById("liveArmState").className=d.liveArmed?"up":"down";
+  document.getElementById("liveEngineState").textContent=d.engineEnabled?"ON":"OFF";
+  document.getElementById("liveEngineState").className=d.engineEnabled?"up":"down";
+  document.getElementById("liveAutoState").textContent=d.liveAutoEnabled?"ON":"OFF";
+  document.getElementById("liveAutoState").className=d.liveAutoEnabled?"up":"down";
+  document.getElementById("liveEngineBtn").textContent=d.engineEnabled?"엔진 OFF":"엔진 ON";
+  document.getElementById("liveAutoBtn").textContent=d.liveAutoEnabled?"자동매매 OFF":"자동매매 ON";
   document.getElementById("liveEngineBtn").disabled=!d.liveTradingEnabled;
   document.getElementById("liveArmBtn").disabled=!!d.liveArmed;
   document.getElementById("liveDisarmBtn").disabled=!d.liveArmed;
