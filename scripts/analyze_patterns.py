@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 
-from pattern_engine import aggregate_3m, common_precondition, evaluate_signals, scan_patterns
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from pattern_engine import aggregate_3m, common_precondition, evaluate_signals, scan_patterns
 DATA = ROOT / "data" / "dashboard.json"
 
 
@@ -37,7 +39,7 @@ def summarize(rows):
             "win5mPct":win(returns5),
             "avg10mReturnPct":pct(returns10),
             "win10mPct":win(returns10),
-            "stopWithin10BarsPct":win([(-1 if x["stopWithin10Bars"] else 1) for x in items]) if items else None,
+            "stopWithin10BarsPct":round(sum(bool(x["stopWithin10Bars"]) for x in items)/len(items)*100,1) if items else None,
         })
     return out
 
