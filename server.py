@@ -159,6 +159,8 @@ def toss_quotes(cfg, items):
             }
     return out
 
+LIVE_TRADER.set_token_provider(lambda: toss_access_token(load_secrets()))
+
 def yahoo_quote(symbol):
     url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
     req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 market-career-dashboard/1.3"})
