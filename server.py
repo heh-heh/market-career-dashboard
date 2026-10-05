@@ -468,7 +468,7 @@ class Handler(BaseHTTPRequestHandler):
                 page=None
                 pages=None
                 for line in reversed(text.splitlines()):
-                    m=re.search(r"^(\\w+): page (\\d+)/(\\d+), fetched=(\\d+), stored=(\\d+)",line)
+                    m=re.search(r"^(\w+): page (\d+)/(\d+), fetched=(\d+), stored=(\d+)",line)
                     if m:
                         current=m.group(1); page=int(m.group(2)); pages=int(m.group(3)); break
                 if result_path.exists():
