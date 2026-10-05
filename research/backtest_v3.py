@@ -10,7 +10,8 @@ OUT = Path("research")
 OUT.mkdir(exist_ok=True)
 
 def load():
-    raw = urllib.request.urlopen(URL, timeout=60).read()
+    req = urllib.request.Request(URL, headers={"User-Agent":"Mozilla/5.0 market-career-dashboard-backtest"})
+    raw = urllib.request.urlopen(req, timeout=60).read()
     z = zipfile.ZipFile(io.BytesIO(raw))
     frames=[]
     for n in z.namelist():
