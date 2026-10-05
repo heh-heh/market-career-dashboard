@@ -435,10 +435,8 @@ class Handler(BaseHTTPRequestHandler):
                     if item.get("symbol") and item.get("price") is not None:
                         prices[item["symbol"]]=float(item["price"])
                 self.send_json({"ok":True,"portfolio":paper_broker.snapshot(prices)}); return
-            except Exception as e:
+            except Exception:
                 self.send_json({"ok":False,"error":"paper portfolio unavailable"},503); return
-    def do_GET(self):
-        path=self.path.split("?")[0]
         if path=="/api/health":
             self.send_json({"ok":True,"service":"market-career-dashboard"})
             return
@@ -480,16 +478,15 @@ class Handler(BaseHTTPRequestHandler):
         if path=="/api/trading/paper/order":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
-            body=self.read_json()
             try:
+                body=self.read_json()
                 side=str(body.get("side","")).upper()
                 symbol=str(body.get("symbol","")).upper().strip()
                 quantity=int(body.get("quantity",0))
                 price=float(body.get("price",0))
                 if side not in {"BUY","SELL"} or not symbol or quantity<=0 or price<=0:
                     raise ValueError("invalid paper order")
-                notional=quantity*price
-                if notional>MAX_ORDER_KRW:
+                if quantity*price>MAX_ORDER_KRW:
                     raise ValueError("MAX_ORDER_KRW exceeded")
                 trade=paper_broker.trade(symbol,side,quantity,price)
                 self.send_json({"ok":True,"mode":"paper","trade":trade,"portfolio":paper_broker.snapshot({symbol:price})}); return
@@ -504,8 +501,6 @@ class Handler(BaseHTTPRequestHandler):
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             self.send_json({"ok":False,"error":"live trading is deliberately disabled in this integration stage"},403); return
-    def do_POST(self):
-        path=self.path.split("?")[0]
         if path=="/api/login":
             try:
                 body=self.read_json()
