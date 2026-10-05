@@ -27,10 +27,12 @@ jobs:
         with:
           python-version: "3.x"
       - name: Validate Python sources
-        run: python -m py_compile server.py live_trader.py trading.py scripts/update_data.py
+        run: python -m py_compile server.py live_trader.py trading.py pattern_engine.py scripts/update_data.py scripts/analyze_patterns.py
 
       - name: Collect public data
         run: python scripts/update_data.py
+      - name: Analyze 3m patterns
+        run: python scripts/analyze_patterns.py
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"
