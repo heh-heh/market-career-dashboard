@@ -8,6 +8,7 @@ WorkingDirectory=/home/ubuntu/market-career-dashboard
 ExecStart=/usr/bin/python3 /home/ubuntu/market-career-dashboard/server.py
 Restart=always
 RestartSec=5
+EnvironmentFile=-/home/ubuntu/market-career-dashboard/.env
 Environment=HOST=0.0.0.0
 Environment=PORT=8080
 Environment=UPDATE_INTERVAL=300
