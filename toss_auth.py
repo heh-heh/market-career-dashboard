@@ -31,7 +31,8 @@ def get_token(cfg: dict, force: bool = False) -> str:
                 data = json.loads(CACHE.read_text(encoding="utf-8"))
                 token = str(data.get("access_token") or "")
                 expires_at = float(data.get("expires_at") or 0)
-                if token and now < expires_at - 60:
+                issued_at = float(data.get("issued_at") or 0)
+                if token and now < expires_at - 60 and (not force or now - issued_at < 10):
                     return token
             except Exception:
                 pass
@@ -59,7 +60,7 @@ def get_token(cfg: dict, force: bool = False) -> str:
         expires = max(120, int(obj.get("expires_in") or 3600))
         tmp = CACHE.with_suffix(".tmp")
         tmp.write_text(
-            json.dumps({"access_token": token, "expires_at": now + expires}),
+            json.dumps({"access_token": token, "expires_at": now + expires, "issued_at": now}),
             encoding="utf-8",
         )
         os.chmod(tmp, 0o600)
