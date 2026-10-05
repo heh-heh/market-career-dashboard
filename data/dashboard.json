@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T03:24:37+00:00",
+  "updatedAt": "2026-10-05T03:31:24+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -181020,6 +181020,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "엔비디아 AI 노트북 OLED 한국이 독점 - thelec.kr",
+      "link": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5",
+      "published": "Mon, 05 Oct 2026 03:26:15 GMT",
+      "publishedAt": "2026-10-05T03:26:15+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiZkFVX3lxTE83SF9aQmlMWVRRXy01Q2tMbW1nWWZLSlQzYVdhb1FSU0JGbHpvNmp0Um1SNHY0SmRsYVVqeWx6T25WanVrc2xJM2haYUU5WmlnMlREQ1Bhcmx1MU5OWjh0SzdDY2ZVdw?oc=5\" target=\"_blank\">엔비디아 AI 노트북 OLED 한국이 독점</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">thelec.kr</font>",
+      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "NVIDIA"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나 - 조선일보",
       "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5",
       "published": "Mon, 05 Oct 2026 02:47:44 GMT",
@@ -181140,6 +181156,22 @@
       "impact": "중립",
       "importance": "높음",
       "relevance": 2,
+      "affectedSymbols": [
+        "삼성전자"
+      ],
+      "impactScore": 2,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "[주간증시일정] 국채금리·FOMC 의사록·삼성전자 실적·AI 반도체 - 네이버 프리미엄콘텐츠",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQUmF4NGVOSk1rOExEMkVCS2RZTEJHajE0WXdUMzhOTjhkSDBEdkNGN3JXX1B3SjJPX2l1R3hKUmdYQWhXa2R1OW5kcVBZTVF6TENDMlZJWTlqRTBELVlpS1p0Um9yaG9hOEpPV2ctVXRZN1gtdU5yV3c5ZkRlblFlTXY3MkpIUWJR?oc=5",
+      "published": "Mon, 05 Oct 2026 00:00:00 GMT",
+      "publishedAt": "2026-10-05T00:00:00+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxQUmF4NGVOSk1rOExEMkVCS2RZTEJHajE0WXdUMzhOTjhkSDBEdkNGN3JXX1B3SjJPX2l1R3hKUmdYQWhXa2R1OW5kcVBZTVF6TENDMlZJWTlqRTBELVlpS1p0Um9yaG9hOEpPV2ctVXRZN1gtdU5yV3c5ZkRlblFlTXY3MkpIUWJR?oc=5\" target=\"_blank\">[주간증시일정] 국채금리·FOMC 의사록·삼성전자 실적·AI 반도체</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">네이버 프리미엄콘텐츠</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "중립",
+      "importance": "높음",
+      "relevance": 3,
       "affectedSymbols": [
         "삼성전자"
       ],
@@ -181337,41 +181369,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "AMD, 'AI 대모' 페이페이 리 월드랩스 82억달러에 인수 - chosundaily.com",
-      "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxOOGVvQW9tZ211U2lPVHFERk1GZW1VbHk5dWIwZFJZS1A1aGlxOE42OGhtZkJubWhmS1BJcnV4bGplbE9LN2RhdVp5WkdkUldBWmw3RFozX0QyU1M1MW41WHBCN3dTMXA5aHBXaG56NHZMRDZhQ0E1X1F3T1dFVThzVmJXTXp2QzktQm9ndnppTl9EQlNtM0hXNFpTZ0c5OEQ3N1lUcEJ2WkVXaXhhSG9STFNRUjNMLWE2aXlMLXFiRQ?oc=5",
-      "published": "Sun, 04 Oct 2026 18:04:24 GMT",
-      "publishedAt": "2026-10-04T18:04:24+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMivwFBVV95cUxOOGVvQW9tZ211U2lPVHFERk1GZW1VbHk5dWIwZFJZS1A1aGlxOE42OGhtZkJubWhmS1BJcnV4bGplbE9LN2RhdVp5WkdkUldBWmw3RFozX0QyU1M1MW41WHBCN3dTMXA5aHBXaG56NHZMRDZhQ0E1X1F3T1dFVThzVmJXTXp2QzktQm9ndnppTl9EQlNtM0hXNFpTZ0c5OEQ3N1lUcEJ2WkVXaXhhSG9STFNRUjNMLWE2aXlMLXFiRQ?oc=5\" target=\"_blank\">AMD, 'AI 대모' 페이페이 리 월드랩스 82억달러에 인수</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">chosundaily.com</font>",
-      "source": "\"AMD\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "AMD"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "마이크론 메모리 계약 2031년까지…AI 호황 장기화 신호 - 글로벌이코노믹",
-      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNLUhzMFNSVWkyMmhRUlVIZnJMbVVCS1pQMkxsRzFWZnJRWGFvbnNwSURodmFlVTJSYVdEZVp4TkpaMUU3Z1BjdjNIUHhTSXo5NjhMV19jc0hPbndmenh4N0xFRER6NjBtZ2xSOGxFYVY3azBrQnVDck9menRJNXdWLUxiWQ?oc=5",
-      "published": "Sun, 04 Oct 2026 18:00:00 GMT",
-      "publishedAt": "2026-10-04T18:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxNLUhzMFNSVWkyMmhRUlVIZnJMbVVCS1pQMkxsRzFWZnJRWGFvbnNwSURodmFlVTJSYVdEZVp4TkpaMUU3Z1BjdjNIUHhTSXo5NjhMV19jc0hPbndmenh4N0xFRER6NjBtZ2xSOGxFYVY3azBrQnVDck9menRJNXdWLUxiWQ?oc=5\" target=\"_blank\">마이크론 메모리 계약 2031년까지…AI 호황 장기화 신호</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">글로벌이코노믹</font>",
-      "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T03:27:05+00:00",
+  "newsUpdatedAt": "2026-10-05T03:33:52+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -182885,6 +182885,26 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBySk05bTJkNEtUU244Wm85NGVCT3Y1WGlYbVFMX3pjc09qUnd3alFVNlJ2UkRFcGVNcEY1Q2xOTTZLTE5nMkRZSVJvTV9TTmlwUUZxbS1CM3JEUQ?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "직업별 채용정보 - 사람인",
+      "company": "직업별",
+      "source": "사람인",
+      "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOVHgtd1ZHN21ma1V2V0dxQjQ2QU44QU9JdDEzMHVLRDRQVTFqenR4MWR2SDVxbEtoVzNhQVhxNzI3cWNTM3NqMWFzUkRtY1RWblNqR212XzkzWUZsR3RMQW1fQ3NkOGZkQ1AzbDZQWjVNbHlCRkhtMVVCM0xHRDg1N0FYSV9MX0Y2?oc=5",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiiAFBVV95cUxOVHgtd1ZHN21ma1V2V0dxQjQ2QU44QU9JdDEzMHVLRDRQVTFqenR4MWR2SDVxbEtoVzNhQVhxNzI3cWNTM3NqMWFzUkRtY1RWblNqR212XzkzWUZsR3RMQW1fQ3NkOGZkQ1AzbDZQWjVNbHlCRkhtMVVCM0xHRDg1N0FYSV9MX0Y2?oc=5\" target=\"_blank\">직업별 채용정보</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">사람인</font>",
+      "published": "Fri, 02 Oct 2026 21:08:00 GMT",
+      "publishedAt": "2026-10-02T21:08:00+00:00",
+      "area": "개발",
+      "career": "경력",
+      "skills": [],
+      "sourceSite": "사람인",
+      "detailText": "Google News",
+      "sources": [
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOVHgtd1ZHN21ma1V2V0dxQjQ2QU44QU9JdDEzMHVLRDRQVTFqenR4MWR2SDVxbEtoVzNhQVhxNzI3cWNTM3NqMWFzUkRtY1RWblNqR212XzkzWUZsR3RMQW1fQ3NkOGZkQ1AzbDZQWjVNbHlCRkhtMVVCM0xHRDg1N0FYSV9MX0Y2?oc=5"
         }
       ]
     },
@@ -185570,29 +185590,9 @@
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5tQVI3QkxHckpUVjdDYXZ5SkRPMEpmcnB3LV9JSGFxQzBpN0xFc2lqRm1jcDh1bzVubmozR0ZfVHUtT0c5QkI1RGVOYl8ybjRyMFA4U3N1TGNTUG1DaldOb3gzUzBIOXZJRF8yNnZ5Nk4zdkxDZG9lNkdyY05UQQ?oc=5"
         }
       ]
-    },
-    {
-      "title": "H/W 회로 설계 차장급 채용 - 점핏",
-      "company": "H/W 회로 설계 차장급",
-      "source": "점핏",
-      "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5tQVI3QkxHckpUVjdDYXZ5SkRPMEpmcnB3LV9JSGFxQzBpN0xFc2lqRm1jcDh1bzVubmozR0ZfVHUtT0c5QkI1RGVOYl8ybjRyMFA4U3N1TGNTUG1DaldOb3gzUzBIOXZJRF8yNnZ5Nk4zdkxDZG9lNkdyY05UQQ?oc=5",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMifkFVX3lxTE5tQVI3QkxHckpUVjdDYXZ5SkRPMEpmcnB3LV9JSGFxQzBpN0xFc2lqRm1jcDh1bzVubmozR0ZfVHUtT0c5QkI1RGVOYl8ybjRyMFA4U3N1TGNTUG1DaldOb3gzUzBIOXZJRF8yNnZ5Nk4zdkxDZG9lNkdyY05UQQ?oc=5\" target=\"_blank\">H/W 회로 설계 차장급 채용</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">점핏</font>",
-      "published": "Wed, 30 Sep 2026 04:12:21 GMT",
-      "publishedAt": "2026-09-30T04:12:21+00:00",
-      "area": "개발",
-      "career": "경력",
-      "skills": [],
-      "sourceSite": "점핏",
-      "detailText": "Google News",
-      "sources": [
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE5tQVI3QkxHckpUVjdDYXZ5SkRPMEpmcnB3LV9JSGFxQzBpN0xFc2lqRm1jcDh1bzVubmozR0ZfVHUtT0c5QkI1RGVOYl8ybjRyMFA4U3N1TGNTUG1DaldOb3gzUzBIOXZJRF8yNnZ5Nk4zdkxDZG9lNkdyY05UQQ?oc=5"
-        }
-      ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T03:24:38+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T03:31:24+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185648,6 +185648,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T03:24:37+00:00"
+    "generatedAt": "2026-10-05T03:31:24+00:00"
   }
 }
