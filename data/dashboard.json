@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T07:02:49+00:00",
+  "updatedAt": "2026-10-05T07:10:35+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180571,7 +180571,7 @@
       "published": "Mon, 05 Oct 2026 06:04:52 GMT",
       "publishedAt": "2026-10-05T06:04:52+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiYEFVX3lxTE92S2NSRjdYcTJvUlZjRXV4bmV1OFFsdUxiTXl0ckVzcFM1SU9WVGhCOWVFWFlzWTJ2d2J5eVNvUmU1Wkx0cW5kUEZYVjRJRURRYkdIZlVWdjVaNUZENUozZA?oc=5\" target=\"_blank\">180조 벌어도 투자할 곳 줄섰다…삼성·SK, 반도체 ‘쩐의 전쟁’</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">메트로신문</font>",
-      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
       "impact": "긍정",
       "importance": "높음",
       "relevance": 2,
@@ -180583,10 +180583,10 @@
     },
     {
       "title": "인텔 반도체 소송에 미국 대중음악 '최악의 립싱크' 사태가 소환된 이유 - 한국일보",
-      "link": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9TR1dFN0t0UGxNY3prMnd4cnQzbFZNVVJVLTBYRDNkSTk0NzlDMDVGcUdTbGRUZ3NhZ0xRVm5aeVdCSjMxdHNXUmZyV2VleTRvSDd3QmVhSW9LQkh5bXhLMDVDdzBCTFVXNWFDa241NXdFc2_SAXNBVV95cUxPU0dXRTdLdFBsTWN6azJ3eHJ0M2xWTVVSVS0wWEQzZEk5NDc5QzA1RnFHU2xkVGdzYWdMUVZuWnlXQkozMXRzV1JmcldlZXk0b0g3d0JlYUlvS0JIeW14SzA1Q3cwQkxVVzVhQ2tuNTV3RXNv?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1WU0tWb2lmdVhrNEVyMkJWcFM3cnRyVUNlZXVuT1daUVpxdGJNMTFBaTl0MlRaaDhMc1BfRGNYNV9teGhMcUFFZzZQb01qSzNHdUJmanF0cXNaTzNEeTMzMExUV0ZIaVF0eFlMdW130gFzQVVfeXFMT1NHV0U3S3RQbE1jemsyd3hydDNsVk1VUlUtMFhEM2RJOTQ3OUMwNUZxR1NsZFRnc2FnTFFWblp5V0JKMzF0c1dSZnJXZWV5NG9IN3dCZWFJb0tCSHlteEswNUN3MEJMVVc1YUNrbjU1d0Vzbw?oc=5",
       "published": "Mon, 05 Oct 2026 05:00:00 GMT",
       "publishedAt": "2026-10-05T05:00:00+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMic0FVX3lxTE9TR1dFN0t0UGxNY3prMnd4cnQzbFZNVVJVLTBYRDNkSTk0NzlDMDVGcUdTbGRUZ3NhZ0xRVm5aeVdCSjMxdHNXUmZyV2VleTRvSDd3QmVhSW9LQkh5bXhLMDVDdzBCTFVXNWFDa241NXdFc2_SAXNBVV95cUxPU0dXRTdLdFBsTWN6azJ3eHJ0M2xWTVVSVS0wWEQzZEk5NDc5QzA1RnFHU2xkVGdzYWdMUVZuWnlXQkozMXRzV1JmcldlZXk0b0g3d0JlYUlvS0JIeW14SzA1Q3cwQkxVVzVhQ2tuNTV3RXNv?oc=5\" target=\"_blank\">인텔 반도체 소송에 미국 대중음악 '최악의 립싱크' 사태가 소환된 이유</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국일보</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibkFVX3lxTE1WU0tWb2lmdVhrNEVyMkJWcFM3cnRyVUNlZXVuT1daUVpxdGJNMTFBaTl0MlRaaDhMc1BfRGNYNV9teGhMcUFFZzZQb01qSzNHdUJmanF0cXNaTzNEeTMzMExUV0ZIaVF0eFlMdW130gFzQVVfeXFMT1NHV0U3S3RQbE1jemsyd3hydDNsVk1VUlUtMFhEM2RJOTQ3OUMwNUZxR1NsZFRnc2FnTFFWblp5V0JKMzF0c1dSZnJXZWV5NG9IN3dCZWFJb0tCSHlteEswNUN3MEJMVVc1YUNrbjU1d0Vzbw?oc=5\" target=\"_blank\">인텔 반도체 소송에 미국 대중음악 '최악의 립싱크' 사태가 소환된 이유</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">한국일보</font>",
       "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
       "impact": "부정",
       "importance": "높음",
@@ -181201,7 +181201,7 @@
       "published": "Mon, 05 Oct 2026 04:40:50 GMT",
       "publishedAt": "2026-10-05T04:40:50+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5\" target=\"_blank\">칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "source": "\"Broadcom\" OR \"브로드컴\" AI OR 반도체",
       "impact": "긍정",
       "importance": "보통",
       "relevance": 1,
@@ -181370,7 +181370,7 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T07:06:04+00:00",
+  "newsUpdatedAt": "2026-10-05T07:13:15+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -184875,6 +184875,10 @@
         {
           "site": "사람인",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5"
+        },
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBac1R2U3dIdU81Q0d2MjFhYmpzaUxNTVZZMGVWUnhrYnk0SnNvVDh4V1ZCYmtRcDIxTXNXNmVDcFIteGE3QVlwYjktNFNUUmlPZnJhSUk3bjBWQQ?oc=5"
         }
       ]
     },
@@ -185017,10 +185021,6 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1iZ0ZWZTloaUtJMUdtYWNRUkRkRXY0R193UHZ6Ym91eGNHS2RteFlsOGR6a191dF80c05zZGp2TU52bjBKdVFkUHVwZ3dWeEdGaWt5WmFjT3RFWUlZZmZzMXN0a1ZSaGtKOENfWXF2RnNDSHNIMERsLVpsUmZzUQ?oc=5"
-        },
-        {
-          "site": "점핏",
-          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1iS2gzRzRBYnVaUkZubGd3VzJmdHlkYzVpRi03NjNuVVBoQUFRUE9FOUNKN0ZpSVEyeVJ4YTJ6R2VXeW02bjF1dHdmb1p1bWVDVWtVazJiY2ZGZw?oc=5"
         }
       ]
     },
@@ -185601,7 +185601,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T07:02:50+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T07:10:35+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185657,6 +185657,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T07:02:49+00:00"
+    "generatedAt": "2026-10-05T07:10:35+00:00"
   }
 }
