@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T09:06:27+00:00",
+  "updatedAt": "2026-10-05T09:28:08+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -180566,11 +180566,59 @@
   ],
   "news": [
     {
+      "title": "반도체 ETF 월 최대 30%수익…개미는 ‘AI 소부장’ 더 담았다 - 아시아투데이",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1NYXNUeHlXOTk0bkFVZkFUVE1PdGFGWEl0R3FEeUhwaHI4TUtnWWxTWk9CTDJvMU1fUUQxOTlGUkM4YS1YUFlBclpITlgtZ1RlVTFXSEJFMkh5ZjZ6MUNXTzBBS283M1ZDRXZRY0Fn?oc=5",
+      "published": "Mon, 05 Oct 2026 09:07:09 GMT",
+      "publishedAt": "2026-10-05T09:07:09+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMibkFVX3lxTE1NYXNUeHlXOTk0bkFVZkFUVE1PdGFGWEl0R3FEeUhwaHI4TUtnWWxTWk9CTDJvMU1fUUQxOTlGUkM4YS1YUFlBclpITlgtZ1RlVTFXSEJFMkh5ZjZ6MUNXTzBBS283M1ZDRXZRY0Fn?oc=5\" target=\"_blank\">반도체 ETF 월 최대 30%수익…개미는 ‘AI 소부장’ 더 담았다</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">아시아투데이</font>",
+      "source": "\"한미반도체\" HBM OR 반도체",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 3,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "삼성파운드리 하반기 흑자전환 기대감…HBM 효과 올라타 - v.daum.net",
+      "link": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE9faURrajN2SnotYWVoZGtGQzhsVGgweUptbjI2amlTNFRNQWtOYmRrV0hhRzhqYTV6d2ZzTVVZOE9sTkkxU3lrTVlyZFVjamc?oc=5",
+      "published": "Mon, 05 Oct 2026 09:00:46 GMT",
+      "publishedAt": "2026-10-05T09:00:46+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiT0FVX3lxTE9faURrajN2SnotYWVoZGtGQzhsVGgweUptbjI2amlTNFRNQWtOYmRrV0hhRzhqYTV6d2ZzTVVZOE9sTkkxU3lrTVlyZFVjamc?oc=5\" target=\"_blank\">삼성파운드리 하반기 흑자전환 기대감…HBM 효과 올라타</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">v.daum.net</font>",
+      "source": "\"삼성전자\" 반도체 OR HBM OR 파운드리",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "반도체/시장"
+      ],
+      "impactScore": 3,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
       "title": "리사 수 한국 다시 찾는다…AMD, 韓 AI 협력 확대 기대감 - 헤럴드경제",
       "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9BZXJBVVptOVFyVnpWLTM2UUJUNnhQaG41LUFkdzFHbjVOSENwbEI4ZnRiTk9lcEtOcVR4Rm5YWjU4TXVFRTdEMGE1OXg3N2RXbkgyLWtR?oc=5",
       "published": "Mon, 05 Oct 2026 08:51:58 GMT",
       "publishedAt": "2026-10-05T08:51:58+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMiVkFVX3lxTE9BZXJBVVptOVFyVnpWLTM2UUJUNnhQaG41LUFkdzFHbjVOSENwbEI4ZnRiTk9lcEtOcVR4Rm5YWjU4TXVFRTdEMGE1OXg3N2RXbkgyLWtR?oc=5\" target=\"_blank\">리사 수 한국 다시 찾는다…AMD, 韓 AI 협력 확대 기대감</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">헤럴드경제</font>",
+      "source": "\"AMD\" AI OR GPU OR 반도체",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "AMD"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
+      "title": "리사 수 한국 다시 찾는다…AMD, 韓 AI 협력 확대 기대감 - biz.heraldcorp.com",
+      "link": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9BZXJBVVptOVFyVnpWLTM2UUJUNnhQaG41LUFkdzFHbjVOSENwbEI4ZnRiTk9lcEtOcVR4Rm5YWjU4TXVFRTdEMGE1OXg3N2RXbkgyLWtR?oc=5",
+      "published": "Mon, 05 Oct 2026 08:51:58 GMT",
+      "publishedAt": "2026-10-05T08:51:58+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVkFVX3lxTE9BZXJBVVptOVFyVnpWLTM2UUJUNnhQaG41LUFkdzFHbjVOSENwbEI4ZnRiTk9lcEtOcVR4Rm5YWjU4TXVFRTdEMGE1OXg3N2RXbkgyLWtR?oc=5\" target=\"_blank\">리사 수 한국 다시 찾는다…AMD, 韓 AI 협력 확대 기대감</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">biz.heraldcorp.com</font>",
       "source": "\"AMD\" AI OR GPU OR 반도체",
       "impact": "긍정",
       "importance": "높음",
@@ -180742,6 +180790,22 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
+      "title": "인텔, 이스라엘에 6억불 투자 - chosundaily.com",
+      "link": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxQQmM2aVRzYkFvclRWMERyUUhsSm9ZdlFyQXFfXzBjd0NRbmhWbWJCMU5ObGNhek5qM1NOTVBjN29GLW1wdEY3RW82VllfLUNBVkVuc0Rib0xSNldlN2xCTWlBR18yc0VXMk1HS1hzMEt3cjBOZnF6dmJJYlViMm40TnBNOHB2N0paN1d5YTFlemZwT2h2NEhsOHJnX2xjYVBIUmJCc3lzWmpLbVdYNG1PaGhvSGloX3FmNll6SG9WRGxLNHQtbmRNM2tjNDNzV2NzUzY3NXpEU2dKTnM1THQ3ZTF3clYyZw?oc=5",
+      "published": "Sun, 04 Oct 2026 11:16:58 GMT",
+      "publishedAt": "2026-10-04T11:16:58+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMi5gFBVV95cUxQQmM2aVRzYkFvclRWMERyUUhsSm9ZdlFyQXFfXzBjd0NRbmhWbWJCMU5ObGNhek5qM1NOTVBjN29GLW1wdEY3RW82VllfLUNBVkVuc0Rib0xSNldlN2xCTWlBR18yc0VXMk1HS1hzMEt3cjBOZnF6dmJJYlViMm40TnBNOHB2N0paN1d5YTFlemZwT2h2NEhsOHJnX2xjYVBIUmJCc3lzWmpLbVdYNG1PaGhvSGloX3FmNll6SG9WRGxLNHQtbmRNM2tjNDNzV2NzUzY3NXpEU2dKTnM1THQ3ZTF3clYyZw?oc=5\" target=\"_blank\">인텔, 이스라엘에 6억불 투자</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">chosundaily.com</font>",
+      "source": "\"Intel\" OR \"인텔\" 반도체 OR AI",
+      "impact": "긍정",
+      "importance": "높음",
+      "relevance": 2,
+      "affectedSymbols": [
+        "Intel"
+      ],
+      "impactScore": 3,
+      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
+    },
+    {
       "title": "SK하이닉스, AI 투자 확대에 솔리다임 자금조달 ‘고심’ - 뉴스토마토",
       "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFB4d3VYT1psTXRKU0VERzlpRWthdDJYdFVWN1lFOXpPTE9ZU3dPZ3JaY3VNWUpqeEdGTTJscllqRFNtdndleTYxeWFRUU4xX29FWkNNd3hEUm12ODVXeEs5VA?oc=5",
       "published": "Sun, 04 Oct 2026 10:56:24 GMT",
@@ -180889,10 +180953,10 @@
     },
     {
       "title": "‘풍향계’ 마이크론은 메모리 순풍 예고, 삼전닉스 영업익 180조 다가간다 [반도체 투자 리포트] - 세계일보",
-      "link": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9XQ2xwXzh4Nm10ejRvMU53Y2U0UHl6TGs2QjVHVmJRMEZkazFSbGhxSEtTZHVicXdLLW9wWXdVV0FvYkpRaEZWQTJOUDdHU3M4NmF6M9IBVEFVX3lxTE9XQ2xwXzh4Nm10ejRvMU53Y2U0UHl6TGs2QjVHVmJRMEZkazFSbGhxSEtTZHVicXdLLW9wWXdVV0FvYkpRaEZWQTJOUDdHU3M4NmF6Mw?oc=5",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5ubFZ0Z3czU3RvWVdRaURCZzE1bTlwYkI1Vms2cTdBRGZ1UGd3bk1jMUVpaFE1bVFjX1libVo2QzdVbzNONDJFZXlkeEFLNFhNS2xhdHJxWkfSAVRBVV95cUxPV0NscF84eDZtdHo0bzFOd2NlNFB5ekxrNkI1R1ZiUTBGZGsxUmxocUhLU2R1YnF3Sy1vcFl3VVdBb2JKUWhGVkEyTlA3R1NzODZhejM?oc=5",
       "published": "Sat, 03 Oct 2026 22:29:19 GMT",
       "publishedAt": "2026-10-03T22:29:19+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiVEFVX3lxTE9XQ2xwXzh4Nm10ejRvMU53Y2U0UHl6TGs2QjVHVmJRMEZkazFSbGhxSEtTZHVicXdLLW9wWXdVV0FvYkpRaEZWQTJOUDdHU3M4NmF6M9IBVEFVX3lxTE9XQ2xwXzh4Nm10ejRvMU53Y2U0UHl6TGs2QjVHVmJRMEZkazFSbGhxSEtTZHVicXdLLW9wWXdVV0FvYkpRaEZWQTJOUDdHU3M4NmF6Mw?oc=5\" target=\"_blank\">‘풍향계’ 마이크론은 메모리 순풍 예고, 삼전닉스 영업익 180조 다가간다 [반도체 투자 리포트]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">세계일보</font>",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMiWEFVX3lxTE5ubFZ0Z3czU3RvWVdRaURCZzE1bTlwYkI1Vms2cTdBRGZ1UGd3bk1jMUVpaFE1bVFjX1libVo2QzdVbzNONDJFZXlkeEFLNFhNS2xhdHJxWkfSAVRBVV95cUxPV0NscF84eDZtdHo0bzFOd2NlNFB5ekxrNkI1R1ZiUTBGZGsxUmxocUhLU2R1YnF3Sy1vcFl3VVdBb2JKUWhGVkEyTlA3R1NzODZhejM?oc=5\" target=\"_blank\">‘풍향계’ 마이크론은 메모리 순풍 예고, 삼전닉스 영업익 180조 다가간다 [반도체 투자 리포트]</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">세계일보</font>",
       "source": "\"Micron\" OR \"마이크론\" HBM OR 메모리",
       "impact": "긍정",
       "importance": "높음",
@@ -181306,74 +181370,9 @@
       ],
       "impactScore": 2,
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "반도체 방류수에 기준 없는 염소·황산… 경기도, SK하이닉스 가동 전 관리 강화 - 천지일보",
-      "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5fZVBEZG9nLWl4dDJYT25PZGQ5aG1FaHBwdDFtQ3BqRGFSVmdMOTlJcnNlVExKZk1HbFQ3NDB4Y2EwYVAxcEV4S3F1R0o5dTBiZkhhVGdzcENNdW12S1U5ZVRRamlEb0s3SXc?oc=5",
-      "published": "Mon, 05 Oct 2026 06:55:29 GMT",
-      "publishedAt": "2026-10-05T06:55:29+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMiakFVX3lxTE5fZVBEZG9nLWl4dDJYT25PZGQ5aG1FaHBwdDFtQ3BqRGFSVmdMOTlJcnNlVExKZk1HbFQ3NDB4Y2EwYVAxcEV4S3F1R0o5dTBiZkhhVGdzcENNdW12S1U5ZVRRamlEb0s3SXc?oc=5\" target=\"_blank\">반도체 방류수에 기준 없는 염소·황산… 경기도, SK하이닉스 가동 전 관리 강화</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">천지일보</font>",
-      "source": "\"SK하이닉스\" HBM OR 반도체 OR AI",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "SK하이닉스"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "AI 열풍에 엔비디아 자사 Shield TV Pro 가격 100달러 인상 - Martin Cid Magazine",
-      "link": "https://news.google.com/rss/articles/CBMipwJBVV95cUxQOGNJSmVqQ0V4SlRqaXlFYUhnYkM5Y2pHMThhZGdXTjI1RGJiMzZQeVJ3RlpMWExHX3otWGxBVV94YXFaOTRTT1Rqc1JmclBUa2R2ZU9VOGFPWDJZQ0ZrR190V3IzOEZieVpMbThscjlVSlQ1UHlIcTNKUlNZSkR0Y01CQkV2bVVCb2pTWUY2UVdpbzlNZUtEeDN1ellLWkpHUko1NWlzVU92QUp2RXEya1JSeVd5MjlwbWhhU0Q3TzF2MWtUSTJUOUdWcWdSZmxucVJqR0ZuaVN2dzVXUUtPb2duOTQxYkF4RFdVaHlQSTdSWS1obmZMaU4zX21PRlYtdTFROW50UnVtVVlRd2tUX3FpOEY2TGhWUmF2ZFdydWxRSllUU19B?oc=5",
-      "published": "Mon, 05 Oct 2026 06:11:38 GMT",
-      "publishedAt": "2026-10-05T06:11:38+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMipwJBVV95cUxQOGNJSmVqQ0V4SlRqaXlFYUhnYkM5Y2pHMThhZGdXTjI1RGJiMzZQeVJ3RlpMWExHX3otWGxBVV94YXFaOTRTT1Rqc1JmclBUa2R2ZU9VOGFPWDJZQ0ZrR190V3IzOEZieVpMbThscjlVSlQ1UHlIcTNKUlNZSkR0Y01CQkV2bVVCb2pTWUY2UVdpbzlNZUtEeDN1ellLWkpHUko1NWlzVU92QUp2RXEya1JSeVd5MjlwbWhhU0Q3TzF2MWtUSTJUOUdWcWdSZmxucVJqR0ZuaVN2dzVXUUtPb2duOTQxYkF4RFdVaHlQSTdSWS1obmZMaU4zX21PRlYtdTFROW50UnVtVVlRd2tUX3FpOEY2TGhWUmF2ZFdydWxRSllUU19B?oc=5\" target=\"_blank\">AI 열풍에 엔비디아 자사 Shield TV Pro 가격 100달러 인상</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Martin Cid Magazine</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "주간 AI 뉴스: 트럼프부터 저커버그·머스크, 엔비디아까지 - Benzinga",
-      "link": "https://news.google.com/rss/articles/CBMi1AJBVV95cUxONGhjak9GNTAybmwydTRydnk2LVc4QnZCVThPYXRabDlVNnBENUlGMk81RjZWTm40QmtvZVkzelhyZTAyalp6dG9vNDBQcGxBanNtekdkS0w0Nml4OHlOZ2FieWY0blJGRC1KS0JZbjhxMGNBNVItbERXdVZMWGNhcWRLU2JORUd4SDJxUGlQSTk4aDhZcWdTaVNjTEUybGtSR2hORHNyRUNwY2NxTTRxTXA3NG1ZY2pMQXVlQzA3SUphNEZpS21CRDZwWDM2bzZMeHFUTExYZ21fX2ZrVTR1bkxPQWJZdHRoZUdPcW9PcXpRRDNRVEZoa0hucWVVMzN2NnV6RDJ2NklTZVlGSDBPZG45aU1EYVIwaVIyTXFhTmo0amo4S2ZGUUJuRVVraGFwSGxWSHUxa3ZtUGc0cWM1bjhETzNKSWdVV2dpRkdEMEo2WlQ0?oc=5",
-      "published": "Mon, 05 Oct 2026 05:44:04 GMT",
-      "publishedAt": "2026-10-05T05:44:04+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi1AJBVV95cUxONGhjak9GNTAybmwydTRydnk2LVc4QnZCVThPYXRabDlVNnBENUlGMk81RjZWTm40QmtvZVkzelhyZTAyalp6dG9vNDBQcGxBanNtekdkS0w0Nml4OHlOZ2FieWY0blJGRC1KS0JZbjhxMGNBNVItbERXdVZMWGNhcWRLU2JORUd4SDJxUGlQSTk4aDhZcWdTaVNjTEUybGtSR2hORHNyRUNwY2NxTTRxTXA3NG1ZY2pMQXVlQzA3SUphNEZpS21CRDZwWDM2bzZMeHFUTExYZ21fX2ZrVTR1bkxPQWJZdHRoZUdPcW9PcXpRRDNRVEZoa0hucWVVMzN2NnV6RDJ2NklTZVlGSDBPZG45aU1EYVIwaVIyTXFhTmo0amo4S2ZGUUJuRVVraGFwSGxWSHUxa3ZtUGc0cWM1bjhETzNKSWdVV2dpRkdEMEo2WlQ0?oc=5\" target=\"_blank\">주간 AI 뉴스: 트럼프부터 저커버그·머스크, 엔비디아까지</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Benzinga</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "NVIDIA"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
-    },
-    {
-      "title": "지난주 화제의 주식: 마이크론, 나이키, 메타, 알파벳 및 AMD - Benzinga",
-      "link": "https://news.google.com/rss/articles/CBMi2gJBVV95cUxQSE9UNUF3QU9QYlQ3SVk2ZnIzbnJJQUZOUER3UlhRT3hsM2ZWSnhqeFVKazU0Z013LXo4QkxVakF0U1U5c2I5OUlyMzk2amNoRlVoX19LSEhVdHg1bU9zUkJlRngySFV6eDFCcjZFRUUzeGM1X2tkU2NfZzBpaVUzX2w3TWVTZXc1RUp2eUtub2R5aDZ0d2ZMRkJEWEx1bkMwVDY2Wi1BSDViQzNMWk1pbEQ4b1QwSVZId2NZMzBldkozWG9hR2hrS18yMWVSekRxR0l3TUxQUnBidVZLNGJsOUNlUlM2S2MxZzgwYnoxa3RoSlB1aFlxcVkyZ2pBMDNTYVR1cGtrSS0wZ3FVelVfSDkxMFhIQkNocGNiX1RUQkV4U3RkLXY2R205Z0c4eFBWd2NrVzVYc1dmS1ZQZWRPNThjNkhHRVZuYXRtdnNIcnNGRHNtZzBLTjFB?oc=5",
-      "published": "Mon, 05 Oct 2026 05:44:04 GMT",
-      "publishedAt": "2026-10-05T05:44:04+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMi2gJBVV95cUxQSE9UNUF3QU9QYlQ3SVk2ZnIzbnJJQUZOUER3UlhRT3hsM2ZWSnhqeFVKazU0Z013LXo4QkxVakF0U1U5c2I5OUlyMzk2amNoRlVoX19LSEhVdHg1bU9zUkJlRngySFV6eDFCcjZFRUUzeGM1X2tkU2NfZzBpaVUzX2w3TWVTZXc1RUp2eUtub2R5aDZ0d2ZMRkJEWEx1bkMwVDY2Wi1BSDViQzNMWk1pbEQ4b1QwSVZId2NZMzBldkozWG9hR2hrS18yMWVSekRxR0l3TUxQUnBidVZLNGJsOUNlUlM2S2MxZzgwYnoxa3RoSlB1aFlxcVkyZ2pBMDNTYVR1cGtrSS0wZ3FVelVfSDkxMFhIQkNocGNiX1RUQkV4U3RkLXY2R205Z0c4eFBWd2NrVzVYc1dmS1ZQZWRPNThjNkhHRVZuYXRtdnNIcnNGRHNtZzBLTjFB?oc=5\" target=\"_blank\">지난주 화제의 주식: 마이크론, 나이키, 메타, 알파벳 및 AMD</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Benzinga</font>",
-      "source": "\"AMD\" AI OR GPU OR 반도체",
-      "impact": "중립",
-      "importance": "높음",
-      "relevance": 2,
-      "affectedSymbols": [
-        "AMD",
-        "Micron"
-      ],
-      "impactScore": 2,
-      "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T09:09:52+00:00",
+  "newsUpdatedAt": "2026-10-05T09:30:39+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -184920,6 +184919,10 @@
         {
           "site": "사람인",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9zdF9hZ0J3a19XaDBVR2Yyal9rb3dtMGhDMkktOGFTbjFjN251VUVoNzFyYk1KbGF2YjRobFJHMGxIbzJnZ2p1M2c2cEJvYU5UejdXWm5OMjNvdXZZSHRSY1VFSXp0VXpNZEQwR3oxZ25jQjMtTkhPQUl0WHJtZw?oc=5"
+        },
+        {
+          "site": "사람인",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBac1R2U3dIdU81Q0d2MjFhYmpzaUxNTVZZMGVWUnhrYnk0SnNvVDh4V1ZCYmtRcDIxTXNXNmVDcFIteGE3QVlwYjktNFNUUmlPZnJhSUk3bjBWQQ?oc=5"
         }
       ]
     },
@@ -185202,6 +185205,10 @@
         {
           "site": "점핏",
           "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1yVFB0elNIa0h5cEZ0dnZreVpmVXh3NDVJZWRaeFJZaW8xUEU2eTU4cExVbzY4Q2ViWElVRnpHdGpzTWNkWExzM0pudHA0X1NrdnM0VWROSG1ZX1ZEOU44eVdPbG93Ykp2VVlIYjIxbUFIQ2xEbkwwOXRWQVRZZw?oc=5"
+        },
+        {
+          "site": "점핏",
+          "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBVTFd1TjRhY1BNbFZXUGw3VFZzaGdpbWdiQzdhQVY5RUo3S1lpOGtQV1h3WkFlWU5ISk5HZHRoNHNJLVYtRXV2Z01nQ2Y0a0l6MzRPaF9zX3ZLQQ?oc=5"
         }
       ]
     },
@@ -185598,7 +185605,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T09:06:27+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T09:28:08+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185654,6 +185661,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T09:06:27+00:00"
+    "generatedAt": "2026-10-05T09:28:08+00:00"
   }
 }
