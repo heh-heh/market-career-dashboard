@@ -11,6 +11,10 @@ on:
       - "data/dashboard.json"
   workflow_dispatch:
 
+concurrency:
+  group: update-dashboard-data
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
