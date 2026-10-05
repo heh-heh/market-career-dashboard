@@ -9,6 +9,7 @@ STATE="$ROOT/data/toss_hybrid_watchdog.json"
 SYMBOLS="NVDA AMD INTC SOXL SOXS TQQQ"
 mkdir -p "$ROOT/data"
 umask 077
+FINALIZED=0
 
 write_state() {
   local phase="$1" current="$2" attempt="$3" msg="$4"
@@ -24,10 +25,16 @@ tmp.replace(p)
 PY
 }
 log() { printf '[WATCHDOG %s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S%z')" "$*" >> "$LOG"; }
-trap 'write_state "stopped" "" 0 "watchdog stopped"; log "watchdog stopped"' EXIT TERM INT
+trap 'if [ "$FINALIZED" -eq 0 ]; then write_state "stopped" "" 0 "watchdog stopped"; fi; log "watchdog stopped"' EXIT
 
 cd "$ROOT" || exit 1
 export HOME=/root
+if [ -f "$ROOT/research/backtest_toss_v5_result.json" ]; then
+  write_state "completed" "" 0 "existing backtest result found"
+  log "existing result found; watchdog is idle"
+  FINALIZED=1
+  exit 0
+fi
 write_state "starting" "" 0 "hybrid watchdog starting"
 log "starting hybrid collector/backtest watchdog"
 
