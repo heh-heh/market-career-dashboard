@@ -44,7 +44,7 @@ while ! command -v g++ >/dev/null 2>&1; do
   sleep 60
 done
 
-while ! "$ROOT/scripts/build_backtest_cpp.sh" >>"$LOG" 2>&1; do
+while ! bash "$ROOT/scripts/build_backtest_cpp.sh" >>"$LOG" 2>&1; do
   write_state "building" "" 0 "C++ build failed; retrying"
   log "C++ build failed; retry in 60s"
   sleep 60
