@@ -36,15 +36,17 @@ def get_token(cfg: dict, force: bool = False) -> str:
             except Exception:
                 pass
 
-        body = urllib.parse.urlencode({"grant_type": "client_credentials"}).encode()
-        basic = base64.b64encode((cid + ":" + sec).encode()).decode()
+        body = urllib.parse.urlencode({
+            "grant_type": "client_credentials",
+            "client_id": cid,
+            "client_secret": sec,
+        }).encode()
         req = urllib.request.Request(
             TOKEN_URL,
             data=body,
             headers={
-                "Authorization": "Basic " + basic,
                 "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": "market-career-dashboard/1.4",
+                "User-Agent": "market-career-dashboard/1.5",
             },
             method="POST",
         )
