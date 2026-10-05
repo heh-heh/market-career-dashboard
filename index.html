@@ -35,44 +35,22 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
 <section id="v8" class="view">
   <div class="grid">
-    <div class="card">
-      <div class="label">자동매매 보안 상태</div>
-      <div id="tradingAuthState" class="signal">로그인 상태 확인 중...</div>
-      <div class="settings-actions" style="margin-top:12px">
-        <button id="tradingLoginBtn" type="button">설정 로그인 사용</button>
-        <button id="tradingLogoutBtn" type="button">로그아웃</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="label">실거래 잠금</div>
-      <div id="tradingLiveLock" class="signal">실거래는 통합 초기 단계에서 서버에서 강제로 잠겨 있습니다.</div>
-    </div>
+    <div class="card"><div class="label">자동매매 인증</div><div id="tradingAuthState" class="signal">로그인 상태 확인 중...</div><div class="settings-actions" style="margin-top:12px"><button id="tradingLoginBtn" type="button">설정 로그인 사용</button><button id="tradingLogoutBtn" type="button">로그아웃</button></div></div>
+    <div class="card"><div class="label">실거래 게이트</div><div id="tradingLiveLock" class="signal">서버 상태 확인 중...</div><div class="settings-actions" style="margin-top:12px"><button id="liveArmBtn" type="button" class="danger">실거래 ARM</button><button id="liveDisarmBtn" type="button" class="secondary">ARM 해제</button><button id="liveEngineBtn" type="button">엔진 시작</button><button id="liveAutoBtn" type="button" class="secondary">자동매매 ON</button><button id="liveScanBtn" type="button" class="secondary">분석 갱신</button></div></div>
   </div>
-
-  <div id="tradingPanel" style="display:none">
+  <div id="liveTradingPanel" style="display:none">
     <div class="grid">
-      <div class="card">
-        <div class="label">엔진</div>
-        <div class="big" id="tradingEngineState">중지</div>
-        <button id="tradingEngineBtn" type="button">모의 엔진 시작</button>
-      </div>
-      <div class="card">
-        <div class="label">안전 한도</div>
-        <div class="signal">주문 한도: <b id="tradingOrderLimit">-</b><br>일일 손실 한도: <b id="tradingLossLimit">-</b></div>
-      </div>
+      <div class="card"><div class="label">미국 시장 상태</div><div class="big" id="liveSession">-</div><div class="mini" id="liveSessionMessage">-</div></div>
+      <div class="card"><div class="label">위험 한도</div><div class="signal">1회 최대 주문 <b id="liveMaxOrderUsd">-</b><br>일일 손실 제한 <b id="liveMaxLossUsd">-</b><br>익절 / 손절 <b id="liveTakeProfit">-</b> / <b id="liveStopLoss">-</b></div></div>
     </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="label">모의 자동매매</div>
-      <div id="tradingPaper" class="signal">모의 포트폴리오를 불러오는 중...</div>
-      <div class="settings-actions" style="margin-top:12px">
-        <button id="paperBuyBtn" type="button">모의 매수</button>
-        <button id="paperSellBtn" type="button">모의 매도</button>
-        <button id="paperResetBtn" type="button">모의 계좌 초기화</button>
-      </div>
-      <div class="mini" style="margin-top:10px">현재 단계에서는 이 화면에서 실계좌 주문이 발생하지 않습니다. 모의매매로 전략·UI를 검증한 뒤 별도 보안 검토 후 실거래 게이트를 열도록 구성합니다.</div>
-    </div>
+    <div class="card" style="margin-top:12px"><div class="label">거래대금 상위 미국 종목</div><div class="big" id="liveCandidate">-</div><div class="signal" id="liveCandidateDetail">분석 대기...</div><div id="liveRankings" class="mini" style="margin-top:12px"></div></div>
+    <div class="card" style="margin-top:12px"><div class="label">자동매매 상태</div><div id="livePosition" class="signal">관리 중인 자동매매 포지션 없음</div><div class="mini" id="liveLastAction" style="margin-top:8px">-</div><div class="mini" id="liveLastError" style="margin-top:8px"></div></div>
   </div>
+  <div id="tradingPanel" style="margin-top:12px"><div class="grid">
+    <div class="card"><div class="label">모의 엔진</div><div class="big" id="tradingEngineState">중지</div><button id="tradingEngineBtn" type="button">모의 엔진 시작</button></div>
+    <div class="card"><div class="label">모의 안전 한도</div><div class="signal">주문 한도: <b id="tradingOrderLimit">-</b><br>일일 손실 한도: <b id="tradingLossLimit">-</b></div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><div class="label">모의 자동매매</div><div id="tradingPaper" class="signal">로그인 후 표시됩니다.</div><div class="settings-actions" style="margin-top:12px"><button id="paperBuyBtn" type="button">모의 매수</button><button id="paperSellBtn" type="button">모의 매도</button><button id="paperResetBtn" type="button">모의 계좌 초기화</button></div><div class="mini" style="margin-top:10px">모의매매와 실거래는 별도입니다.</div></div></div>
 </section>
 <section id="v7" class="view">
   <div class="grid">
@@ -189,41 +167,53 @@ async function tradingRequest(path,options={}){
 function wonFmt(v){return v==null?"-":"₩"+Number(v).toLocaleString("ko-KR",{maximumFractionDigits:0});}
 async function refreshTrading(){
  const state=document.getElementById("tradingAuthState");
- const panel=document.getElementById("tradingPanel");
  const token=localStorage.getItem(SETTINGS_TOKEN_KEY)||"";
- if(!token){state.textContent="로그인 필요 · 설정 탭에서 관리자 로그인을 먼저 하세요.";panel.style.display="none";return;}
+ if(!token){state.textContent="로그인 필요 · 설정 탭에서 관리자 로그인";document.getElementById("liveTradingPanel").style.display="none";return;}
  try{
   const d=await tradingRequest("/api/trading/status");
-  state.textContent="로그인됨 · 모드: "+String(d.mode).toUpperCase()+" · 실거래 API: "+(d.liveTradingEnabled?"허용":"잠금");
-  panel.style.display="block";
+  state.textContent="로그인됨 · 모드: "+String(d.mode).toUpperCase()+" · 실거래 API: "+(d.liveTradingEnabled?"환경 허용":"기본 잠금");
   document.getElementById("tradingEngineState").textContent=d.engine_enabled?"모의 엔진 실행 중":"중지";
   document.getElementById("tradingEngineBtn").textContent=d.engine_enabled?"모의 엔진 중지":"모의 엔진 시작";
   document.getElementById("tradingOrderLimit").textContent=wonFmt(d.maxOrderKrw);
   document.getElementById("tradingLossLimit").textContent=wonFmt(d.dailyLossLimitKrw);
-  await refreshPaper();
- }catch(e){state.textContent=e.message;panel.style.display="none";}
+  await refreshPaper(); await refreshLiveTrading();
+ }catch(e){state.textContent=e.message;}
+}
+async function refreshLiveTrading(){
+ try{
+  const d=await tradingRequest("/api/trading/live/status");
+  const p=document.getElementById("liveTradingPanel"); p.style.display="block";
+  document.getElementById("tradingLiveLock").textContent=d.liveTradingEnabled?"실거래 환경 허용 · ARM 후 엔진/자동매매를 켤 수 있습니다.":"실거래 환경 잠금 · 서버 설정을 먼저 확인하세요.";
+  document.getElementById("liveSession").textContent=d.session||"-";
+  document.getElementById("liveSessionMessage").textContent=d.sessionMessage||"-";
+  document.getElementById("liveMaxOrderUsd").textContent="$"+Number(d.limits?.maxOrderUsd||0).toFixed(2);
+  document.getElementById("liveMaxLossUsd").textContent="$"+Number(d.limits?.maxDailyLossUsd||0).toFixed(2);
+  document.getElementById("liveTakeProfit").textContent="+"+Number(d.limits?.takeProfitPct||0).toFixed(2)+"%";
+  document.getElementById("liveStopLoss").textContent="-"+Number(d.limits?.stopLossPct||0).toFixed(2)+"%";
+  const c=d.candidate;
+  document.getElementById("liveCandidate").textContent=c?(c.symbol+" · "+c.name):"후보 없음";
+  document.getElementById("liveCandidateDetail").innerHTML=c?("거래대금 순위 <b>#"+esc(c.rank||"-")+"</b> · 거래대금 <b>$"+Number(c.tradingAmountUsd||0).toLocaleString("en-US",{maximumFractionDigits:0})+"</b><br>현재가 <b>$"+Number(c.price||0).toFixed(2)+"</b> · 등락 <b>"+(Number(c.changePct||0)>=0?"+":"")+Number(c.changePct||0).toFixed(2)+"%</b> · 신호 <b>"+esc(c.signal||"-")+"</b><br>SMA5 "+(c.sma5==null?"-":Number(c.sma5).toFixed(2))+" · SMA20 "+(c.sma20==null?"-":Number(c.sma20).toFixed(2))+" · RSI14 "+(c.rsi14==null?"-":Number(c.rsi14).toFixed(1))+" · 거래량배수 "+(c.volumeSurge==null?"-":Number(c.volumeSurge).toFixed(2))+"x<br>"+esc(c.reason||"")):"거래대금 랭킹/분석 대기";
+  document.getElementById("liveRankings").innerHTML=(d.rankings||[]).map((x,i)=>"<div style=\"padding:7px 0;border-bottom:1px solid var(--line)\">#"+esc(x.rank||i+1)+" <b>"+esc(x.symbol)+"</b> · $"+Number(x.tradingAmountUsd||0).toLocaleString("en-US",{maximumFractionDigits:0})+" · "+esc(x.signal||"-")+"</div>").join("")||"비교할 종목이 없습니다."; 
+  document.getElementById("livePosition").textContent=d.managedSymbol?(d.managedSymbol+" · 진입가 "+(d.entryPrice?"$"+Number(d.entryPrice).toFixed(2):"체결 대기")+" · 미체결 "+(d.pendingSide||"없음")):"관리 중인 자동매매 포지션 없음";
+  document.getElementById("liveLastAction").textContent="최근 스캔: "+(d.lastScanAt||"-")+" · "+(d.lastAction||"실행 없음");
+  document.getElementById("liveLastError").textContent=d.lastError?("오류: "+d.lastError):"";
+  document.getElementById("liveEngineBtn").textContent=d.engineEnabled?"실거래 엔진 중지":"실거래 엔진 시작";
+  document.getElementById("liveEngineBtn").disabled=!d.liveTradingEnabled;
+  document.getElementById("liveArmBtn").disabled=!!d.liveArmed;
+  document.getElementById("liveDisarmBtn").disabled=!d.liveArmed;
+  document.getElementById("liveAutoBtn").disabled=!d.liveArmed||!d.engineEnabled;
+  document.getElementById("liveAutoBtn").textContent=d.liveAutoEnabled?"자동매매 OFF":"자동매매 ON";
+ }catch(e){document.getElementById("tradingLiveLock").textContent=e.message;}
 }
 async function refreshPaper(){
- try{
-  const d=await tradingRequest("/api/trading/paper/portfolio");
-  const p=d.portfolio;
-  const holdings=(p.holdings||[]).map(x=>esc(x.symbol)+" × "+x.quantity+" / "+wonFmt(x.market_value)).join("<br>")||"보유 종목 없음";
-  document.getElementById("tradingPaper").innerHTML="현금: <b>"+wonFmt(p.cash)+"</b><br>평가금: <b>"+wonFmt(p.equity)+"</b><br>손익: <b>"+wonFmt(p.total_pnl)+"</b><br><br>"+holdings;
- }catch(e){document.getElementById("tradingPaper").textContent=e.message;}
+ try{const d=await tradingRequest("/api/trading/paper/portfolio");const p=d.portfolio;const holdings=(p.holdings||[]).map(x=>esc(x.symbol)+" × "+x.quantity+" / "+wonFmt(x.market_value)).join("<br>")||"보유 종목 없음";document.getElementById("tradingPaper").innerHTML="현금: <b>"+wonFmt(p.cash)+"</b><br>평가금: <b>"+wonFmt(p.equity)+"</b><br>손익: <b>"+wonFmt(p.total_pnl)+"</b><br><br>"+holdings;}catch(e){document.getElementById("tradingPaper").textContent=e.message;}
 }
 async function paperTrade(side){
- const symbol=prompt("종목 코드/티커", "SOXL");
- if(!symbol)return;
- const quantity=Number(prompt("수량","1"));
- const found=findStock(symbol.toUpperCase());
- const price=found?.price;
- if(!(quantity>0)||!(price>0)){alert("현재 대시보드에서 해당 종목의 가격을 찾지 못했습니다.");return;}
- try{
-  const d=await tradingRequest("/api/trading/paper/order",{method:"POST",body:JSON.stringify({symbol:symbol.toUpperCase(),side,quantity,price})});
-  await refreshPaper(); alert("모의 "+(side==="BUY"?"매수":"매도")+" 완료");
- }catch(e){alert(e.message);}
-}
-document.getElementById("tradingLoginBtn")?.addEventListener("click",()=>{showView("v7",document.querySelector('nav button[data-view="v7"]'));document.getElementById("adminPassword")?.focus();});
+ const symbol=prompt("종목 코드/티커","SOXL"); if(!symbol)return;
+ const quantity=Number(prompt("수량","1")); const found=findStock(symbol.toUpperCase()); const price=found?.price;
+ if(!(quantity>0)||!(price>0)){alert("현재 대시보드에서 가격을 찾지 못했습니다.");return;}
+ try{await tradingRequest("/api/trading/paper/order",{method:"POST",body:JSON.stringify({symbol:symbol.toUpperCase(),side,quantity,price})});await refreshPaper();alert("모의 "+(side==="BUY"?"매수":"매도")+" 완료");}catch(e){alert(e.message);}
+}document.getElementById("tradingLoginBtn")?.addEventListener("click",()=>{showView("v7",document.querySelector('nav button[data-view="v7"]'));document.getElementById("adminPassword")?.focus();});
 document.getElementById("tradingLogoutBtn")?.addEventListener("click",logoutSettings);
 document.getElementById("tradingEngineBtn")?.addEventListener("click",async()=>{try{const st=await tradingRequest("/api/trading/status");await tradingRequest("/api/trading/engine",{method:"POST",body:JSON.stringify({enabled:!st.engine_enabled})});await refreshTrading();}catch(e){alert(e.message);}});
 document.getElementById("paperBuyBtn")?.addEventListener("click",()=>paperTrade("BUY"));
