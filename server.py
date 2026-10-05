@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, os, secrets, subprocess, threading, time, urllib.parse, urllib.request
+import asyncio, json, os, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -40,7 +40,7 @@ def authorized(handler):
 def update_data():
     while True:
         try:
-            subprocess.run(["python3",str(ROOT/"scripts"/"update_data.py")],cwd=ROOT,timeout=240,check=False)
+            subprocess.run([sys.executable,str(ROOT/"scripts"/"update_data.py")],cwd=ROOT,timeout=240,check=False)
         except Exception as e:
             print("update error:",e,flush=True)
         time.sleep(INTERVAL)
@@ -165,6 +165,205 @@ def live_quotes():
     except Exception as e:
         return {"updatedAt":time.time(),"quotes":{},"provider":"none","error":str(e)}
 
+
+REALTIME_WS_HOST=os.getenv("REALTIME_WS_HOST","127.0.0.1")
+REALTIME_WS_PORT=int(os.getenv("REALTIME_WS_PORT","8081"))
+TOSS_WS_URL="wss://openapi-ws.tossinvest.com/ws/v1"
+REALTIME_CLIENTS=set()
+REALTIME_QUOTES={}
+REALTIME_STATUS={
+    "connected":False,
+    "lastMessageAt":None,
+    "lastError":None,
+    "subscribed":[],
+}
+REALTIME_STATE_LOCK=threading.Lock()
+
+def realtime_snapshot():
+    with REALTIME_STATE_LOCK:
+        return {
+            "connected":bool(REALTIME_STATUS["connected"]),
+            "lastMessageAt":REALTIME_STATUS["lastMessageAt"],
+            "lastError":REALTIME_STATUS["lastError"],
+            "subscribed":list(REALTIME_STATUS["subscribed"]),
+            "clientCount":len(REALTIME_CLIENTS),
+            "quotes":dict(REALTIME_QUOTES),
+        }
+
+def build_toss_trade_subscriptions():
+    try:
+        data=json.loads(DATA.read_text(encoding="utf-8"))
+    except Exception:
+        return [], {}
+    stocks=data.get("stocks",[])
+    kr=[]
+    us=[]
+    reverse={}
+    for item in stocks:
+        original=str(item.get("symbol") or "").strip()
+        if not original:
+            continue
+        toss=toss_symbol(original)
+        if original.endswith(".KS") or original.endswith(".KQ"):
+            if toss and toss not in kr:
+                kr.append(toss)
+                reverse[toss]=original
+        else:
+            if toss and toss not in us:
+                us.append(toss)
+                reverse[toss]=original
+    declarations=[]
+    if kr:
+        declarations.append({"type":"trade:kr","codes":kr})
+    if us:
+        declarations.append({"type":"trade:us","codes":us})
+    return declarations, reverse
+
+async def broadcast_realtime(message):
+    if not REALTIME_CLIENTS:
+        return
+    raw=json.dumps(message,ensure_ascii=False,separators=(",",":"))
+    clients=list(REALTIME_CLIENTS)
+    results=await asyncio.gather(
+        *(client.send(raw) for client in clients),
+        return_exceptions=True
+    )
+    for client,result in zip(clients,results):
+        if isinstance(result,Exception):
+            REALTIME_CLIENTS.discard(client)
+
+async def browser_realtime_handler(websocket,*_args):
+    REALTIME_CLIENTS.add(websocket)
+    try:
+        snap=realtime_snapshot()
+        initial={"type":"snapshot","connected":snap["connected"],"quotes":snap["quotes"],"ts":time.time()}
+        await websocket.send(json.dumps(initial,ensure_ascii=False,separators=(",",":")))
+        async for _message in websocket:
+            # Browser is read-only; ignore client messages.
+            pass
+    except Exception:
+        pass
+    finally:
+        REALTIME_CLIENTS.discard(websocket)
+
+async def toss_realtime_once():
+    import websockets
+    cfg=load_secrets()
+    token=toss_access_token(cfg)
+    if not token:
+        raise RuntimeError("Toss Open API credentials are not configured")
+    declarations, reverse=build_toss_trade_subscriptions()
+    if not declarations:
+        raise RuntimeError("No stock symbols available for Toss WebSocket subscription")
+    headers={"Authorization":"Bearer "+token}
+    try:
+        major=int(str(getattr(websockets,"__version__","15")).split(".",1)[0])
+    except Exception:
+        major=15
+    kwargs={"additional_headers":headers} if major>=14 else {"extra_headers":headers}
+    async with websockets.connect(
+        TOSS_WS_URL,
+        ping_interval=None,
+        close_timeout=5,
+        **kwargs
+    ) as ws:
+        declaration=[{"id":"market-dashboard"}]+declarations
+        await ws.send(json.dumps(declaration,separators=(",",":")))
+        with REALTIME_STATE_LOCK:
+            REALTIME_STATUS["connected"]=True
+            REALTIME_STATUS["lastError"]=None
+            REALTIME_STATUS["subscribed"]=[
+                f"trade:kr:{x}" for x in next((d["codes"] for d in declarations if d["type"]=="trade:kr"),[])
+            ]+[
+                f"trade:us:{x}" for x in next((d["codes"] for d in declarations if d["type"]=="trade:us"),[])
+            ]
+        await broadcast_realtime({"type":"status","connected":True,"provider":"toss_ws","ts":time.time()})
+
+        async def keepalive():
+            while True:
+                await asyncio.sleep(60)
+                await ws.send("PING")
+
+        keepalive_task=asyncio.create_task(keepalive())
+        try:
+            async for raw in ws:
+                try:
+                    payload=json.loads(raw)
+                except Exception:
+                    continue
+                if payload.get("type") in ("subscriptions","error","pong"):
+                    if payload.get("type")=="error":
+                        with REALTIME_STATE_LOCK:
+                            REALTIME_STATUS["lastError"]=payload.get("error")
+                    continue
+                if payload.get("type")!="message":
+                    continue
+                topic=str(payload.get("topic") or "")
+                data=payload.get("data") or {}
+                if not topic.startswith("trade:"):
+                    continue
+                toss_sym=topic.rsplit(":",1)[-1]
+                original=reverse.get(toss_sym)
+                if not original:
+                    continue
+                try:
+                    price=float(data.get("price"))
+                except (TypeError,ValueError):
+                    continue
+                with REALTIME_STATE_LOCK:
+                    old=REALTIME_QUOTES.get(original,{})
+                    quote={
+                        "price":price,
+                        "change":old.get("change"),
+                        "live":True,
+                        "provider":"toss_ws",
+                        "timestamp":data.get("timestamp")
+                    }
+                    REALTIME_QUOTES[original]=quote
+                    REALTIME_STATUS["lastMessageAt"]=time.time()
+                await broadcast_realtime({"type":"quote","symbol":original,**quote})
+        finally:
+            keepalive_task.cancel()
+            with REALTIME_STATE_LOCK:
+                REALTIME_STATUS["connected"]=False
+
+async def realtime_loop():
+    while True:
+        try:
+            await toss_realtime_once()
+        except Exception as e:
+            msg=str(e)
+            print("realtime websocket error:",msg,flush=True)
+            with REALTIME_STATE_LOCK:
+                REALTIME_STATUS["connected"]=False
+                REALTIME_STATUS["lastError"]=msg
+            await broadcast_realtime({"type":"status","connected":False,"provider":"toss_ws","error":msg,"ts":time.time()})
+            await asyncio.sleep(5)
+
+async def realtime_server():
+    import websockets
+    async with websockets.serve(
+        browser_realtime_handler,
+        REALTIME_WS_HOST,
+        REALTIME_WS_PORT,
+        ping_interval=30,
+        ping_timeout=20,
+        max_size=1024*1024,
+    ):
+        print(f"Realtime browser WebSocket listening on {REALTIME_WS_HOST}:{REALTIME_WS_PORT}",flush=True)
+        await realtime_loop()
+
+def start_realtime():
+    try:
+        import websockets  # noqa: F401
+    except Exception as e:
+        print("WARNING: realtime websocket disabled; install websockets package:",e,flush=True)
+        return
+    try:
+        asyncio.run(realtime_server())
+    except Exception as e:
+        print("realtime server stopped:",e,flush=True)
+
 class Handler(BaseHTTPRequestHandler):
     def send_json(self,obj,status=200):
         raw=json.dumps(obj,ensure_ascii=False).encode()
@@ -199,6 +398,10 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(json.loads(DATA.read_text(encoding="utf-8")))
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)
+            return
+        if path=="/api/realtime":
+            snap=realtime_snapshot()
+            self.send_json({"ok":True,**snap})
             return
         if path=="/api/settings":
             if not authorized(self):
@@ -264,6 +467,7 @@ class Handler(BaseHTTPRequestHandler):
 if __name__=="__main__":
     DATA.parent.mkdir(parents=True,exist_ok=True)
     threading.Thread(target=update_data,daemon=True).start()
+    threading.Thread(target=start_realtime,daemon=True).start()
     print(f"API listening on {HOST}:{PORT}; update interval={INTERVAL}s",flush=True)
     if not ADMIN_PASSWORD:
         print("WARNING: ADMIN_PASSWORD is not set; /api/login is disabled.",flush=True)
