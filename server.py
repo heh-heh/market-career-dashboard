@@ -433,7 +433,12 @@ class Handler(BaseHTTPRequestHandler):
                 lines=log_text.splitlines()
                 tail="\n".join(lines[-100:])
                 symbols=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
-                stats={s:{"symbol":s,"page":0,"pages":10000,"fetched":0,"stored":0,"status":"waiting"} for s in symbols}
+                progress_path=ROOT/"data"/"toss_1m_progress.json"
+                live_progress={}
+                if progress_path.exists():
+                    try: live_progress=json.loads(progress_path.read_text(encoding="utf-8"))
+                    except Exception: live_progress={}
+                stats={s:{"symbol":s,"page":0,"pages":10000,"fetched":0,"stored":0,"status":"waiting","coveragePct":0,"latestTimestamp":None,"oldestTimestamp":None,"since":None} for s in symbols}
                 page_re=re.compile(r"^(\w+): page (\d+)/(\d+), fetched=(\d+), stored=(\d+)")
                 saved_re=re.compile(r"^(\w+): total saved (\d+)")
                 for line in lines:
@@ -443,6 +448,9 @@ class Handler(BaseHTTPRequestHandler):
                     m=saved_re.search(line)
                     if m and m.group(1) in stats:
                         s=m.group(1); stats[s].update(stored=int(m.group(2)),status="completed")
+                for s in symbols:
+                    if isinstance(live_progress.get(s),dict):
+                        stats[s].update(live_progress[s])
                 completed=[s for s in symbols if stats[s]["status"]=="completed"]
                 current=next((s for s in reversed(symbols) if stats[s]["status"]=="collecting"),None)
                 current_stats=stats.get(current) if current else None
@@ -457,7 +465,7 @@ class Handler(BaseHTTPRequestHandler):
                         phase="building"; progress=5
                     elif running_out or completed or current:
                         phase="collecting"
-                        cur_frac=((current_stats["page"]/max(1,current_stats["pages"])) if current_stats else 0)
+                        cur_frac=(float(current_stats.get("coveragePct",0))/100.0 if current_stats else 0)
                         progress=min(88,round(((len(completed)+cur_frac)/len(symbols))*85))
                     elif backtest_out:
                         phase="backtest"; progress=90
