@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import asyncio, json, os, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
+import asyncio, json, os, re, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
@@ -453,6 +453,43 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":True,"portfolio":paper_broker.snapshot(prices)}); return
             except Exception:
                 self.send_json({"ok":False,"error":"paper portfolio unavailable"},503); return
+        if path=="/api/backtest/monitor":
+            try:
+                log_path=Path("/tmp/toss_hybrid.log")
+                result_path=ROOT/"research"/"backtest_toss_v5_result.json"
+                text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
+                tail="\n".join(text.splitlines()[-80:])
+                symbols=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
+                completed=[]
+                for sym in symbols:
+                    if f"{sym}: total saved" in text:
+                        completed.append(sym)
+                current=None
+                page=None
+                pages=None
+                for line in reversed(text.splitlines()):
+                    m=re.search(r"^(\\w+): page (\\d+)/(\\d+), fetched=(\\d+), stored=(\\d+)",line)
+                    if m:
+                        current=m.group(1); page=int(m.group(2)); pages=int(m.group(3)); break
+                if result_path.exists():
+                    phase="completed"; progress=100
+                elif "backtest_toss_v5" in text or "Backtest V5" in text:
+                    phase="backtest"; progress=90
+                elif "total saved" in text:
+                    phase="collecting"; progress=min(88,round((len(completed)/len(symbols))*85 + (min((page or 0),10000)/10000)*12))
+                elif "build_backtest_cpp" in text:
+                    phase="building"; progress=5
+                elif "git fetch" in text:
+                    phase="syncing"; progress=2
+                else:
+                    phase="starting"; progress=0
+                running=bool(subprocess.run(["pgrep","-af","collect_toss_1m|backtest_toss_v5"],capture_output=True,text=True).stdout.strip())
+                self.send_json({"ok":True,"phase":phase,"progress":progress,"running":running,
+                    "completedSymbols":completed,"currentSymbol":current,"currentPage":page,"totalPages":pages,
+                    "resultReady":result_path.exists(),"updatedAt":time.time(),"log":tail})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},500)
+            return
         if path=="/api/health":
             self.send_json({"ok":True,"service":"market-career-dashboard"})
             return
