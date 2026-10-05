@@ -29,6 +29,7 @@ class LiveAutoTrader:
         self.pending_order_id = None
         self.pending_side = None
         self._token = {"value": "", "expires_at": 0.0}
+        self._token_provider = None
         self._load_state()
 
     @property
@@ -107,7 +108,15 @@ class LiveAutoTrader:
         except Exception:
             return {}
 
+    def set_token_provider(self, provider):
+        self._token_provider = provider
+
     def _token_get(self):
+        if self._token_provider is not None:
+            token = str(self._token_provider() or "")
+            if not token:
+                raise RuntimeError("Toss access token을 발급받지 못했습니다.")
+            return token
         now = time.time()
         if self._token["value"] and now < self._token["expires_at"] - 60:
             return self._token["value"]
