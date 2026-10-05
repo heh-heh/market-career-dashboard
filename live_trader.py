@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Guarded Toss US trading-amount auto trader. Live mode is OFF by default."""
 from __future__ import annotations
-import base64, json, os, secrets, threading, time, urllib.parse, urllib.request
+import base64, json, os, secrets, threading, time, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -71,6 +71,17 @@ class LiveAutoTrader:
         self.engine_enabled = False
         self.live_armed = False
         self.auto_enabled = False
+
+    def _ensure_day(self):
+        if not self.state_path.exists():
+            return
+        try:
+            raw = json.loads(self.state_path.read_text(encoding="utf-8"))
+            if raw.get("day") != self._day():
+                self.live_halted = False
+                self._save_state()
+        except Exception:
+            pass
 
     def _save_state(self):
         payload = {
@@ -356,6 +367,7 @@ class LiveAutoTrader:
 
     def scan(self, allow_orders=False):
         with self.lock:
+            self._ensure_day()
             self.last_scan_at = datetime.now(KST).isoformat(timespec="seconds")
             self.last_error = None
             if not self.live_enabled:
