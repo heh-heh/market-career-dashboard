@@ -33,6 +33,40 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 
 
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
+<section id="v7" class="view">
+  <div class="grid">
+    <div class="card">
+      <div class="label">서버 관리자 로그인</div>
+      <div id="settingsLogin" class="settings-form" style="margin-top:12px">
+        <label>관리자 비밀번호
+          <input id="adminPassword" type="password" autocomplete="current-password" placeholder="EC2 .env의 ADMIN_PASSWORD">
+        </label>
+        <div class="settings-actions"><button id="settingsLoginBtn" type="button">로그인</button></div>
+      </div>
+      <div id="settingsPanel" class="settings-form" style="display:none;margin-top:12px">
+        <label>Toss Securities App Key
+          <input id="tossAppKey" type="password" autocomplete="off" placeholder="App Key">
+        </label>
+        <label>Toss Securities App Secret
+          <input id="tossAppSecret" type="password" autocomplete="off" placeholder="App Secret">
+        </label>
+        <label>기타 API Key
+          <input id="genericApiKey" type="password" autocomplete="off" placeholder="API Key">
+        </label>
+        <div class="settings-actions">
+          <button id="settingsSaveBtn" type="button">서버에 저장</button>
+          <button id="settingsLogoutBtn" type="button">로그아웃</button>
+        </div>
+        <div class="secret-note">API 키 원문은 GitHub나 브라우저 저장소에 저장하지 않고 EC2 서버에만 보관합니다.</div>
+      </div>
+      <div id="settingsStatus" class="signal settings-status">로그인 상태를 확인하는 중...</div>
+    </div>
+    <div class="card">
+      <div class="label">서버 연결 상태</div>
+      <div class="signal">EC2 API: <b>https://35.79.235.14</b><br>관리자 로그인 후 API 키를 서버에 주입할 수 있습니다.</div>
+    </div>
+  </div>
+</section>
 <div class="notice" id="notice">데이터 정책을 불러오는 중...</div></div><div id="stockModal" class="modal"><div class="modal-box"><div id="stockDetail"></div></div></div><div id="jobModal" class="modal"><div class="modal-box"><div id="jobDetail"></div></div></div>
 </div>
 <script>
