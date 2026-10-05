@@ -26,6 +26,9 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
+      - name: Validate Python sources
+        run: python -m py_compile server.py live_trader.py trading.py scripts/update_data.py
+
       - name: Collect public data
         run: python scripts/update_data.py
       - name: Commit data
