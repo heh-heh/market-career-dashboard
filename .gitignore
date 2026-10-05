@@ -16,3 +16,6 @@ build/
 server_secrets.json
 server_secrets.tmp
 live_trading_state.json
+
+data/toss_1m/
+research/backtest_toss_v4_result.json
