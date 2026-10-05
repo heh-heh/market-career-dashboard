@@ -457,35 +457,50 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 log_path=Path("/tmp/toss_hybrid.log")
                 result_path=ROOT/"research"/"backtest_toss_v5_result.json"
-                text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
-                tail="\n".join(text.splitlines()[-80:])
+                log_text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
+                lines=log_text.splitlines()
+                tail="\n".join(lines[-100:])
                 symbols=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
-                completed=[]
-                for sym in symbols:
-                    if f"{sym}: total saved" in text:
-                        completed.append(sym)
-                current=None
-                page=None
-                pages=None
-                for line in reversed(text.splitlines()):
-                    m=re.search(r"^(\w+): page (\d+)/(\d+), fetched=(\d+), stored=(\d+)",line)
-                    if m:
-                        current=m.group(1); page=int(m.group(2)); pages=int(m.group(3)); break
+                stats={s:{"symbol":s,"page":0,"pages":10000,"fetched":0,"stored":0,"status":"waiting"} for s in symbols}
+                page_re=re.compile(r"^(\\w+): page (\\d+)/(\\d+), fetched=(\\d+), stored=(\\d+)")
+                saved_re=re.compile(r"^(\\w+): total saved (\\d+)")
+                for line in lines:
+                    m=page_re.search(line)
+                    if m and m.group(1) in stats:
+                        s=m.group(1); stats[s].update(page=int(m.group(2)),pages=int(m.group(3)),fetched=int(m.group(4)),stored=int(m.group(5)),status="collecting")
+                    m=saved_re.search(line)
+                    if m and m.group(1) in stats:
+                        s=m.group(1); stats[s].update(stored=int(m.group(2)),status="completed")
+                completed=[s for s in symbols if stats[s]["status"]=="completed"]
+                current=next((s for s in reversed(symbols) if stats[s]["status"]=="collecting"),None)
+                current_stats=stats.get(current) if current else None
                 if result_path.exists():
                     phase="completed"; progress=100
-                elif "backtest_toss_v5" in text or "Backtest V5" in text:
-                    phase="backtest"; progress=90
-                elif "total saved" in text:
-                    phase="collecting"; progress=min(88,round((len(completed)/len(symbols))*85 + (min((page or 0),10000)/10000)*12))
-                elif "build_backtest_cpp" in text:
-                    phase="building"; progress=5
-                elif "git fetch" in text:
-                    phase="syncing"; progress=2
                 else:
-                    phase="starting"; progress=0
-                running=bool(subprocess.run(["pgrep","-af","collect_toss_1m|backtest_toss_v5"],capture_output=True,text=True).stdout.strip())
+                    running_out=subprocess.run(["pgrep","-af","[c]ollect_toss_1m.py"],capture_output=True,text=True).stdout.strip()
+                    backtest_out=subprocess.run(["pgrep","-af","[b]in/backtest_toss_v5"],capture_output=True,text=True).stdout.strip()
+                    build_out=subprocess.run(["pgrep","-af","[b]uild_backtest_cpp.sh"],capture_output=True,text=True).stdout.strip()
+                    running=bool(running_out or backtest_out or build_out)
+                    if build_out and not current:
+                        phase="building"; progress=5
+                    elif running_out or completed or current:
+                        phase="collecting"
+                        cur_frac=((current_stats["page"]/max(1,current_stats["pages"])) if current_stats else 0)
+                        progress=min(88,round(((len(completed)+cur_frac)/len(symbols))*85))
+                    elif backtest_out:
+                        phase="backtest"; progress=90
+                    elif "Built:" in log_text:
+                        phase="backtest"; progress=90
+                    elif log_text:
+                        phase="starting"; progress=2
+                    else:
+                        phase="waiting"; progress=0
+                running=bool(subprocess.run(["pgrep","-af","[c]ollect_toss_1m.py|[b]in/backtest_toss_v5|[b]uild_backtest_cpp.sh"],capture_output=True,text=True).stdout.strip())
                 self.send_json({"ok":True,"phase":phase,"progress":progress,"running":running,
-                    "completedSymbols":completed,"currentSymbol":current,"currentPage":page,"totalPages":pages,
+                    "symbols":list(stats.values()),"completedSymbols":completed,
+                    "currentSymbol":current,"currentPage":current_stats["page"] if current_stats else None,
+                    "totalPages":current_stats["pages"] if current_stats else None,
+                    "currentStored":current_stats["stored"] if current_stats else None,
                     "resultReady":result_path.exists(),"updatedAt":time.time(),"log":tail})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},500)
