@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "*/30 * * * *"
   workflow_dispatch:
+concurrency:
+  group: deploy-github-pages
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pages: write
