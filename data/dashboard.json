@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-05T05:58:40+00:00",
+  "updatedAt": "2026-10-05T06:10:54+00:00",
   "notice": "뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
   "stocks": [
     {
@@ -181121,13 +181121,27 @@
       "published": "Mon, 05 Oct 2026 04:40:50 GMT",
       "publishedAt": "2026-10-05T04:40:50+00:00",
       "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxQNGFQOE05ZmkzRllSUk1VZmJDN2ZxZ3dvUHRaWDRFczlWVG5VUjM3blBCOWVQVUx1N0hrNk13dzNoX250OTVPdjNaeHpubXowaFJjZXJkcHlPZ00yS0tWdUlia182WlpHdEgya29GS0gtSEdRZGZBTXYtNElrQ3BwQV83SQ?oc=5\" target=\"_blank\">칩 리스·자산담보 대출...AI 투자 폭주에 ‘빅테크 금융공학’ 총동원</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
-      "source": "\"NVIDIA\" OR \"엔비디아\" AI OR GPU OR 반도체",
+      "source": "\"Broadcom\" OR \"브로드컴\" AI OR 반도체",
       "impact": "긍정",
       "importance": "보통",
       "relevance": 1,
       "affectedSymbols": [
         "반도체/시장"
       ],
+      "impactScore": 2,
+      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
+    },
+    {
+      "title": "‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나 - 조선일보",
+      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5",
+      "published": "Mon, 05 Oct 2026 04:40:50 GMT",
+      "publishedAt": "2026-10-05T04:40:50+00:00",
+      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5\" target=\"_blank\">‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
+      "source": "\"엔씨소프트\" 게임 OR 실적 OR 신작",
+      "impact": "긍정",
+      "importance": "보통",
+      "relevance": 1,
+      "affectedSymbols": [],
       "impactScore": 2,
       "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
     },
@@ -181244,20 +181258,6 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     },
     {
-      "title": "‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나 - 조선일보",
-      "link": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5",
-      "published": "Mon, 05 Oct 2026 02:47:44 GMT",
-      "publishedAt": "2026-10-05T02:47:44+00:00",
-      "description": "<a href=\"https://news.google.com/rss/articles/CBMigwFBVV95cUxOODZyOGpsRDNsdXpOTF91NExKYzN1WGIyM0wxLVhlbHlobHIxV2JJWmI4bDJORnpCYnBVZlhzbHdOdnRQbjc0OGpvMlhLSGRrSC1TTGpwY0RNUzl0UzR3eEltTXBLX3JtZGU0OFVDb296MUF3UHdKeUV6Z3JVRlhLMzI2VQ?oc=5\" target=\"_blank\">‘아이온2’ 5일 글로벌 출시 … 엔씨 주가 힘받나</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">조선일보</font>",
-      "source": "\"엔씨소프트\" 게임 OR 실적 OR 신작",
-      "impact": "긍정",
-      "importance": "보통",
-      "relevance": 1,
-      "affectedSymbols": [],
-      "impactScore": 2,
-      "impactReason": "반도체·AI·금리·환율·게임 등 시장 영향도가 큰 키워드 기반 기사"
-    },
-    {
       "title": "딥시크·화웨이, AI 칩 SW 맞손…\"엔비디아 의존 낮춰\" - 한국경제",
       "link": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFA2REMwQ1Rrak9ucGRGOHZCMHZrZktXd3JDU1FhaWVzcC1FM0JxT1pMdHM3TGRsc2ZCQkh6YnplSlJaRlRRVll6dHJ3Y3Jpb2xSRWNYVGVFMTJkZw?oc=5",
       "published": "Mon, 05 Oct 2026 02:16:37 GMT",
@@ -181371,7 +181371,7 @@
       "impactReason": "종목 직접 언급 및 핵심 산업 키워드가 포함된 기사"
     }
   ],
-  "newsUpdatedAt": "2026-10-05T06:00:55+00:00",
+  "newsUpdatedAt": "2026-10-05T06:12:56+00:00",
   "employmentNews": [
     {
       "title": "포커 페이스 홀덤 게임 유형을 구분하는 기준 - Calgary Roughnecks",
@@ -185588,7 +185588,7 @@
       ]
     }
   ],
-  "jobPostingsUpdatedAt": "2026-10-05T05:58:40+00:00",
+  "jobPostingsUpdatedAt": "2026-10-05T06:10:54+00:00",
   "employment": [
     {
       "title": "게임 클라이언트",
@@ -185644,6 +185644,6 @@
     "quotes_ok": 19,
     "quotes_total": 19,
     "candle_ready": 19,
-    "generatedAt": "2026-10-05T05:58:40+00:00"
+    "generatedAt": "2026-10-05T06:10:54+00:00"
   }
 }
