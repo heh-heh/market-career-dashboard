@@ -1,0 +1,2 @@
+# Runtime dependency for Toss Securities realtime WebSocket streaming
+websockets>=10.4,<16
