@@ -64,9 +64,23 @@ def collect(symbol,since,pages,sleep_s):
     tok=token()
     rows={}
     before=None
+    out=ROOT/"data"/"toss_1m"
+    out.mkdir(parents=True,exist_ok=True)
+    path=out/(symbol+".csv.gz")
+    if path.exists():
+        try:
+            with gzip.open(path,"rt",newline="",encoding="utf-8") as f:
+                for r in csv.DictReader(f):
+                    if r.get("timestamp"):
+                        rows[r["timestamp"]]=r
+            existing_oldest=min(rows) if rows else None
+            if existing_oldest and (not since or existing_oldest > since):
+                before=existing_oldest
+        except Exception:
+            rows={}
     refresh=lambda: token(force=True)
     started=time.time()
-    latest_ts=None
+    latest_ts=max(rows) if rows else None
     write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":0,"fetched":0,"coveragePct":0,"latestTimestamp":None,"oldestTimestamp":None,"since":since,"startedAt":started,"updatedAt":started})
     for n in range(pages):
         obj=fetch_page(tok,symbol,before,refresh_token=refresh)
@@ -101,15 +115,7 @@ def collect(symbol,since,pages,sleep_s):
         if not next_before or next_before==before: break
         before=next_before
         time.sleep(sleep_s)
-    out=ROOT/"data"/"toss_1m"
-    out.mkdir(parents=True,exist_ok=True)
-    path=out/(symbol+".csv.gz")
-    existing={}
-    if path.exists():
-        with gzip.open(path,"rt",newline="",encoding="utf-8") as f:
-            for r in csv.DictReader(f): existing[r["timestamp"]]=r
-    existing.update(rows)
-    ordered=[existing[k] for k in sorted(existing)]
+    ordered=[rows[k] for k in sorted(rows)]
     with gzip.open(path,"wt",newline="",encoding="utf-8") as f:
         w=csv.DictWriter(f,fieldnames=["timestamp","open","high","low","close","volume","currency"])
         w.writeheader(); w.writerows(ordered)
