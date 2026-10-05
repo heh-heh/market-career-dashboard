@@ -36,6 +36,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <div class="notice" id="notice">데이터 정책을 불러오는 중...</div></div><div id="stockModal" class="modal"><div class="modal-box"><div id="stockDetail"></div></div></div><div id="jobModal" class="modal"><div class="modal-box"><div id="jobDetail"></div></div></div>
 </div>
 <script>
+const AWS_API_BASE=""; // EC2 주소를 넣으면 AWS 데이터를 우선 사용. 예: http://EC2_PUBLIC_IP:8080
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function formatKSTDateTime(v){
   if(!v)return "-";
@@ -50,7 +51,7 @@ document.querySelector("nav").addEventListener("click",e=>{const b=e.target.clos
 let cached;
 async function loadData(){
  try{
-  cached=await fetch("data/dashboard.json?"+Date.now()).then(r=>r.json());
+  cached=await fetch((AWS_API_BASE?AWS_API_BASE+"/api/dashboard":"data/dashboard.json")+"?"+Date.now()).then(r=>r.json());
   render(cached);
  }catch(e){document.getElementById("status").textContent="데이터를 불러오지 못했습니다.";}
 }
@@ -274,7 +275,7 @@ async function liveQuotes(){
  // 시세는 GitHub Actions가 수집한 dashboard.json을 사용합니다.
  // 브라우저에서 Yahoo Finance를 직접 호출하지 않아 CORS 오류를 방지합니다.
  try{
-  const fresh=await fetch("data/dashboard.json?"+Date.now()).then(r=>r.json());
+  const fresh=await fetch((AWS_API_BASE?AWS_API_BASE+"/api/dashboard":"data/dashboard.json")+"?"+Date.now()).then(r=>r.json());
   cached=fresh;
   render(cached);
  }catch(e){
