@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
+from toss_auth import get_token as shared_toss_token
 
 ROOT=Path(__file__).resolve().parents[1]
 SECRETS=ROOT/"server_secrets.json"
@@ -12,21 +13,12 @@ BASE="https://openapi.tossinvest.com"
 TOKEN_URL=BASE+"/oauth2/token"
 DEFAULT_SYMBOLS=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
 
-def token():
+def token(force=False):
     cfg=json.loads(SECRETS.read_text(encoding="utf-8"))
-    toss=cfg.get("toss",{})
-    cid=str(toss.get("app_key") or "").strip()
-    sec=str(toss.get("app_secret") or "").strip()
-    if not cid or not sec:
-        raise RuntimeError("Toss credentials are not configured in server_secrets.json")
-    auth=base64.b64encode((cid+":"+sec).encode()).decode()
-    req=Request(TOKEN_URL,data=urlencode({"grant_type":"client_credentials"}).encode(),
-                headers={"Authorization":"Basic "+auth,"Content-Type":"application/x-www-form-urlencoded",
-                         "User-Agent":"market-career-dashboard/history-collector"},method="POST")
-    with urlopen(req,timeout=15) as r:
-        obj=json.loads(r.read())
-    if not obj.get("access_token"): raise RuntimeError("Toss OAuth token was not returned")
-    return obj["access_token"]
+    tok=shared_toss_token(cfg, force=force)
+    if not tok:
+        raise RuntimeError("Toss OAuth token을 발급받지 못했습니다.")
+    return tok
 
 def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
     q={"symbol":symbol,"interval":"1m","count":str(count),"adjusted":"true"}
@@ -55,7 +47,7 @@ def collect(symbol,since,pages,sleep_s):
     tok=token()
     rows={}
     before=None
-    refresh=lambda: token()
+    refresh=lambda: token(force=True)
     for n in range(pages):
         obj=fetch_page(tok,symbol,before,refresh_token=refresh)
         candles=obj.get("candles") or []
