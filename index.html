@@ -18,7 +18,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 .trade-toggle input:checked+.trade-switch:after{transform:translateX(24px)}
 .trade-toggle .toggle-text{font-weight:800;min-width:28px}
 .trade-toggle input:disabled+.trade-switch{opacity:.45;cursor:not-allowed}
-</style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style></head>
+</style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style><style>.bt-symbol-pct{font-size:22px;font-weight:900;margin-top:8px;font-variant-numeric:tabular-nums}</style></head>
 <body><div class="app">
 <header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
 <nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장·고용률</button><button data-view="v5">채용공고</button><button data-view="v4">신기술 · IT</button><button data-view="v8">자동매매</button><button data-view="v9">백테스트 모니터</button><button data-view="v7">설정</button></nav>
@@ -654,6 +654,36 @@ function startRealtime(){
  connect();
  window.addEventListener("beforeunload",()=>{stopped=true;},{once:true});
 }
+
+let btTimer=null;
+const btPhaseNames={starting:"시작 준비",syncing:"GitHub 동기화",building:"C++ 엔진 빌드",collecting:"Toss 1분봉 수집",backtest:"C++ 백테스트 계산",completed:"백테스트 완료",waiting:"대기"};
+async function loadBacktestMonitor(){
+ const base=AWS_API_BASE||"";if(!base)return;
+ try{
+  const d=await fetch(base+"/api/backtest/monitor?"+Date.now(),{cache:"no-store"}).then(r=>r.json());
+  if(!d.ok)throw new Error(d.error||"monitor unavailable");
+  const p=Math.max(0,Math.min(100,Number(d.progress)||0)),phase=btPhaseNames[d.phase]||d.phase||"-";
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const bar=document.getElementById("btProgressBar");if(bar)bar.style.width=p+"%";
+  set("btProgressText",p.toFixed(0)+"%");set("btOverall",p.toFixed(0)+"%");
+  const phaseEl=document.getElementById("btPhase");if(phaseEl)phaseEl.innerHTML="<b>"+esc(phase)+"</b> · "+(d.running?'<span class="bt-ok">실행 중</span>':'<span class="bt-wait">대기/종료</span>');
+  set("btCurrent",d.currentSymbol||"-");set("btPage",d.currentPage?d.currentPage+" / "+(d.totalPages||"-"):"-");set("btStored",d.currentStored!=null?Number(d.currentStored).toLocaleString()+"봉":"-");
+  const rows=d.symbols||[];
+  const box=document.getElementById("btSymbols");
+  if(box)box.innerHTML=rows.map(x=>{
+   const pct=Math.max(0,Math.min(100,Number(x.coveragePct)||0));
+   const st=x.status==="completed"?"완료":x.status==="collecting"?"수집 중":x.status==="error"?"오류":"대기";
+   const cl=x.status==="completed"?"bt-ok":x.status==="collecting"?"up":x.status==="error"?"down":"bt-wait";
+   return '<div class="bt-symbol"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(x.symbol)+'</b><span class="'+cl+'">'+st+'</span></div><div class="bt-symbol-pct">'+pct.toFixed(1)+'%</div><div class="bt-mini-progress"><i style="width:'+pct+'%"></i></div><div class="mini" style="margin-top:7px">저장 '+Number(x.stored||0).toLocaleString()+'봉 · API 페이지 '+Number(x.page||0)+' / '+Number(x.pages||10000)+'</div><div class="mini">현재 범위: '+esc(x.oldestTimestamp?formatKSTDateTime(x.oldestTimestamp):"-")+' · 시작: '+esc(x.latestTimestamp?formatKSTDateTime(x.latestTimestamp):"-")+'</div></div>'
+  }).join("");
+  const result=document.getElementById("btResult");
+  if(result)result.innerHTML=d.resultReady?'<b class="bt-ok">✓ 백테스트 결과 생성 완료</b>':'<span class="muted">'+(d.running?(phase==="backtest"?"C++ Train/Test 계산 중입니다.":"Toss 과거 데이터를 수집 중입니다."):"아직 실행 중인 백테스트가 없습니다.")+'</span>';
+  const log=document.getElementById("btLog");if(log)log.textContent=d.log||"로그 없음";
+ }catch(e){const phaseEl=document.getElementById("btPhase");if(phaseEl)phaseEl.textContent="서버 연결 대기 · "+e.message}
+}
+function startBacktestMonitor(){if(btTimer)clearInterval(btTimer);loadBacktestMonitor();btTimer=setInterval(loadBacktestMonitor,3000)}
+document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
+
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 loadData();
 startRealtime();
