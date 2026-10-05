@@ -188,7 +188,20 @@ class LiveAutoTrader:
                 obj = json.loads(r.read())
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", "ignore")
-            raise RuntimeError("Toss API 실패: " + detail[:500])
+            if e.code == 401 and self._token_provider is not None and any(x in detail for x in ("invalid-token","expired-token","token-revoked")):
+                token = str(self._token_provider(True) or "")
+                if not token:
+                    raise RuntimeError("Toss access token 재발급에 실패했습니다.")
+                headers["Authorization"] = "Bearer " + token
+                req = urllib.request.Request(url, data=data, headers=headers, method=method)
+                try:
+                    with urllib.request.urlopen(req, timeout=8) as r:
+                        obj = json.loads(r.read())
+                except urllib.error.HTTPError as e2:
+                    detail2 = e2.read().decode("utf-8", "ignore")
+                    raise RuntimeError("Toss API 실패: " + detail2[:500])
+            else:
+                raise RuntimeError("Toss API 실패: " + detail[:500])
         return obj.get("result", obj) if isinstance(obj, dict) else obj
 
     def _calendar(self):
