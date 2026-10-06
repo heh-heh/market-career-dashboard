@@ -19,3 +19,5 @@ live_trading_state.json
 
 data/toss_1m/
 research/backtest_toss_v4_result.json
+
+data/toss_errors.jsonl
