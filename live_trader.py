@@ -5,6 +5,7 @@ import base64, json, math, os, secrets, threading, time, urllib.error, urllib.pa
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from pathlib import Path
+from toss_rate_limit import wait_for_slot, group_for_path
 
 KST = timezone(timedelta(hours=9))
 
@@ -193,10 +194,26 @@ class LiveAutoTrader:
             headers["Content-Type"] = "application/json"
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
+            wait_for_slot(group_for_path(path))
             with urllib.request.urlopen(req, timeout=8) as r:
                 obj = json.loads(r.read())
         except urllib.error.HTTPError as e:
             detail = e.read().decode("utf-8", "ignore")
+            if e.code == 429:
+                retry_after = 0.0
+                try:
+                    retry_after = float(e.headers.get("Retry-After") or 0)
+                except Exception:
+                    pass
+                time.sleep(max(1.0, min(30.0, retry_after or 2.0)))
+                wait_for_slot(group_for_path(path))
+                try:
+                    with urllib.request.urlopen(req, timeout=8) as r:
+                        obj = json.loads(r.read())
+                    return obj.get("result", obj) if isinstance(obj, dict) else obj
+                except urllib.error.HTTPError as e_retry:
+                    detail_retry = e_retry.read().decode("utf-8", "ignore")
+                    raise RuntimeError("Toss API rate-limit retry failed: " + detail_retry[:500])
             if e.code == 401 and self._token_provider is not None and any(x in detail for x in ("invalid-token","expired-token","token-revoked")):
                 token = str(self._token_provider(True) or "")
                 if not token:
