@@ -5,6 +5,7 @@ from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
 from live_trader import LiveAutoTrader
 from toss_auth import get_token as shared_toss_token
+from toss_rate_limit import wait_for_slot, group_for_path
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -115,6 +116,7 @@ def toss_quotes(cfg, items):
         chunk=requested[start:start+200]
         qs=urllib.parse.urlencode({"symbols":",".join(chunk)})
         url=TOSS_API_BASE+"/api/v1/prices?"+qs
+        wait_for_slot("MARKET_DATA")
         req=urllib.request.Request(
             url,
             headers={
