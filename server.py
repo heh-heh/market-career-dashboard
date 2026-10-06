@@ -75,8 +75,14 @@ def trading_status():
             "live":LIVE_TRADER.status(),
         }
 
+def backtest_ready():
+    return (ROOT/"research"/"backtest_toss_v5_result.json").exists()
+
 def update_data():
     while True:
+        if not backtest_ready():
+            time.sleep(30)
+            continue
         try:
             subprocess.run([sys.executable,str(ROOT/"scripts"/"update_data.py")],cwd=ROOT,timeout=240,check=False)
         except Exception as e:
@@ -339,6 +345,8 @@ async def toss_realtime_once():
                 REALTIME_STATUS["connected"]=False
 
 async def realtime_loop():
+    while not backtest_ready():
+        await asyncio.sleep(30)
     while True:
         try:
             await toss_realtime_once()
