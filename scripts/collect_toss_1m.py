@@ -81,7 +81,17 @@ def collect(symbol,since,pages,sleep_s):
     refresh=lambda: token(force=True)
     started=time.time()
     latest_ts=max(rows) if rows else None
-    write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":len(rows),"fetched":0,"coveragePct":0,"latestTimestamp":latest_ts,"oldestTimestamp":(min(rows) if rows else None),"since":since,"startedAt":started,"updatedAt":started})
+    existing_oldest=min(rows) if rows else None
+    initial_coverage=0.0
+    if latest_ts and existing_oldest and since:
+        try:
+            import datetime as _dt
+            a=_dt.datetime.fromisoformat(since.replace("Z","+00:00")).timestamp()
+            b=_dt.datetime.fromisoformat(latest_ts.replace("Z","+00:00")).timestamp()
+            o=_dt.datetime.fromisoformat(existing_oldest.replace("Z","+00:00")).timestamp()
+            if b>a: initial_coverage=max(0.0,min(100.0,((b-o)/(b-a))*100.0))
+        except Exception: pass
+    write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":len(rows),"fetched":0,"coveragePct":round(initial_coverage,2),"latestTimestamp":latest_ts,"oldestTimestamp":existing_oldest,"since":since,"startedAt":started,"updatedAt":started})
     for n in range(pages):
         obj=fetch_page(tok,symbol,before,refresh_token=refresh)
         candles=obj.get("candles") or []
@@ -126,7 +136,7 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--symbols",default=",".join(DEFAULT_SYMBOLS))
     ap.add_argument("--since",default="2021-01-01T00:00:00+00:00")
-    ap.add_argument("--pages",type=int,default=10000)
+    ap.add_argument("--pages",type=int,default=3000)
     ap.add_argument("--sleep",type=float,default=0.25)
     a=ap.parse_args()
     for s in [x.strip().upper() for x in a.symbols.split(",") if x.strip()]:
