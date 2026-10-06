@@ -17,10 +17,11 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
+sys.path.insert(0, str(ROOT))
+from toss_rate_limit import wait_for_slot, group_for_path
 
 ROOT = Path(__file__).resolve().parents[1]
 SECRETS = ROOT / "server_secrets.json"
-sys.path.insert(0, str(ROOT))
 from toss_auth import get_token as shared_toss_token
 
 BASE = "https://openapi.tossinvest.com"
@@ -67,6 +68,7 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None):
 
     for attempt in range(8):
         try:
+            wait_for_slot("MARKET_DATA_CHART")
             req = Request(
                 url,
                 headers={
@@ -81,7 +83,13 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None):
             if e.code == 429:
                 record_error(symbol, before, attempt, "HTTPError", e.code, body)
                 if attempt < 7:
-                    time.sleep(min(30, 2 ** attempt))
+                    retry_after = 0.0
+                    try:
+                        retry_after = float(e.headers.get("Retry-After") or 0)
+                    except Exception:
+                        pass
+                    delay = retry_after or min(30, 2 ** attempt)
+                    time.sleep(max(1.0, min(30.0, delay)))
                     continue
             if e.code == 401 and attempt < 2 and refresh_token is not None:
                 record_error(symbol, before, attempt, "HTTPError", e.code, body)
