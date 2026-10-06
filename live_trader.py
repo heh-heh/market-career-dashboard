@@ -247,40 +247,121 @@ class LiveAutoTrader:
         return {str(x.get("symbol")): x for x in rows} if isinstance(rows, list) else {}
 
     def _candles(self, symbol):
-        obj = self._api("GET", "/api/v1/candles", {"symbol": symbol, "interval": "1m", "count": "60"}, account=False)
+        obj = self._api("GET", "/api/v1/candles", {"symbol": symbol, "interval": "1m", "count": "240"}, account=False)
         rows = obj.get("candles", []) if isinstance(obj, dict) else []
         return rows if isinstance(rows, list) else []
 
     @staticmethod
     def _analyze(rows):
+        """3-minute adaptive V2 signal engine.
+        Rows are 1-minute Toss candles, newest-first.
+        """
         rows = list(reversed(rows))
-        close, vol = [], []
-        for x in rows:
+        bars = []
+        for i in range(0, len(rows) - 2, 3):
+            chunk = rows[i:i+3]
+            if len(chunk) < 3:
+                break
             try:
-                close.append(float(x["closePrice"]))
-                vol.append(float(x.get("volume") or 0))
-            except Exception:
-                pass
-        if len(close) < 25:
-            return {"signal": "HOLD", "reason": "1분봉 데이터 부족", "price": close[-1] if close else None}
-        sma5 = sum(close[-5:]) / 5.0
-        sma20 = sum(close[-20:]) / 20.0
-        gains, losses = [], []
-        for i in range(len(close) - 14, len(close)):
-            d = close[i] - close[i - 1]
-            gains.append(max(d, 0))
-            losses.append(max(-d, 0))
-        ag, al = sum(gains) / 14.0, sum(losses) / 14.0
-        rsi = 100.0 if al == 0 and ag > 0 else 50.0 if al == 0 else 100.0 - 100.0 / (1.0 + ag / al)
-        avg_v = sum(vol[-21:-1]) / max(1, len(vol[-21:-1]))
-        surge = vol[-1] / avg_v if avg_v else 0.0
-        buy = sma5 > sma20 * 1.001 and 48 <= rsi <= 72 and surge >= 1.10 and close[-1] >= sma5
-        sell = sma5 < sma20 * 0.999 or rsi < 35
-        signal = "BUY" if buy else "SELL" if sell else "HOLD"
-        reason = "거래량 상위 + SMA5>SMA20 + RSI + 1분 거래량 급증 확인" if buy else "SMA5/SMA20 또는 RSI 약세" if sell else "추세 확인 대기"
-        return {"signal": signal, "reason": reason, "price": close[-1],
-                "sma5": round(sma5, 4), "sma20": round(sma20, 4),
-                "rsi14": round(rsi, 2), "volumeSurge": round(surge, 2)}
+                o=float(chunk[0]["openPrice"]); h=max(float(x["highPrice"]) for x in chunk)
+                l=min(float(x["lowPrice"]) for x in chunk); c=float(chunk[-1]["closePrice"])
+                v=sum(float(x.get("volume") or 0) for x in chunk)
+                bars.append({"o":o,"h":h,"l":l,"c":c,"v":v})
+            except (KeyError,TypeError,ValueError):
+                continue
+        if len(bars) < 25:
+            return {"signal":"HOLD","reason":"3분봉 데이터 부족","price":bars[-1]["c"] if bars else None,"patternScore":0}
+        eps=1e-9
+        closes=[b["c"] for b in bars]; vols=[b["v"] for b in bars]
+        def sma(a,n): return sum(a[-n:])/n
+        ma5=sma(closes,5); ma10=sma(closes,10); ma20=sma(closes,20)
+        ma20_3=sma(closes[:-3],20)
+        trs=[]
+        for i,b in enumerate(bars):
+            prev=closes[i-1] if i else b["c"]
+            trs.append(max(b["h"]-b["l"],abs(b["h"]-prev),abs(b["l"]-prev)))
+        atr=sum(trs[-14:])/14.0
+        med20=sorted(vols[-20:])[9]
+        vma5=sma(vols,5); rvol=vols[-1]/max(med20,eps)
+        body=abs(bars[-1]["c"]-bars[-1]["o"]); rng=max(bars[-1]["h"]-bars[-1]["l"],eps)
+        body_ratio=body/rng
+        prev=bars[-2]; prev2=bars[-3]
+        # RSI14
+        gains=[]; losses=[]
+        for i in range(max(1,len(closes)-14),len(closes)):
+            d=closes[i]-closes[i-1]; gains.append(max(d,0)); losses.append(max(-d,0))
+        ag=sum(gains)/max(1,len(gains)); al=sum(losses)/max(1,len(losses))
+        rsi=100.0 if al==0 and ag>0 else 50.0 if al==0 else 100.0-100.0/(1.0+ag/al)
+        day_high=max(b["h"] for b in bars[-130:]); day_low=min(b["l"] for b in bars[-130:])
+        reference_mid=None; risk_r=None; score=0; patterns=[]
+        # P1 upper-line breakout
+        p1=(prev["c"]<prev["o"] and prev["c"]>=sma(closes[:-1],5)*0.998
+            and prev["v"]<=sma(vols[:-1],5)*0.90 and bars[-1]["c"]>bars[-1]["o"]
+            and bars[-1]["c"]>prev["h"] and rvol>=1.40 and vols[-1]>=vma5*1.35
+            and body_ratio>=0.45 and ma5>ma10 and bars[-1]["c"]<=ma5+atr)
+        if p1: score+=5; patterns.append("P1")
+        # P2 5MA turnaround
+        ma5p=sma(closes[:-1],5); ma10p=sma(closes[:-1],10)
+        p2=(prev["c"]<ma5p and prev["c"]>ma10p and prev["l"]>=ma10p*0.997
+            and bars[-1]["c"]>bars[-1]["o"] and bars[-1]["c"]>ma5
+            and bars[-1]["c"]>prev["h"]*0.999 and vols[-1]>=max(prev["v"]*1.8,vma5*1.2)
+            and body_ratio>=0.45 and (bars[-1]["c"]-bars[-1]["l"])/rng>=0.55)
+        if p2: score+=4; patterns.append("P2")
+        # P3 20MA pullback
+        ma20p=sma(closes[:-1],20)
+        pullback=abs(prev["l"]/ma20p-1)<=0.004 and min(prev["o"],prev["c"])>=ma20p*0.997
+        prior_high=max(closes[-6:-2])
+        p3=(ma20>ma20_3 and pullback and prev["c"]/max(prior_high,eps)-1<=-0.008
+            and bars[-1]["c"]>bars[-1]["o"] and bars[-1]["c"]>ma5
+            and bars[-1]["c"]>prev["h"] and vols[-1]>=vma5*1.25 and rvol>=1.20)
+        if p3: score+=3; patterns.append("P3")
+        # P4 opening-range/pivot retest, only when enough same-session bars are available
+        p4=False
+        if len(bars)>=15:
+            orh=max(b["h"] for b in bars[:6])
+            broke=any(b["c"]>orh*1.002 for b in bars[6:-2])
+            retest=min(prev["l"],prev2["l"])>=orh*0.997 and min(prev["c"],prev2["c"])>=orh*0.999
+            p4=broke and retest and bars[-1]["c"]>bars[-1]["o"] and bars[-1]["c"]>prev["h"] and vols[-1]>=prev["v"]*1.4 and rvol>=1.20
+            if p4: score+=3; patterns.append("P4")
+        # P5 compression breakout
+        if len(bars)>=12:
+            spreads=[]
+            for j in range(-10,0):
+                a5=sma(closes[:j],5); a10=sma(closes[:j],10); a20=sma(closes[:j],20)
+                spreads.append((max(a5,a10,a20)-min(a5,a10,a20))/max(min(a5,a10,a20),eps))
+            box_high=max(b["h"] for b in bars[-11:-1]); box_range=box_high-min(b["l"] for b in bars[-11:-1])
+            p5=(max(spreads)<=0.006 and box_range<=atr*2.0 and bars[-1]["c"]>box_high*1.001
+                and vols[-1]>=max(vols[-11:-1])*1.60 and vols[-1]>=vma5*1.35 and body_ratio>=0.55)
+            if p5: score+=4; patterns.append("P5")
+        if rvol>=1.50 and vols[-1]>prev["v"] and vols[-1]>vma5: score+=2; patterns.append("VOL")
+        if ma5>ma10>ma20 and ma20>ma20_3: score+=1; patterns.append("TREND")
+        # Common filters from V2 using available session window.
+        prev_close=closes[-2]
+        day_high_pct=(day_high/max(prev_close,eps)-1)*100
+        day_low_recovery=(closes[-1]/max(day_low,eps)-1)*100
+        dollar_value=closes[-1]*vols[-1]
+        gap_atr=abs(closes[-1]-ma5)/max(atr,eps)
+        common=(5<=closes[-1]<=300 and rvol>=1.20 and dollar_value>=1500000
+                and (day_high_pct>=3.0 or day_low_recovery>=4.0) and gap_atr<=1.20)
+        # Reference candle: latest strong volume bullish candle before/at signal.
+        if score>=7:
+            candidates=[b for b in bars[max(0,len(bars)-10):] if b["c"]>b["o"] and b["v"]>=vma5*1.25]
+            if candidates:
+                ref=candidates[-1]; reference_mid=(ref["o"]+ref["c"])/2.0
+                risk_r=closes[-1]-reference_mid
+        signal="BUY" if common and score>=7 and risk_r is not None and risk_r>0 and risk_r<=atr*1.20 else "HOLD"
+        if signal=="BUY":
+            target=max(0.8,min(2.5,1.5*(risk_r/max(closes[-1],eps))*100))
+            reason="V2 BUY "+("+".join(patterns))+f" score={score}"
+        else:
+            target=None; reason=f"V2 대기 score={score} common={'OK' if common else 'NO'}"
+        return {"signal":signal,"reason":reason,"price":closes[-1],
+                "ma5":round(ma5,4),"ma10":round(ma10,4),"ma20":round(ma20,4),
+                "rsi14":round(rsi,2),"rvol":round(rvol,2),"atr14":round(atr,4),
+                "patternScore":score,"patterns":patterns,"referenceMid":reference_mid,
+                "riskR":risk_r,"targetPct":target,"volume3m":vols[-1],
+                "dayHighPct":round(day_high_pct,3),"dayLowRecoveryPct":round(day_low_recovery,3),
+                "dollarValue3m":round(dollar_value,2),"ma5GapAtr":round(gap_atr,3)}
 
     def _scan_candidates(self):
         ranked = self._rankings()
