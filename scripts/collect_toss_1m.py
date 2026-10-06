@@ -76,6 +76,16 @@ def write_progress(symbol, payload):
     os.chmod(tmp, 0o600)
     os.replace(tmp, PROGRESS)
 
+def save_rows(path, rows):
+    ordered=[rows[k] for k in sorted(rows)]
+    tmp=path.with_suffix(".tmp.gz")
+    with gzip.open(tmp,"wt",newline="",encoding="utf-8") as f:
+        w=csv.DictWriter(f,fieldnames=["timestamp","open","high","low","close","volume","currency"])
+        w.writeheader()
+        w.writerows(ordered)
+    os.replace(tmp,path)
+    return len(ordered)
+
 def collect(symbol,since,until,pages,sleep_s,batch_pages,batch_sleep):
     tok=token()
     rows={}
@@ -112,8 +122,17 @@ def collect(symbol,since,until,pages,sleep_s,batch_pages,batch_sleep):
         except Exception: pass
     write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":len(rows),"fetched":0,"coveragePct":round(initial_coverage,2),"latestTimestamp":latest_ts,"oldestTimestamp":existing_oldest,"since":since,"startedAt":started,"updatedAt":started})
     for n in range(pages):
-        obj=fetch_page(tok,symbol,before,refresh_token=refresh)
-        candles=obj.get("candles") or []
+        try:
+            obj=fetch_page(tok,symbol,before,refresh_token=refresh)
+            candles=obj.get("candles") or []
+        except Exception as e:
+            saved=save_rows(path,rows)
+            write_progress(symbol,{"symbol":symbol,"status":"error","page":n,"pages":pages,"stored":saved,
+                                  "fetched":0,"coveragePct":round(initial_coverage,2),"latestTimestamp":latest_ts,
+                                  "oldestTimestamp":min(rows) if rows else existing_oldest,"since":since,
+                                  "startedAt":started,"updatedAt":time.time(),"error":str(e)[:500]})
+            print(f"{symbol}: ERROR after page {n}; checkpoint saved={saved}",flush=True)
+            raise
         if not candles: break
         page_ts=[str(x.get("timestamp") or "") for x in candles if x.get("timestamp")]
         if page_ts and latest_ts is None:
@@ -145,15 +164,20 @@ def collect(symbol,since,until,pages,sleep_s,batch_pages,batch_sleep):
         if not next_before or next_before==before: break
         before=next_before
         time.sleep(sleep_s)
-        if (n + 1) % batch_pages == 0 and n + 1 < pages:
-            print(f"{symbol}: {n+1} pages completed; pausing {batch_sleep:.1f}s before next batch",flush=True)
-            time.sleep(batch_sleep)
-    ordered=[rows[k] for k in sorted(rows)]
-    with gzip.open(path,"wt",newline="",encoding="utf-8") as f:
-        w=csv.DictWriter(f,fieldnames=["timestamp","open","high","low","close","volume","currency"])
-        w.writeheader(); w.writerows(ordered)
-    write_progress(symbol,{"symbol":symbol,"status":"completed","page":n+1 if 'n' in locals() else 0,"pages":pages,"stored":len(ordered),"fetched":len(ordered),"coveragePct":100,"latestTimestamp":latest_ts,"oldestTimestamp":ordered[0]["timestamp"] if ordered else None,"since":since,"startedAt":started,"updatedAt":time.time()})
-    print(f"{symbol}: total saved {len(ordered)} -> {path}",flush=True)
+        if (n + 1) % batch_pages == 0:
+            saved=save_rows(path,rows)
+            write_progress(symbol,{"symbol":symbol,"status":"checkpoint","page":n+1,"pages":pages,"stored":saved,
+                                  "fetched":len(candles),"coveragePct":round(coverage,2),"latestTimestamp":latest_ts,
+                                  "oldestTimestamp":min(rows) if rows else oldest_ts,"since":since,
+                                  "startedAt":started,"updatedAt":time.time()})
+            print(f"{symbol}: checkpoint saved={saved} at page {n+1}; pausing {batch_sleep:.1f}s",flush=True)
+            if n + 1 < pages:
+                time.sleep(batch_sleep)
+    saved=save_rows(path,rows)
+    write_progress(symbol,{"symbol":symbol,"status":"completed","page":n+1 if 'n' in locals() else 0,"pages":pages,"stored":saved,"fetched":saved,
+                        "coveragePct":100,"latestTimestamp":latest_ts,"oldestTimestamp":min(rows) if rows else None,
+                        "since":since,"startedAt":started,"updatedAt":time.time()})
+    print(f"{symbol}: total saved {saved} -> {path}",flush=True)
 
 def main():
     ap=argparse.ArgumentParser()
