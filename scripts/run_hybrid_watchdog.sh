@@ -79,7 +79,9 @@ for symbol in $SYMBOLS; do
     write_state "retrying" "$symbol" "$attempt" "$symbol failed; retry in ${sleep_for}s"
     log "$symbol retry scheduled in ${sleep_for}s"
     sleep "$sleep_for"
-    attempt=$((attempt + 1))
+    if [ "$attempt" -lt 20 ]; then
+      attempt=$((attempt + 1))
+    fi
   done
 done
 
