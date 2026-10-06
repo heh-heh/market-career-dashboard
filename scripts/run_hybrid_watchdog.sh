@@ -62,9 +62,8 @@ for symbol in $SYMBOLS; do
     fi
     log "$symbol collection failed"
     if [ "$attempt" -ge 20 ]; then
-      write_state "error" "$symbol" "$attempt" "$symbol exceeded retry limit"
-      log "$symbol exceeded retry limit"
-      exit 2
+      log "$symbol has failed 20 times; continuing with 5-minute retry interval"
+      attempt=20
     fi
     sleep_for=$((15 * attempt))
     [ "$sleep_for" -gt 300 ] && sleep_for=300
