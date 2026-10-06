@@ -45,9 +45,11 @@ def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
                 return json.loads(r.read()).get("result",{})
         except HTTPError as e:
             body=e.read().decode("utf-8","ignore")
-            if e.code==429 and attempt<7:
-                time.sleep(min(30,2**attempt))
-                continue
+            if e.code==429:
+                record_error(symbol,before,attempt,"HTTPError",e.code,body)
+                if attempt<7:
+                    time.sleep(min(30,2**attempt))
+                    continue
             if e.code==401 and attempt<2 and refresh_token is not None:
                 record_error(symbol,before,attempt,"HTTPError",e.code,body)
                 msg=body.lower()
