@@ -29,6 +29,9 @@ class LiveAutoTrader:
         self.entry_price = None
         self.pending_order_id = None
         self.pending_side = None
+        self.reference_mid = None
+        self.target_pct = None
+        self.entry_time = None
         self._token = {"value": "", "expires_at": 0.0}
         self._token_provider = None
         self._load_state()
@@ -79,6 +82,9 @@ class LiveAutoTrader:
             self.entry_price = raw.get("entry_price")
             self.pending_order_id = raw.get("pending_order_id")
             self.pending_side = raw.get("pending_side")
+            self.reference_mid = raw.get("reference_mid")
+            self.target_pct = raw.get("target_pct")
+            self.entry_time = raw.get("entry_time")
             self.live_halted = bool(raw.get("live_halted", False)) if raw.get("day") == self._day() else False
         except Exception:
             pass
@@ -104,6 +110,9 @@ class LiveAutoTrader:
             "entry_price": self.entry_price,
             "pending_order_id": self.pending_order_id,
             "pending_side": self.pending_side,
+            "reference_mid": self.reference_mid,
+            "target_pct": self.target_pct,
+            "entry_time": self.entry_time,
             "live_halted": self.live_halted,
         }
         tmp = self.state_path.with_suffix(".tmp")
@@ -433,6 +442,7 @@ class LiveAutoTrader:
         if status == "FILLED":
             if self.pending_side == "SELL":
                 self.managed_symbol, self.entry_price = None, None
+                self.reference_mid, self.target_pct, self.entry_time = None, None, None
                 self.last_action = "SELL_FILLED"
             else:
                 self.last_action = "BUY_FILLED " + str(self.managed_symbol)
@@ -441,6 +451,7 @@ class LiveAutoTrader:
         elif status in {"CANCELED", "REJECTED", "REPLACED"}:
             if self.pending_side == "BUY":
                 self.managed_symbol, self.entry_price = None, None
+                self.reference_mid, self.target_pct, self.entry_time = None, None, None
             self.last_error = "주문 종료: " + status
             self.pending_order_id, self.pending_side = None, None
             self._save_state()
@@ -493,6 +504,9 @@ class LiveAutoTrader:
         if not oid:
             raise RuntimeError("매수 주문 ID가 없습니다.")
         self.managed_symbol, self.entry_price = c["symbol"], None
+        self.reference_mid = c.get("referenceMid")
+        self.target_pct = c.get("targetPct")
+        self.entry_time = time.time()
         self.pending_order_id, self.pending_side = oid, "BUY"
         self.last_action = action_text
         self._save_state()
@@ -614,14 +628,17 @@ class LiveAutoTrader:
                     self.candidate = managed
                     if allow_orders and self.session in {"DAY", "PRE", "REGULAR", "AFTER"} and not self.pending_order_id:
                         reason = None
-                        if pnl <= -float(os.getenv("AUTO_STOP_LOSS_PCT", "1.0")):
-                            reason = "stop_loss"
-                        elif pnl >= float(os.getenv("AUTO_TAKE_PROFIT_PCT", "1.5")):
-                            reason = "take_profit"
+                        price_now = float(managed["price"])
+                        if self.reference_mid is not None and price_now < float(self.reference_mid):
+                            reason = "v2_reference_mid_stop"
+                        elif self.entry_price and self.target_pct is not None and price_now >= float(self.entry_price) * (1 + float(self.target_pct)/100):
+                            reason = "v2_target"
+                        elif self.entry_time and time.time()-float(self.entry_time) >= 1800 and price_now < float(self.entry_price)*1.003 and price_now < float(managed.get("ma5") or price_now):
+                            reason = "v2_time_stop"
                         elif managed.get("signal") == "SELL":
-                            reason = "trend_exit"
+                            reason = "v2_trend_exit"
                         if reason:
-                            self._submit_sell(float(managed["price"]), reason)
+                            self._submit_sell(price_now, reason)
                     self._save_state()
                     return self.status()
 
