@@ -2,6 +2,8 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "data/toss_errors.jsonl"
   workflow_dispatch:
 concurrency:
   group: deploy-github-pages
