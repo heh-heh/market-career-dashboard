@@ -61,6 +61,15 @@ for symbol in $SYMBOLS; do
       break
     fi
     log "$symbol collection failed"
+    if [ -f "$ROOT/data/toss_errors.jsonl" ]; then
+      git config user.name "market-career-dashboard-bot" >/dev/null 2>&1 || true
+      git config user.email "market-career-dashboard-bot@users.noreply.github.com" >/dev/null 2>&1 || true
+      git add "$ROOT/data/toss_errors.jsonl" >/dev/null 2>&1 || true
+      if ! git diff --cached --quiet -- "$ROOT/data/toss_errors.jsonl" 2>/dev/null; then
+        git commit -m "chore: record Toss collector error" >/dev/null 2>&1 || true
+        git push origin main >/dev/null 2>&1 || log "error log push failed; keeping local log"
+      fi
+    fi
     if [ "$attempt" -ge 20 ]; then
       log "$symbol has failed 20 times; continuing with 5-minute retry interval"
       attempt=20
