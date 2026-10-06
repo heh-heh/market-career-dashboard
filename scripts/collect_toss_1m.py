@@ -15,6 +15,7 @@ TOKEN_URL=BASE+"/oauth2/token"
 DEFAULT_SYMBOLS=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
 DEFAULT_UNTIL="2026-10-01T23:59:59+00:00"
 PROGRESS=ROOT/"data"/"toss_1m_progress.json"
+ERROR_LOG=ROOT/"data"/"toss_errors.jsonl"
 
 def token(force=False):
     cfg=json.loads(SECRETS.read_text(encoding="utf-8"))
@@ -22,6 +23,15 @@ def token(force=False):
     if not tok:
         raise RuntimeError("Toss OAuth token을 발급받지 못했습니다.")
     return tok
+
+def record_error(symbol, before, attempt, error, http_code=None, body=None):
+    ERROR_LOG.parent.mkdir(parents=True, exist_ok=True)
+    entry={"timestamp":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
+           "symbol":symbol,"before":before,"attempt":attempt,
+           "httpCode":http_code,"error":str(error),
+           "response":(body or "")[:1000]}
+    with ERROR_LOG.open("a",encoding="utf-8") as f:
+        f.write(json.dumps(entry,ensure_ascii=False)+"\n")
 
 def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
     q={"symbol":symbol,"interval":"1m","count":str(count),"adjusted":"true"}
@@ -39,12 +49,17 @@ def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
                 time.sleep(min(30,2**attempt))
                 continue
             if e.code==401 and attempt<2 and refresh_token is not None:
+                record_error(symbol,before,attempt,"HTTPError",e.code,body)
                 msg=body.lower()
-                if "token-revoked" in msg or "unauthorized" in msg:
+                if "token-revoked" in msg or "unauthorized" in msg or "invalid-token" in msg:
                     tok=refresh_token()
                     time.sleep(0.5)
                     continue
+            record_error(symbol,before,attempt,"HTTPError",e.code,body)
             raise RuntimeError(f"Toss candles HTTP {e.code}: {body[:300]}")
+        except Exception as e:
+            record_error(symbol,before,attempt,type(e).__name__,None,str(e))
+            raise
 
 
 def write_progress(symbol, payload):
