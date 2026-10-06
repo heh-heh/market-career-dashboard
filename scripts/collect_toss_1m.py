@@ -33,7 +33,7 @@ def record_error(symbol, before, attempt, error, http_code=None, body=None):
     with ERROR_LOG.open("a",encoding="utf-8") as f:
         f.write(json.dumps(entry,ensure_ascii=False)+"\n")
 
-def fetch_page(tok,symbol,before=None,count=200,refresh_token=None):
+def fetch_page(tok,symbol,before=None,count=100,refresh_token=None):
     q={"symbol":symbol,"interval":"1m","count":str(count),"adjusted":"true"}
     if before: q["before"]=before
     url=BASE+"/api/v1/candles?"+urlencode(q)
