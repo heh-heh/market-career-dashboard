@@ -13,6 +13,7 @@ from toss_auth import get_token as shared_toss_token
 BASE="https://openapi.tossinvest.com"
 TOKEN_URL=BASE+"/oauth2/token"
 DEFAULT_SYMBOLS=["NVDA","AMD","INTC","SOXL","SOXS","TQQQ"]
+DEFAULT_UNTIL="2026-10-01T23:59:59+00:00"
 PROGRESS=ROOT/"data"/"toss_1m_progress.json"
 
 def token(force=False):
@@ -60,10 +61,10 @@ def write_progress(symbol, payload):
     os.chmod(tmp, 0o600)
     os.replace(tmp, PROGRESS)
 
-def collect(symbol,since,pages,sleep_s,batch_pages,batch_sleep):
+def collect(symbol,since,until,pages,sleep_s,batch_pages,batch_sleep):
     tok=token()
     rows={}
-    before=None
+    before=until
     out=ROOT/"data"/"toss_1m"
     out.mkdir(parents=True,exist_ok=True)
     path=out/(symbol+".csv.gz")
@@ -71,11 +72,14 @@ def collect(symbol,since,pages,sleep_s,batch_pages,batch_sleep):
         try:
             with gzip.open(path,"rt",newline="",encoding="utf-8") as f:
                 for r in csv.DictReader(f):
-                    if r.get("timestamp"):
-                        rows[r["timestamp"]]=r
+                    ts=r.get("timestamp")
+                    if ts and (not since or ts >= since) and (not until or ts <= until):
+                        rows[ts]=r
             existing_oldest=min(rows) if rows else None
             if existing_oldest and (not since or existing_oldest > since):
                 before=existing_oldest
+            elif until:
+                before=until
         except Exception:
             rows={}
     refresh=lambda: token(force=True)
@@ -104,6 +108,7 @@ def collect(symbol,since,pages,sleep_s,batch_pages,batch_sleep):
             ts=str(c.get("timestamp") or "")
             if not ts: continue
             if since and ts < since: continue
+            if until and ts > until: continue
             rows[ts]={"timestamp":ts,"open":c.get("openPrice"),"high":c.get("highPrice"),
                       "low":c.get("lowPrice"),"close":c.get("closePrice"),
                       "volume":c.get("volume"),"currency":c.get("currency")}
@@ -139,12 +144,13 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--symbols",default=",".join(DEFAULT_SYMBOLS))
     ap.add_argument("--since",default="2021-01-01T00:00:00+00:00")
+    ap.add_argument("--until",default=DEFAULT_UNTIL)
     ap.add_argument("--pages",type=int,default=10000)
     ap.add_argument("--sleep",type=float,default=0.5)
     ap.add_argument("--batch-pages",type=int,default=150)
     ap.add_argument("--batch-sleep",type=float,default=10.0)
     a=ap.parse_args()
     for s in [x.strip().upper() for x in a.symbols.split(",") if x.strip()]:
-        collect(s,a.since,a.pages,a.sleep,a.batch_pages,a.batch_sleep)
+        collect(s,a.since,a.until,a.pages,a.sleep,a.batch_pages,a.batch_sleep)
 
 if __name__=="__main__": main()
