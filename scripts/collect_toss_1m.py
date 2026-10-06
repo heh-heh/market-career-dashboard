@@ -60,7 +60,7 @@ def write_progress(symbol, payload):
     os.chmod(tmp, 0o600)
     os.replace(tmp, PROGRESS)
 
-def collect(symbol,since,pages,sleep_s):
+def collect(symbol,since,pages,sleep_s,batch_pages,batch_sleep):
     tok=token()
     rows={}
     before=None
@@ -125,6 +125,9 @@ def collect(symbol,since,pages,sleep_s):
         if not next_before or next_before==before: break
         before=next_before
         time.sleep(sleep_s)
+        if (n + 1) % batch_pages == 0 and n + 1 < pages:
+            print(f"{symbol}: {n+1} pages completed; pausing {batch_sleep:.1f}s before next batch",flush=True)
+            time.sleep(batch_sleep)
     ordered=[rows[k] for k in sorted(rows)]
     with gzip.open(path,"wt",newline="",encoding="utf-8") as f:
         w=csv.DictWriter(f,fieldnames=["timestamp","open","high","low","close","volume","currency"])
@@ -136,10 +139,12 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--symbols",default=",".join(DEFAULT_SYMBOLS))
     ap.add_argument("--since",default="2021-01-01T00:00:00+00:00")
-    ap.add_argument("--pages",type=int,default=3000)
-    ap.add_argument("--sleep",type=float,default=0.25)
+    ap.add_argument("--pages",type=int,default=10000)
+    ap.add_argument("--sleep",type=float,default=0.5)
+    ap.add_argument("--batch-pages",type=int,default=150)
+    ap.add_argument("--batch-sleep",type=float,default=10.0)
     a=ap.parse_args()
     for s in [x.strip().upper() for x in a.symbols.split(",") if x.strip()]:
-        collect(s,a.since,a.pages,a.sleep)
+        collect(s,a.since,a.pages,a.sleep,a.batch_pages,a.batch_sleep)
 
 if __name__=="__main__": main()
