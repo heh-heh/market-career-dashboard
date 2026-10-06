@@ -58,7 +58,7 @@ class LiveAutoTrader:
 
     @property
     def scan_interval(self):
-        return max(15, int(os.getenv("AUTO_SCAN_INTERVAL_SEC", "30")))
+        return max(30, int(os.getenv("AUTO_SCAN_INTERVAL_SEC", "60")))
 
     @property
     def min_us_price(self):
@@ -402,7 +402,7 @@ class LiveAutoTrader:
                         "tradingVolume": volume,
                         "tradingAmountUsd": round(amount, 2),
                         "price": price, "changePct": round(change, 3), **a})
-            if len(out) >= 8:
+            if len(out) >= 5:
                 break
         out.sort(key=lambda x: x["tradingVolume"], reverse=True)
         return out
