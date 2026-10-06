@@ -3,8 +3,6 @@ name: Update dashboard data
 # live-job-refresh
 
 on:
-  schedule:
-    - cron: "0 * * * *"
   push:
     branches: ["main"]
     paths-ignore:
