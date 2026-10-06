@@ -81,7 +81,7 @@ def collect(symbol,since,pages,sleep_s):
     refresh=lambda: token(force=True)
     started=time.time()
     latest_ts=max(rows) if rows else None
-    write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":0,"fetched":0,"coveragePct":0,"latestTimestamp":None,"oldestTimestamp":None,"since":since,"startedAt":started,"updatedAt":started})
+    write_progress(symbol,{"symbol":symbol,"status":"starting","page":0,"pages":pages,"stored":len(rows),"fetched":0,"coveragePct":0,"latestTimestamp":latest_ts,"oldestTimestamp":(min(rows) if rows else None),"since":since,"startedAt":started,"updatedAt":started})
     for n in range(pages):
         obj=fetch_page(tok,symbol,before,refresh_token=refresh)
         candles=obj.get("candles") or []
