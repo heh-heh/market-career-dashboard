@@ -44,11 +44,11 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
 <section id="v9" class="view">
-<div class="card"><div class="backtest-head"><div><div class="label">Toss 1분봉 수집 → C++17 하이브리드 백테스트</div><h2 style="margin:5px 0">백테스트 모니터</h2><div id="btPhase" class="muted">상태 확인 중...</div></div><div class="bt-progress-text" id="btProgressText">0%</div></div>
+<div class="card"><div class="backtest-head"><div><div class="label">Toss 1분봉 · 동적 종목선정 · 4전략 백테스트</div><h2 style="margin:5px 0">백테스트 모니터</h2><div id="btPhase" class="muted">상태 확인 중...</div></div><div class="bt-progress-text" id="btProgressText">0%</div></div>
 <div class="bt-progress"><i id="btProgressBar"></i></div>
-<div class="bt-grid"><div class="bt-stat"><div class="label">전체 진행률</div><div class="v" id="btOverall">-</div></div><div class="bt-stat"><div class="label">현재 종목</div><div class="v" id="btCurrent">-</div></div><div class="bt-stat"><div class="label">현재 수집 범위</div><div class="v" id="btPage">-</div></div><div class="bt-stat"><div class="label">현재 저장 봉</div><div class="v" id="btStored">-</div></div></div></div>
-<div class="card" style="margin-top:12px"><div class="label">Toss 수집기 현황</div><div id="btSymbols" class="bt-symbols"></div></div>
-<div class="card" style="margin-top:12px"><div class="label">자동 복구 감시</div><div id="btWatchdog" class="signal">감시 상태 확인 중...</div></div><div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
+<div class="bt-grid"><div class="bt-stat"><div class="label">전체 진행률</div><div class="v" id="btOverall">-</div></div><div class="bt-stat"><div class="label">현재 처리</div><div class="v" id="btCurrent">-</div></div><div class="bt-stat"><div class="label">진행 구간</div><div class="v" id="btPage">-</div></div><div class="bt-stat"><div class="label">현재 거래 수</div><div class="v" id="btStored">-</div></div></div></div>
+<div class="card" style="margin-top:12px"><div class="label">분석 종목</div><div id="btSymbols" class="bt-symbols"></div></div>
+<div class="card" style="margin-top:12px"><div class="label">백그라운드 작업 상태</div><div id="btWatchdog" class="signal">상태 확인 중...</div></div><div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
 <div class="card" style="margin-top:12px"><div class="label">실시간 로그 · 최근 100줄</div><div id="btLog" class="bt-log">로그를 불러오는 중...</div></div>
 </section><section id="v8" class="view">
   <div class="grid">
@@ -666,19 +666,51 @@ async function loadBacktestMonitor(){
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
   const bar=document.getElementById("btProgressBar");if(bar)bar.style.width=p+"%";
   set("btProgressText",p.toFixed(0)+"%");set("btOverall",p.toFixed(0)+"%");
-  const phaseEl=document.getElementById("btPhase");if(phaseEl)phaseEl.innerHTML="<b>"+esc(phase)+"</b> · "+(d.running?'<span class="bt-ok">실행 중</span>':'<span class="bt-wait">대기/종료</span>');
-  set("btCurrent",d.currentSymbol||"-");const cur=(d.symbols||[]).find(x=>x.symbol===d.currentSymbol);set("btPage",cur&&cur.oldestTimestamp&&cur.latestTimestamp?formatKSTDateTime(cur.oldestTimestamp)+" ~ "+formatKSTDateTime(cur.latestTimestamp):"-");set("btStored",d.currentStored!=null?Number(d.currentStored).toLocaleString()+"봉":"-");
+  const phaseEl=document.getElementById("btPhase");if(phaseEl)phaseEl.innerHTML="<b>"+esc(phase)+"</b> · "+(d.running?'<span class="bt-ok">실행 중</span>':'<span class="bt-wait">대기/종료</span>')+" · "+esc(d.engine||"");
+  if(d.engine==="multi-strategy-v3"){
+    set("btCurrent",d.currentDay||"-");
+    set("btPage",(d.completedDays!=null&&d.totalDays!=null)?Number(d.completedDays).toLocaleString()+" / "+Number(d.totalDays).toLocaleString()+"일":"-");
+    set("btStored",d.currentStored!=null?Number(d.currentStored).toLocaleString()+"건":"-");
+  }else{
+    set("btCurrent",d.currentSymbol||"-");
+    const cur=(d.symbols||[]).find(x=>x.symbol===d.currentSymbol);
+    set("btPage",cur&&cur.oldestTimestamp&&cur.latestTimestamp?formatKSTDateTime(cur.oldestTimestamp)+" ~ "+formatKSTDateTime(cur.latestTimestamp):"-");
+    set("btStored",d.currentStored!=null?Number(d.currentStored).toLocaleString()+"봉":"-");
+  }
   const rows=d.symbols||[];
   const box=document.getElementById("btSymbols");
   if(box)box.innerHTML=rows.map(x=>{
    const pct=Math.max(0,Math.min(100,Number(x.coveragePct)||0));
-   const st=x.status==="completed"?"완료":x.status==="collecting"?"수집 중":x.status==="error"?"오류":"대기";
-   const cl=x.status==="completed"?"bt-ok":x.status==="collecting"?"up":x.status==="error"?"down":"bt-wait";
+   const st=x.status==="ready"?"데이터 준비":x.status==="completed"?"완료":x.status==="collecting"?"수집 중":x.status==="error"?"오류":"대기";
+   const cl=(x.status==="ready"||x.status==="completed")?"bt-ok":x.status==="collecting"?"up":x.status==="error"?"down":"bt-wait";
+   if(d.engine==="multi-strategy-v3")return '<div class="bt-symbol"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(x.symbol)+'</b><span class="'+cl+'">'+st+'</span></div><div class="bt-symbol-pct">'+pct.toFixed(0)+'%</div><div class="bt-mini-progress"><i style="width:'+pct+'%"></i></div><div class="mini" style="margin-top:7px">수집 완료 데이터 사용</div></div>';
    return '<div class="bt-symbol"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(x.symbol)+'</b><span class="'+cl+'">'+st+'</span></div><div class="bt-symbol-pct">'+pct.toFixed(1)+'%</div><div class="bt-mini-progress"><i style="width:'+pct+'%"></i></div><div class="mini" style="margin-top:7px">저장 '+Number(x.stored||0).toLocaleString()+'봉</div><div class="mini">수집 범위: '+esc(x.oldestTimestamp?formatKSTDateTime(x.oldestTimestamp):"-")+' ~ '+esc(x.latestTimestamp?formatKSTDateTime(x.latestTimestamp):"-")+'</div></div>'
   }).join("");
   const wd=d.watchdog||{};const wdEl=document.getElementById("btWatchdog");if(wdEl)wdEl.innerHTML="<b>"+esc(btPhaseNames[wd.phase]||wd.phase||"대기")+"</b> · "+esc(wd.message||"")+(wd.attempt?" · 재시도 "+wd.attempt+"회":"");
   const result=document.getElementById("btResult");
-  if(result)result.innerHTML=d.resultReady?'<b class="bt-ok">✓ 백테스트 결과 생성 완료</b>':'<span class="muted">'+(d.running?(phase==="backtest"?"C++ Train/Test 계산 중입니다.":"Toss 과거 데이터를 수집 중입니다."):"아직 실행 중인 백테스트가 없습니다.")+'</span>';
+  if(result){
+    const ms=d.multiStrategy||{},o=ms.overall||{},by=ms.byStrategy||{};
+    if(d.resultReady&&d.engine==="multi-strategy-v3"){
+      const pf=Number(o.profitFactor||0),exp=Number(o.expectancyPct||0),dd=Number(o.maxDrawdownPct||0);
+      const cards='<div class="bt-grid" style="margin-top:10px">'+
+        '<div class="bt-stat"><div class="label">거래</div><div class="v">'+Number(o.trades||0).toLocaleString()+'건</div></div>'+
+        '<div class="bt-stat"><div class="label">승률</div><div class="v">'+Number(o.winRatePct||0).toFixed(2)+'%</div></div>'+
+        '<div class="bt-stat"><div class="label">기대값</div><div class="v '+(exp>=0?"up":"down")+'">'+(exp>=0?"+":"")+exp.toFixed(4)+'%</div></div>'+
+        '<div class="bt-stat"><div class="label">Profit Factor</div><div class="v '+(pf>=1?"up":"down")+'">'+pf.toFixed(3)+'</div></div>'+
+        '<div class="bt-stat"><div class="label">총 수익률 합</div><div class="v '+(Number(o.totalReturnPct||0)>=0?"up":"down")+'">'+Number(o.totalReturnPct||0).toFixed(3)+'%</div></div>'+
+        '<div class="bt-stat"><div class="label">Max Drawdown</div><div class="v down">'+dd.toFixed(3)+'%</div></div>'+
+        '<div class="bt-stat"><div class="label">데이터 기간</div><div class="v">'+Number(ms.days||0).toLocaleString()+'일</div></div>'+
+        '<div class="bt-stat"><div class="label">진입점수</div><div class="v">'+(ms.minFinalScore??"-")+'</div></div></div>';
+      const strategies='<div class="bt-symbols" style="margin-top:12px">'+Object.entries(by).map(([name,x])=>
+        '<div class="bt-symbol"><b>'+esc(name)+'</b><div class="mini" style="margin-top:7px">거래 '+Number(x.trades||0).toLocaleString()+'건 · 승률 '+Number(x.winRatePct||0).toFixed(1)+'%</div><div class="mini">기대값 '+Number(x.expectancyPct||0).toFixed(4)+'% · PF '+Number(x.profitFactor||0).toFixed(3)+' · MDD '+Number(x.maxDrawdownPct||0).toFixed(3)+'%</div></div>'
+      ).join("")+'</div>';
+      result.innerHTML='<b class="bt-ok">✓ 멀티전략 백테스트 완료</b>'+cards+strategies;
+    }else if(d.engine==="multi-strategy-v3"){
+      result.innerHTML='<span class="muted">'+(d.running?"동적 종목선정 + 4전략 백테스트를 백그라운드에서 계산 중입니다.":"백테스트 결과 대기 중입니다.")+'</span>';
+    }else{
+      result.innerHTML=d.resultReady?'<b class="bt-ok">✓ 기존 백테스트 결과 생성 완료</b>':'<span class="muted">'+(d.running?"기존 백테스트 작업 중입니다.":"아직 실행 중인 백테스트가 없습니다.")+'</span>';
+    }
+  }
   const log=document.getElementById("btLog");if(log)log.textContent=d.log||"로그 없음";
  }catch(e){const phaseEl=document.getElementById("btPhase");if(phaseEl)phaseEl.textContent="서버 연결 대기 · "+e.message}
 }
