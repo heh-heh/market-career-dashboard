@@ -7,6 +7,7 @@ on:
     paths:
       - "strategy_engine.py"
       - "live_trader.py"
+      - "server.py"
       - "scripts/collect_toss_1m.py"
       - "research/backtest_multistrategy_v1.py"
       - ".github/workflows/strategy-engine-check.yml"
@@ -24,7 +25,7 @@ jobs:
           python-version: "3.x"
       - name: Compile strategy sources
         run: |
-          python -m py_compile strategy_engine.py live_trader.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py
+          python -m py_compile strategy_engine.py live_trader.py server.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py
       - name: Smoke-test feature and scoring engine
         run: |
           python - <<'PY'
