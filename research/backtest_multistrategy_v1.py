@@ -16,6 +16,8 @@ import gzip
 import json
 import statistics
 import sys
+import os
+import time
 from collections import defaultdict
 from datetime import datetime, time as dtime
 from pathlib import Path
@@ -191,7 +193,40 @@ def summarize(trades):
     }
 
 
-def run(data_dir, symbols, min_score, slippage_bps):
+
+def atomic_json(path, payload):
+    if not path:
+        return
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(tmp, p)
+
+
+def append_log(path, message):
+    if not path:
+        return
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    with p.open("a", encoding="utf-8") as fp:
+        fp.write(f"[{stamp}] {message}\n")
+
+
+def progress_state(state_path, log_path, **kwargs):
+    payload = {
+        "engine": "strategy_engine_v3",
+        "updatedAt": time.time(),
+        **kwargs,
+    }
+    atomic_json(state_path, payload)
+    msg = kwargs.get("message")
+    if msg:
+        append_log(log_path, msg)
+
+
+def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=None):
     datasets = {}
     for sym in symbols:
         path = data_dir / f"{sym}.csv.gz"
@@ -199,6 +234,13 @@ def run(data_dir, symbols, min_score, slippage_bps):
             datasets[sym] = load_symbol(path)
 
     all_days = sorted(set().union(*(set(v.keys()) for v in datasets.values()))) if datasets else []
+    progress_state(
+        state_path, log_path,
+        phase="backtest", progress=1, running=True,
+        symbols=sorted(datasets), totalDays=len(all_days), completedDays=0,
+        trades=0, currentDay=None,
+        message=f"백테스트 시작 · {len(datasets)}종목 · {len(all_days)}거래일",
+    )
     checkpoints = [
         (10, 0), (10, 15), (10, 30), (10, 45),
         (11, 0), (11, 30), (12, 0), (12, 30),
@@ -210,7 +252,15 @@ def run(data_dir, symbols, min_score, slippage_bps):
     funnel = defaultdict(int)
     used = set()
 
-    for day in all_days:
+    for day_no, day in enumerate(all_days, start=1):
+        progress = 2 + int((day_no - 1) / max(1, len(all_days)) * 94)
+        progress_state(
+            state_path, log_path,
+            phase="backtest", progress=progress, running=True,
+            symbols=sorted(datasets), totalDays=len(all_days), completedDays=day_no-1,
+            trades=len(trades), currentDay=day,
+            message=(f"진행 {day_no}/{len(all_days)} · {day}" if day_no == 1 or day_no % 10 == 0 else None),
+        )
         for hh, mm in checkpoints:
             candidates, idx_map = [], {}
             for sym, days in datasets.items():
@@ -267,7 +317,7 @@ def run(data_dir, symbols, min_score, slippage_bps):
         by_strategy[t["strategy"]].append(t)
         by_combo[f"{t['symbol']}::{t['strategy']}"].append(t)
 
-    return {
+    result = {
         "engine": "strategy_engine_v3",
         "execution": {
             "direction": "long-only",
@@ -285,6 +335,15 @@ def run(data_dir, symbols, min_score, slippage_bps):
         "byTickerStrategy": {k: summarize(v) for k, v in sorted(by_combo.items())},
         "trades": trades,
     }
+    progress_state(
+        state_path, log_path,
+        phase="completed", progress=100, running=False,
+        symbols=sorted(datasets), totalDays=len(all_days), completedDays=len(all_days),
+        trades=len(trades), currentDay=None,
+        summary=result["overall"], byStrategy=result["byStrategy"],
+        message=f"백테스트 완료 · 거래 {len(trades)}건",
+    )
+    return result
 
 
 def main():
@@ -294,6 +353,8 @@ def main():
     ap.add_argument("--out", default=str(ROOT / "research" / "backtest_multistrategy_v1_result.json"))
     ap.add_argument("--min-score", type=float, default=55.0)
     ap.add_argument("--slippage-bps", type=float, default=2.0)
+    ap.add_argument("--state", default="")
+    ap.add_argument("--log", default="")
     args = ap.parse_args()
 
     data_dir = Path(args.data)
@@ -302,17 +363,28 @@ def main():
     else:
         symbols = [x.strip().upper() for x in args.symbols.split(",") if x.strip()]
 
-    result = run(data_dir, symbols, args.min_score, args.slippage_bps)
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(json.dumps({
-        "out": str(out),
-        "symbols": result["symbols"],
-        "days": result["days"],
-        "overall": result["overall"],
-        "funnel": result["funnel"],
-    }, ensure_ascii=False, indent=2))
+    try:
+        result = run(
+            data_dir, symbols, args.min_score, args.slippage_bps,
+            state_path=(args.state or None), log_path=(args.log or None),
+        )
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(json.dumps({
+            "out": str(out),
+            "symbols": result["symbols"],
+            "days": result["days"],
+            "overall": result["overall"],
+            "funnel": result["funnel"],
+        }, ensure_ascii=False, indent=2))
+    except Exception as exc:
+        progress_state(
+            (args.state or None), (args.log or None),
+            phase="error", progress=0, running=False,
+            error=str(exc), message="백테스트 오류: " + str(exc),
+        )
+        raise
 
 
 if __name__ == "__main__":
