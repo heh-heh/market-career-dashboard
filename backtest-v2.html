@@ -36,6 +36,19 @@ h1{font-size:25px;margin:4px 0 2px}.sub,.muted{color:var(--muted)}.card{backgrou
   </div>
 
   <div class="card">
+    <div class="label">확장 데이터 Universe</div>
+    <div id="universeStatus" class="status">수집 상태 확인 중...</div>
+    <div class="bar"><i id="universeBar"></i></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="stat"><div class="label">완료 종목</div><div id="universeDone" class="value">-</div></div>
+      <div class="stat"><div class="label">전체 종목</div><div id="universeTotal" class="value">-</div></div>
+      <div class="stat"><div class="label">현재 종목</div><div id="universeCurrent" class="value" style="font-size:16px">-</div></div>
+      <div class="stat"><div class="label">저장 1분봉</div><div id="universeRows" class="value" style="font-size:16px">-</div></div>
+    </div>
+    <div id="universeSymbols" class="mini" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
     <div class="label">상위 Walk-Forward 후보</div>
     <div id="summary" class="sub" style="margin-top:5px">결과 대기 중...</div>
     <div id="variants" class="variants"></div>
@@ -71,7 +84,27 @@ async function load(){
    const r=await fetch(API+"/api/backtest/monitor?"+Date.now(),{cache:"no-store"});
    const d=await r.json();
    if(!d.ok)throw new Error(d.error||"API error");
-   const v2=(d.multiStrategy||{}).v2Research||{}, st=v2.state||{}, res=v2.result||{};
+   const multi=d.multiStrategy||{};
+   const eu=multi.expandedUniverse||{};
+   const euDone=(eu.completedSymbols||[]).length, euTotal=Number(eu.totalSymbols||0);
+   const euPct=euTotal?Math.max(0,Math.min(100,100*euDone/euTotal)):0;
+   $("universeBar").style.width=euPct+"%";
+   $("universeDone").textContent=euDone.toLocaleString();
+   $("universeTotal").textContent=euTotal?euTotal.toLocaleString():"-";
+   $("universeCurrent").textContent=eu.currentSymbol||"-";
+   $("universeRows").textContent=eu.storedRows!=null?Number(eu.storedRows).toLocaleString():"-";
+   if(eu.running){
+     $("universeStatus").innerHTML='<span class="ok">● 수집 중</span> · '+euPct.toFixed(0)+'%';
+   }else if(eu.phase==="completed"){
+     $("universeStatus").innerHTML='<span class="ok">✓ 수집 완료</span>';
+   }else if(eu.phase==="completed_with_errors"){
+     $("universeStatus").innerHTML='<span class="bad">일부 오류</span>';
+   }else{
+     $("universeStatus").textContent="아직 확장 수집을 시작하지 않았습니다.";
+   }
+   const missing=(eu.symbols||[]).filter(x=>!(eu.completedSymbols||[]).includes(x));
+   $("universeSymbols").textContent=euTotal?("완료 "+euDone+"/"+euTotal+(missing.length?" · 남음: "+missing.slice(0,12).join(", ")+(missing.length>12?" …":""):"")):"30종목 연구 Universe 준비됨";
+   const v2=multi.v2Research||{}, st=v2.state||{}, res=v2.result||{};
    const pct=Math.max(0,Math.min(100,Number(st.progress||(v2.resultReady?100:0))));
    $("pct").textContent=pct.toFixed(0)+"%"; $("bar").style.width=pct+"%";
    $("done").textContent=Number(st.completedVariants||0).toLocaleString();
