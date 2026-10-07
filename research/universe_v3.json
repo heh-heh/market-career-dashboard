@@ -1,0 +1,80 @@
+{
+  "version": 3,
+  "purpose": "intraday-multi-strategy-research",
+  "groups": {
+    "market_reference": [
+      "SPY",
+      "QQQ",
+      "IWM"
+    ],
+    "semiconductor_reference": [
+      "SOXX",
+      "SMH"
+    ],
+    "leveraged_etf": [
+      "TQQQ",
+      "SQQQ",
+      "SOXL",
+      "SOXS"
+    ],
+    "semiconductor_stocks": [
+      "NVDA",
+      "AMD",
+      "MU",
+      "INTC",
+      "AVGO",
+      "MRVL",
+      "AMAT",
+      "LRCX",
+      "KLAC",
+      "TSM",
+      "QCOM"
+    ],
+    "mega_cap_tech": [
+      "AAPL",
+      "MSFT",
+      "META",
+      "AMZN",
+      "GOOGL",
+      "TSLA"
+    ],
+    "high_beta_tech": [
+      "PLTR",
+      "NFLX",
+      "COIN",
+      "MSTR"
+    ]
+  },
+  "symbols": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "SOXX",
+    "SMH",
+    "TQQQ",
+    "SQQQ",
+    "SOXL",
+    "SOXS",
+    "NVDA",
+    "AMD",
+    "MU",
+    "INTC",
+    "AVGO",
+    "MRVL",
+    "AMAT",
+    "LRCX",
+    "KLAC",
+    "TSM",
+    "QCOM",
+    "AAPL",
+    "MSFT",
+    "META",
+    "AMZN",
+    "GOOGL",
+    "TSLA",
+    "PLTR",
+    "NFLX",
+    "COIN",
+    "MSTR"
+  ]
+}
