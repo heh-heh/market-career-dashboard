@@ -1,0 +1,66 @@
+name: Strategy engine checks
+
+on:
+  push:
+    branches: ["strategy-engine-v3"]
+  pull_request:
+    paths:
+      - "strategy_engine.py"
+      - "live_trader.py"
+      - "scripts/collect_toss_1m.py"
+      - "research/backtest_multistrategy_v1.py"
+      - ".github/workflows/strategy-engine-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - name: Compile strategy sources
+        run: |
+          python -m py_compile strategy_engine.py live_trader.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py
+      - name: Smoke-test feature and scoring engine
+        run: |
+          python - <<'PY'
+          import math
+          from datetime import datetime, timedelta
+          from zoneinfo import ZoneInfo
+          from strategy_engine import evaluate_rows, score_universe, apply_trade_decision
+
+          ny=ZoneInfo("America/New_York")
+          start=datetime(2026,1,5,9,30,tzinfo=ny)
+          rows=[]
+          prev=100.0
+          for i in range(180):
+              px=100.0 + 0.025*i + 0.12*math.sin(i/5)
+              o=prev
+              c=px
+              h=max(o,c)+0.08
+              l=min(o,c)-0.08
+              rows.append({
+                  "timestamp":(start+timedelta(minutes=i)).isoformat(),
+                  "openPrice":o,"highPrice":h,"lowPrice":l,"closePrice":c,
+                  "volume":100000 + (i%17)*5000,
+              })
+              prev=c
+
+          analysis=evaluate_rows(list(reversed(rows)))
+          assert analysis["ready"] is True, analysis
+          assert len(analysis["strategyScores"]) == 4, analysis
+          candidate={
+              "symbol":"TEST","name":"TEST","tradingVolume":20000000,
+              "tradingAmountUsd":2000000000,"price":analysis["price"],
+              "changePct":2.0, **analysis,
+          }
+          ranked=score_universe([candidate])
+          assert len(ranked)==1
+          apply_trade_decision(ranked[0],55)
+          assert 0 <= ranked[0]["finalScore"] <= 100
+          print(ranked[0]["bestStrategy"], ranked[0]["finalScore"], ranked[0]["signal"])
+          PY
