@@ -21,7 +21,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style><style>.bt-symbol-pct{font-size:22px;font-weight:900;margin-top:8px;font-variant-numeric:tabular-nums}</style></head>
 <body><div class="app">
 <header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
-<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장·고용률</button><button data-view="v5">채용공고</button><button data-view="v4">신기술 · IT</button><button data-view="v8">자동매매</button><button data-view="v9">백테스트 모니터</button><button data-view="v10">서버 콘솔</button><button data-view="v7">설정</button></nav>
+<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장·고용률</button><button data-view="v5">채용공고</button><button data-view="v4">신기술 · IT</button><button data-view="v9">백테스트 모니터</button><button data-view="v7">설정</button></nav>
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
   <div class="stock-layout">
@@ -81,95 +81,8 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div class="label">수집 로그 · 최근 120줄</div>
   <div id="btLog" class="bt-log">로그를 불러오는 중...</div>
 </div>
-</section><section id="v8" class="view">
-  <div class="grid">
-    <div class="card"><div class="label">자동매매 인증</div><div id="tradingAuthState" class="signal">로그인 상태 확인 중...</div><div class="settings-actions" style="margin-top:12px"><button id="tradingLoginBtn" type="button">설정 로그인 사용</button><button id="tradingLogoutBtn" type="button">로그아웃</button></div></div>
-    <div class="card"><div class="label">실거래 게이트</div><div id="tradingLiveLock" class="signal">서버 상태 확인 중...</div>
-<div class="grid" style="margin-top:12px">
-  <div class="signal"><b>ARM</b><div class="trade-toggle"><label><input id="liveArmToggle" type="checkbox"><span class="trade-switch"></span></label><span id="liveArmState" class="toggle-text down">OFF</span></div></div>
-  <div class="signal"><b>엔진</b><div class="trade-toggle"><label><input id="liveEngineToggle" type="checkbox"><span class="trade-switch"></span></label><span id="liveEngineState" class="toggle-text down">OFF</span></div></div>
-  <div class="signal"><b>자동매매</b><div class="trade-toggle"><label><input id="liveAutoToggle" type="checkbox"><span class="trade-switch"></span></label><span id="liveAutoState" class="toggle-text down">OFF</span></div></div>
-</div>
-<div class="settings-actions" style="margin-top:12px"><button id="liveScanBtn" type="button" class="secondary">분석 갱신</button></div>
-</div></div>
-  <div id="liveTradingPanel" style="display:none">
-    <div class="card">
-      <div class="label">내 토스증권 계좌 · 실시간 계좌 현황</div>
-      <div class="wallet-grid">
-        <div class="wallet-stat"><div class="label">USD 매수 가능</div><div class="value" id="walletUsdBuyingPower">-</div></div>
-        <div class="wallet-stat"><div class="label">KRW 매수 가능</div><div class="value" id="walletKrwBuyingPower">-</div></div>
-        <div class="wallet-stat"><div class="label">보유 평가액</div><div class="value" id="walletMarketValue">-</div></div>
-        <div class="wallet-stat"><div class="label">평가손익</div><div class="value" id="walletProfitLoss">-</div></div>
-      </div>
-      <div class="signal" style="margin-top:12px" id="walletSummary">계좌 정보를 불러오는 중...</div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="label">현재 보유 종목</div>
-      <div id="walletHoldings" class="account-list">-</div>
-    </div>
-
-    <div class="grid" style="margin-top:12px">
-      <div class="card"><div class="label">미국 시장 상태</div><div class="big" id="liveSession">-</div><div class="mini" id="liveSessionMessage">-</div></div>
-      <div class="card"><div class="label">자동매매 제한</div><div class="signal">1회 최대 주문 <b id="liveMaxOrderUsd">-</b><br>일일 손실 제한 <b id="liveMaxLossUsd">-</b><br>익절 / 손절 <b id="liveTakeProfit">-</b> / <b id="liveStopLoss">-</b></div></div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="label">거래량 상위 미국 종목</div>
-      <div class="big" id="liveCandidate">-</div>
-      <div class="signal" id="liveCandidateDetail">분석 대기...</div>
-      <div id="liveRankings" class="mini" style="margin-top:12px"></div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="label">자동매매 상태</div>
-      <div id="livePosition" class="signal">관리 중인 자동매매 포지션 없음</div>
-      <div class="mini" id="liveLastAction" style="margin-top:8px">-</div>
-      <div class="mini" id="liveLastError" style="margin-top:8px"></div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="label">최근 주문 · 체결 로그</div>
-      <div class="mini">토스증권 계좌의 최근 종료 주문과 현재 미체결 주문을 표시합니다. <b>BOT</b>는 이 대시보드 자동매매가 제출한 주문입니다.</div>
-      <div id="liveOrderLogs" class="account-list">로그를 불러오는 중...</div>
-    </div>
-  </div>
-  <div id="tradingPanel" style="margin-top:12px"><div class="grid">
-    <div class="card"><div class="label">모의 엔진</div><div class="big" id="tradingEngineState">중지</div><button id="tradingEngineBtn" type="button">모의 엔진 시작</button></div>
-    <div class="card"><div class="label">모의 안전 한도</div><div class="signal">주문 한도: <b id="tradingOrderLimit">-</b><br>일일 손실 한도: <b id="tradingLossLimit">-</b></div></div>
-  </div>
-  <div class="card" style="margin-top:12px"><div class="label">모의 자동매매</div><div id="tradingPaper" class="signal">로그인 후 표시됩니다.</div><div class="settings-actions" style="margin-top:12px"><button id="paperBuyBtn" type="button">모의 매수</button><button id="paperSellBtn" type="button">모의 매도</button><button id="paperResetBtn" type="button">모의 계좌 초기화</button></div><div class="mini" style="margin-top:10px">모의매매와 실거래는 별도입니다.</div></div></div>
 </section>
-<section id="v10" class="view">
-<div class="card">
-  <div class="backtest-head">
-    <div>
-      <div class="label">관리자 인증 필요 · 제한형 웹 터미널</div>
-      <h2 style="margin:5px 0">서버 콘솔</h2>
-      <div id="adminConsoleState" class="muted">설정 탭의 관리자 로그인을 사용합니다.</div>
-    </div>
-    <button id="adminConsoleClear" type="button" class="secondary">화면 지우기</button>
-  </div>
-  <div class="settings-actions" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-    <button type="button" data-console-cmd="df -h /">디스크</button>
-    <button type="button" data-console-cmd="du -sh data/toss_1m">수집 데이터 크기</button>
-    <button type="button" data-console-cmd="systemctl status collect-expanded-universe.service">수집 서비스</button>
-    <button type="button" data-console-cmd="tail collector 80">수집 로그</button>
-    <button type="button" data-console-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
-    <button type="button" data-console-cmd="tail v2 80">V2 로그</button>
-    <button type="button" data-console-cmd="systemctl status market-career-dashboard.service">API 서비스</button>
-    <button type="button" data-console-cmd="git status">Git 상태</button>
-  </div>
-</div>
-<div class="card" style="margin-top:12px">
-  <div id="adminConsoleOutput" class="bt-log" style="min-height:320px;max-height:58vh">웹 콘솔 준비됨. help 를 입력하면 허용 명령을 볼 수 있습니다.</div>
-  <div style="display:flex;gap:8px;margin-top:10px">
-    <input id="adminConsoleInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help" style="flex:1;min-width:0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace">
-    <button id="adminConsoleRun" type="button">실행</button>
-  </div>
-  <div class="mini" style="margin-top:8px">보안을 위해 임의 bash가 아니라 관리자용 허용 명령만 실행됩니다. 각 명령은 /home/ubuntu/market-career-dashboard 기준입니다.</div>
-</div>
-</section><section id="v7" class="view">
+<section id="v7" class="view">
   <div class="grid">
     <div class="card">
       <div class="label">서버 관리자 로그인</div>
@@ -180,8 +93,11 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
         <div class="settings-actions"><button id="settingsLoginBtn" type="button">로그인</button></div>
       </div>
       <div id="settingsLoggedIn" style="display:none;margin-top:12px">
-        <div class="signal">관리자 인증 완료</div>
-        <div class="settings-actions" style="margin-top:12px"><button id="settingsLogoutBtn" type="button">로그아웃</button></div>
+        <div class="signal">관리자 인증 완료 · 민감 기능은 별도 관리자 페이지에서만 표시됩니다.</div>
+        <div class="settings-actions" style="margin-top:12px">
+          <button id="openAdminPageBtn" type="button">관리자 페이지 열기</button>
+          <button id="settingsLogoutBtn" type="button">로그아웃</button>
+        </div>
       </div>
       <div id="settingsStatus" class="signal settings-status">로그인 상태를 확인하는 중...</div>
     </div>
@@ -405,11 +321,12 @@ document.getElementById("paperBuyBtn")?.addEventListener("click",()=>paperTrade(
 document.getElementById("paperSellBtn")?.addEventListener("click",()=>paperTrade("SELL"));
 document.getElementById("paperResetBtn")?.addEventListener("click",async()=>{if(!confirm("모의 계좌를 초기화할까요?"))return;try{await tradingRequest("/api/trading/paper/reset",{method:"POST",body:"{}"});await refreshPaper();}catch(e){alert(e.message);}});
 function showView(id,button){document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));window.scrollTo(0,0)}
-setInterval(()=>{if(localStorage.getItem(SETTINGS_TOKEN_KEY))refreshLiveTrading();},10000);
-document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b);if(b.dataset.view==="v7")loadSettings();if(b.dataset.view==="v8")refreshTrading()});
+
+document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b);if(b.dataset.view==="v7")loadSettings()});
 document.getElementById("settingsLoginBtn")?.addEventListener("click",loginSettings);
 
 document.getElementById("settingsLogoutBtn")?.addEventListener("click",logoutSettings);
+document.getElementById("openAdminPageBtn")?.addEventListener("click",()=>{location.href="./admin.html";});
 document.getElementById("adminPassword")?.addEventListener("keydown",e=>{if(e.key==="Enter")loginSettings()});
 
 let cached;
