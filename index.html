@@ -49,6 +49,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <div class="bt-grid"><div class="bt-stat"><div class="label">전체 진행률</div><div class="v" id="btOverall">-</div></div><div class="bt-stat"><div class="label">현재 처리</div><div class="v" id="btCurrent">-</div></div><div class="bt-stat"><div class="label">진행 구간</div><div class="v" id="btPage">-</div></div><div class="bt-stat"><div class="label">현재 거래 수</div><div class="v" id="btStored">-</div></div></div></div>
 <div class="card" style="margin-top:12px"><div class="label">분석 종목</div><div id="btSymbols" class="bt-symbols"></div></div>
 <div class="card" style="margin-top:12px"><div class="label">백그라운드 작업 상태</div><div id="btWatchdog" class="signal">상태 확인 중...</div></div><div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
+<div class="card" style="margin-top:12px"><div class="label">V2 연구 · TQQQ VWAP Mean Reversion</div><div id="btV2Research" class="signal">V2 연구 대기 중...</div></div>
 <div class="card" style="margin-top:12px"><div class="label">실시간 로그 · 최근 100줄</div><div id="btLog" class="bt-log">로그를 불러오는 중...</div></div>
 </section><section id="v8" class="view">
   <div class="grid">
@@ -716,6 +717,22 @@ async function loadBacktestMonitor(){
       result.innerHTML='<span class="muted">'+(d.running?"동적 종목선정 + 4전략 백테스트를 백그라운드에서 계산 중입니다.":"백테스트 결과 대기 중입니다.")+'</span>';
     }else{
       result.innerHTML=d.resultReady?'<b class="bt-ok">✓ 기존 백테스트 결과 생성 완료</b>':'<span class="muted">'+(d.running?"기존 백테스트 작업 중입니다.":"아직 실행 중인 백테스트가 없습니다.")+'</span>';
+    }
+  }
+  const v2el=document.getElementById("btV2Research");
+  if(v2el){
+    const v2=(d.multiStrategy||{}).v2Research||{},st=v2.state||{},vr=v2.result||{},top=vr.top||[];
+    if(v2.resultReady&&top.length){
+      const rows=top.slice(0,5).map((x,i)=>{
+        const p=x.params||{}, folds=x.folds||[];
+        const tests=folds.map((f,j)=>'F'+(j+1)+': n='+Number(f.test?.trades||0)+' expR='+Number(f.test?.expectancyR||0).toFixed(4)+' PF='+Number(f.test?.profitFactorR||0).toFixed(3)).join('<br>');
+        return '<div class="bt-symbol"><b>#'+(i+1)+' '+esc(p.id||'-')+'</b><div class="mini">z '+Number(p.z_entry||0).toFixed(1)+' · ER≤'+Number(p.er_max||0).toFixed(2)+' · RVOL≤'+Number(p.rvol_max||0).toFixed(1)+' · stop '+Number(p.stop_atr||0).toFixed(1)+'ATR</div><div class="mini">양수 미래구간 '+Number(x.positiveTestFolds||0)+'/3 · median expR '+Number(x.medianTestExpectancyR||0).toFixed(4)+' · PF '+Number(x.medianTestProfitFactorR||0).toFixed(3)+'</div><div class="mini" style="margin-top:5px">'+tests+'</div></div>';
+      }).join('');
+      v2el.innerHTML='<b class="bt-ok">✓ V2 walk-forward 완료</b> · '+Number(vr.variantsTested||0)+'개 coarse variant · '+Number(vr.days||0)+'일<div class="bt-symbols" style="margin-top:10px">'+rows+'</div>';
+    }else if(st.running){
+      v2el.innerHTML='<b>계산 중</b> · '+Number(st.completedVariants||0)+' / '+Number(st.totalVariants||0)+' variants · '+Number(st.progress||0).toFixed(0)+'%';
+    }else{
+      v2el.innerHTML='<span class="muted">아직 V2 연구가 실행되지 않았습니다.</span>';
     }
   }
   const log=document.getElementById("btLog");if(log)log.textContent=d.log||"로그 없음";
