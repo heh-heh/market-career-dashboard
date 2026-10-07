@@ -443,6 +443,7 @@ class Handler(BaseHTTPRequestHandler):
                 ms_state_path=ms_root/"backtest_multistrategy_v1_state.json"
                 ms_result_path=ms_root/"backtest_multistrategy_v1_result.json"
                 ms_log_path=ms_root/"backtest_multistrategy_v1.log"
+                ms_analysis_path=ms_root/"backtest_multistrategy_v1_analysis.json"
                 log_text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
                 lines=log_text.splitlines()
                 tail="\n".join(lines[-100:])
@@ -507,12 +508,16 @@ class Handler(BaseHTTPRequestHandler):
                         progress=max(progress,5)
                 ms_state={}
                 ms_result={}
+                ms_analysis={}
                 if ms_state_path.exists():
                     try: ms_state=json.loads(ms_state_path.read_text(encoding="utf-8"))
                     except Exception: ms_state={}
                 if ms_result_path.exists():
                     try: ms_result=json.loads(ms_result_path.read_text(encoding="utf-8"))
                     except Exception: ms_result={}
+                if ms_analysis_path.exists():
+                    try: ms_analysis=json.loads(ms_analysis_path.read_text(encoding="utf-8"))
+                    except Exception: ms_analysis={}
                 ms_running=bool(subprocess.run(
                     ["pgrep","-af","[b]acktest_multistrategy_v1.py"],
                     capture_output=True,text=True
@@ -555,6 +560,7 @@ class Handler(BaseHTTPRequestHandler):
                             "minFinalScore":ms_result.get("minFinalScore"),
                             "days":ms_result.get("days") or ms_state.get("totalDays"),
                             "symbols":ms_result.get("symbols") or ms_state.get("symbols") or [],
+                            "analysis":ms_analysis,
                         },
                         "log":tail,
                     })
