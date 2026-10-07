@@ -444,6 +444,8 @@ class Handler(BaseHTTPRequestHandler):
                 ms_result_path=ms_root/"backtest_multistrategy_v1_result.json"
                 ms_log_path=ms_root/"backtest_multistrategy_v1.log"
                 ms_analysis_path=ms_root/"backtest_multistrategy_v1_analysis.json"
+                v2_state_path=ms_root/"backtest_v2_tqqq_mr_state.json"
+                v2_result_path=ms_root/"backtest_v2_tqqq_mr.json"
                 log_text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
                 lines=log_text.splitlines()
                 tail="\n".join(lines[-100:])
@@ -509,6 +511,8 @@ class Handler(BaseHTTPRequestHandler):
                 ms_state={}
                 ms_result={}
                 ms_analysis={}
+                v2_state={}
+                v2_result={}
                 if ms_state_path.exists():
                     try: ms_state=json.loads(ms_state_path.read_text(encoding="utf-8"))
                     except Exception: ms_state={}
@@ -518,6 +522,12 @@ class Handler(BaseHTTPRequestHandler):
                 if ms_analysis_path.exists():
                     try: ms_analysis=json.loads(ms_analysis_path.read_text(encoding="utf-8"))
                     except Exception: ms_analysis={}
+                if v2_state_path.exists():
+                    try: v2_state=json.loads(v2_state_path.read_text(encoding="utf-8"))
+                    except Exception: v2_state={}
+                if v2_result_path.exists():
+                    try: v2_result=json.loads(v2_result_path.read_text(encoding="utf-8"))
+                    except Exception: v2_result={}
                 ms_running=bool(subprocess.run(
                     ["pgrep","-af","[b]acktest_multistrategy_v1.py"],
                     capture_output=True,text=True
@@ -561,6 +571,17 @@ class Handler(BaseHTTPRequestHandler):
                             "days":ms_result.get("days") or ms_state.get("totalDays"),
                             "symbols":ms_result.get("symbols") or ms_state.get("symbols") or [],
                             "analysis":ms_analysis,
+                            "v2Research":{
+                                "state":v2_state,
+                                "resultReady":v2_result_path.exists(),
+                                "result":{
+                                    "engine":v2_result.get("engine"),
+                                    "symbol":v2_result.get("symbol"),
+                                    "days":v2_result.get("days"),
+                                    "variantsTested":v2_result.get("variantsTested"),
+                                    "top":v2_result.get("top") or [],
+                                } if v2_result else {},
+                            },
                         },
                         "log":tail,
                     })
