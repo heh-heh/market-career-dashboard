@@ -5,13 +5,14 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-User=ubuntu
-Group=ubuntu
+User=root
+Group=root
 WorkingDirectory=/home/ubuntu/market-career-dashboard
 ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python /home/ubuntu/market-career-dashboard/scripts/collect_expanded_universe.py
 StandardOutput=append:/var/lib/market-career-dashboard/expanded_universe.log
 StandardError=append:/var/lib/market-career-dashboard/expanded_universe.log
 Nice=7
+UMask=0077
 
 [Install]
 WantedBy=multi-user.target
