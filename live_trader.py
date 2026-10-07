@@ -83,6 +83,10 @@ class LiveAutoTrader:
         return max(3, min(20, int(os.getenv("AUTO_MAX_CANDIDATES", "10"))))
 
     @property
+    def scan_total_symbols(self):
+        return max(self.scan_universe_size, min(60, int(os.getenv("AUTO_SCAN_TOTAL_SYMBOLS", "40"))))
+
+    @property
     def min_final_score(self):
         return max(0.0, min(100.0, float(os.getenv("AUTO_MIN_FINAL_SCORE", "55"))))
 
@@ -300,9 +304,34 @@ class LiveAutoTrader:
         return {str(x.get("symbol")): x for x in rows} if isinstance(rows, list) else {}
 
     def _candles(self, symbol):
-        obj = self._api("GET", "/api/v1/candles", {"symbol": symbol, "interval": "1m", "count": "240"}, account=False)
+        # Toss caps a single candle request at 200 bars. The first page is
+        # enough through most of the regular session; later in the day fetch
+        # one older page so opening-range/close-momentum features still have
+        # the 09:30 ET context.
+        obj = self._api(
+            "GET", "/api/v1/candles",
+            {"symbol": symbol, "interval": "1m", "count": "200"},
+            account=False,
+        )
         rows = obj.get("candles", []) if isinstance(obj, dict) else []
-        return rows if isinstance(rows, list) else []
+        rows = rows if isinstance(rows, list) else []
+        now_ny = datetime.now(ZoneInfo("America/New_York"))
+        need_opening_context = now_ny.hour >= 13
+        next_before = obj.get("nextBefore") if isinstance(obj, dict) else None
+        if need_opening_context and next_before:
+            older = self._api(
+                "GET", "/api/v1/candles",
+                {"symbol": symbol, "interval": "1m", "count": "200", "before": next_before},
+                account=False,
+            )
+            older_rows = older.get("candles", []) if isinstance(older, dict) else []
+            seen = {str(x.get("timestamp") or "") for x in rows}
+            for x in older_rows if isinstance(older_rows, list) else []:
+                ts = str(x.get("timestamp") or "")
+                if ts and ts not in seen:
+                    rows.append(x)
+                    seen.add(ts)
+        return rows
 
     @staticmethod
     def _analyze(rows):
@@ -333,8 +362,9 @@ class LiveAutoTrader:
         for sym in self.seed_symbols:
             if sym not in symbols:
                 symbols.append(sym)
-            if len(symbols) >= self.scan_universe_size:
+            if len(symbols) >= self.scan_total_symbols:
                 break
+        symbols = symbols[:self.scan_total_symbols]
 
         meta = self._stocks(symbols)
         out = []
@@ -748,6 +778,7 @@ class LiveAutoTrader:
                     "minUsVolume": self.min_us_volume,
                     "scanUniverseSize": self.scan_universe_size,
                     "maxCandidates": self.max_candidates,
+                    "scanTotalSymbols": self.scan_total_symbols,
                     "minFinalScore": self.min_final_score,
                     "entrySessions": sorted(self.entry_sessions),
                     "rankingBasis": "MARKET_TRADING_VOLUME + multi-strategy finalScore",
