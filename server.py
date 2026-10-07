@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import asyncio, json, os, re, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
+import asyncio, json, os, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
@@ -107,6 +107,130 @@ def authorized(handler):
 
 def trading_authorized(handler):
     return authorized(handler)
+
+ADMIN_CONSOLE_SERVICES={
+    "market-career-dashboard.service",
+    "collect-expanded-universe.service",
+    "backtest-v2-tqqq.service",
+    "backtest-multistrategy.service",
+    "backtest-hybrid-watchdog.service",
+}
+ADMIN_CONSOLE_LOGS={
+    "collector": Path("/var/lib/market-career-dashboard/expanded_universe.log"),
+    "v2": Path("/var/lib/market-career-dashboard/backtest_v2_tqqq_mr.log"),
+    "multi": Path("/var/lib/market-career-dashboard/backtest_multistrategy_v1.log"),
+}
+ADMIN_CONSOLE_STATES={
+    "collector": ROOT/"data"/"expanded_universe_progress.json",
+    "v2": Path("/var/lib/market-career-dashboard/backtest_v2_tqqq_mr_state.json"),
+    "multi": Path("/var/lib/market-career-dashboard/backtest_multistrategy_v1_state.json"),
+}
+ADMIN_CONSOLE_LOCK=threading.Lock()
+
+def _console_run(args,timeout=15):
+    p=subprocess.run(
+        args,cwd=str(ROOT),capture_output=True,text=True,
+        timeout=timeout,check=False,
+    )
+    out=(p.stdout or "")+(p.stderr or "")
+    if len(out)>30000:
+        out=out[-30000:]+"\n[output truncated]"
+    return p.returncode,out.rstrip()
+
+def run_admin_console(command):
+    cmd=str(command or "").strip()
+    if not cmd:
+        return 0,""
+    if len(cmd)>500:
+        raise ValueError("command too long")
+    try:
+        parts=shlex.split(cmd)
+    except Exception as e:
+        raise ValueError("invalid command") from e
+    if not parts:
+        return 0,""
+
+    if any(x in cmd for x in ("&&","||",";","\x60","$(" ,">","<","\n","\r")):
+        raise ValueError("shell operators are not allowed")
+
+    if parts[0] in {"help","?"}:
+        return 0,(
+            "허용 명령\n"
+            "  pwd\n"
+            "  df -h /\n"
+            "  du -sh data/toss_1m\n"
+            "  git status\n"
+            "  git log [N]\n"
+            "  systemctl status|is-active|restart <service>\n"
+            "  journalctl <service> [N]\n"
+            "  tail collector|v2|multi [N]\n"
+            "  state collector|v2|multi\n"
+            "서비스: "+", ".join(sorted(ADMIN_CONSOLE_SERVICES))
+        )
+
+    if parts==["pwd"]:
+        return 0,str(ROOT)
+
+    if parts in (["df","-h"],["df","-h","/"]):
+        return _console_run(["df","-h","/"])
+
+    if parts in (["du","-sh","data/toss_1m"],["du","-sh",str(ROOT/"data"/"toss_1m")]):
+        return _console_run(["du","-sh",str(ROOT/"data"/"toss_1m")],timeout=30)
+
+    if parts[:2]==["git","status"] and len(parts)==2:
+        return _console_run(["git","status","--short","--branch"])
+
+    if parts[:2]==["git","log"]:
+        n=10
+        if len(parts)==3:
+            n=max(1,min(50,int(parts[2])))
+        elif len(parts)>3:
+            raise ValueError("usage: git log [N]")
+        return _console_run(["git","log","--oneline","-n",str(n)])
+
+    if parts and parts[0]=="systemctl":
+        if len(parts)!=3 or parts[1] not in {"status","is-active","restart"}:
+            raise ValueError("usage: systemctl status|is-active|restart <service>")
+        service=parts[2]
+        if service not in ADMIN_CONSOLE_SERVICES:
+            raise ValueError("service not allowed")
+        args=["systemctl",parts[1],service]
+        if parts[1]=="status":
+            args+=["--no-pager","--full"]
+        return _console_run(args,timeout=20)
+
+    if parts and parts[0]=="journalctl":
+        if len(parts) not in {2,3}:
+            raise ValueError("usage: journalctl <service> [N]")
+        service=parts[1]
+        if service not in ADMIN_CONSOLE_SERVICES:
+            raise ValueError("service not allowed")
+        n=max(1,min(200,int(parts[2]))) if len(parts)==3 else 50
+        return _console_run(["journalctl","-u",service,"-n",str(n),"--no-pager"],timeout=20)
+
+    if parts and parts[0]=="tail":
+        if len(parts) not in {2,3} or parts[1] not in ADMIN_CONSOLE_LOGS:
+            raise ValueError("usage: tail collector|v2|multi [N]")
+        n=max(1,min(300,int(parts[2]))) if len(parts)==3 else 50
+        p=ADMIN_CONSOLE_LOGS[parts[1]]
+        if not p.exists():
+            return 1,f"log not found: {p}"
+        return _console_run(["tail","-n",str(n),str(p)])
+
+    if parts and parts[0]=="state":
+        if len(parts)!=2 or parts[1] not in ADMIN_CONSOLE_STATES:
+            raise ValueError("usage: state collector|v2|multi")
+        p=ADMIN_CONSOLE_STATES[parts[1]]
+        if not p.exists():
+            return 1,f"state not found: {p}"
+        raw=p.read_text(encoding="utf-8",errors="ignore")
+        try:
+            raw=json.dumps(json.loads(raw),ensure_ascii=False,indent=2)
+        except Exception:
+            pass
+        return 0,raw[-30000:]
+
+    raise ValueError("허용되지 않은 명령입니다. help 를 입력하세요.")
 
 def trading_status():
     with TRADING_LOCK:
@@ -757,6 +881,20 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":True,**LIVE_TRADER.set_auto(bool(body.get("enabled")))}); return
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/admin/console":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                command=str(body.get("command") or "")
+                with ADMIN_CONSOLE_LOCK:
+                    code,output=run_admin_console(command)
+                self.send_json({"ok":True,"command":command,"exitCode":code,"output":output})
+            except subprocess.TimeoutExpired:
+                self.send_json({"ok":False,"error":"command timed out"},408)
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400)
+            return
         if path=="/api/trading/live/engine":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
