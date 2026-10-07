@@ -131,7 +131,7 @@ GIT_LOCK=threading.Lock()
 
 def _git_run(args,timeout=60):
     p=subprocess.run(
-        ["git","-C",str(ROOT),*args],
+        ["git","-c",f"safe.directory={ROOT}","-C",str(ROOT),*args],
         cwd=str(ROOT),capture_output=True,text=True,
         timeout=timeout,check=False,
         env={**os.environ,"GIT_TERMINAL_PROMPT":"0"},
