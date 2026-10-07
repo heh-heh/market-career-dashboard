@@ -13,5 +13,5 @@ rm -f "$STATE/backtest_v2_tqqq_mr.json" "$STATE/backtest_v2_tqqq_mr_state.json" 
 systemctl daemon-reload
 systemctl stop backtest-v2-tqqq.service >/dev/null 2>&1 || true
 systemctl start backtest-v2-tqqq.service
-systemctl restart market-career-dashboard.service || true
+bash "$ROOT/scripts/repair_dashboard_api.sh" || true
 echo "Started backtest-v2-tqqq.service"
