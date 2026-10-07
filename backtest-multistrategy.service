@@ -11,7 +11,7 @@ WorkingDirectory=/home/ubuntu/market-career-dashboard
 StateDirectory=market-career-dashboard
 StateDirectoryMode=0755
 ExecStart=/usr/bin/python3 /home/ubuntu/market-career-dashboard/research/backtest_multistrategy_v1.py --out /var/lib/market-career-dashboard/backtest_multistrategy_v1_result.json --state /var/lib/market-career-dashboard/backtest_multistrategy_v1_state.json --log /var/lib/market-career-dashboard/backtest_multistrategy_v1.log
-ExecStartPost=/usr/bin/python3 /home/ubuntu/market-career-dashboard/research/analyze_multistrategy_result.py\nExecStartPost=/bin/bash /home/ubuntu/market-career-dashboard/scripts/publish_multistrategy_backtest.sh
+ExecStartPost=/usr/bin/python3 /home/ubuntu/market-career-dashboard/research/analyze_multistrategy_result.py\nExecStartPost=-/bin/bash /home/ubuntu/market-career-dashboard/scripts/publish_multistrategy_backtest.sh
 Nice=5
 IOSchedulingClass=best-effort
 IOSchedulingPriority=6
