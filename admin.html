@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Market Dashboard Admin</title>
+<style>
+:root{--bg:#08111f;--panel:#101b2f;--line:#263653;--text:#eaf1ff;--muted:#8fa2c2;--accent:#7c8cff;--ok:#39d98a;--bad:#ff667a;--warn:#f0b84b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07101d,#0b1730);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}button,input{font:inherit}button{background:#182742;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 13px}button.primary{background:var(--accent);color:white}button.danger{border-color:#693040;color:#ffb0bb}.wrap{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted,.mini{color:var(--muted)}.mini{font-size:12px;line-height:1.6}.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tabs button.active{background:var(--accent)}.panel{display:none}.panel.active{display:block}.card{background:#101b2feF;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.stat{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800;margin-top:5px}.signal{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;line-height:1.6}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.terminal{white-space:pre-wrap;word-break:break-word;background:#050c17;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:260px;max-height:55vh;overflow:auto;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.command{display:flex;gap:8px;margin-top:8px}.command input,.field input{width:100%;background:#07111f;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px}.row{padding:9px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}#gate{max-width:560px;margin:18vh auto}.hidden{display:none!important}@media(max-width:650px){.grid,.stats{grid-template-columns:1fr 1fr}.top{align-items:flex-start}.wrap{padding:10px}.terminal{min-height:340px}.command{flex-direction:column}} 
+</style>
+</head>
+<body>
+<div id="gate" class="card">
+  <div class="label">관리자 인증 확인</div>
+  <h2>보호된 관리자 페이지</h2>
+  <div id="gateMsg" class="signal">서버 세션을 확인하고 있습니다...</div>
+  <div class="actions"><button onclick="location.href='./'">메인 페이지</button></div>
+</div>
+
+<div id="app" class="wrap hidden">
+  <div class="top">
+    <div><div class="label">Market & Career Dashboard</div><h2 style="margin:4px 0">관리자 페이지</h2><div id="sessionState" class="mini">인증됨</div></div>
+    <div class="actions"><button onclick="location.href='./'">메인</button><button id="logoutBtn" class="danger">로그아웃</button></div>
+  </div>
+
+  <div class="tabs">
+    <button class="active" data-tab="trade">자동매매</button>
+    <button data-tab="server">서버 콘솔</button>
+    <button data-tab="git">GitHub · Git</button>
+  </div>
+
+  <section id="trade" class="panel active">
+    <div class="card">
+      <div class="label">실거래 제어</div>
+      <div id="tradeGate" class="signal">상태 확인 중...</div>
+      <div class="actions">
+        <button id="armBtn">ARM</button><button id="engineBtn">엔진</button><button id="autoBtn">자동매매</button><button id="scanBtn">분석 갱신</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">USD 매수 가능</div><div id="usdPower" class="value">-</div></div>
+      <div class="stat"><div class="label">KRW 매수 가능</div><div id="krwPower" class="value">-</div></div>
+      <div class="stat"><div class="label">보유 평가액</div><div id="marketValue" class="value">-</div></div>
+      <div class="stat"><div class="label">평가손익</div><div id="pnl" class="value">-</div></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">시장 / 자동매매 상태</div><div id="liveState" class="signal">-</div></div>
+      <div class="card"><div class="label">현재 후보</div><div id="candidate" class="signal">-</div></div>
+    </div>
+    <div class="card"><div class="label">보유 종목</div><div id="holdings" class="signal">-</div></div>
+    <div class="card"><div class="label">최근 주문</div><div id="orders" class="signal">-</div></div>
+  </section>
+
+  <section id="server" class="panel">
+    <div class="card">
+      <div class="label">제한형 서버 관리 콘솔</div>
+      <div class="mini">임의 root shell은 노출하지 않습니다. 허용된 서버·Git 관리 명령만 실행됩니다.</div>
+      <div class="actions">
+        <button data-cmd="df -h /">디스크</button>
+        <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
+        <button data-cmd="systemctl status collect-expanded-universe.service">수집 서비스</button>
+        <button data-cmd="tail collector 80">수집 로그</button>
+        <button data-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
+        <button data-cmd="systemctl status market-career-dashboard.service">API 서비스</button>
+      </div>
+    </div>
+    <div id="consoleOut" class="terminal">관리자 콘솔 준비됨. help 를 입력하세요.</div>
+    <div class="command"><input id="consoleIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help"><button id="consoleRun" class="primary">실행</button></div>
+  </section>
+
+  <section id="git" class="panel">
+    <div class="card">
+      <div class="label">GitHub 인증</div>
+      <div id="gitStatus" class="signal">상태 확인 중...</div>
+      <div class="field" style="margin-top:10px"><input id="githubToken" type="password" autocomplete="off" placeholder="GitHub fine-grained PAT"></div>
+      <div class="actions"><button id="saveGitToken" class="primary">GitHub 연결 저장</button><button id="disconnectGit" class="danger">연결 제거</button></div>
+      <div class="mini" style="margin-top:8px">토큰은 GitHub Pages나 브라우저 저장소에 저장하지 않고 EC2의 권한 제한 credential 파일에만 저장합니다. 저장소 Contents 권한은 필요한 범위만 부여하세요.</div>
+    </div>
+    <div class="card">
+      <div class="label">Git 작업</div>
+      <div class="actions">
+        <button data-git="status">status</button><button data-git="log">log</button><button data-git="branches">branch</button><button data-git="diff">diff</button>
+        <button data-git="fetch">fetch</button><button data-git="pull">pull --ff-only</button><button data-git="push">push</button>
+      </div>
+    </div>
+    <div id="gitOut" class="terminal">Git 상태를 불러오는 중...</div>
+  </section>
+</div>
+
+<script>
+const API="https://35.79.235.14";
+const TOKEN_KEY="market_dashboard_admin_token";
+const token=()=>localStorage.getItem(TOKEN_KEY)||"";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+async function req(path,options={}){
+  const headers={"Content-Type":"application/json",...(options.headers||{})};
+  if(token())headers.Authorization="Bearer "+token();
+  const r=await fetch(API+path,{...options,headers,cache:"no-store"});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
+  return d;
+}
+function fmtUsd(v){return v==null?"-":"$"+Number(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtKrw(v){return v==null?"-":"₩"+Number(v).toLocaleString("ko-KR",{maximumFractionDigits:0})}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
+
+async function authGate(){
+  if(!token())return deny("메인 페이지 설정 탭에서 먼저 관리자 로그인하세요.");
+  try{
+    await req("/api/settings");
+    document.getElementById("gate").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    await Promise.allSettled([refreshTrade(),refreshGit()]);
+  }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
+}
+function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
+document.getElementById("logoutBtn").onclick=async()=>{try{await req("/api/logout",{method:"POST",body:"{}"})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.href="./";};
+
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));
+  if(b.dataset.tab==="trade")refreshTrade();
+  if(b.dataset.tab==="git")refreshGit();
+});
+
+let live={};
+async function refreshTrade(){
+  try{
+    live=await req("/api/trading/live/status");
+    const armed=!!live.liveArmed,engine=!!live.engineEnabled,auto=!!live.liveAutoEnabled;
+    document.getElementById("tradeGate").innerHTML=
+      '<b>'+(live.liveTradingEnabled?'<span class="ok">실거래 환경 허용</span>':'<span class="warn">실거래 환경 잠금</span>')+'</b>'+
+      ' · ARM '+(armed?"ON":"OFF")+' · 엔진 '+(engine?"ON":"OFF")+' · AUTO '+(auto?"ON":"OFF");
+    setText("armBtn",armed?"DISARM":"ARM");
+    setText("engineBtn",engine?"엔진 OFF":"엔진 ON");
+    setText("autoBtn",auto?"자동매매 OFF":"자동매매 ON");
+    document.getElementById("engineBtn").disabled=!live.liveTradingEnabled;
+    document.getElementById("autoBtn").disabled=!armed||!engine||!live.liveTradingEnabled;
+
+    setText("liveState",(live.session||"-")+" · "+(live.sessionMessage||"")+(live.managedSymbol?" · 관리 "+live.managedSymbol:""));
+    const c=live.candidate;
+    setText("candidate",c?(c.symbol+" · $"+Number(c.price||0).toFixed(2)+" · "+(c.signal||"-")+" · "+(c.reason||"")):"후보 없음");
+
+    try{
+      const a=await req("/api/trading/live/account");
+      const w=a.wallet||{};
+      setText("usdPower",fmtUsd(w.usdBuyingPower));
+      setText("krwPower",fmtKrw(w.krwBuyingPower));
+      setText("marketValue",Number(w.marketValueUsd||0)>0?fmtUsd(w.marketValueUsd):fmtKrw(w.marketValueKrw));
+      const pv=Number(w.profitLossUsd||0)!==0?Number(w.profitLossUsd||0):Number(w.profitLossKrw||0);
+      setText("pnl",(pv>=0?"+":"")+(Number(w.profitLossUsd||0)!==0?fmtUsd(pv):fmtKrw(pv)));
+      document.getElementById("holdings").innerHTML=(a.holdings||[]).map(h=>'<div class="row"><b>'+esc(h.symbol)+'</b> · '+esc(h.name||"")+' · '+Number(h.quantity||0)+'주 · 현재 '+(h.currency==="USD"?"$":"₩")+Number(h.lastPrice||0).toLocaleString(undefined,{maximumFractionDigits:2})+'</div>').join("")||'<span class="muted">보유 종목 없음</span>';
+      const os=[...(a.openOrders||[]),...(a.recentOrders||[])].slice(0,30);
+      document.getElementById("orders").innerHTML=os.map(o=>'<div class="row"><b>'+esc(o.side||"-")+' '+esc(o.symbol||"-")+'</b> · '+esc(o.status||"-")+' · '+esc(o.orderedAt||"-")+'</div>').join("")||'<span class="muted">주문 내역 없음</span>';
+    }catch(e){document.getElementById("holdings").textContent="계좌 조회 실패: "+e.message;}
+  }catch(e){document.getElementById("tradeGate").innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
+}
+document.getElementById("armBtn").onclick=async()=>{
+  try{
+    if(live.liveArmed)await req("/api/trading/live/disarm",{method:"POST",body:"{}"});
+    else{const phrase=prompt("LIVE_ARM_PHRASE를 입력하세요.");if(!phrase)return;await req("/api/trading/live/arm",{method:"POST",body:JSON.stringify({phrase})});}
+    await refreshTrade();
+  }catch(e){alert(e.message)}
+};
+document.getElementById("engineBtn").onclick=async()=>{try{await req("/api/trading/live/engine",{method:"POST",body:JSON.stringify({enabled:!live.engineEnabled})});await refreshTrade()}catch(e){alert(e.message)}};
+document.getElementById("autoBtn").onclick=async()=>{try{await req("/api/trading/live/auto",{method:"POST",body:JSON.stringify({enabled:!live.liveAutoEnabled})});await refreshTrade()}catch(e){alert(e.message)}};
+document.getElementById("scanBtn").onclick=async()=>{try{await req("/api/trading/live/scan",{method:"POST",body:"{}"});await refreshTrade()}catch(e){alert(e.message)}};
+
+function appendConsole(v){const e=document.getElementById("consoleOut");e.textContent+=(e.textContent?"\n":"")+v;e.scrollTop=e.scrollHeight}
+async function runConsole(cmd){
+  cmd=String(cmd||document.getElementById("consoleIn").value||"").trim();if(!cmd)return;
+  document.getElementById("consoleIn").value="";appendConsole("\n$ "+cmd);
+  try{const d=await req("/api/admin/console",{method:"POST",body:JSON.stringify({command:cmd})});appendConsole(d.output||"(출력 없음)");}catch(e){appendConsole("ERROR: "+e.message)}
+}
+document.getElementById("consoleRun").onclick=()=>runConsole();
+document.getElementById("consoleIn").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();runConsole()}};
+document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>runConsole(b.dataset.cmd));
+
+async function refreshGit(){
+  try{
+    const d=await req("/api/admin/github");
+    document.getElementById("gitStatus").innerHTML=
+      (d.configured?'<span class="ok">GitHub 인증 저장됨</span>':'<span class="warn">GitHub 인증 없음</span>')+
+      '<br>branch: <b>'+esc(d.branch||"-")+'</b><br>origin: '+esc(d.remote||"-");
+    document.getElementById("gitOut").textContent=d.status||"working tree clean";
+  }catch(e){document.getElementById("gitStatus").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
+}
+document.getElementById("saveGitToken").onclick=async()=>{
+  const input=document.getElementById("githubToken"),t=input.value.trim();if(!t)return alert("fine-grained PAT를 입력하세요.");
+  try{const d=await req("/api/admin/github",{method:"POST",body:JSON.stringify({token:t})});input.value="";alert("GitHub 연결 저장 완료: "+(d.login||""));await refreshGit()}catch(e){alert(e.message)}
+};
+document.getElementById("disconnectGit").onclick=async()=>{if(!confirm("서버의 GitHub 인증을 제거할까요?"))return;try{await req("/api/admin/github",{method:"POST",body:JSON.stringify({disconnect:true})});await refreshGit()}catch(e){alert(e.message)}};
+async function gitAction(action){
+  const out=document.getElementById("gitOut");out.textContent="$ git "+action+"\n실행 중...";
+  try{const d=await req("/api/admin/git",{method:"POST",body:JSON.stringify({action})});out.textContent="$ git "+action+"\n"+(d.output||"(출력 없음)")+(d.exitCode?"\n[exit "+d.exitCode+"]":"");await refreshGitStatusOnly()}catch(e){out.textContent="ERROR: "+e.message}
+}
+async function refreshGitStatusOnly(){try{const d=await req("/api/admin/github");document.getElementById("gitStatus").innerHTML=(d.configured?'<span class="ok">GitHub 인증 저장됨</span>':'<span class="warn">GitHub 인증 없음</span>')+'<br>branch: <b>'+esc(d.branch||"-")+'</b><br>origin: '+esc(d.remote||"-")}catch(e){}}
+document.querySelectorAll("[data-git]").forEach(b=>b.onclick=()=>gitAction(b.dataset.git));
+
+authGate();
+setInterval(()=>{if(!document.getElementById("app").classList.contains("hidden")&&document.getElementById("trade").classList.contains("active"))refreshTrade()},15000);
+</script>
+</body>
+</html>
