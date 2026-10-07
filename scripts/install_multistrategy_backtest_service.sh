@@ -16,6 +16,11 @@ systemctl stop backtest-multistrategy.service >/dev/null 2>&1 || true
 rm -f "$STATE_DIR/backtest_multistrategy_v1_state.json"
 systemctl start backtest-multistrategy.service
 
+# Reload the API so /api/backtest/monitor immediately exposes the new state.
+if systemctl list-unit-files market-career-dashboard.service >/dev/null 2>&1; then
+  systemctl restart market-career-dashboard.service || true
+fi
+
 echo "Started backtest-multistrategy.service"
 echo "Status: systemctl status backtest-multistrategy.service --no-pager"
 echo "Log:    tail -f $STATE_DIR/backtest_multistrategy_v1.log"
