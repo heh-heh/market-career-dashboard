@@ -1,7 +1,7 @@
 name: Deploy GitHub Pages
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "strategy-engine-v3"]
     paths-ignore:
       - "data/toss_errors.jsonl"
   workflow_dispatch:
