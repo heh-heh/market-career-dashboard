@@ -233,7 +233,11 @@ def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=No
         if path.exists():
             datasets[sym] = load_symbol(path)
 
+    if not datasets:
+        raise RuntimeError(f"데이터 파일을 열지 못했습니다: {data_dir}")
     all_days = sorted(set().union(*(set(v.keys()) for v in datasets.values()))) if datasets else []
+    if not all_days:
+        raise RuntimeError("정규장 1분봉 거래일을 하나도 읽지 못했습니다.")
     progress_state(
         state_path, log_path,
         phase="backtest", progress=1, running=True,
@@ -362,6 +366,14 @@ def main():
         symbols = sorted(p.name[:-7] for p in data_dir.glob("*.csv.gz"))
     else:
         symbols = [x.strip().upper() for x in args.symbols.split(",") if x.strip()]
+
+    if not data_dir.exists():
+        raise RuntimeError(f"백테스트 데이터 디렉터리가 없습니다: {data_dir}")
+    if not symbols:
+        raise RuntimeError(
+            f"읽을 수 있는 *.csv.gz 데이터가 없습니다: {data_dir} "
+            f"(user={os.geteuid()})"
+        )
 
     try:
         result = run(
