@@ -135,7 +135,7 @@ def _same_regular_session(bars):
         if b["ts"].date() == last_date
         and ((b["ts"].hour == 9 and b["ts"].minute >= 30) or 10 <= b["ts"].hour < 16)
     ]
-    return regular if len(regular) >= 10 else [b for b in stamped if b["ts"].date() == last_date]
+    return regular if len(regular) >= 3 else [b for b in stamped if b["ts"].date() == last_date]
 
 
 def ema_series(values, period):
@@ -238,7 +238,7 @@ def _zscore(series, period=20):
 def extract_features(rows):
     one = normalize_toss_rows(rows)
     five = _same_regular_session(aggregate(one, 5))
-    if len(five) < 22:
+    if len(five) < 6:
         return {"ready": False, "reason": "5분봉 데이터 부족", "bars": len(five)}
 
     closes = [b["c"] for b in five]
