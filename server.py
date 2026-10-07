@@ -446,6 +446,7 @@ class Handler(BaseHTTPRequestHandler):
                 ms_analysis_path=ms_root/"backtest_multistrategy_v1_analysis.json"
                 v2_state_path=ms_root/"backtest_v2_tqqq_mr_state.json"
                 v2_result_path=ms_root/"backtest_v2_tqqq_mr.json"
+                expanded_progress_path=ROOT/"data"/"expanded_universe_progress.json"
                 log_text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
                 lines=log_text.splitlines()
                 tail="\n".join(lines[-100:])
@@ -513,6 +514,7 @@ class Handler(BaseHTTPRequestHandler):
                 ms_analysis={}
                 v2_state={}
                 v2_result={}
+                expanded_progress={}
                 if ms_state_path.exists():
                     try: ms_state=json.loads(ms_state_path.read_text(encoding="utf-8"))
                     except Exception: ms_state={}
@@ -528,6 +530,9 @@ class Handler(BaseHTTPRequestHandler):
                 if v2_result_path.exists():
                     try: v2_result=json.loads(v2_result_path.read_text(encoding="utf-8"))
                     except Exception: v2_result={}
+                if expanded_progress_path.exists():
+                    try: expanded_progress=json.loads(expanded_progress_path.read_text(encoding="utf-8"))
+                    except Exception: expanded_progress={}
                 ms_running=bool(subprocess.run(
                     ["pgrep","-af","[b]acktest_multistrategy_v1.py"],
                     capture_output=True,text=True
@@ -571,6 +576,7 @@ class Handler(BaseHTTPRequestHandler):
                             "days":ms_result.get("days") or ms_state.get("totalDays"),
                             "symbols":ms_result.get("symbols") or ms_state.get("symbols") or [],
                             "analysis":ms_analysis,
+                            "expandedUniverse":expanded_progress,
                             "v2Research":{
                                 "state":v2_state,
                                 "resultReady":v2_result_path.exists(),
