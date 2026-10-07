@@ -63,6 +63,12 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div class="bt-stat"><div class="label">현재 수집</div><div class="v" id="btUniverseCurrent">-</div></div>
     <div class="bt-stat"><div class="label">현재 저장 봉</div><div class="v" id="btUniverseRows">-</div></div>
   </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">디스크 사용</div><div class="v" id="btDiskUsed">-</div></div>
+    <div class="bt-stat"><div class="label">남은 용량</div><div class="v" id="btDiskFree">-</div></div>
+    <div class="bt-stat"><div class="label">수집 데이터 크기</div><div class="v" id="btDataSize">-</div></div>
+    <div class="bt-stat"><div class="label">저장공간 상태</div><div class="v" id="btDiskState">-</div></div>
+  </div>
 </div>
 
 <div class="card" style="margin-top:12px">
@@ -688,7 +694,16 @@ async function loadBacktestMonitor(){
   const d=await fetch(base+"/api/backtest/monitor?"+Date.now(),{cache:"no-store"}).then(r=>r.json());
   if(!d.ok)throw new Error(d.error||"monitor unavailable");
   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  const eu=(d.multiStrategy||{}).expandedUniverse||{};
+  const multi=d.multiStrategy||{};
+  const eu=multi.expandedUniverse||{};
+  const storage=multi.storage||{};
+  const fmtBytes=n=>{
+    n=Number(n||0);
+    if(!n)return "0 B";
+    const u=["B","KB","MB","GB","TB"];
+    let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}
+    return n.toFixed(i>=3?2:i>=2?1:0)+" "+u[i];
+  };
   const details=Array.isArray(eu.symbolProgress)?eu.symbolProgress:[];
   const total=Number(eu.totalSymbols||eu.symbols?.length||details.length||0);
   const completed=(eu.completedSymbols||[]).length;
@@ -710,6 +725,17 @@ async function loadBacktestMonitor(){
   set("btUniverseTotal",total?total.toLocaleString():"-");
   set("btUniverseCurrent",eu.currentSymbol||"-");
   set("btUniverseRows",eu.storedRows!=null?Number(eu.storedRows).toLocaleString()+"봉":"-");
+  set("btDiskUsed",storage.totalBytes?Number(storage.usedPct||0).toFixed(1)+"% · "+fmtBytes(storage.usedBytes):"-");
+  set("btDiskFree",storage.freeBytes!=null?fmtBytes(storage.freeBytes):"-");
+  set("btDataSize",storage.dataBytes!=null?fmtBytes(storage.dataBytes):"-");
+  const diskState=document.getElementById("btDiskState");
+  if(diskState){
+    const level=storage.level||"unknown";
+    if(level==="critical")diskState.innerHTML='<span class="down">위험</span>';
+    else if(level==="warning")diskState.innerHTML='<span style="color:#f0b84b">주의</span>';
+    else if(level==="ok")diskState.innerHTML='<span class="bt-ok">여유</span>';
+    else diskState.textContent="-";
+  }
 
   const phase=document.getElementById("btPhase");
   if(phase){
