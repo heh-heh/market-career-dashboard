@@ -439,6 +439,10 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 log_path=Path("/tmp/toss_hybrid.log")
                 result_path=ROOT/"research"/"backtest_toss_v5_result.json"
+                ms_root=Path("/var/lib/market-career-dashboard")
+                ms_state_path=ms_root/"backtest_multistrategy_v1_state.json"
+                ms_result_path=ms_root/"backtest_multistrategy_v1_result.json"
+                ms_log_path=ms_root/"backtest_multistrategy_v1.log"
                 log_text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
                 lines=log_text.splitlines()
                 tail="\n".join(lines[-100:])
@@ -501,7 +505,62 @@ class Handler(BaseHTTPRequestHandler):
                         progress=max(progress, min(88, progress))
                     elif phase=="building":
                         progress=max(progress,5)
-                self.send_json({"ok":True,"phase":phase,"progress":progress,"running":running or bool(watchdog.get("phase") in ("starting","building","collecting","retrying","backtest","retrying_backtest")),
+                ms_state={}
+                ms_result={}
+                if ms_state_path.exists():
+                    try: ms_state=json.loads(ms_state_path.read_text(encoding="utf-8"))
+                    except Exception: ms_state={}
+                if ms_result_path.exists():
+                    try: ms_result=json.loads(ms_result_path.read_text(encoding="utf-8"))
+                    except Exception: ms_result={}
+                ms_running=bool(subprocess.run(
+                    ["pgrep","-af","[b]acktest_multistrategy_v1.py"],
+                    capture_output=True,text=True
+                ).stdout.strip())
+                if ms_state or ms_result or ms_running:
+                    phase=str(ms_state.get("phase") or ("completed" if ms_result else "backtest"))
+                    progress=int(ms_state.get("progress") or (100 if ms_result else 1))
+                    running=ms_running or bool(ms_state.get("running"))
+                    if ms_log_path.exists():
+                        ms_lines=ms_log_path.read_text(encoding="utf-8",errors="ignore").splitlines()
+                        tail="\n".join(ms_lines[-100:])
+                    overall=ms_result.get("overall") or ms_state.get("summary") or {}
+                    by_strategy=ms_result.get("byStrategy") or ms_state.get("byStrategy") or {}
+                    funnel=ms_result.get("funnel") or {}
+                    self.send_json({
+                        "ok":True,
+                        "engine":"multi-strategy-v3",
+                        "phase":phase,
+                        "progress":progress,
+                        "running":running,
+                        "resultReady":ms_result_path.exists(),
+                        "updatedAt":time.time(),
+                        "currentDay":ms_state.get("currentDay"),
+                        "completedDays":ms_state.get("completedDays"),
+                        "totalDays":ms_state.get("totalDays"),
+                        "currentStored":ms_state.get("trades") or overall.get("trades"),
+                        "symbols":[{"symbol":x,"status":"ready","coveragePct":100} for x in (ms_state.get("symbols") or ms_result.get("symbols") or [])],
+                        "completedSymbols":ms_state.get("symbols") or ms_result.get("symbols") or [],
+                        "watchdog":{
+                            "phase":phase,
+                            "message":ms_state.get("message") or ("백테스트 완료" if ms_result else "멀티전략 백테스트"),
+                            "updatedAt":ms_state.get("updatedAt"),
+                            "error":ms_state.get("error"),
+                        },
+                        "multiStrategy":{
+                            "overall":overall,
+                            "byStrategy":by_strategy,
+                            "funnel":funnel,
+                            "execution":ms_result.get("execution") or {},
+                            "minFinalScore":ms_result.get("minFinalScore"),
+                            "days":ms_result.get("days") or ms_state.get("totalDays"),
+                            "symbols":ms_result.get("symbols") or ms_state.get("symbols") or [],
+                        },
+                        "log":tail,
+                    })
+                    return
+
+                self.send_json({"ok":True,"engine":"legacy-hybrid","phase":phase,"progress":progress,"running":running or bool(watchdog.get("phase") in ("starting","building","collecting","retrying","backtest","retrying_backtest")),
                     "watchdog":watchdog,
                     "symbols":list(stats.values()),"completedSymbols":completed,
                     "currentSymbol":current,"currentPage":current_stats["page"] if current_stats else None,
