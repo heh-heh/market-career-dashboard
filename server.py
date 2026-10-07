@@ -533,6 +533,29 @@ class Handler(BaseHTTPRequestHandler):
                 if expanded_progress_path.exists():
                     try: expanded_progress=json.loads(expanded_progress_path.read_text(encoding="utf-8"))
                     except Exception: expanded_progress={}
+                # Attach detailed per-symbol collector state so the web UI can
+                # show collection progress, row counts, date bounds and errors
+                # for the full expanded research universe.
+                eu_symbols=expanded_progress.get("symbols") or []
+                eu_completed=set(expanded_progress.get("completedSymbols") or [])
+                eu_failed=set(expanded_progress.get("failedSymbols") or [])
+                eu_current=expanded_progress.get("currentSymbol")
+                eu_symbol_progress=[]
+                for sym in eu_symbols:
+                    detail=dict(live_progress.get(sym) or {})
+                    detail["symbol"]=sym
+                    if sym in eu_failed:
+                        detail["status"]="error"
+                    elif sym == eu_current and expanded_progress.get("running"):
+                        detail["status"]=detail.get("status") or "collecting"
+                    elif sym in eu_completed:
+                        detail["status"]="completed"
+                        if detail.get("coveragePct") is None:
+                            detail["coveragePct"]=100
+                    else:
+                        detail["status"]=detail.get("status") or "waiting"
+                    eu_symbol_progress.append(detail)
+                expanded_progress["symbolProgress"]=eu_symbol_progress
                 ms_running=bool(subprocess.run(
                     ["pgrep","-af","[b]acktest_multistrategy_v1.py"],
                     capture_output=True,text=True
