@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import asyncio, json, os, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request
+import asyncio, json, os, pwd, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
@@ -126,6 +126,112 @@ ADMIN_CONSOLE_STATES={
     "multi": Path("/var/lib/market-career-dashboard/backtest_multistrategy_v1_state.json"),
 }
 ADMIN_CONSOLE_LOCK=threading.Lock()
+GIT_CREDENTIAL_FILE=Path("/home/ubuntu/.config/market-dashboard/git-credentials")
+GIT_LOCK=threading.Lock()
+
+def _git_run(args,timeout=60):
+    p=subprocess.run(
+        ["git","-C",str(ROOT),*args],
+        cwd=str(ROOT),capture_output=True,text=True,
+        timeout=timeout,check=False,
+        env={**os.environ,"GIT_TERMINAL_PROMPT":"0"},
+    )
+    out=(p.stdout or "")+(p.stderr or "")
+    if len(out)>30000:
+        out=out[-30000:]+"\n[output truncated]"
+    return p.returncode,out.rstrip()
+
+def _git_branch():
+    code,out=_git_run(["rev-parse","--abbrev-ref","HEAD"])
+    branch=out.strip() if code==0 else ""
+    if not branch or branch=="HEAD":
+        raise RuntimeError("detached HEAD에서는 pull/push를 실행하지 않습니다.")
+    return branch
+
+def github_auth_status():
+    code,remote=_git_run(["remote","get-url","origin"])
+    remote=remote.strip() if code==0 else ""
+    code,branch_out=_git_run(["rev-parse","--abbrev-ref","HEAD"])
+    branch=branch_out.strip() if code==0 else ""
+    code,status=_git_run(["status","--short","--branch"])
+    return {
+        "configured":GIT_CREDENTIAL_FILE.exists() and GIT_CREDENTIAL_FILE.stat().st_size>0,
+        "remote":remote,
+        "branch":branch,
+        "status":status,
+    }
+
+def save_github_token(token):
+    token=str(token or "").strip()
+    if len(token)<20 or any(c.isspace() for c in token):
+        raise ValueError("유효한 GitHub fine-grained PAT를 입력하세요.")
+    req=urllib.request.Request(
+        "https://api.github.com/user",
+        headers={
+            "Authorization":"Bearer "+token,
+            "Accept":"application/vnd.github+json",
+            "User-Agent":"market-career-dashboard-admin",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req,timeout=15) as r:
+            user=json.loads(r.read() or b"{}")
+    except Exception as e:
+        raise ValueError("GitHub 토큰 확인에 실패했습니다. 권한과 토큰 상태를 확인하세요.") from e
+    login=str(user.get("login") or "").strip()
+    if not login:
+        raise ValueError("GitHub 사용자 정보를 확인하지 못했습니다.")
+
+    GIT_CREDENTIAL_FILE.parent.mkdir(parents=True,exist_ok=True)
+    encoded_user=urllib.parse.quote("x-access-token",safe="")
+    encoded_token=urllib.parse.quote(token,safe="")
+    GIT_CREDENTIAL_FILE.write_text(
+        f"https://{encoded_user}:{encoded_token}@github.com\n",
+        encoding="utf-8",
+    )
+    os.chmod(GIT_CREDENTIAL_FILE,0o600)
+    try:
+        u=pwd.getpwnam("ubuntu")
+        os.chown(GIT_CREDENTIAL_FILE,u.pw_uid,u.pw_gid)
+        os.chown(GIT_CREDENTIAL_FILE.parent,u.pw_uid,u.pw_gid)
+    except Exception:
+        pass
+
+    helper=f"store --file {GIT_CREDENTIAL_FILE}"
+    code,out=_git_run(["config","--local","credential.helper",helper])
+    if code!=0:
+        raise RuntimeError(out or "credential.helper 설정 실패")
+    _git_run(["config","--local","user.name",login])
+    _git_run(["config","--local","user.email",f"{login}@users.noreply.github.com"])
+    return {"login":login,**github_auth_status()}
+
+def clear_github_token():
+    try:
+        GIT_CREDENTIAL_FILE.unlink(missing_ok=True)
+    except Exception:
+        pass
+    _git_run(["config","--local","--unset-all","credential.helper"])
+    return github_auth_status()
+
+def run_git_action(action):
+    action=str(action or "").strip().lower()
+    if action=="status":
+        return _git_run(["status","--short","--branch"])
+    if action=="log":
+        return _git_run(["log","--oneline","--decorate","-n","30"])
+    if action=="branches":
+        return _git_run(["branch","-vv"])
+    if action=="diff":
+        return _git_run(["diff","--stat"])
+    if action=="fetch":
+        return _git_run(["fetch","--prune","origin"],timeout=120)
+    if action=="pull":
+        branch=_git_branch()
+        return _git_run(["pull","--ff-only","origin",branch],timeout=120)
+    if action=="push":
+        branch=_git_branch()
+        return _git_run(["push","origin",f"HEAD:{branch}"],timeout=120)
+    raise ValueError("unsupported git action")
 
 def _console_run(args,timeout=15):
     p=subprocess.run(
@@ -159,7 +265,7 @@ def run_admin_console(command):
             "  pwd\n"
             "  df -h /\n"
             "  du -sh data/toss_1m\n"
-            "  git status\n"
+            "  git status|branch|diff|fetch|pull|push\n"
             "  git log [N]\n"
             "  systemctl status|is-active|restart <service>\n"
             "  journalctl <service> [N]\n"
@@ -178,7 +284,24 @@ def run_admin_console(command):
         return _console_run(["du","-sh",str(ROOT/"data"/"toss_1m")],timeout=30)
 
     if parts[:2]==["git","status"] and len(parts)==2:
-        return _console_run(["git","status","--short","--branch"])
+        return _git_run(["status","--short","--branch"])
+
+    if parts[:2]==["git","branch"] and len(parts)==2:
+        return _git_run(["branch","-vv"])
+
+    if parts[:2]==["git","diff"] and len(parts)==2:
+        return _git_run(["diff","--stat"])
+
+    if parts[:2]==["git","fetch"] and len(parts)==2:
+        return _git_run(["fetch","--prune","origin"],timeout=120)
+
+    if parts[:2]==["git","pull"] and len(parts)==2:
+        branch=_git_branch()
+        return _git_run(["pull","--ff-only","origin",branch],timeout=120)
+
+    if parts[:2]==["git","push"] and len(parts)==2:
+        branch=_git_branch()
+        return _git_run(["push","origin",f"HEAD:{branch}"],timeout=120)
 
     if parts[:2]==["git","log"]:
         n=10
@@ -186,7 +309,7 @@ def run_admin_console(command):
             n=max(1,min(50,int(parts[2])))
         elif len(parts)>3:
             raise ValueError("usage: git log [N]")
-        return _console_run(["git","log","--oneline","-n",str(n)])
+        return _git_run(["log","--oneline","-n",str(n)])
 
     if parts and parts[0]=="systemctl":
         if len(parts)!=3 or parts[1] not in {"status","is-active","restart"}:
@@ -817,6 +940,14 @@ class Handler(BaseHTTPRequestHandler):
             snap=realtime_snapshot()
             self.send_json({"ok":True,**snap})
             return
+        if path=="/api/admin/github":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**github_auth_status()})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},500)
+            return
         if path=="/api/settings":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -881,6 +1012,35 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":True,**LIVE_TRADER.set_auto(bool(body.get("enabled")))}); return
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/admin/github":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                if body.get("disconnect"):
+                    with GIT_LOCK:
+                        info=clear_github_token()
+                    self.send_json({"ok":True,**info}); return
+                token=str(body.get("token") or "")
+                with GIT_LOCK:
+                    info=save_github_token(token)
+                self.send_json({"ok":True,**info}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/admin/git":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                action=str(body.get("action") or "")
+                with GIT_LOCK:
+                    code,output=run_git_action(action)
+                self.send_json({"ok":True,"action":action,"exitCode":code,"output":output})
+            except subprocess.TimeoutExpired:
+                self.send_json({"ok":False,"error":"git command timed out"},408)
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400)
+            return
         if path=="/api/admin/console":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
