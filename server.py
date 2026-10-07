@@ -447,6 +447,7 @@ class Handler(BaseHTTPRequestHandler):
                 v2_state_path=ms_root/"backtest_v2_tqqq_mr_state.json"
                 v2_result_path=ms_root/"backtest_v2_tqqq_mr.json"
                 expanded_progress_path=ROOT/"data"/"expanded_universe_progress.json"
+                expanded_log_path=ms_root/"expanded_universe.log"
                 log_text=log_path.read_text(encoding="utf-8",errors="ignore") if log_path.exists() else ""
                 lines=log_text.splitlines()
                 tail="\n".join(lines[-100:])
@@ -556,6 +557,12 @@ class Handler(BaseHTTPRequestHandler):
                         detail["status"]=detail.get("status") or "waiting"
                     eu_symbol_progress.append(detail)
                 expanded_progress["symbolProgress"]=eu_symbol_progress
+                if expanded_log_path.exists():
+                    try:
+                        expanded_lines=expanded_log_path.read_text(encoding="utf-8",errors="ignore").splitlines()
+                        expanded_progress["log"]="\n".join(expanded_lines[-120:])
+                    except Exception:
+                        expanded_progress["log"]=""
                 ms_running=bool(subprocess.run(
                     ["pgrep","-af","[b]acktest_multistrategy_v1.py"],
                     capture_output=True,text=True
