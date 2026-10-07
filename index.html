@@ -47,6 +47,18 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <div class="card"><div class="backtest-head"><div><div class="label">Toss 1분봉 · 동적 종목선정 · 4전략 백테스트</div><h2 style="margin:5px 0">백테스트 모니터</h2><div id="btPhase" class="muted">상태 확인 중...</div></div><div><a href="./backtest-v2.html" style="display:inline-block;margin-right:10px">V2 전용 화면</a><span class="bt-progress-text" id="btProgressText">0%</span></div></div>
 <div class="bt-progress"><i id="btProgressBar"></i></div>
 <div class="bt-grid"><div class="bt-stat"><div class="label">전체 진행률</div><div class="v" id="btOverall">-</div></div><div class="bt-stat"><div class="label">현재 처리</div><div class="v" id="btCurrent">-</div></div><div class="bt-stat"><div class="label">진행 구간</div><div class="v" id="btPage">-</div></div><div class="bt-stat"><div class="label">현재 거래 수</div><div class="v" id="btStored">-</div></div></div></div>
+<div class="card" style="margin-top:12px">
+  <div class="label">확장 데이터 Universe · 30종목</div>
+  <div id="btUniverseStatus" class="signal">수집 상태 확인 중...</div>
+  <div class="bt-progress" style="margin-top:10px"><i id="btUniverseBar"></i></div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">완료 종목</div><div class="v" id="btUniverseDone">-</div></div>
+    <div class="bt-stat"><div class="label">전체 종목</div><div class="v" id="btUniverseTotal">-</div></div>
+    <div class="bt-stat"><div class="label">현재 수집</div><div class="v" id="btUniverseCurrent">-</div></div>
+    <div class="bt-stat"><div class="label">현재 저장 봉</div><div class="v" id="btUniverseRows">-</div></div>
+  </div>
+  <div id="btUniverseSymbols" class="mini" style="margin-top:9px"></div>
+</div>
 <div class="card" style="margin-top:12px"><div class="label">분석 종목</div><div id="btSymbols" class="bt-symbols"></div></div>
 <div class="card" style="margin-top:12px"><div class="label">백그라운드 작업 상태</div><div id="btWatchdog" class="signal">상태 확인 중...</div></div><div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
 <div class="card" style="margin-top:12px"><div class="label">V2 연구 · TQQQ VWAP Mean Reversion</div><div id="btV2Research" class="signal">V2 연구 대기 중...</div></div>
@@ -677,6 +689,27 @@ async function loadBacktestMonitor(){
     const cur=(d.symbols||[]).find(x=>x.symbol===d.currentSymbol);
     set("btPage",cur&&cur.oldestTimestamp&&cur.latestTimestamp?formatKSTDateTime(cur.oldestTimestamp)+" ~ "+formatKSTDateTime(cur.latestTimestamp):"-");
     set("btStored",d.currentStored!=null?Number(d.currentStored).toLocaleString()+"봉":"-");
+  }
+  const multi=d.multiStrategy||{};
+  const eu=multi.expandedUniverse||{};
+  const euDone=(eu.completedSymbols||[]).length,euTotal=Number(eu.totalSymbols||0);
+  const euPct=euTotal?Math.max(0,Math.min(100,100*euDone/euTotal)):0;
+  const euBar=document.getElementById("btUniverseBar");if(euBar)euBar.style.width=euPct+"%";
+  set("btUniverseDone",euDone.toLocaleString());
+  set("btUniverseTotal",euTotal?euTotal.toLocaleString():"-");
+  set("btUniverseCurrent",eu.currentSymbol||"-");
+  set("btUniverseRows",eu.storedRows!=null?Number(eu.storedRows).toLocaleString()+"봉":"-");
+  const euStatus=document.getElementById("btUniverseStatus");
+  if(euStatus){
+    if(eu.running)euStatus.innerHTML='<b class="up">● 수집 중</b> · '+euPct.toFixed(0)+'% · '+esc(eu.currentSymbol||"");
+    else if(eu.phase==="completed")euStatus.innerHTML='<b class="bt-ok">✓ 확장 데이터 수집 완료</b>';
+    else if(eu.phase==="completed_with_errors")euStatus.innerHTML='<b class="down">일부 종목 오류</b>';
+    else euStatus.innerHTML='<span class="muted">아직 확장 데이터 수집을 시작하지 않았습니다.</span>';
+  }
+  const euSymbols=document.getElementById("btUniverseSymbols");
+  if(euSymbols){
+    const missing=(eu.symbols||[]).filter(x=>!(eu.completedSymbols||[]).includes(x));
+    euSymbols.textContent=euTotal?("완료 "+euDone+"/"+euTotal+(missing.length?" · 남은 종목: "+missing.slice(0,15).join(", ")+(missing.length>15?" …":""):" · 전체 완료")):"";
   }
   const rows=d.symbols||[];
   const box=document.getElementById("btSymbols");
