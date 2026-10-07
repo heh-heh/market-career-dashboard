@@ -314,15 +314,33 @@ def main():
     ap.add_argument("--data",default="/home/ubuntu/market-career-dashboard/data/toss_1m/TQQQ.csv.gz")
     ap.add_argument("--out",default="/var/lib/market-career-dashboard/backtest_v2_tqqq_mr.json")
     ap.add_argument("--slippage-bps",type=float,default=2.0)
+    ap.add_argument("--state",default="")
     args=ap.parse_args()
 
     days=load_days(Path(args.data))
     folds=split_days(days)
     results=[]
     variants=make_variants()
+    state_path=Path(args.state) if args.state else None
+    def write_state(i,phase="running",top=None):
+        if not state_path:return
+        state_path.parent.mkdir(parents=True,exist_ok=True)
+        obj={
+          "phase":phase,"running":phase=="running",
+          "completedVariants":i,"totalVariants":len(variants),
+          "progress":round(100*i/max(1,len(variants)),1),
+          "updatedAt":time.time(),"top":top or [],
+        }
+        tmp=state_path.with_suffix(state_path.suffix+".tmp")
+        tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2),encoding="utf-8")
+        tmp.replace(state_path)
+    write_state(0)
     for i,p in enumerate(variants,1):
         results.append(score_candidate(folds,p,args.slippage_bps))
-        if i%10==0: print(f"{i}/{len(variants)} variants",flush=True)
+        if i%5==0 or i==len(variants):
+            tmp_top=sorted(results,key=lambda x:x["rank"],reverse=True)[:3]
+            write_state(i,top=tmp_top)
+            print(f"{i}/{len(variants)} variants",flush=True)
 
     results.sort(key=lambda x:x["rank"],reverse=True)
     payload={
@@ -336,6 +354,7 @@ def main():
     }
     p=Path(args.out);p.parent.mkdir(parents=True,exist_ok=True)
     p.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
+    write_state(len(variants),phase="completed",top=results[:5])
     print(json.dumps({"out":str(p),"days":len(days),"variants":len(results),"top":results[:5]},ensure_ascii=False,indent=2))
 
 
