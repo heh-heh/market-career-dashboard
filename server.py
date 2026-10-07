@@ -31,6 +31,49 @@ TRADING_STATE={
 }
 TRADING_LOCK=threading.Lock()
 LIVE_TRADER=LiveAutoTrader(ROOT)
+STORAGE_CACHE={"at":0.0,"value":{}}
+STORAGE_CACHE_LOCK=threading.Lock()
+
+def storage_status():
+    now=time.time()
+    with STORAGE_CACHE_LOCK:
+        if STORAGE_CACHE["value"] and now-STORAGE_CACHE["at"]<15:
+            return dict(STORAGE_CACHE["value"])
+    try:
+        st=os.statvfs(str(ROOT))
+        total=int(st.f_blocks*st.f_frsize)
+        free=int(st.f_bavail*st.f_frsize)
+        used=max(0,total-free)
+        data_dir=ROOT/"data"/"toss_1m"
+        data_bytes=0
+        file_count=0
+        if data_dir.exists():
+            for p in data_dir.rglob("*"):
+                try:
+                    if p.is_file():
+                        data_bytes+=p.stat().st_size
+                        file_count+=1
+                except OSError:
+                    pass
+        free_pct=(free/total*100.0) if total else 0.0
+        level="critical" if free_pct<10 else "warning" if free_pct<20 else "ok"
+        value={
+            "totalBytes":total,
+            "usedBytes":used,
+            "freeBytes":free,
+            "usedPct":round((used/total*100.0) if total else 0.0,2),
+            "freePct":round(free_pct,2),
+            "dataBytes":data_bytes,
+            "dataFileCount":file_count,
+            "level":level,
+            "checkedAt":now,
+        }
+    except Exception as e:
+        value={"error":str(e),"level":"unknown","checkedAt":now}
+    with STORAGE_CACHE_LOCK:
+        STORAGE_CACHE["at"]=now
+        STORAGE_CACHE["value"]=dict(value)
+    return value
 
 def load_secrets():
     if not SECRETS.exists():
@@ -607,6 +650,7 @@ class Handler(BaseHTTPRequestHandler):
                             "symbols":ms_result.get("symbols") or ms_state.get("symbols") or [],
                             "analysis":ms_analysis,
                             "expandedUniverse":expanded_progress,
+                            "storage":storage_status(),
                             "v2Research":{
                                 "state":v2_state,
                                 "resultReady":v2_result_path.exists(),
