@@ -58,6 +58,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div class="bt-stat"><div class="label">현재 저장 봉</div><div class="v" id="btUniverseRows">-</div></div>
   </div>
   <div id="btUniverseSymbols" class="mini" style="margin-top:9px"></div>
+  <div id="btUniverseCards" class="bt-symbols" style="margin-top:10px"></div>
 </div>
 <div class="card" style="margin-top:12px"><div class="label">분석 종목</div><div id="btSymbols" class="bt-symbols"></div></div>
 <div class="card" style="margin-top:12px"><div class="label">백그라운드 작업 상태</div><div id="btWatchdog" class="signal">상태 확인 중...</div></div><div class="card" style="margin-top:12px"><div class="label">백테스트 결과</div><div id="btResult" class="signal">결과 대기 중...</div></div>
@@ -710,6 +711,27 @@ async function loadBacktestMonitor(){
   if(euSymbols){
     const missing=(eu.symbols||[]).filter(x=>!(eu.completedSymbols||[]).includes(x));
     euSymbols.textContent=euTotal?("완료 "+euDone+"/"+euTotal+(missing.length?" · 남은 종목: "+missing.slice(0,15).join(", ")+(missing.length>15?" …":""):" · 전체 완료")):"";
+  }
+  const euCards=document.getElementById("btUniverseCards");
+  if(euCards){
+    const details=eu.symbolProgress||[];
+    euCards.innerHTML=details.map(x=>{
+      const pct=Math.max(0,Math.min(100,Number(x.coveragePct)||0));
+      const status=x.status||"waiting";
+      const st=status==="completed"?"완료":status==="collecting"||status==="checkpoint"||status==="starting"?"수집 중":status==="error"?"오류":"대기";
+      const cl=status==="completed"?"bt-ok":(status==="collecting"||status==="checkpoint"||status==="starting")?"up":status==="error"?"down":"bt-wait";
+      const rows=Number(x.stored||0);
+      const page=(x.page!=null&&x.pages!=null)?(" · page "+Number(x.page).toLocaleString()+"/"+Number(x.pages).toLocaleString()):"";
+      const range=(x.oldestTimestamp||x.latestTimestamp)?("기간 "+esc(x.oldestTimestamp?formatKSTDateTime(x.oldestTimestamp):"-")+" ~ "+esc(x.latestTimestamp?formatKSTDateTime(x.latestTimestamp):"-")):"아직 수집 전";
+      const err=x.error?'<div class="mini down" style="margin-top:5px">'+esc(x.error)+'</div>':"";
+      return '<div class="bt-symbol">'+
+        '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(x.symbol||"-")+'</b><span class="'+cl+'">'+st+'</span></div>'+
+        '<div class="bt-symbol-pct">'+pct.toFixed(1)+'%</div>'+
+        '<div class="bt-mini-progress"><i style="width:'+pct+'%"></i></div>'+
+        '<div class="mini" style="margin-top:7px">저장 '+rows.toLocaleString()+'봉'+page+'</div>'+
+        '<div class="mini">'+range+'</div>'+err+
+      '</div>';
+    }).join("");
   }
   const rows=d.symbols||[];
   const box=document.getElementById("btSymbols");
