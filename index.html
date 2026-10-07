@@ -704,7 +704,10 @@ async function loadBacktestMonitor(){
       const strategies='<div class="bt-symbols" style="margin-top:12px">'+Object.entries(by).map(([name,x])=>
         '<div class="bt-symbol"><b>'+esc(name)+'</b><div class="mini" style="margin-top:7px">거래 '+Number(x.trades||0).toLocaleString()+'건 · 승률 '+Number(x.winRatePct||0).toFixed(1)+'%</div><div class="mini">기대값 '+Number(x.expectancyPct||0).toFixed(4)+'% · PF '+Number(x.profitFactor||0).toFixed(3)+' · MDD '+Number(x.maxDrawdownPct||0).toFixed(3)+'%</div></div>'
       ).join("")+'</div>';
-      result.innerHTML='<b class="bt-ok">✓ 멀티전략 백테스트 완료</b>'+cards+strategies;
+      const an=ms.analysis||{},ths=an.conditionalThresholds||{},risk=an.overall||{};
+      const thtml=Object.keys(ths).length?'<div class="card" style="margin-top:12px"><div class="label">점수 임계값 진단 · 기존 체결 로그 조건부 분석</div><div class="bt-symbols" style="margin-top:10px">'+Object.entries(ths).map(([th,x])=>'<div class="bt-symbol"><b>'+esc(th)+'점 이상</b><div class="mini">거래 '+Number(x.trades||0).toLocaleString()+' · 기대값R '+Number(x.expectancyR||0).toFixed(4)+' · PF(R) '+Number(x.profitFactorR||0).toFixed(3)+'</div><div class="mini">복리 '+Number(x.compoundedReturnPct||0).toFixed(2)+'% · MDD '+Number(x.maxDrawdownPct||0).toFixed(2)+'%</div></div>').join("")+'</div><div class="mini" style="margin-top:8px">점수-R 상관 '+Number(an.scoreCorrelationWithR||0).toFixed(4)+' · 실제 임계값별 재백테스트가 아니라 기존 체결 내 조건부 분석입니다.</div></div>':'';
+      const rhtml=Object.keys(risk).length?'<div class="signal" style="margin-top:12px"><b>고정위험 R 기준</b> · 기대값 '+Number(risk.expectancyR||0).toFixed(4)+'R · PF '+Number(risk.profitFactorR||0).toFixed(3)+' · 복리 '+Number(risk.compoundedReturnPct||0).toFixed(2)+'% · MDD '+Number(risk.maxDrawdownPct||0).toFixed(2)+'%</div>':'';
+      result.innerHTML='<b class="bt-ok">✓ 멀티전략 백테스트 완료</b>'+cards+rhtml+strategies+thtml;
     }else if(d.engine==="multi-strategy-v3"){
       result.innerHTML='<span class="muted">'+(d.running?"동적 종목선정 + 4전략 백테스트를 백그라운드에서 계산 중입니다.":"백테스트 결과 대기 중입니다.")+'</span>';
     }else{
