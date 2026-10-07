@@ -40,7 +40,7 @@ PATH_GROUPS = [
     ("/api/v1/buying-power", "ORDER_INFO"),
     ("/api/v1/sellable-quantity", "ORDER_INFO"),
     ("/api/v1/commissions", "ORDER_INFO"),
-)
+]
 
 def group_for_path(path: str) -> str:
     for prefix, group in PATH_GROUPS:
