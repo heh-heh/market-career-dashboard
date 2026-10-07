@@ -15,6 +15,7 @@ import sqlite3
 import subprocess
 import sys
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -74,8 +75,21 @@ def write_state(obj):
 
 
 def covered(oldest,latest,since,until):
-    if not oldest or not latest:return False
-    return oldest<=since and latest>=until
+    """Treat nearest trading days as full coverage.
+
+    since/until can land on weekends/holidays or after the US cash close, so
+    exact timestamp comparisons would incorrectly recollect completed symbols.
+    """
+    if not oldest or not latest:
+        return False
+    try:
+        od=datetime.fromisoformat(str(oldest).replace("Z","+00:00"))
+        ld=datetime.fromisoformat(str(latest).replace("Z","+00:00"))
+        sd=datetime.fromisoformat(str(since).replace("Z","+00:00"))
+        ud=datetime.fromisoformat(str(until).replace("Z","+00:00"))
+        return od.date() <= (sd.date()+timedelta(days=7)) and ld.date() >= (ud.date()-timedelta(days=7))
+    except Exception:
+        return False
 
 
 def main():
