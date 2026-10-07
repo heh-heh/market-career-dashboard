@@ -120,6 +120,45 @@ def group_summary(trades, key_fn, risk_fraction=0.002, min_trades=1):
     return out
 
 
+
+def chronological_split(trades, train_fraction=0.70):
+    ordered=sorted(
+        trades,
+        key=lambda t:(str(t.get("day") or ""), str(t.get("entryTime") or ""))
+    )
+    if not ordered:
+        return [],[],None
+    days=sorted({str(t.get("day") or "") for t in ordered})
+    if len(days)<2:
+        cut=max(1,int(len(ordered)*train_fraction))
+        return ordered[:cut],ordered[cut:],None
+    cut_day_idx=max(1,min(len(days)-1,int(len(days)*train_fraction)))
+    split_day=days[cut_day_idx]
+    train=[t for t in ordered if str(t.get("day") or "") < split_day]
+    test=[t for t in ordered if str(t.get("day") or "") >= split_day]
+    return train,test,split_day
+
+
+def stability_by_group(trades, key_fn, risk_fraction=0.002, min_train=20, min_test=10):
+    train,test,split_day=chronological_split(trades)
+    tg=defaultdict(list); vg=defaultdict(list)
+    for t in train: tg[str(key_fn(t))].append(t)
+    for t in test: vg[str(key_fn(t))].append(t)
+    keys=sorted(set(tg)|set(vg))
+    out={}
+    for k in keys:
+        a,b=tg.get(k,[]),vg.get(k,[])
+        tr=summarize(a,risk_fraction)
+        te=summarize(b,risk_fraction)
+        stable=(
+            len(a)>=min_train and len(b)>=min_test
+            and tr["expectancyR"]>0 and tr["profitFactorR"]>1.05
+            and te["expectancyR"]>0 and te["profitFactorR"]>1.05
+        )
+        out[k]={"train":tr,"test":te,"stablePositive":stable}
+    return {"splitDay":split_day,"trainTrades":len(train),"testTrades":len(test),"groups":out}
+
+
 def analyze(result, risk_fraction=0.002):
     trades=list(result.get("trades") or [])
     thresholds=[55,60,65,70,75,80,85]
@@ -160,6 +199,19 @@ def analyze(result, risk_fraction=0.002):
         cov=statistics.fmean([(x-xm)*(y-ym) for x,y in zip(xs,ys)])
         corr=cov/(statistics.pstdev(xs)*statistics.pstdev(ys))
 
+    combo_stability=stability_by_group(
+        trades,lambda t:f"{t.get('symbol','?')}::{t.get('strategy','?')}",
+        risk_fraction,min_train=20,min_test=10
+    )
+    strategy_stability=stability_by_group(
+        trades,lambda t:t.get("strategy") or "UNKNOWN",
+        risk_fraction,min_train=30,min_test=15
+    )
+    stable_combos={
+        k:v for k,v in combo_stability["groups"].items()
+        if v.get("stablePositive")
+    }
+
     return {
         "engine":result.get("engine"),
         "sourceMinFinalScore":result.get("minFinalScore"),
@@ -175,6 +227,11 @@ def analyze(result, risk_fraction=0.002):
         "worstTickerStrategy":dict(reversed(combos[-12:])),
         "byEntryTime":by_time,
         "byExitReason":by_exit,
+        "oos":{
+            "comboStability":combo_stability,
+            "strategyStability":strategy_stability,
+            "stablePositiveCombos":stable_combos,
+        },
         "notes":[
             "conditionalThresholds filters the already-executed trade ledger; it is diagnostic, not a full rerun at each threshold.",
             "maxDrawdownPct uses a compounded fixed-fractional equity curve rather than summing raw trade percentages.",
