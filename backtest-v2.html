@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TQQQ V2 백테스트</title>
+<style>
+:root{color-scheme:dark;--bg:#08111f;--card:#101a2d;--line:#26344d;--muted:#93a4bd;--ok:#47d18c;--bad:#ff6b7a;--accent:#6aa8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#eef4ff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:980px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+h1{font-size:25px;margin:4px 0 2px}.sub,.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#0b1425;border:1px solid var(--line);border-radius:12px;padding:12px}
+.label{font-size:12px;color:var(--muted)}.value{font-size:22px;font-weight:800;margin-top:4px}.bar{height:18px;background:#07101d;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-top:12px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--ok));transition:width .35s}
+.status{font-weight:800}.ok{color:var(--ok)}.bad{color:var(--bad)}button,a.btn{background:#17243c;color:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 13px;text-decoration:none;display:inline-block}
+.variants{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}.variant{background:#0b1425;border:1px solid var(--line);border-radius:12px;padding:13px}.rank{font-weight:900;font-size:18px}.mini{font-size:13px;color:#c7d2e5;line-height:1.6;margin-top:5px}
+.fold{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}pre{white-space:pre-wrap;word-break:break-word;background:#07101d;padding:12px;border-radius:10px;max-height:260px;overflow:auto}
+@media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.variants{grid-template-columns:1fr}.wrap{padding:12px}.value{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="label">Market & Career Dashboard</div><h1>TQQQ V2 Mean Reversion</h1><div class="sub">3-fold Walk-Forward · coarse parameter research</div></div>
+    <div><a class="btn" href="./">메인 대시보드</a> <button id="refresh">새로고침</button></div>
+  </div>
+
+  <div class="card">
+    <div class="top"><div><div class="label">백테스트 상태</div><div id="status" class="status">확인 중...</div></div><div id="pct" class="value">0%</div></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="grid" style="margin-top:12px">
+      <div class="stat"><div class="label">완료 Variant</div><div id="done" class="value">-</div></div>
+      <div class="stat"><div class="label">전체 Variant</div><div id="total" class="value">-</div></div>
+      <div class="stat"><div class="label">데이터 일수</div><div id="days" class="value">-</div></div>
+      <div class="stat"><div class="label">마지막 갱신</div><div id="updated" class="value" style="font-size:15px">-</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">상위 Walk-Forward 후보</div>
+    <div id="summary" class="sub" style="margin-top:5px">결과 대기 중...</div>
+    <div id="variants" class="variants"></div>
+  </div>
+
+  <div class="card">
+    <div class="label">판정 기준</div>
+    <div class="mini">우선순위는 미래 구간 3개 중 양수 구간 수 → OOS median Expectancy R → OOS median PF 순서입니다. 최고 수익 한 구간만 선택하지 않습니다.</div>
+  </div>
+
+  <div class="card">
+    <div class="label">연결 상태</div>
+    <pre id="debug">API 확인 중...</pre>
+  </div>
+</div>
+<script>
+const API="https://35.79.235.14";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+function fmtTime(sec){if(!sec)return"-";try{return new Date(Number(sec)*1000).toLocaleString("ko-KR",{hour12:false})}catch{return"-"}}
+function variantCard(x,i){
+ const p=x.params||{},folds=x.folds||[];
+ const stable=Number(x.positiveTestFolds||0);
+ return '<div class="variant">'+
+   '<div class="top"><div class="rank">#'+(i+1)+' '+esc(p.id||"-")+'</div><div class="'+(stable===3?"ok":stable>=2?"":"bad")+'">'+stable+'/3 OOS</div></div>'+
+   '<div class="mini">Z ≤ -'+Number(p.z_entry||0).toFixed(1)+' · ER ≤ '+Number(p.er_max||0).toFixed(2)+' · RVOL ≤ '+Number(p.rvol_max||0).toFixed(1)+'<br>Stop '+Number(p.stop_atr||0).toFixed(1)+' ATR · '+esc((p.start||[]).join(":"))+'~'+esc((p.end||[]).join(":"))+'</div>'+
+   '<div class="mini"><b>Median OOS</b> expR '+Number(x.medianTestExpectancyR||0).toFixed(4)+' · PF '+Number(x.medianTestProfitFactorR||0).toFixed(3)+' · trades '+Number(x.testTrades||0)+'</div>'+
+   folds.map((f,j)=>'<div class="fold mini"><b>Fold '+(j+1)+'</b><br>Train: n='+Number(f.train?.trades||0)+' expR='+Number(f.train?.expectancyR||0).toFixed(4)+' PF='+Number(f.train?.profitFactorR||0).toFixed(3)+'<br>OOS: n='+Number(f.test?.trades||0)+' expR='+Number(f.test?.expectancyR||0).toFixed(4)+' PF='+Number(f.test?.profitFactorR||0).toFixed(3)+'</div>').join("")+
+ '</div>';
+}
+async function load(){
+ try{
+   const r=await fetch(API+"/api/backtest/monitor?"+Date.now(),{cache:"no-store"});
+   const d=await r.json();
+   if(!d.ok)throw new Error(d.error||"API error");
+   const v2=(d.multiStrategy||{}).v2Research||{}, st=v2.state||{}, res=v2.result||{};
+   const pct=Math.max(0,Math.min(100,Number(st.progress||(v2.resultReady?100:0))));
+   $("pct").textContent=pct.toFixed(0)+"%"; $("bar").style.width=pct+"%";
+   $("done").textContent=Number(st.completedVariants||0).toLocaleString();
+   $("total").textContent=Number(st.totalVariants||res.variantsTested||0).toLocaleString();
+   $("days").textContent=Number(res.days||0).toLocaleString();
+   $("updated").textContent=fmtTime(st.updatedAt);
+   if(st.running){
+     $("status").innerHTML='<span class="ok">● 계산 중</span>';
+   }else if(v2.resultReady){
+     $("status").innerHTML='<span class="ok">✓ 완료</span>';
+   }else{
+     $("status").textContent="대기";
+   }
+   const top=res.top||st.top||[];
+   $("summary").textContent=v2.resultReady?"완료 · "+Number(res.variantsTested||0)+"개 variant 검증":"계산 중 · 현재 상위 후보";
+   $("variants").innerHTML=top.length?top.slice(0,5).map(variantCard).join(""):'<div class="muted">아직 상위 후보가 없습니다.</div>';
+   $("debug").textContent="API 연결 정상\nengine="+(d.engine||"-")+"\nphase="+(d.phase||"-")+"\nV2 resultReady="+Boolean(v2.resultReady);
+ }catch(e){
+   $("status").innerHTML='<span class="bad">연결 오류</span>';
+   $("debug").textContent=String(e);
+ }
+}
+$("refresh").onclick=load;
+load();
+setInterval(load,3000);
+</script>
+</body>
+</html>
