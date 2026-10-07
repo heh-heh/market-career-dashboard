@@ -9,12 +9,17 @@ echo "[1/5] dashboard systemd unit 설치"
 install -m 0644 "$UNIT_SRC" "$UNIT_DST"
 systemctl daemon-reload
 
-echo "[2/5] Python 실행환경 확인"
+echo "[2/5] Python 소스 복구 + 실행환경 확인"
+# Restore the API dependency chain explicitly from the fetched strategy branch.
+# This guards against stale/corrupted working-tree files left by earlier root/ubuntu operations.
+git -C "$ROOT" checkout origin/strategy-engine-v3 -- toss_rate_limit.py strategy_engine.py live_trader.py server.py
 if [ ! -x "$ROOT/.venv/bin/python" ]; then
   python3 -m venv "$ROOT/.venv"
   "$ROOT/.venv/bin/python" -m pip install --upgrade pip
   "$ROOT/.venv/bin/python" -m pip install -r "$ROOT/requirements.txt"
 fi
+
+"$ROOT/.venv/bin/python" -m py_compile   "$ROOT/toss_rate_limit.py"   "$ROOT/strategy_engine.py"   "$ROOT/live_trader.py"   "$ROOT/server.py"
 
 echo "[3/5] API 서비스 재시작"
 systemctl restart market-career-dashboard.service
