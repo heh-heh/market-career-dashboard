@@ -227,7 +227,23 @@ def run_git_action(action):
         return _git_run(["fetch","--prune","origin"],timeout=120)
     if action=="pull":
         branch=_git_branch()
+        if branch=="main":
+            code,remote_head=_git_run(["rev-parse","origin/strategy-engine-v3"])
+            if code==0:
+                return 2,(
+                    "현재 EC2 로컬 브랜치가 main이지만 배포 코드는 strategy-engine-v3입니다.\n"
+                    "GitHub · Git 탭의 '배포 브랜치 맞추기'를 먼저 실행하세요."
+                )
         return _git_run(["pull","--ff-only","origin",branch],timeout=120)
+    if action=="sync-v3":
+        code,out=_git_run(["fetch","--prune","origin"],timeout=120)
+        if code!=0:
+            return code,out
+        code2,out2=_git_run(["switch","-C","strategy-engine-v3","origin/strategy-engine-v3"],timeout=120)
+        if code2!=0:
+            return code2,(out+"\n"+out2).strip()
+        code3,out3=_git_run(["branch","--set-upstream-to=origin/strategy-engine-v3","strategy-engine-v3"])
+        return code3,(out+"\n"+out2+"\n"+out3).strip()
     if action=="push":
         branch=_git_branch()
         return _git_run(["push","origin",f"HEAD:{branch}"],timeout=120)
@@ -266,6 +282,7 @@ def run_admin_console(command):
             "  df -h /\n"
             "  du -sh data/toss_1m\n"
             "  git status|branch|diff|fetch|pull|push\n"
+            "  (배포 브랜치 정리는 관리자 Git 탭의 전용 버튼 사용)\n"
             "  git log [N]\n"
             "  systemctl status|is-active|restart <service>\n"
             "  journalctl <service> [N]\n"
