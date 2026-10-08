@@ -25,7 +25,8 @@
   </div>
 
   <div class="tabs">
-    <button class="active" data-tab="trade">자동매매</button>
+    <button class="active" data-tab="trade">실거래</button>
+    <button data-tab="paper">모의매매</button>
     <button data-tab="server">서버 콘솔</button>
     <button data-tab="git">GitHub · Git</button>
   </div>
@@ -50,6 +51,30 @@
     </div>
     <div class="card"><div class="label">보유 종목</div><div id="holdings" class="signal">-</div></div>
     <div class="card"><div class="label">최근 주문</div><div id="orders" class="signal">-</div></div>
+  </section>
+
+  <section id="paper" class="panel">
+    <div class="card">
+      <div class="label">V3 실시간 모의매매</div>
+      <div id="paperGate" class="signal">상태 확인 중...</div>
+      <div class="actions">
+        <button id="paperAutoBtn" class="primary">모의매매 시작</button>
+        <button id="paperScanBtn">실데이터 갱신</button>
+      </div>
+      <div class="mini" style="margin-top:8px">Toss 실제 시세·1분봉을 V3 전략 엔진에 넣어 가상 체결합니다. 실제 주문 API는 호출하지 않으며, 의사결정과 체결 결과는 서버에 누적 저장됩니다.</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">가상 자산</div><div id="paperEquity" class="value">-</div></div>
+      <div class="stat"><div class="label">누적 손익</div><div id="paperPnl" class="value">-</div></div>
+      <div class="stat"><div class="label">완료 거래</div><div id="paperTrades" class="value">-</div></div>
+      <div class="stat"><div class="label">승률</div><div id="paperWinRate" class="value">-</div></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">현재 가상 포지션</div><div id="paperPosition" class="signal">-</div></div>
+      <div class="card"><div class="label">수집 상태</div><div id="paperState" class="signal">-</div></div>
+    </div>
+    <div class="card"><div class="label">현재 V3 후보</div><div id="paperCandidates" class="signal">-</div></div>
+    <div class="card"><div class="label">최근 모의 체결</div><div id="paperHistory" class="signal">-</div></div>
   </section>
 
   <section id="server" class="panel">
@@ -111,7 +136,7 @@ async function authGate(){
     await req("/api/settings");
     document.getElementById("gate").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
-    await Promise.allSettled([refreshTrade(),refreshGit()]);
+    await Promise.allSettled([refreshTrade(),refreshPaper(),refreshGit()]);
   }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
 }
 function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
@@ -121,6 +146,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));
   if(b.dataset.tab==="trade")refreshTrade();
+  if(b.dataset.tab==="paper")refreshPaper();
   if(b.dataset.tab==="git")refreshGit();
 });
 
@@ -167,6 +193,79 @@ document.getElementById("engineBtn").onclick=async()=>{try{await req("/api/tradi
 document.getElementById("autoBtn").onclick=async()=>{try{await req("/api/trading/live/auto",{method:"POST",body:JSON.stringify({enabled:!live.liveAutoEnabled})});await refreshTrade()}catch(e){alert(e.message)}};
 document.getElementById("scanBtn").onclick=async()=>{try{await req("/api/trading/live/scan",{method:"POST",body:"{}"});await refreshTrade()}catch(e){alert(e.message)}};
 
+
+let paper={};
+async function refreshPaper(){
+  try{
+    paper=await req("/api/trading/paper/v3/status");
+    const on=!!paper.enabled;
+    document.getElementById("paperGate").innerHTML=
+      '<b>'+(on?'<span class="ok">모의매매 수집 ON</span>':'<span class="warn">모의매매 정지</span>')+'</b>'+
+      ' · '+esc(paper.engine||"strategy-engine-v3")+
+      ' · '+esc(paper.session||"-")+
+      ' · '+Number(paper.scanIntervalSec||0)+'초 간격';
+    setText("paperAutoBtn",on?"모의매매 중지":"모의매매 시작");
+    setText("paperEquity",fmtUsd(paper.equityUsd));
+    const pnl=Number(paper.totalPnlUsd||0);
+    setText("paperPnl",(pnl>=0?"+":"")+fmtUsd(pnl));
+    setText("paperTrades",String(paper.closedTrades||0));
+    setText("paperWinRate",Number(paper.winRate||0).toFixed(1)+"%");
+
+    const p=paper.position;
+    if(p){
+      const up=Number(p.unrealizedPnlUsd||0);
+      document.getElementById("paperPosition").innerHTML=
+        '<b>'+esc(p.symbol||"-")+'</b> · '+esc(p.strategy||"-")+
+        '<br>진입 '+fmtUsd(p.entryPrice)+' · 현재 '+fmtUsd(p.markPrice)+
+        '<br>미실현 '+(up>=0?'+':'')+fmtUsd(up)+
+        ' · stop '+(p.stopPrice==null?'-':fmtUsd(p.stopPrice))+
+        ' · target '+(p.targetPrice==null?'-':fmtUsd(p.targetPrice));
+    }else{
+      document.getElementById("paperPosition").innerHTML='<span class="muted">열린 가상 포지션 없음</span>';
+    }
+
+    document.getElementById("paperState").innerHTML=
+      '데이터: '+esc(paper.dataSource||"-")+
+      '<br>마지막 스캔: '+esc(paper.lastScanAt||"-")+
+      '<br>마지막 동작: '+esc(paper.lastAction||"-")+
+      (paper.lastError?'<br><span class="bad">'+esc(paper.lastError)+'</span>':'')+
+      '<br><span class="mini">주문 '+fmtUsd(paper.orderUsd)+' · 슬리피지 '+Number(paper.slippageBpsPerSide||0).toFixed(1)+'bps/side</span>';
+
+    const cs=(paper.candidates||[]).slice(0,10);
+    document.getElementById("paperCandidates").innerHTML=cs.map(c=>
+      '<div class="row"><b>'+esc(c.symbol||"-")+'</b> · '+esc(c.bestStrategy||"-")+
+      ' · '+esc(c.signal||"HOLD")+
+      ' · 점수 '+Number(c.finalScore||0).toFixed(1)+
+      ' · '+fmtUsd(c.price)+'</div>'
+    ).join("")||'<span class="muted">후보 없음 — 장 시간 또는 다음 스캔을 기다리세요.</span>';
+
+    const hs=(paper.recentTrades||[]).slice(0,30);
+    document.getElementById("paperHistory").innerHTML=hs.map(t=>{
+      const v=Number(t.pnlUsd||0);
+      return '<div class="row"><b>'+esc(t.symbol||"-")+' · '+esc(t.strategy||"-")+'</b>'+
+        ' · '+esc(t.exitReason||"-")+
+        ' · '+(v>=0?'+':'')+fmtUsd(v)+
+        ' ('+Number(t.returnPct||0).toFixed(2)+'%)'+
+        '<br><span class="mini">'+esc(t.entryTimestamp||"-")+' → '+esc(t.exitTimestamp||"-")+'</span></div>';
+    }).join("")||'<span class="muted">아직 완료된 모의 거래가 없습니다.</span>';
+  }catch(e){
+    document.getElementById("paperGate").innerHTML='<span class="bad">'+esc(e.message)+'</span>';
+  }
+}
+document.getElementById("paperAutoBtn").onclick=async()=>{
+  try{
+    await req("/api/trading/paper/v3/auto",{method:"POST",body:JSON.stringify({enabled:!paper.enabled})});
+    await refreshPaper();
+  }catch(e){alert(e.message)}
+};
+document.getElementById("paperScanBtn").onclick=async()=>{
+  const b=document.getElementById("paperScanBtn");
+  b.disabled=true;b.textContent="갱신 중...";
+  try{await req("/api/trading/paper/v3/scan",{method:"POST",body:"{}"});await refreshPaper()}
+  catch(e){alert(e.message)}
+  finally{b.disabled=false;b.textContent="실데이터 갱신"}
+};
+
 function appendConsole(v){const e=document.getElementById("consoleOut");e.textContent+=(e.textContent?"\n":"")+v;e.scrollTop=e.scrollHeight}
 async function runConsole(cmd){
   cmd=String(cmd||document.getElementById("consoleIn").value||"").trim();if(!cmd)return;
@@ -199,7 +298,11 @@ async function refreshGitStatusOnly(){try{const d=await req("/api/admin/github")
 document.querySelectorAll("[data-git]").forEach(b=>b.onclick=()=>gitAction(b.dataset.git));
 
 authGate();
-setInterval(()=>{if(!document.getElementById("app").classList.contains("hidden")&&document.getElementById("trade").classList.contains("active"))refreshTrade()},15000);
+setInterval(()=>{
+  if(document.getElementById("app").classList.contains("hidden"))return;
+  if(document.getElementById("trade").classList.contains("active"))refreshTrade();
+  if(document.getElementById("paper").classList.contains("active"))refreshPaper();
+},15000);
 </script>
 </body>
 </html>
