@@ -71,7 +71,47 @@ class Bar:
     ask: float | None = None
 
 
-def validate_data_manifest(path, symbols, timestamp_kind):
+def file_sha256(path):
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024*1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def manifest_input_path(data_dir, symbol, meta):
+    """Bind each reviewed instrument to one finalized CSV inside data-dir."""
+    name = meta.get("path")
+    if not isinstance(name, str) or name not in (f"{symbol}.csv", f"{symbol}.csv.gz"):
+        raise ValueError(f"{symbol}: manifest path must be SYMBOL.csv or SYMBOL.csv.gz")
+    root = data_dir.resolve()
+    path = (root/name).resolve()
+    if path.parent != root or not path.is_file():
+        raise ValueError(f"{symbol}: manifest input missing or outside data-dir: {name}")
+    return path
+
+
+def normalize_minute_timestamp(value, timestamp_kind, naive_timezone):
+    dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if dt.tzinfo is None:
+        if naive_timezone is None:
+            raise ValueError("manifest requires timezone-aware rows")
+        zone = ZoneInfo(naive_timezone)
+        # Reject ambiguous/nonexistent local times; a declaration cannot resolve
+        # a DST fold or a missing wall-clock minute.
+        candidates = [dt.replace(tzinfo=zone, fold=f) for f in (0, 1)]
+        valid = [x for x in candidates if x.astimezone(ZoneInfo("UTC")).astimezone(zone).replace(tzinfo=None) == dt]
+        if not valid or len({x.utcoffset() for x in valid}) != 1:
+            raise ValueError("ambiguous/nonexistent naive local timestamp")
+        dt = valid[0]
+    dt = dt.astimezone(NY)
+    start = dt - MINUTE if timestamp_kind == "end" else dt
+    if start.second or start.microsecond:
+        raise ValueError("timestamp must be an exact minute boundary; inclusive :59 end labels are unsupported")
+    return start
+
+
+def validate_data_manifest(path, symbols, timestamp_kind, *, data_dir=None):
     """Require externally reviewed, byte-bound provenance, not a boolean alone.
 
     OHLCV cannot prove corporate-action history. The manifest records that
@@ -82,6 +122,14 @@ def validate_data_manifest(path, symbols, timestamp_kind):
     manifest = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(manifest, dict) or manifest.get("version") != 1:
         raise ValueError("Data manifest must have version 1")
+    if manifest.get("validationPassed") is not True:
+        raise ValueError("Manifest validation did not PASS")
+    if manifest.get("priceAdjustmentConfirmed") is not True:
+        raise ValueError("Manifest priceAdjustmentConfirmed must be true")
+    if manifest.get("timestampKind") != timestamp_kind:
+        raise ValueError("Manifest timestamp_kind disagrees with CLI")
+    if manifest.get("calendar") != "XNYS":
+        raise ValueError("Manifest calendar must be XNYS")
     for field in ("verified_by", "verification_note"):
         if not isinstance(manifest.get(field), str) or not manifest[field].strip():
             raise ValueError(f"Manifest requires external review evidence: {field}")
@@ -93,16 +141,23 @@ def validate_data_manifest(path, symbols, timestamp_kind):
         meta = files.get(symbol)
         if not isinstance(meta, dict):
             raise ValueError(f"Manifest lacks required symbol {symbol}")
+        if meta.get("validationPassed") is not True or meta.get("priceAdjustmentConfirmed") is not True:
+            raise ValueError(f"{symbol}: validation/price adjustment confirmation did not PASS")
+        if meta.get("symbol") != symbol or meta.get("symbolIdentityConfirmed") is not True:
+            raise ValueError(f"{symbol}: symbol identity is unverified")
+        for field in ("conflictingDuplicates", "ohlcViolations", "timestampViolations", "quoteViolations", "symbolViolations"):
+            if meta.get(field) != 0:
+                raise ValueError(f"{symbol}: {field} must be zero")
         digest = meta.get("sha256", "")
         if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
-            raise ValueError(f"{symbol}: manifest requires SHA256 of the compressed CSV bytes")
+            raise ValueError(f"{symbol}: manifest requires SHA256 of the exact input bytes")
         if meta.get("timestamp_kind") != timestamp_kind:
             raise ValueError(f"{symbol}: manifest timestamp_kind disagrees with CLI")
         expected = "minute_start" if timestamp_kind == "start" else "exclusive_minute_end"
         if meta.get("timestamp_semantics") != expected:
             raise ValueError(f"{symbol}: timestamp_semantics must be {expected}; inclusive :59 labels are unsupported")
-        if "naive_timezone" not in meta or meta["naive_timezone"] not in (None, "America/New_York"):
-            raise ValueError(f"{symbol}: declare naive_timezone=null (aware rows only) or America/New_York")
+        if "naive_timezone" not in meta or meta["naive_timezone"] not in (None, "America/New_York", "UTC"):
+            raise ValueError(f"{symbol}: declare naive_timezone=null (aware rows only), America/New_York or UTC")
         if meta.get("split_consistency_verified") is not True:
             raise ValueError(f"{symbol}: split/leveraged-ETF adjustment consistency is unverified")
         if meta.get("point_in_time_eligibility_verified") is not True:
@@ -110,7 +165,19 @@ def validate_data_manifest(path, symbols, timestamp_kind):
         basis = meta.get("price_basis")
         if basis not in ("split_adjusted_ohlcv", "unadjusted_split_free_ohlcv"):
             raise ValueError(f"{symbol}: unknown/unverified price and volume adjustment basis")
+        adjustment = {"split_adjusted_ohlcv": "split-adjusted", "unadjusted_split_free_ohlcv": "raw"}[basis]
+        if meta.get("priceAdjustment") != adjustment or manifest.get("priceAdjustment") != adjustment:
+            raise ValueError(f"{symbol}: inconsistent priceAdjustment declaration")
         bases.add(basis)
+        if data_dir is not None:
+            input_path = manifest_input_path(data_dir, symbol, meta)
+            before = input_path.stat()
+            actual = file_sha256(input_path)
+            after = input_path.stat()
+            if (before.st_size, before.st_mtime_ns, before.st_ino) != (after.st_size, after.st_mtime_ns, after.st_ino):
+                raise ValueError(f"{symbol}: input changed during manifest preflight")
+            if actual != digest:
+                raise ValueError(f"{symbol}: SHA256 disagrees with manifest; rebuild and review it")
     if len(bases) != 1:
         raise ValueError("Mixed symbol/benchmark adjustment bases are forbidden")
     return manifest
@@ -122,22 +189,15 @@ def load_1m_data(path, timestamp_kind, *, expected_sha256=None, naive_timezone="
     errors = defaultdict(dict)
     untrusted_open = set()
     before = path.stat()
-    with gzip.open(path, "rt", encoding="utf-8", newline="") as stream:
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"timestamp", "open", "high", "low", "close", "volume"}
         if not required.issubset(reader.fieldnames or []):
             raise ValueError(f"{path}: required columns {sorted(required)}")
         for line, row in enumerate(reader, 2):
             try:
-                dt = datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
-                if dt.tzinfo is None:
-                    if naive_timezone is None:
-                        raise ValueError("manifest requires timezone-aware rows")
-                    dt = dt.replace(tzinfo=NY)  # Same naive-time convention as V2.
-                dt = dt.astimezone(NY)
-                start = dt - MINUTE if timestamp_kind == "end" else dt
-                if start.second or start.microsecond:
-                    raise ValueError("timestamp must be an exact minute boundary; inclusive :59 end labels are unsupported")
+                start = normalize_minute_timestamp(row["timestamp"], timestamp_kind, naive_timezone)
             except (ValueError, TypeError) as exc:
                 raise ValueError(f"{path}:{line}: invalid timestamp semantics: {exc}") from exc
             if not time(9, 30) <= start.time() < time(16):
@@ -204,7 +264,11 @@ def exchange_sessions(first, last):
         import exchange_calendars as xc
     except ImportError as exc:
         raise RuntimeError("Runtime requires exchange_calendars; no weekday-only calendar fallback.") from exc
-    cal = xc.get_calendar("XNYS", start=first, end=last)
+    # Calendar construction needs start < end and at least one session. Padding
+    # also lets single-day/holiday-only validation return an exact empty slice.
+    start_bound = (datetime.fromisoformat(first)-timedelta(days=7)).date().isoformat()
+    end_bound = (datetime.fromisoformat(last)+timedelta(days=7)).date().isoformat()
+    cal = xc.get_calendar("XNYS", start=start_bound, end=end_bound)
     schedule = cal.schedule
     open_col = "market_open" if "market_open" in schedule else "open"
     close_col = "market_close" if "market_close" in schedule else "close"
@@ -974,7 +1038,7 @@ def parse_args():
     p.add_argument("--symbols", help="Comma-separated frozen LONG instruments; default: universe_v3.json subset")
     p.add_argument("--timestamp-kind", choices=("start", "end"), help="Required runtime confirmation of raw timestamp meaning")
     p.add_argument("--confirm-price-adjustment", action="store_true", help="Confirm OHLC price units/split adjustments are consistent")
-    p.add_argument("--data-manifest", type=Path, help="Required externally reviewed timestamp/adjustment provenance and per-file SHA256")
+    p.add_argument("--data-manifest", "--manifest", dest="data_manifest", type=Path, help="Required externally reviewed timestamp/adjustment provenance and per-file SHA256")
     return p.parse_args()
 
 
@@ -994,14 +1058,12 @@ def main():
     if any(s in SEMI for s in symbols) and any(s in ("S1", "S3") for s in strategies):
         required.add("SOXX")
     # S2 sector/RS are diagnostics only; do not make SOXX mandatory for S2.
-    missing = [s for s in sorted(required | set(symbols)) if not (args.data_dir/f"{s}.csv.gz").is_file()]
-    if missing:
-        raise ValueError(f"Missing required existing SYMBOL.csv.gz data: {', '.join(missing)} ({args.data_dir})")
-    manifest = validate_data_manifest(args.data_manifest, required | set(symbols), args.timestamp_kind)
+    manifest = validate_data_manifest(args.data_manifest, required | set(symbols), args.timestamp_kind,
+                                      data_dir=args.data_dir)
 
     def load_verified(symbol):
         meta = manifest["symbols"][symbol]
-        return load_1m_data(args.data_dir/f"{symbol}.csv.gz", args.timestamp_kind,
+        return load_1m_data(manifest_input_path(args.data_dir, symbol, meta), args.timestamp_kind,
                             expected_sha256=meta["sha256"], naive_timezone=meta["naive_timezone"])
 
     raw_refs = {s: load_verified(s) for s in required}

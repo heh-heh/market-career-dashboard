@@ -314,9 +314,13 @@ class ProvenanceAndMetricAudit(unittest.TestCase):
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         meta = dict(sha256=digest, price_basis=basis, timestamp_kind="start",
                     timestamp_semantics="minute_start", naive_timezone="America/New_York",
-                    split_consistency_verified=True, point_in_time_eligibility_verified=True)
+                    split_consistency_verified=True, point_in_time_eligibility_verified=True,
+                    validationPassed=True, priceAdjustmentConfirmed=True, priceAdjustment="split-adjusted",
+                    symbolIdentityConfirmed=True, conflictingDuplicates=0, ohlcViolations=0,
+                    timestampViolations=0, quoteViolations=0, symbolViolations=0)
         return dict(version=1, verified_by="synthetic-test", verification_note="Synthetic fixture only, not production provenance",
-                    symbols={s: dict(meta) for s in ("TQQQ", "QQQ", "SPY")})
+                    validationPassed=True, priceAdjustmentConfirmed=True, priceAdjustment="split-adjusted", timestampKind="start", calendar="XNYS",
+                    symbols={s: dict(meta, symbol=s) for s in ("TQQQ", "QQQ", "SPY")})
 
     def test_boolean_without_manifest_rejected(self):
         with self.assertRaisesRegex(ValueError, "data-manifest"):
@@ -329,7 +333,7 @@ class ProvenanceAndMetricAudit(unittest.TestCase):
             manifest = self.manifest(path)
             manifest["symbols"]["QQQ"]["price_basis"] = "unadjusted_split_free_ohlcv"
             manifest_path.write_text(json.dumps(manifest))
-            with self.assertRaisesRegex(ValueError, "Mixed"):
+            with self.assertRaisesRegex(ValueError, "inconsistent|Mixed"):
                 v4.validate_data_manifest(manifest_path, {"TQQQ", "QQQ"}, "start")
             manifest = self.manifest(path)
             manifest["symbols"]["TQQQ"]["split_consistency_verified"] = False
