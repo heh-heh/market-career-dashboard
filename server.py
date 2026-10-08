@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
 from live_trader import LiveAutoTrader
+from paper_trader import PaperV3Trader
 from toss_auth import get_token as shared_toss_token
 from toss_rate_limit import wait_for_slot, group_for_path
 from simple_momentum_v1 import SimpleMomentumPaper, ReadOnlyTossMarketData, persistent_directory
@@ -467,6 +468,35 @@ def restore_simple_paper():
     except Exception as e:
         print("Simple paper startup unavailable:",e,flush=True)
 
+def paper_v3_market_snapshot(managed_symbol=None):
+    """Read real Toss market data through the V3 engine without placing orders."""
+    with LIVE_TRADER.lock:
+        session,session_message=LIVE_TRADER._calendar()
+        candidates=LIVE_TRADER._scan_candidates()
+        managed=None
+        if managed_symbol:
+            managed=next(
+                (x for x in candidates if str(x.get("symbol") or "").upper()==str(managed_symbol).upper()),
+                None,
+            )
+            if managed is None:
+                rows=LIVE_TRADER._candles(str(managed_symbol).upper())
+                analyzed=LIVE_TRADER._analyze(rows)
+                managed={
+                    "symbol":str(managed_symbol).upper(),
+                    "name":str(managed_symbol).upper(),
+                    **analyzed,
+                }
+        return {
+            "session":session,
+            "sessionMessage":session_message,
+            "candidates":candidates,
+            "managed":managed,
+            "timestamp":time.time(),
+        }
+
+PAPER_V3=PaperV3Trader(ROOT,paper_v3_market_snapshot)
+
 def yahoo_quote(symbol):
     url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
     req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 market-career-dashboard/1.3"})
@@ -749,6 +779,10 @@ class Handler(BaseHTTPRequestHandler):
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             self.send_json({"ok":True,**LIVE_TRADER.status()}); return
+        if path=="/api/trading/paper/v3/status":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({"ok":True,**PAPER_V3.status()}); return
         if path=="/api/trading/live/account":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -1052,6 +1086,21 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             paper_broker.reset()
             self.send_json({"ok":True,"portfolio":paper_broker.snapshot()}); return
+        if path=="/api/trading/paper/v3/auto":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                self.send_json({"ok":True,**PAPER_V3.set_enabled(bool(body.get("enabled")))}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/trading/paper/v3/scan":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**PAPER_V3.scan(force=True)}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/trading/live/arm":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -1184,6 +1233,7 @@ if __name__=="__main__":
     threading.Thread(target=start_realtime,daemon=True).start()
     LIVE_TRADER.start()
     threading.Thread(target=restore_simple_paper,daemon=True,name="simple-paper-restore").start()
+    PAPER_V3.start()
     print(f"API listening on {HOST}:{PORT}; update interval={INTERVAL}s",flush=True)
     if not ADMIN_PASSWORD:
         print("WARNING: ADMIN_PASSWORD is not set; /api/login is disabled.",flush=True)
