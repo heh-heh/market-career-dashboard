@@ -77,7 +77,7 @@
     <div class="card"><div class="label">최근 모의 체결</div><div id="paperHistory" class="signal">-</div></div>
     <div class="card">
       <div class="label">Simple Momentum V1 · USD 모의매매</div>
-      <div id="simpleState" class="signal">-</div>
+      <div id="simpleState" class="signal">-</div><div id="simpleTimestamps" class="mini">-</div>
       <div class="mini">중지는 신규 진입을 중단합니다. 보유 포지션의 손절·청산 관리는 계속됩니다.</div>
       <div class="actions"><button id="simpleStart" class="primary">Simple V1 시작</button><button id="simpleStop">Simple V1 중지</button><button id="simpleScan">실데이터 갱신</button></div>
     </div>
@@ -284,14 +284,16 @@ document.getElementById("paperScanBtn").onclick=async()=>{
 async function refreshSimple(){
   try{
     const s=await req("/api/trading/paper/simple-v1/status"),p=s.openPosition;
-    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:''));
+    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:'')+(s.timestampWarning?' · '+s.timestampWarning:''));
     document.getElementById("simpleStart").disabled=!!s.enabled;
     document.getElementById("simpleStop").disabled=!s.enabled;
     setText("simpleEquity",fmtUsd(s.paperEquity));setText("simplePnl",fmtUsd(s.totalPnl)+' / '+fmtUsd(s.realizedPnl));
     setText("simpleUnrealized",fmtUsd(s.unrealizedPnl));setText("simpleStats",s.completedTrades+' / '+(100*s.winRate).toFixed(1)+'%');
-    setText("simplePosition",p?p.symbol+' · 수량 '+Number(p.quantity).toFixed(4)+' · 진입 '+fmtUsd(p.entryFill)+' · 진입 후 고점 '+fmtUsd(p.highestPriceAfterEntry)+' · TRAIL '+(p.trailingActivated?'YES':'NO')+' · trailing stop '+fmtUsd(p.trailingStopPrice)+' · hard stop '+fmtUsd(p.stopPrice):s.pendingSignal?'다음 1분 시가 대기: '+s.pendingSignal.symbol+' · '+s.pendingSignal.signalTimestamp:'포지션 없음');
+    setText("simplePosition",p?p.symbol+' · 수량 '+Number(p.quantity).toFixed(4)+' · 진입 '+fmtUsd(p.entryFill)+' · 진입 후 고점 '+fmtUsd(p.highestPriceAfterEntry)+' · TRAIL '+(p.trailingActivated?'YES':'NO')+' · trailing stop '+fmtUsd(p.trailingStopPrice)+' · hard stop '+fmtUsd(p.stopPrice)+' · 데이터 '+(p.dataStatus||'UNKNOWN')+' · stale since '+(p.staleSince||'-')+' · stale 횟수 '+(p.staleObservationCount||0)+' · 진입 지연 '+(p.entryLatencySeconds??'-')+'초':s.pendingSignal?'다음 스캔 현재 시세 대기: '+s.pendingSignal.symbol+' · '+s.pendingSignal.signalTimestamp:'포지션 없음');
+    const observation=p?.lastObservation||s.lastPriceObservation,bar=s.candidates?.find(c=>c.current1m)?.current1m;
+    setText("simpleTimestamps",'source '+(observation?.sourceTimestamp||bar?.sourceTimestamp||'-')+' · timezone '+(observation?.parsedTimezone||bar?.parsedTimezone||'-')+' · bar '+(bar?.start||observation?.barTimestamp||'-')+' · scan '+(s.lastScan||'-')+(observation?.warning?' · '+observation.warning:''));
     document.getElementById("simpleCandidates").innerHTML=(s.candidates||[]).map(c=>'<div class="row"><b>'+esc(c.symbol)+'</b> · '+esc(fmtUsd(c.price))+' · 일중 '+Number(c.dayChangePct).toFixed(2)+'% · impulse '+(c.recentImpulsePct==null?'-':Number(c.recentImpulsePct).toFixed(2)+'%')+' · pullback '+(c.pullbackPct==null?'-':Number(c.pullbackPct).toFixed(2)+'%')+' · '+esc(c.rejectionReason||'TRIGGER')+'</div>').join('')||'후보 없음';
-    document.getElementById("simpleTrades").innerHTML=[...(s.recentTrades||[])].reverse().map(t=>'<div class="row"><b>'+esc(t.symbol)+'</b> · '+esc(t.exitTimestamp)+' · '+esc(t.exitReason)+' · '+esc(fmtUsd(t.pnlUsd))+' · '+Number(t.returnPct).toFixed(2)+'%</div>').join('')||'완료 거래 없음';
+    document.getElementById("simpleTrades").innerHTML=[...(s.recentTrades||[])].reverse().map(t=>'<div class="row"><b>'+esc(t.symbol)+'</b> · '+esc(t.exitTimestamp)+' · '+esc(t.exitReason)+' · '+esc(fmtUsd(t.pnlUsd))+' · '+Number(t.returnPct).toFixed(2)+'%'+(t.exitAffectedByDataStale?' · DATA_STALE 영향':'')+'</div>').join('')||'완료 거래 없음';
   }catch(e){setText("simpleState",e.message)}
 }
 async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refreshSimple()])}

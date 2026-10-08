@@ -1,109 +1,126 @@
 # SIMPLE_MOMENTUM_V1 forward paper protocol
 
-This engine starts OFF, uses only real Toss market data, and owns an independent
-USD cash account. It never calls `LiveAutoTrader`, `PaperBroker`, or order APIs.
-The existing V3 strategy engine and legacy paper endpoints are unchanged. This
-branch's legacy paper account supports manual orders; it has no separate V3
-automatic paper runner. The admin paper panel labels that account separately.
+V3's automatic `paper_trader.py` and Simple V1 coexist. They have independent
+controls, accounts, positions, logs and APIs. Simple never calls LiveAutoTrader,
+PaperBroker or broker orders. Both use real Toss data. New accounts start OFF.
+Existing persisted controls are restored; starting paper never changes LIVE ARM.
 
-## Market data and universe
+## Data and signals (unchanged)
 
-Every 60 seconds while enabled (or managing a position), use the existing US
-`MARKET_TRADING_VOLUME` realtime top-100 ranking. Filter price >= $5, day return
->= 5%, volume >= 100,000 shares and trading amount >= $1M. If amount is absent,
-record the explicitly labelled price*volume proxy. Sort survivors by day gain,
-then amount, then ticker. Fetch metadata in one request and 1m candles only for
-the first 15 suitable candidates, plus any open/pending instrument. Metadata
-indicating inactive/non-USD/non-common stock/warrant/right/preferred/exotic/ETN
-or leverage is excluded. Known leveraged/inverse ETFs are excluded. No account
-borrowing is simulated; entry notional must fit this paper account's cash.
+Scan every 60 seconds. Use Toss US realtime MARKET_TRADING_VOLUME top-100,
+filter price >= $5, day gain >= 5%, volume >=100k, dollar amount >=$1M, and
+shortlist 15 (configurable, maximum20). Metadata excludes inactive/non-USD,
+non-common shares/warrants/rights/preferred/exotic/ETN/leveraged instruments.
+Fetch candles only for shortlisted symbols. No historical data collection.
+The read-only transport permits five whitelisted market-data GETs, uses shared
+OAuth/rate limiter, and cannot express POST or arbitrary/order/account paths.
 
-The read-only transport allows exactly four market-data GET paths, applies the
-existing shared Toss rate limiter, and obtains tokens via the existing shared
-OAuth provider. No broker submit function is imported. Position processing has
-priority over ranking requests, including when rankings fail.
+Most recent10 consecutive completed regular-session1m bars:
+H = latest maximum high among first9 bars, excluding confirmation. At least
+one completed pullback bar must follow H before confirmation. Pullback low
+is the minimum of those pullback bars, excluding confirmation.
 
-## Entry
+- Impulse:100*(H/first bar open-1) >=2%.
+- Pullback:100*(1-confirmation close/H) in[1%,3%].
+- Confirmation:close>open AND close>previous high AND low>=pullback low.
+- One position/pending signal, $100 notional, fractional quantity, no borrowing,
+  pyramiding, averaging or shorting. Independent initial cash:$10,000.
+- A completed trade locks that symbol for its NY entry date. Cancellation does
+  not lock a symbol. The same completed trigger cannot be reused.
 
-Use the most recent 10 consecutive COMPLETED regular-session 1m bars. Source
-timestamps require explicit timezone offsets. `SIMPLE_TIMESTAMP_KIND=start`
-means [T,T+1m); `end` means exclusive [T-1m,T). Future and incomplete OHLCV never
-participate in the setup. An incomplete bar supplies only its known open.
+All timestamps require explicit timezone offsets. `start` means[T,T+1m);
+`end` means exclusive[T-1m,T). **No production semantics are inferred.**
+`SIMPLE_TIMESTAMP_KIND_CONFIRMED=false` is the runtime default and blocks NEW
+entries, with a status/UI warning. Confirm actual EC2 payload semantics before
+setting it true. Logs retain sourceTimestamp, sourceTimezone, parsedTimezone,
+bar start/end, declared timestamp kind and scanTimestamp.
 
-Let H be the maximum high in the first nine bars (exclude confirmation). Use
-the most recent bar attaining H. At least one subsequent completed pullback
-bar must precede confirmation. The pullback low is the minimum low of those
-subsequent bars, also excluding confirmation.
+## Forward execution (observable_scan_price_v2)
 
-- Impulse = 100*(H / first bar open - 1), at least 2%.
-- Pullback = 100*(1 - confirmation close / H), within [1%,3%].
-- Confirmation close > confirmation open AND close > previous bar high AND
-  confirmation low >= previously observed pullback low.
-- One pending signal, one position, no pyramid/averaging, long only. A completed
-  trade locks that symbol for its NY entry date. Cancelled signals do not lock it.
-- A trigger is journaled at its bar end. It cannot fill in the same scan that
-  creates it. A later scan must find the exact next minute's open; no skipping
-  to a later candle. Market must still be regular, before the exit cutoff, and
-  no more than 90 seconds may have elapsed from that expected open.
+A completed confirmation creates ENTRY_PENDING. It cannot fill in its creation
+scan. On the first subsequent scan with valid data, fill at the CURRENT observed
+price plus2bps. Never retrieve a previously completed candle's open for execution.
+Entry must be within90 seconds of trigger bar completion and before session
+cutoff. Too late cancels; missing fresh observation waits only until that limit.
 
-This is a minute-open paper simulation resolved on REST delivery, not a claim
-that a real order could have executed at an already elapsed opening tick.
-`entryTimestamp` is the simulated market minute; `entryObservedAt` and
-`entryDeliveryDelaySeconds` record when that fill became available. Old signals
-are never generated retroactively. Fill = real next-minute open * 1.0002;
-quantity = $100 / fill. Initial paper cash is $10,000.
+Prefer GET /api/v1/prices, matching symbol, positive finite lastPrice and aware
+source timestamp no more than15 seconds old (configurable), never future-dated.
+Receipt time and source time remain distinct; receiving an old quote does not
+make it fresh. If quotes fail, an explicitly declared currently FORMING candle's
+last closePrice may be used as a labelled snapshot. Its open/high/low are not
+execution prices. Historical completed candles are never fallback fills.
+Fallback logs the source failure and warning: its intrabar last-trade age cannot
+be independently verified. Unconfirmed candle semantics disallow this fallback.
 
-## Exit and candle ordering
+Entry records include triggerTimestamp (completion), triggerDecisionTimestamp,
+entryDecisionTimestamp (actual scan decision), firstObservedPriceTimestamp
+(receipt), entryTimestamp (decision), entryMarketPrice, entryFillPrice,
+entryLatencySeconds (decision minus trigger completion), and full source
+observation. `entryFill` is a compatibility alias for entryFillPrice.
 
-Hard stop = fill*0.988. Trail activates once a completed held candle's high
-reaches fill*1.008. Highest price resets at entry, never to the pre-entry high.
-Activated trail = highest post-entry price * 0.994.
+## Stops/exits and sampled excursions
 
-Opening gaps first: fill at the worse open if it is below an existing stop.
-Then scheduled exits use the open. On completed candles, hard stop precedes
-the previously established trail. Test old stops before raising/activating the
-trail using this candle's high. The new trail becomes an intrabar stop only
-next minute. If the current completed close already breaches it, exit at that
-close (never infer a favorable high-before-low path). All sells subtract 2bps.
-Stop-candle excursions include only its known open and exit; full held candles
-contribute their high/low. These excursion values are conservative OHLC bounds.
+Hard stop remains entryFill*0.988. Trail activates when an actual post-entry
+observation reaches entryFill*1.008. Track highest observed post-entry price;
+trail = that high*0.994. These are sampled observations, not historical candle
+high/low replays. Unobserved intrabar peaks and stops cannot be reconstructed
+as executable opportunities. This change can miss brief moves between scans;
+MFE/MAE explicitly describe sampled excursions, not complete market extremes.
 
-If the trail has never activated after 15 minutes, exit at that minute's first
-available open. A trade that already reached +0.8% can continue under its trail.
-Exit at 15:50 NY, or regular close minus ten minutes on early-close days, whichever
-is earlier. Toss's session calendar controls holidays and early closes.
+Each fresh observation checks hard stop first, existing trail second, session
+cutoff third, then time stop. Every sell fills at that SAME observable price
+minus2bps. A gap below a stop receives the worse current price, never the stop
+level. No favorable high-before-low or ideal retrospective intrabar ordering.
+Price exits' trigger time is first detection/receipt, not an unknown missed tick.
+Scheduled time/session exits use their known deadline as trigger time, but only
+fill when a valid observation arrives. Latency is decision minus trigger time.
 
-Missing position candles never produce invented stops. Flatten at a fresh real
-open if available, mark `dataGap=true` and `DATA_GAP_EXIT`, and exclude such trades
-from clean execution analyses. If real data is unavailable, retain the unresolved
-position and expose an error; session liquidation can be late during an outage.
-No new entry can coexist with that position. Stopping AUTO cancels pending entries
-but continues stop/session management. Manual scan while OFF does not enter.
+After15 minutes, exit if trail has never activated (+0.8% progress definition).
+Otherwise continue trailing. Session cutoff is15:50 NY or actual regular close
+minus10 minutes on early-close days, whichever is earlier. Toss calendar controls
+session eligibility. OFF cancels pending entries but continues open risk management.
 
-## Persistence and integration
+Exit record:exitTriggerTimestamp, exitObservationTimestamp (receipt),
+exitDecisionTimestamp, exitTimestamp, exitMarketPrice, exitFillPrice, exitReason,
+exitLatencySeconds, PnL/return, sampled MFE/MAE and actual hold duration.
+`exitFill` is a compatibility alias. No overnight entry is allowed; liquidation
+may be late during an outage and is not retroactively credited to a cutoff price.
 
-`SIMPLE_PAPER_DATA_DIR` defaults to
-`/var/lib/market-career-dashboard/paper_simple_v1`; otherwise
-`PERSISTENT_DATA_DIR/paper_simple_v1` supplies the base default. Give the service
-user write permission before deployment. No service/collector restart is done
-by this change. No real trading flags are changed.
+## DATA_STALE and recovery
 
-- `state.json`: atomic, fsynced checkpoint; independent cash, pending/open
-  position, peak/trail, last scan, counters, per-day locks and latest candidates.
-- `signals.jsonl`: durable trigger/control/entry/exit journal with revisions and
-  state snapshots. Restart repairs a committed event missing from checkpoint.
-- `trades.jsonl`: completed trade projection, unique trade IDs; recovered from
-  the journal if a crash occurred before this projection was written.
-- `decisions.jsonl`: each analyzed candidate with prices, ranking/liquidity,
-  current/previous OHLCV, impulse/pullback, confirmation flags and rejection.
-- `.writer.lock`: one writer per account directory. Corrupt/torn files fail
-  closed rather than reset balances or discard an existing position.
+Missing/invalid/stale/future/cached observations never fabricate a fill or change
+cash. Retain unresolved position, set dataStatus=DATA_STALE, staleSince and
+staleObservationCount, persist and log each failed observation. Ignore historical
+candles for fills/peaks even if they reveal a missed stop during the outage.
 
-Authenticated routes use the unchanged admin Bearer-session check:
-`GET /api/trading/paper/simple-v1/status`,
-`POST /api/trading/paper/simple-v1/auto` with JSON boolean `enabled`,
-`POST /api/trading/paper/simple-v1/scan`.
+On recovery use first fresh current observation, log DATA_RECOVERED, retain
+lastStaleSince, staleRecoveredAt, count and everDataStale. Resume current stop/
+trail/deadline checks. A recovered price above stop does not claim a missed
+historical stop; a recovered price below stop sells at that worse observed price.
+All affected exits set exitAffectedByDataStale=true for separate analysis.
+UI shows stale status/count, latency, source/bar/scan times and timestamp warnings.
 
-Parameters are documented in `.env.example`; there is no optimization or historical
-backtest. Production verification still requires genuine Toss credentials, live
-response timestamp conventions and writable persistence storage.
+Legacy pending signals lacking the new execution model/decision time are cancelled
+on restart. Existing legacy positions/cash/history remain intact and flagged
+legacyEntryFillSemantics; future management uses observable prices. Old trades
+are never rewritten as though their execution model had changed.
+
+## Persistence/API
+
+Simple directory:SIMPLE_PAPER_DATA_DIR or
+PERSISTENT_DATA_DIR/paper_simple_v1 (default
+/var/lib/market-career-dashboard/paper_simple_v1).
+V3 directory:PAPER_V3_DIR (default /var/lib/market-career-dashboard/paper_v3),
+with its existing root/data/paper_v3 fallback. Server rejects identical resolved
+account directories. Separate state.json, trades.jsonl and decisions.jsonl;
+Simple also uses signals.jsonl revision journal and exclusive .writer.lock.
+Atomic/fsynced checkpoint, crash-recoverable trade projections; corrupt/foreign
+state fails closed. No service/collector restart or LIVE flag change is performed.
+
+Existing authenticated admin APIs:
+- V3:GET /api/trading/paper/v3/status; POST /auto and /scan under that prefix.
+- Simple:GET /api/trading/paper/simple-v1/status; POST /auto and /scan under that prefix.
+
+Admin paper tab has independent V3 and Simple sections. Live order endpoints
+are untouched. Genuine response schemas/timezones/clock freshness, session
+calendar, writable storage and rate-limit capacity still require EC2 checks.

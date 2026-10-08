@@ -40,6 +40,11 @@ def valid_bars():
     return [candle(moment(9, 50)+timedelta(minutes=i), *p) for i, p in enumerate(prices)]
 
 
+def observation(price, at, symbol="ABC"):
+    return dict(symbol=symbol, price=price, observedAt=at.isoformat(), sourceTimestamp=at.isoformat(),
+                sourcePriceTimestamp=at.isoformat(), parsedTimezone=str(simple.NY), source="toss_current_price", warning=None)
+
+
 class SignalTests(unittest.TestCase):
     def evaluate(self, bars):
         return simple.analyze_setup(bars, candidate(), moment(), simple.Config(), session())
@@ -111,7 +116,7 @@ class ExecutionTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.path = Path(self.tmp.name)/"simple"
-        self.engine = simple.SimpleMomentumPaper(self.path, None)
+        self.engine = simple.SimpleMomentumPaper(self.path, None, simple.Config())
         self.addCleanup(lambda: self.engine.close() if not self.engine.file_lock.closed else None)
         self.engine.set_enabled(True)
 
@@ -121,41 +126,66 @@ class ExecutionTests(unittest.TestCase):
     def enter(self, at=None):
         at = at or moment()
         signal = simple.analyze_setup(valid_bars(), candidate(), moment(), self.engine.config, session())
-        signal.update(signalTimestamp=at.isoformat(), triggerBarTimestamp=(at-simple.MINUTE).isoformat(), sessionCutoff=session()["cutoff"])
-        self.engine._enter(signal, candle(at, complete=False), at)
+        signal.update(signalTimestamp=(at-timedelta(seconds=1)).isoformat(),
+                      triggerDecisionTimestamp=(at-timedelta(seconds=1)).isoformat(),
+                      triggerBarTimestamp=(at-simple.MINUTE).isoformat(), sessionCutoff=session()["cutoff"])
+        self.engine._enter(signal, observation(100, at), at)
         return self.engine.state["openPosition"]
+
+    def manage(self, price, at):
+        self.engine._manage(observation(price, at) if price is not None else None, at)
+
+    def exit(self):
+        self.engine._exit(observation(101, moment(10, 1)), moment(10, 1), "TEST", moment(10, 1))
 
     def test_06_trigger_does_not_fill_same_bar_or_same_snapshot(self):
         current = candle(moment(), o=103.4, complete=False)
-        self.engine.process_snapshot([candidate()], {"ABC": valid_bars()+[current]}, moment(), session())
+        self.engine.process_snapshot([candidate()], {"ABC": valid_bars()+[current]}, moment(), session(),
+                                     observations={"ABC": observation(103.9, moment())})
         self.assertIsNone(self.engine.state["openPosition"])
         self.assertIsNotNone(self.engine.state["pendingSignal"])
         self.assertEqual(self.engine.state["paperCash"], 10000)
+        self.engine.process_snapshot([], {}, moment(), session(), observations={"ABC": observation(103.9, moment())})
+        self.assertIsNone(self.engine.state["openPosition"])
 
-    def test_07_next_minute_open_enters_paper(self):
+    def test_07_first_observable_price_enters_not_past_next_minute_open(self):
         self.trigger()
-        current = candle(moment(), o=103.4, h=103.6, l=103.1, c=103.5)
-        self.engine.process_snapshot([], {"ABC": valid_bars()+[current]}, moment(10, 1), session())
+        current = candle(moment(), o=103.4, h=104.2, l=103.1, c=103.9)
+        self.engine.process_snapshot([], {"ABC": valid_bars()+[current]}, moment(10, 1), session(),
+                                     observations={"ABC": observation(104, moment(10, 1))})
         p = self.engine.state["openPosition"]
-        self.assertEqual(p["entryTimestamp"], moment().isoformat())
-        self.assertEqual(p["entryMarketPrice"], 103.4)
-        self.assertAlmostEqual(p["entryFill"], 103.4*1.0002)
+        self.assertEqual(p["entryTimestamp"], moment(10, 1).isoformat())
+        self.assertEqual(p["entryDecisionTimestamp"], moment(10, 1).isoformat())
+        self.assertEqual(p["firstObservedPriceTimestamp"], moment(10, 1).isoformat())
+        self.assertEqual(p["entryLatencySeconds"], 60)
+        self.assertEqual(p["entryMarketPrice"], 104)
+        self.assertAlmostEqual(p["entryFillPrice"], 104*1.0002)
         self.assertAlmostEqual(p["entryFill"]*p["quantity"], 100)
         self.assertEqual(self.engine.state["paperCash"], 9900)
 
-    def test_08_hard_stop_and_same_bar_high_cannot_save_loss(self):
+    def test_past_candle_open_without_current_observation_never_fills(self):
+        self.trigger()
+        self.engine.process_snapshot([], {"ABC": [candle(moment(), o=103.4)]}, moment(10, 1), session())
+        self.assertIsNone(self.engine.state["openPosition"])
+        self.assertIsNotNone(self.engine.state["pendingSignal"])
+
+    def test_08_gap_below_hard_stop_receives_worse_observable_price(self):
         p = self.enter()
         stop = p["stopPrice"]
-        self.engine._manage([candle(moment(), h=105, l=98, c=101)], moment(10, 1))
+        self.manage(97, moment(10, 1))
         t = self.engine.recent_trades[-1]
         self.assertEqual(t["exitReason"], "HARD_STOP")
-        self.assertAlmostEqual(t["exitFill"], stop*.9998)
+        self.assertEqual(t["exitMarketPrice"], 97)
+        self.assertAlmostEqual(t["exitFillPrice"], 97*.9998)
+        self.assertLess(t["exitFillPrice"], stop)
         self.assertFalse(t["trailingActivated"])
         self.assertLess(t["mfePct"], .01)
+        self.assertEqual(t["exitTriggerTimestamp"], t["exitObservationTimestamp"])
+        self.assertEqual(t["exitLatencySeconds"], 0)
 
     def activate(self):
         p = self.enter()
-        self.engine._manage([candle(moment(), h=100.9, l=99.9, c=100.8)], moment(10, 1))
+        self.manage(100.9, moment(10, 1))
         return p
 
     def test_09_profit_threshold_activates_trail(self):
@@ -166,42 +196,44 @@ class ExecutionTests(unittest.TestCase):
 
     def test_10_new_high_updates_trailing_high(self):
         p = self.activate()
-        self.engine._manage([candle(moment(10, 1), o=100.8, h=101.5, l=100.8, c=101.4)], moment(10, 2))
+        self.manage(101.5, moment(10, 2))
         self.assertEqual(p["highestPriceAfterEntry"], 101.5)
         self.assertAlmostEqual(p["trailingStopPrice"], 101.5*.994)
 
-    def test_11_six_tenths_drawdown_exits(self):
+    def test_11_six_tenths_drawdown_exits_at_observed_price(self):
         p = self.activate()
         stop = p["trailingStopPrice"]
-        self.engine._manage([candle(moment(10, 1), o=100.8, h=101.5, l=100.2, c=100.4)], moment(10, 2))
+        self.manage(100.2, moment(10, 2))
         self.assertIsNone(self.engine.state["openPosition"])
         self.assertEqual(self.engine.recent_trades[-1]["exitReason"], "TRAILING_STOP")
-        self.assertAlmostEqual(self.engine.recent_trades[-1]["exitMarketPrice"], stop)
+        self.assertEqual(self.engine.recent_trades[-1]["exitMarketPrice"], 100.2)
+        self.assertLess(100.2, stop)
 
     def test_12_no_trail_before_required_profit(self):
         p = self.enter()
-        self.engine._manage([candle(moment(), h=100.79, l=99.8, c=100.7)], moment(10, 1))
+        self.manage(100.79, moment(10, 1))
         self.assertFalse(p["trailingActivated"])
         self.assertIsNone(p["trailingStopPrice"])
 
-    def test_13_fifteen_minute_time_stop_without_progress(self):
+    def test_13_fifteen_minute_time_stop_executes_only_at_actual_observation(self):
         self.enter()
-        bars = [candle(moment()+timedelta(minutes=i)) for i in range(16)]
-        self.engine._manage(bars, moment(10, 16))
+        self.manage(100, moment(10, 16))
         t = self.engine.recent_trades[-1]
         self.assertEqual(t["exitReason"], "TIME_STOP")
-        self.assertEqual(t["exitTimestamp"], moment(10, 15).isoformat())
-        self.assertEqual(t["holdDurationSeconds"], 900)
+        self.assertEqual(t["exitTimestamp"], moment(10, 16).isoformat())
+        self.assertEqual(t["exitTriggerTimestamp"], moment(10, 15).isoformat())
+        self.assertEqual(t["exitLatencySeconds"], 60)
+        self.assertEqual(t["holdDurationSeconds"], 960)
 
     def test_14_forced_exit_at_1550(self):
         self.enter(moment(15, 49))
-        self.engine._manage([candle(moment(15, 49)), candle(moment(15, 50), complete=False)], moment(15, 50))
+        self.manage(100, moment(15, 50))
         self.assertEqual(self.engine.recent_trades[-1]["exitReason"], "SESSION_EXIT")
         self.assertEqual(self.engine.recent_trades[-1]["exitTimestamp"], moment(15, 50).isoformat())
 
     def test_15_completed_symbol_locked_for_day_other_symbol_not_locked(self):
         self.enter()
-        self.engine._exit(101, moment(10, 1), "TEST", moment(10, 1))
+        self.exit()
         self.trigger()
         self.assertEqual(self.engine.state["candidates"][0]["rejectionReason"], "COMPLETED_TODAY")
         self.engine.process_snapshot([candidate("XYZ")], {"XYZ": valid_bars()}, moment(), session())
@@ -212,7 +244,7 @@ class ExecutionTests(unittest.TestCase):
         self.engine._save()
         saved = copy.deepcopy(self.engine.state)
         self.engine.close()
-        self.engine = simple.SimpleMomentumPaper(self.path, None)
+        self.engine = simple.SimpleMomentumPaper(self.path, None, simple.Config())
         self.assertEqual(self.engine.state, saved)
 
     def test_17_v3_and_simple_accounts_are_isolated(self):
@@ -220,7 +252,7 @@ class ExecutionTests(unittest.TestCase):
         legacy = PaperBroker()
         before = legacy.snapshot()
         self.enter()
-        self.engine._exit(101, moment(10, 1), "TEST", moment(10, 1))
+        self.exit()
         self.assertEqual(legacy.snapshot(), before)
         simple_before = copy.deepcopy(self.engine.state)
         legacy.trade("ABC", "BUY", 1, 100)
@@ -228,52 +260,100 @@ class ExecutionTests(unittest.TestCase):
 
     def test_no_averaging_or_pyramiding_and_disabled_does_not_enter(self):
         self.enter()
-        self.trigger()
+        self.engine.process_snapshot([candidate()], {"ABC": valid_bars()}, moment(), session(), manage_positions=False)
         self.assertEqual(self.engine.state["candidates"][0]["rejectionReason"], "POSITION_OPEN")
         self.engine.set_enabled(False)
         self.assertIsNotNone(self.engine.state["openPosition"])
-        self.engine._manage([candle(moment(), h=101, l=98)], moment(10, 1))
+        self.manage(98, moment(10, 1))
         self.assertIsNone(self.engine.state["openPosition"])
 
-    def test_missing_or_delayed_next_minute_never_fills_later_open(self):
+    def test_delayed_entry_cancels_even_with_current_observation_and_past_open(self):
         self.trigger()
-        self.engine.process_snapshot([], {"ABC": [candle(moment(10, 2))]}, moment(10, 3), session())
+        now = moment()+timedelta(seconds=91)
+        self.engine.process_snapshot([], {"ABC": [candle(moment(), o=100)]}, now, session(),
+                                     observations={"ABC": observation(104, now)})
         self.assertIsNone(self.engine.state["openPosition"])
         self.assertIsNone(self.engine.state["pendingSignal"])
         self.assertEqual(self.engine.state["paperCash"], 10000)
+        event = json.loads((self.path/"signals.jsonl").read_text().splitlines()[-1])
+        self.assertEqual(event["reason"], "ENTRY_LATENCY_EXCEEDED")
 
     def test_future_position_candles_and_uncompleted_high_are_not_observed(self):
         p = self.enter()
-        self.engine._manage([candle(moment(), h=110, l=98), candle(moment(10, 1), h=120, l=97)], moment())
+        self.engine.process_snapshot([], {"ABC": [candle(moment(), h=110, l=98), candle(moment(10, 1), h=120, l=97)]},
+                                     moment(10, 1), session(), observations={"ABC": observation(100.1, moment(10, 1))})
         self.assertIsNotNone(self.engine.state["openPosition"])
         self.assertFalse(p["trailingActivated"])
-        self.assertEqual(p["highestPriceAfterEntry"], 100)
+        self.assertEqual(p["highestPriceAfterEntry"], 100.1)
 
-    def test_data_gap_exits_at_fresh_real_open_and_is_labelled(self):
+    def test_data_outage_never_fabricates_fill_and_recovery_is_flagged(self):
+        p = self.enter()
+        cash = self.engine.state["paperCash"]
+        self.manage(None, moment(10, 1))
+        self.manage(None, moment(10, 2))
+        self.assertEqual(p["dataStatus"], "DATA_STALE")
+        self.assertEqual(p["staleSince"], moment(10, 1).isoformat())
+        self.assertEqual(p["staleObservationCount"], 2)
+        self.assertEqual(self.engine.state["paperCash"], cash)
+        self.assertEqual(self.engine.recent_trades, [])
+        self.manage(97, moment(10, 3))
+        t = self.engine.recent_trades[-1]
+        self.assertTrue(t["exitAffectedByDataStale"])
+        self.assertEqual(t["lastStaleSince"], moment(10, 1).isoformat())
+        self.assertEqual(t["staleRecoveredAt"], moment(10, 3).isoformat())
+        self.assertEqual(t["exitMarketPrice"], 97)
+        self.assertEqual(t["exitTimestamp"], moment(10, 3).isoformat())
+
+    def test_recovery_above_stop_does_not_claim_missed_historical_stop(self):
+        p = self.enter()
+        self.manage(None, moment(10, 1))
+        self.engine.process_snapshot([], {"ABC": [candle(moment(), l=90)]}, moment(10, 2), session(),
+                                     observations={"ABC": observation(100.1, moment(10, 2))})
+        self.assertIs(self.engine.state["openPosition"], p)
+        self.assertEqual(p["dataStatus"], "LIVE")
+        self.assertTrue(p["everDataStale"])
+        self.assertEqual(p["lowestPriceAfterEntry"], 100)
+
+    def test_stale_state_survives_restart_and_cached_receipt_cannot_recover_it(self):
         self.enter()
-        self.engine._manage([candle(moment(10, 2), o=99.5, h=100, l=99, c=99.8)], moment(10, 3))
-        trade = self.engine.recent_trades[-1]
-        self.assertTrue(trade["dataGap"])
-        self.assertEqual(trade["exitReason"], "DATA_GAP_EXIT")
-        self.assertEqual(trade["exitMarketPrice"], 99.5)
+        self.manage(None, moment(10, 1))
+        self.engine.close()
+        self.engine = simple.SimpleMomentumPaper(self.path, None, simple.Config())
+        p = self.engine.state["openPosition"]
+        self.assertEqual(p["dataStatus"], "DATA_STALE")
+        self.manage(100, moment(10, 2))
+        self.engine._manage(observation(97, moment(10, 2)), moment(10, 2)+timedelta(seconds=1))
+        self.assertIsNotNone(self.engine.state["openPosition"])
+        self.assertEqual(p["dataStatus"], "DATA_STALE")
+        self.assertEqual(p["staleObservationCount"], 2)
 
     def test_newly_activated_trail_does_not_assume_high_before_low(self):
         p = self.enter()
-        self.engine._manage([candle(moment(), h=101, l=99.5, c=100.8)], moment(10, 1))
+        self.engine.process_snapshot([], {"ABC": [candle(moment(), h=101, l=99.5, c=100.8)]}, moment(10, 1), session(),
+                                     observations={"ABC": observation(100.9, moment(10, 1))})
         self.assertIsNotNone(self.engine.state["openPosition"])
         self.assertTrue(p["trailingActivated"])
-        self.assertEqual(p["highestPriceAfterEntry"], 101)
+        self.assertEqual(p["highestPriceAfterEntry"], 100.9)
+
+    def test_stale_or_future_quote_is_not_a_fill(self):
+        self.enter()
+        for at in (moment(), moment(10, 3)):
+            self.engine._manage(observation(90, at), moment(10, 2))
+        self.assertIsNotNone(self.engine.state["openPosition"])
+        self.assertEqual(self.engine.state["openPosition"]["dataStatus"], "DATA_STALE")
 
     def test_protect_position_before_ranking_failure_and_limit_candle_requests(self):
         self.enter()
         class Feed:
-            def __init__(self):
-                self.calls = []
+            def __init__(feed):
+                feed.calls = []
             def session(feed, now, config):
                 return session()
-            def candles(feed, symbol):
+            def observation(feed, symbol, config):
                 feed.calls.append(symbol)
-                return [dict(timestamp=moment().isoformat(), openPrice=100, highPrice=101, lowPrice=98, closePrice=99, volume=100)]
+                return observation(97, moment(10, 1))
+            def candles(feed, symbol):
+                raise AssertionError("Position protection must not depend on candles")
             def candidates(feed, config):
                 self.assertIsNone(self.engine.state["openPosition"])
                 raise RuntimeError("synthetic ranking outage")
@@ -293,17 +373,35 @@ class ExecutionTests(unittest.TestCase):
         self.enter()
         with patch.object(self.engine, "_save", side_effect=OSError("simulated crash")):
             with self.assertRaises(OSError):
-                self.engine._exit(101, moment(10, 1), "TEST", moment(10, 1))
+                self.exit()
         self.engine.close()
-        self.engine = simple.SimpleMomentumPaper(self.path, None)
+        self.engine = simple.SimpleMomentumPaper(self.path, None, simple.Config())
         self.assertIsNone(self.engine.state["openPosition"])
         self.assertEqual(self.engine.state["completedTrades"], 1)
         self.assertEqual(len(self.engine.recent_trades), 1)
         cash = self.engine.state["paperCash"]
         self.engine.close()
-        self.engine = simple.SimpleMomentumPaper(self.path, None)
+        self.engine = simple.SimpleMomentumPaper(self.path, None, simple.Config())
         self.assertEqual(self.engine.state["paperCash"], cash)
         self.assertEqual(len(self.engine.recent_trades), 1)
+
+    def test_legacy_pending_signal_cancelled_without_rewriting_account(self):
+        self.trigger()
+        self.engine.state["pendingSignal"].pop("triggerDecisionTimestamp")
+        self.engine.state["pendingSignal"].pop("executionModel")
+        self.engine._save()
+        cash = self.engine.state["paperCash"]
+        self.engine.close()
+        self.engine = simple.SimpleMomentumPaper(self.path, None, simple.Config())
+        self.assertIsNone(self.engine.state["pendingSignal"])
+        self.assertEqual(self.engine.state["paperCash"], cash)
+
+    def test_unconfirmed_timestamp_kind_disables_entry_loudly(self):
+        self.engine.config = simple.Config(timestamp_kind_confirmed=False)
+        result = self.trigger()
+        self.assertIn("UNCONFIRMED", result["timestampWarning"])
+        self.assertEqual(result["candidates"][0]["rejectionReason"], "TIMESTAMP_KIND_UNCONFIRMED")
+        self.assertIsNone(result["pendingSignal"])
 
     def test_foreign_v3_journal_is_not_imported_or_overwritten(self):
         other = Path(self.tmp.name)/"v3"
@@ -318,6 +416,71 @@ class ExecutionTests(unittest.TestCase):
 
 
 class DataSafetyTests(unittest.TestCase):
+    def observed(self, payload, at=None, config=None):
+        at = at or moment(10, 1)
+        client = simple.ReadOnlyTossMarketData(lambda force=False: "synthetic-token")
+        class FrozenTime(datetime):
+            @staticmethod
+            def now(zone):
+                return at
+        with patch.object(simple, "datetime", FrozenTime), patch.object(client, "get", side_effect=payload):
+            return client.observation("ABC", config or simple.Config())
+
+    def test_current_quote_is_observable_and_source_age_is_validated(self):
+        at = moment(10, 1)
+        row = dict(symbol="ABC", lastPrice=104, timestamp=(at-timedelta(seconds=2)).isoformat())
+        observed = self.observed([[row]])
+        self.assertEqual(observed["price"], 104)
+        self.assertEqual(observed["observedAt"], at.isoformat())
+        self.assertEqual(observed["sourcePriceTimestamp"], row["timestamp"])
+        self.assertEqual(observed["source"], "toss_current_price")
+
+    def test_90_second_old_quote_or_future_quote_never_becomes_fresh_on_receipt(self):
+        for source in (moment(10, 1)-timedelta(seconds=90), moment(10, 2)):
+            row = dict(symbol="ABC", lastPrice=104, timestamp=source.isoformat())
+            with self.assertRaisesRegex(RuntimeError, "No current market observation"):
+                self.observed([[row], {"candles": []}])
+
+    def test_forming_fallback_uses_current_last_price_never_historical_open(self):
+        at = moment(10, 1)+timedelta(seconds=5)
+        historical = dict(timestamp=moment().isoformat(), openPrice=90, highPrice=101,
+                          lowPrice=90, closePrice=100, volume=100)
+        current = dict(timestamp=moment(10, 1).isoformat(), openPrice=100, closePrice=104)
+        observed = self.observed([[], {"candles": [historical, current]}], at)
+        self.assertEqual(observed["price"], 104)
+        self.assertEqual(observed["source"], "toss_forming_1m_last_price")
+        self.assertEqual(observed["barTimestamp"], moment(10, 1).isoformat())
+        self.assertIn("age unverified", observed["warning"])
+        with self.assertRaisesRegex(RuntimeError, "No current market observation"):
+            self.observed([[], {"candles": [historical]}], at)
+        with self.assertRaisesRegex(RuntimeError, "No current market observation"):
+            self.observed([[], {"candles": [dict(timestamp=moment(10, 1).isoformat(), openPrice=100)]}], at)
+
+    def test_end_label_forming_fallback_is_explicit_exclusive_end(self):
+        current = dict(timestamp=moment(10, 2).isoformat(), openPrice=100, closePrice=104)
+        observed = self.observed([[], {"candles": [current]}], moment(10, 1)+timedelta(seconds=5),
+                                 simple.Config(timestamp_kind="end"))
+        self.assertEqual(observed["barTimestamp"], moment(10, 1).isoformat())
+        self.assertEqual(observed["price"], 104)
+
+    def test_naive_candle_labels_fail_and_source_labels_are_auditable(self):
+        row = dict(timestamp="2026-10-07T10:00:00", openPrice=100)
+        with self.assertRaisesRegex(ValueError, "explicit timezone"):
+            simple.normalize_candles([row], moment(), simple.Config())
+        row["timestamp"] = "2026-10-07T14:00:00+00:00"
+        bar = simple.normalize_candles([row], moment(), simple.Config())[0]
+        self.assertEqual(bar["sourceTimestamp"], row["timestamp"])
+        self.assertEqual(bar["sourceTimezone"], "UTC")
+        self.assertEqual(bar["parsedTimezone"], "America/New_York")
+        self.assertEqual(bar["start"], moment())
+        self.assertEqual(bar["scanTimestamp"], moment().isoformat())
+
+    def test_unconfirmed_timestamp_semantics_cannot_enable_forming_fallback(self):
+        with self.assertRaisesRegex(RuntimeError, "timestamp kind unconfirmed"):
+            self.observed([[]], config=simple.Config(timestamp_kind_confirmed=False))
+        with patch.dict(simple.os.environ, {}, clear=True):
+            self.assertFalse(simple.Config.from_env().timestamp_kind_confirmed)
+
     def test_18_read_only_transport_and_no_live_order_import(self):
         client = simple.ReadOnlyTossMarketData(lambda force=False: "synthetic-token")
         for path in ("/api/v1/orders", "/api/v1/orders/1", "/api/v1/accounts", "https://example.com"):

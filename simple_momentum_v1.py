@@ -1,15 +1,12 @@
 """Forward PAPER research with real Toss quotes; no broker/order capability.
 
-Only whitelisted market-data GETs exist. Completed candles define signals;
-pending signals resolve at the exact following minute's real open, on a later
-poll (maximum 90 seconds lateness). observedAt records REST delivery latency.
-No replay of old signals. Position candles may be replayed after a restart.
-
-Intrabar convention: opening gaps first; hard stop before existing trailing
-stop. A candle's high raises/activates the trail only AFTER testing old stops.
-The new trail applies next minute; if this candle CLOSE already breaches it,
-exit at that close. Never assume high occurred before low for a better fill.
-Excursions on ambiguous stop candles use only the known open and exit price.
+Only whitelisted market-data GETs exist. Completed candles define signals.
+On a subsequent scan, fill at the first fresh observed current price, not a
+historical open/stop. Quote receive/decision/source times remain distinct.
+When quotes are unavailable, only a current FORMING candle's last price can
+serve as a labelled observation; completed candle prices are never fills.
+Stops, trailing highs and excursions use post-entry observations, not replayed
+intrabar extremes. Missing fresh data is persistent DATA_STALE, never a fill.
 """
 from __future__ import annotations
 
@@ -32,6 +29,7 @@ from zoneinfo import ZoneInfo
 from toss_rate_limit import group_for_path, wait_for_slot
 
 NAME = "SIMPLE_MOMENTUM_V1"
+EXECUTION_MODEL = "observable_scan_price_v2"
 NY = ZoneInfo("America/New_York")
 MINUTE = timedelta(minutes=1)
 KNOWN_LEVERAGED = {"TQQQ", "SQQQ", "SOXL", "SOXS", "UPRO", "SPXU", "SSO", "SDS", "QLD", "QID", "TNA", "TZA"}
@@ -76,6 +74,8 @@ class Config:
     max_entry_delay_sec: float = 90
     force_exit_time: str = "15:50"
     timestamp_kind: str = "start"
+    timestamp_kind_confirmed: bool = True  # Direct Config is an explicit declaration.
+    max_quote_age_sec: float = 15
 
     def __post_init__(self):
         for name, value in vars(self).items():
@@ -87,7 +87,7 @@ class Config:
             raise ValueError("Invalid pullback range")
         if not all(0 < v < 100 for v in (self.hard_stop_pct, self.trail_activation_pct, self.trail_distance_pct)):
             raise ValueError("Invalid stop/trail percentages")
-        if min(self.order_usd, self.initial_cash, self.time_stop_minutes, self.max_entry_delay_sec) <= 0 or self.slippage_bps >= 100:
+        if min(self.order_usd, self.initial_cash, self.time_stop_minutes, self.max_entry_delay_sec, self.max_quote_age_sec) <= 0 or self.slippage_bps >= 100:
             raise ValueError("Invalid paper cash/time/slippage settings")
         if self.timestamp_kind not in ("start", "end"):
             raise ValueError("SIMPLE_TIMESTAMP_KIND must be start or exclusive end")
@@ -108,12 +108,15 @@ class Config:
                      max_entry_delay_sec="MAX_ENTRY_DELAY_SEC", force_exit_time="FORCE_EXIT_TIME",
                      timestamp_kind="TIMESTAMP_KIND")
         defaults = cls()
-        return cls(**{k: type(getattr(defaults, k))(os.getenv("SIMPLE_"+v, str(getattr(defaults, k)))) for k, v in names.items()})
+        settings = {k: type(getattr(defaults, k))(os.getenv("SIMPLE_"+v, str(getattr(defaults, k)))) for k, v in names.items()}
+        settings["timestamp_kind_confirmed"] = os.getenv("SIMPLE_TIMESTAMP_KIND_CONFIRMED", "false").lower() == "true"
+        settings["max_quote_age_sec"] = number(os.getenv("SIMPLE_MAX_QUOTE_AGE_SEC", "15"))
+        return cls(**settings)
 
 
 class ReadOnlyTossMarketData:
     """Cannot express a POST, account operation, order endpoint or arbitrary URL."""
-    ALLOWED = frozenset({"/api/v1/rankings", "/api/v1/stocks", "/api/v1/candles", "/api/v1/market-calendar/US"})
+    ALLOWED = frozenset({"/api/v1/rankings", "/api/v1/stocks", "/api/v1/candles", "/api/v1/prices", "/api/v1/market-calendar/US"})
 
     def __init__(self, token_provider):
         self.token_provider = token_provider
@@ -223,9 +226,46 @@ class ReadOnlyTossMarketData:
             raise ValueError(f"Invalid Toss candle response for {symbol}")
         return rows
 
+    def observation(self, symbol, config):
+        """Fetch current price, with fresh source time, or a forming close.
+
+        An undated/stale quote is not certified by assigning a receipt time.
+        Forming-candle fallback explicitly records that last-trade age cannot
+        be established from its bar label. No historical OPEN is ever used.
+        """
+        failure = None
+        try:
+            rows = self.get("/api/v1/prices", {"symbols": symbol})
+            received = datetime.now(NY)
+            row = next((r for r in rows if str(r.get("symbol", "")).upper() == symbol), None) if isinstance(rows, list) else None
+            if not row:
+                raise ValueError("Current-price response missing requested symbol")
+            source = timestamp(row["timestamp"])
+            age = (received-source).total_seconds()
+            price = number(row["lastPrice"])
+            if price <= 0 or not 0 <= age <= config.max_quote_age_sec:
+                raise ValueError("Current quote source timestamp stale/future or price invalid")
+            return dict(symbol=symbol, price=price, observedAt=iso(received),
+                        sourceTimestamp=str(row["timestamp"]), sourcePriceTimestamp=iso(source),
+                        parsedTimezone=str(NY), source="toss_current_price", warning=None)
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError) as exc:
+            failure = str(exc)
+        if not config.timestamp_kind_confirmed:
+            raise RuntimeError(f"Current-price unavailable: {failure}; candle timestamp kind unconfirmed")
+        rows = self.candles(symbol)
+        received = datetime.now(NY)
+        bars = normalize_candles(rows, received, config)
+        current = next((b for b in reversed(bars) if b["start"] <= received < b["end"] and b.get("observablePrice") is not None), None)
+        if not current:
+            raise RuntimeError(f"No current market observation: {failure}; no forming candle last price")
+        return dict(symbol=symbol, price=current["observablePrice"], observedAt=iso(received),
+                    sourceTimestamp=current["sourceTimestamp"], sourcePriceTimestamp=None,
+                    parsedTimezone=str(NY), barTimestamp=iso(current["start"]), barEndTimestamp=iso(current["end"]),
+                    source="toss_forming_1m_last_price", warning="QUOTE_UNAVAILABLE; forming snapshot receipt time used; intrabar last-trade age unverified: "+failure)
+
 
 def normalize_candles(rows, now, config):
-    """Return completed OHLCV and open-only current bars, never future bars."""
+    """Completed features plus explicitly forming snapshots, never future bars."""
     out = {}
     for row in rows:
         start = timestamp(row["timestamp"])
@@ -238,12 +278,25 @@ def normalize_candles(rows, now, config):
         opening = number(row.get("openPrice", row.get("open")))
         if opening <= 0:
             raise ValueError("Invalid opening price")
-        bar = dict(start=start, end=start+MINUTE, open=opening, complete=start+MINUTE <= now)
+        bar = dict(start=start, end=start+MINUTE, open=opening, complete=start+MINUTE <= now,
+                   sourceTimestamp=str(row["timestamp"]), parsedTimezone=str(NY),
+                   sourceTimezone=str(datetime.fromisoformat(str(row["timestamp"]).replace("Z", "+00:00")).tzinfo),
+                   timestampKind=config.timestamp_kind, timestampKindConfirmed=config.timestamp_kind_confirmed,
+                   scanTimestamp=iso(now))
         if bar["complete"]:
             h, l, c, v = (number(row.get(a, row.get(b))) for a, b in (("highPrice", "high"), ("lowPrice", "low"), ("closePrice", "close"), ("volume", "volume")))
             if h < max(opening, c) or l > min(opening, c) or h < l or min(h, l, c) <= 0 or v < 0:
                 raise ValueError("Invalid completed OHLCV")
             bar.update(high=h, low=l, close=c, volume=v)
+        else:
+            # This lastPrice/close is observable NOW but is NOT a completed-bar
+            # feature. Do not use its high/low for a setup or paper excursion.
+            try:
+                last_price = number(row.get("closePrice", row.get("close")))
+                if last_price > 0:
+                    bar["observablePrice"] = last_price
+            except (ValueError, TypeError):
+                pass
         if start in out and out[start] != bar:
             raise ValueError("Conflicting candle timestamps")
         out[start] = bar
@@ -327,6 +380,14 @@ class SimpleMomentumPaper:
                 raise ValueError("Wrong paper state identity; refusing to reset it")
             self.recent_trades = []
             self._recover()
+            pending = self.state.get("pendingSignal")
+            if pending and (pending.get("executionModel") != EXECUTION_MODEL or not pending.get("triggerDecisionTimestamp")):
+                self.state["pendingSignal"] = None
+                self._commit("CANCEL", datetime.now(NY), reason="LEGACY_PENDING_EXECUTION_MODEL")
+            position = self.state.get("openPosition")
+            if position and position.get("executionModel") != EXECUTION_MODEL:
+                # Preserve legacy cash/entry history; future exits use observable prices.
+                position["legacyEntryFillSemantics"] = True
         except Exception:
             self.file_lock.close()
             raise
@@ -402,8 +463,41 @@ class SimpleMomentumPaper:
             self._commit("CONTROL", datetime.now(NY), enabled=enabled)
             return self.status()
 
-    def _enter(self, signal, bar, now):
-        fill = bar["open"]*(1+self.config.slippage_bps/10000)
+    def _valid_observation(self, observation, symbol, now):
+        """Receipt time alone cannot certify an old quote/current candle open."""
+        if not isinstance(observation, dict) or observation.get("symbol") != symbol:
+            return None
+        try:
+            received = timestamp(observation["observedAt"])
+            price = number(observation["price"])
+            if price <= 0 or not 0 <= (now-received).total_seconds() <= self.config.max_quote_age_sec:
+                return None
+            source = observation.get("source")
+            if source == "toss_current_price":
+                quoted = timestamp(observation["sourcePriceTimestamp"])
+                if not 0 <= (now-quoted).total_seconds() <= self.config.max_quote_age_sec or quoted > received:
+                    return None
+            elif source == "toss_forming_1m_last_price":
+                if not self.config.timestamp_kind_confirmed:
+                    return None
+                start, end = timestamp(observation["barTimestamp"]), timestamp(observation["barEndTimestamp"])
+                if not start <= received < end or end-start != MINUTE or now >= end:
+                    return None
+            else:
+                return None
+            return observation
+        except (KeyError, ValueError, TypeError):
+            return None
+
+    def _enter(self, signal, observation, now):
+        observation = self._valid_observation(observation, signal["symbol"], now)
+        trigger = timestamp(signal["signalTimestamp"])
+        decision = timestamp(signal["triggerDecisionTimestamp"])
+        if (not observation or timestamp(observation["observedAt"]) <= decision or
+                not 0 < (now-trigger).total_seconds() <= self.config.max_entry_delay_sec):
+            raise ValueError("Entry requires a fresh subsequent-scan observation within latency limit")
+        price = number(observation["price"])
+        fill = price*(1+self.config.slippage_bps/10000)
         quantity = self.config.order_usd/fill
         if self.state["paperCash"] < self.config.order_usd:
             raise ValueError("Insufficient independent paper cash")
@@ -411,27 +505,35 @@ class SimpleMomentumPaper:
         self.state["pendingSignal"] = None
         self.state["openPosition"] = dict(
             symbol=signal["symbol"], tradeId=f"{signal['symbol']}:{signal['signalTimestamp']}",
-            date=bar["start"].date().isoformat(), entrySignalTimestamp=signal["signalTimestamp"],
-            triggerBarTimestamp=signal["triggerBarTimestamp"], entryTimestamp=iso(bar["start"]),
-            entryObservedAt=iso(now), entryDeliveryDelaySeconds=(now-bar["start"]).total_seconds(),
-            entryMarketPrice=bar["open"], entryFill=fill, quantity=quantity,
-            dayChangeAtEntry=100*(bar["open"]/signal["previousClose"]-1) if signal.get("previousClose") else None,
+            date=now.date().isoformat(), entrySignalTimestamp=signal["signalTimestamp"],
+            triggerTimestamp=signal["signalTimestamp"], triggerDecisionTimestamp=signal["triggerDecisionTimestamp"],
+            triggerBarTimestamp=signal["triggerBarTimestamp"], entryTimestamp=iso(now),
+            entryDecisionTimestamp=iso(now), firstObservedPriceTimestamp=observation["observedAt"],
+            entryObservedAt=observation["observedAt"], entryLatencySeconds=(now-trigger).total_seconds(),
+            entryObservation=copy.deepcopy(observation), executionModel=EXECUTION_MODEL,
+            entryMarketPrice=price, entryFillPrice=fill, entryFill=fill, quantity=quantity,
+            dayChangeAtEntry=100*(price/signal["previousClose"]-1) if signal.get("previousClose") else None,
             dayChangeAtSignal=signal["dayChangePct"], previousClose=signal.get("previousClose"),
-            impulsePct=signal["recentImpulsePct"],
-            pullbackPct=signal["pullbackPct"], recentHigh=signal["recentHigh"], pullbackLow=signal["pullbackLow"],
+            impulsePct=signal["recentImpulsePct"], pullbackPct=signal["pullbackPct"],
+            recentHigh=signal["recentHigh"], pullbackLow=signal["pullbackLow"],
             stopPrice=fill*(1-self.config.hard_stop_pct/100),
             trailActivationPrice=fill*(1+self.config.trail_activation_pct/100),
             trailingActivated=False, trailingActivationTimestamp=None, trailingStopPrice=None,
-            highestPriceAfterEntry=bar["open"], lowestPriceAfterEntry=bar["open"],
-            lastMarketPrice=bar["open"], lastMarketTimestamp=iso(bar["start"]), lastCompletedMinute=None,
+            highestPriceAfterEntry=price, lowestPriceAfterEntry=price,
+            lastMarketPrice=price, lastMarketTimestamp=observation["observedAt"],
             sessionCutoff=signal["sessionCutoff"], timeStopMinutes=self.config.time_stop_minutes,
             trailDistancePct=self.config.trail_distance_pct, slippageBps=self.config.slippage_bps,
-            dataGap=False, configurationAtEntry=dict(vars(self.config)),
-            excursionMethod="complete held candles; stop candle open/exit only")
+            dataStatus="LIVE", staleSince=None, staleObservationCount=0, everDataStale=False,
+            configurationAtEntry=dict(vars(self.config)),
+            excursionMethod="sampled fresh post-entry observations; unobserved intrabar extremes excluded")
         self._commit("ENTRY", now, entry=copy.deepcopy(self.state["openPosition"]))
 
-    def _exit(self, price, execution_time, reason, now):
+    def _exit(self, observation, trigger_time, reason, now):
         p = self.state["openPosition"]
+        observation = self._valid_observation(observation, p["symbol"], now)
+        if not observation:
+            raise ValueError("Exit requires a fresh observable market price")
+        price = number(observation["price"])
         p["highestPriceAfterEntry"] = max(p["highestPriceAfterEntry"], price)
         p["lowestPriceAfterEntry"] = min(p["lowestPriceAfterEntry"], price)
         fill = price*(1-p["slippageBps"]/10000)
@@ -442,102 +544,109 @@ class SimpleMomentumPaper:
         self.state["wins"] += pnl > 0
         self.state["losses"] += pnl < 0
         self.state["completedByDate"].setdefault(p["date"], []).append(p["symbol"])
-        trade = dict(strategy=NAME, mode="paper", **p, exitTimestamp=iso(execution_time),
-                     exitObservedAt=iso(now), exitMarketPrice=price, exitFill=fill, exitReason=reason,
+        trade = dict(strategy=NAME, mode="paper", **p, exitTimestamp=iso(now),
+                     exitTriggerTimestamp=iso(trigger_time), exitObservationTimestamp=observation["observedAt"],
+                     exitDecisionTimestamp=iso(now), exitLatencySeconds=(now-trigger_time).total_seconds(),
+                     exitObservation=copy.deepcopy(observation), exitObservedAt=observation["observedAt"],
+                     exitMarketPrice=price, exitFillPrice=fill, exitFill=fill, exitReason=reason,
+                     exitAffectedByDataStale=p.get("everDataStale", False),
                      pnlUsd=pnl, returnPct=100*(fill/p["entryFill"]-1),
                      mfePct=max(0, 100*(p["highestPriceAfterEntry"]/p["entryFill"]-1)),
                      maePct=100*(p["lowestPriceAfterEntry"]/p["entryFill"]-1),
-                     holdDurationSeconds=(execution_time-timestamp(p["entryTimestamp"])).total_seconds(),
-                     exitTimeBasis="bar_end" if reason in ("HARD_STOP", "TRAILING_STOP", "TRAILING_CLOSE") else "minute_open")
+                     holdDurationSeconds=(now-timestamp(p["entryTimestamp"])).total_seconds(),
+                     exitTimeBasis="observable_scan_price")
         self.state["openPosition"] = None
         self._commit("EXIT", now, trade=trade)
         self._append("trades.jsonl", trade)
         self.recent_trades = (self.recent_trades+[trade])[-30:]
 
-    def _manage(self, bars, now):
+    def _manage(self, observation, now):
         p = self.state["openPosition"]
         if not p:
             return
+        observation = self._valid_observation(observation, p["symbol"], now)
+        if observation and timestamp(observation["observedAt"]) <= timestamp(p["lastMarketTimestamp"]):
+            observation = None  # A cached receipt is not a new execution opportunity.
+        if not observation:
+            p.update(dataStatus="DATA_STALE", everDataStale=True,
+                     staleSince=p.get("staleSince") or iso(now),
+                     staleObservationCount=p.get("staleObservationCount", 0)+1)
+            self.state["lastError"] = "DATA_STALE: no fresh price; position unresolved"
+            self._append("decisions.jsonl", dict(strategy=NAME, symbol=p["symbol"], timestamp=iso(now),
+                                               rejectionReason="DATA_STALE", staleSince=p["staleSince"],
+                                               staleObservationCount=p["staleObservationCount"]))
+            self._save()
+            return
+        if p.get("dataStatus") == "DATA_STALE":
+            p.update(lastStaleSince=p["staleSince"], staleSince=None, staleRecoveredAt=observation["observedAt"])
+            self._append("decisions.jsonl", dict(strategy=NAME, symbol=p["symbol"], timestamp=iso(now),
+                                               decision="DATA_RECOVERED", staleSince=p["lastStaleSince"],
+                                               observation=observation))
+        p["dataStatus"] = "LIVE"
+        price = number(observation["price"])
+        received = timestamp(observation["observedAt"])
+        p.update(lastMarketPrice=price, lastMarketTimestamp=observation["observedAt"],
+                 lastObservation=copy.deepcopy(observation),
+                 highestPriceAfterEntry=max(p["highestPriceAfterEntry"], price),
+                 lowestPriceAfterEntry=min(p["lowestPriceAfterEntry"], price))
         entry = timestamp(p["entryTimestamp"])
-        last = timestamp(p["lastCompletedMinute"]) if p["lastCompletedMinute"] else entry-MINUTE
-        expected = last+MINUTE
-        relevant = [b for b in bars if expected <= b["start"] <= now]
-        for bar in relevant:
-            if bar["start"] != expected:
-                # Never invent stops inside missing candles. Flatten at a fresh
-                # observed open and label incomplete excursions explicitly.
-                p["dataGap"] = True
-                fresh = [b for b in relevant if 0 <= (now-b["start"]).total_seconds() <= self.config.max_entry_delay_sec]
-                if fresh:
-                    b = fresh[-1]
-                    self._exit(b["open"], b["start"], "DATA_GAP_EXIT", now)
-                else:
-                    self.state["lastError"] = "OPEN_POSITION_DATA_GAP_NO_FRESH_FILL"
-                return
-            opening = bar["open"]
-            p["highestPriceAfterEntry"] = max(p["highestPriceAfterEntry"], opening)
-            p["lowestPriceAfterEntry"] = min(p["lowestPriceAfterEntry"], opening)
-            p["lastMarketPrice"], p["lastMarketTimestamp"] = opening, iso(bar["start"])
-            old_trail = p["trailingStopPrice"] if p["trailingActivated"] else None
-            reason = ("HARD_STOP_GAP" if opening <= p["stopPrice"] else
-                      "TRAILING_STOP_GAP" if old_trail is not None and opening <= old_trail else
-                      "SESSION_EXIT" if bar["start"] >= timestamp(p["sessionCutoff"]) else
-                      "TIME_STOP" if bar["start"] >= entry+timedelta(minutes=p["timeStopMinutes"]) and not p["trailingActivated"] else None)
-            if reason:
-                self._exit(opening, bar["start"], reason, now)
-                return
-            if not bar["complete"] or bar["end"] > now:
-                return
-            stop = (p["stopPrice"] if bar["low"] <= p["stopPrice"] else
-                    old_trail if old_trail is not None and bar["low"] <= old_trail else None)
-            if stop is not None:
-                p["lowestPriceAfterEntry"] = min(p["lowestPriceAfterEntry"], stop)
-                self._exit(stop, bar["end"], "HARD_STOP" if stop == p["stopPrice"] else "TRAILING_STOP", now)
-                return
-            p["highestPriceAfterEntry"] = max(p["highestPriceAfterEntry"], bar["high"])
-            p["lowestPriceAfterEntry"] = min(p["lowestPriceAfterEntry"], bar["low"])
-            p["lastMarketPrice"], p["lastMarketTimestamp"] = bar["close"], iso(bar["end"])
-            if not p["trailingActivated"] and bar["high"] >= p["trailActivationPrice"]:
-                p["trailingActivated"] = True
-                p["trailingActivationTimestamp"] = iso(bar["end"])
-            if p["trailingActivated"]:
-                p["trailingStopPrice"] = p["highestPriceAfterEntry"]*(1-p["trailDistancePct"]/100)
-                if bar["close"] <= p["trailingStopPrice"]:
-                    self._exit(bar["close"], bar["end"], "TRAILING_CLOSE", now)
-                    return
-            p["lastCompletedMinute"] = iso(bar["start"])
-            expected += MINUTE
-        if now >= timestamp(p["sessionCutoff"]) and self.state["openPosition"]:
-            self.state["lastError"] = "SESSION_EXIT_WAITING_FOR_REAL_OPEN"
+        cutoff = timestamp(p["sessionCutoff"])
+        time_stop = entry+timedelta(minutes=p["timeStopMinutes"])
+        old_trail = p["trailingStopPrice"] if p["trailingActivated"] else None
+        # Hard stop wins. All exits use the SAME current observation; never a
+        # historical level that improves a gap fill. Intrabar ordering unknown.
+        reason = ("HARD_STOP" if price <= p["stopPrice"] else
+                  "TRAILING_STOP" if old_trail is not None and price <= old_trail else
+                  "SESSION_EXIT" if now >= cutoff else
+                  "TIME_STOP" if now >= time_stop and not p["trailingActivated"] else None)
+        if reason:
+            trigger = cutoff if reason == "SESSION_EXIT" else time_stop if reason == "TIME_STOP" else received
+            self._exit(observation, trigger, reason, now)
+            return
+        if not p["trailingActivated"] and price >= p["trailActivationPrice"]:
+            p.update(trailingActivated=True, trailingActivationTimestamp=observation["observedAt"])
+        if p["trailingActivated"]:
+            p["trailingStopPrice"] = p["highestPriceAfterEntry"]*(1-p["trailDistancePct"]/100)
+        self._save()
 
-    def process_snapshot(self, candidates, bars_by_symbol, now, session):
-        """Deterministic core. Only scan() obtains real production market data."""
+    def process_snapshot(self, candidates, bars_by_symbol, now, session, observations=None, manage_positions=True):
+        """Only explicit fresh observations execute; candle opens cannot fill."""
+        observations = observations or {}
         with self.lock:
             self.state.update(lastScan=iso(now), session=session, candidates=[], lastError=None)
-            position = self.state["openPosition"]
-            if position:
-                self._manage(bars_by_symbol.get(position["symbol"], []), now)
-            pending = self.state["pendingSignal"]
-            if pending:
-                expected = timestamp(pending["signalTimestamp"])
-                bar = next((b for b in bars_by_symbol.get(pending["symbol"], []) if b["start"] == expected), None)
-                valid = (self.state["enabled"] and session.get("status") == "REGULAR"
-                         and expected.date() == now.date() and expected < timestamp(pending["sessionCutoff"])
-                         and 0 <= (now-expected).total_seconds() <= self.config.max_entry_delay_sec)
-                if bar and valid and not self.state["openPosition"]:
-                    self._enter(pending, bar, now)
-                    self._manage(bars_by_symbol.get(pending["symbol"], []), now)
-                elif not valid or now >= expected+timedelta(seconds=self.config.max_entry_delay_sec):
-                    self.state["pendingSignal"] = None
-                    reason = ("PAPER_DISABLED" if not self.state["enabled"] else
-                              "SESSION_NO_LONGER_REGULAR" if session.get("status") != "REGULAR" else
-                              "NEXT_OPEN_AFTER_CUTOFF" if expected >= timestamp(pending["sessionCutoff"]) else
-                              "MISSING_OR_STALE_NEXT_MINUTE")
-                    self._commit("CANCEL", now, reason=reason, symbol=pending["symbol"])
+            warning = None if self.config.timestamp_kind_confirmed else "TIMESTAMP_KIND_UNCONFIRMED: entry disabled; verify actual Toss labels"
+            self.state["timestampWarning"] = warning
+            if manage_positions:
+                for symbol, item in observations.items():
+                    if self._valid_observation(item, symbol, now):
+                        self.state["lastPriceObservation"] = copy.deepcopy(item)
+                position = self.state["openPosition"]
+                if position:
+                    self._manage(observations.get(position["symbol"]), now)
+                pending = self.state["pendingSignal"]
+                if pending:
+                    trigger = timestamp(pending["signalTimestamp"])
+                    valid = (self.state["enabled"] and self.config.timestamp_kind_confirmed and session.get("status") == "REGULAR"
+                             and trigger.date() == now.date() and now < timestamp(pending["sessionCutoff"])
+                             and 0 <= (now-trigger).total_seconds() <= self.config.max_entry_delay_sec)
+                    observation = self._valid_observation(observations.get(pending["symbol"]), pending["symbol"], now)
+                    if valid and observation and timestamp(observation["observedAt"]) > timestamp(pending["triggerDecisionTimestamp"]) and not self.state["openPosition"]:
+                        self._enter(pending, observation, now)
+                    elif not valid:
+                        self.state["pendingSignal"] = None
+                        reason = ("PAPER_DISABLED" if not self.state["enabled"] else
+                                  "TIMESTAMP_KIND_UNCONFIRMED" if not self.config.timestamp_kind_confirmed else
+                                  "SESSION_NO_LONGER_REGULAR" if session.get("status") != "REGULAR" else
+                                  "SESSION_CUTOFF" if now >= timestamp(pending["sessionCutoff"]) else
+                                  "ENTRY_LATENCY_EXCEEDED")
+                        self._commit("CANCEL", now, reason=reason, symbol=pending["symbol"])
+                    else:
+                        self.state["lastError"] = "ENTRY_PENDING: no fresh subsequent-scan observation"
             for candidate in candidates[:self.config.max_candidates]:
                 symbol = candidate["symbol"]
                 decision = analyze_setup(bars_by_symbol.get(symbol, []), candidate, now, self.config, session)
-                reason = ("SESSION_NOT_REGULAR" if session.get("status") != "REGULAR" else
+                reason = ("TIMESTAMP_KIND_UNCONFIRMED" if warning else
+                          "SESSION_NOT_REGULAR" if session.get("status") != "REGULAR" else
                           "SESSION_CUTOFF" if now >= timestamp(session["cutoff"]) else
                           "COMPLETED_TODAY" if symbol in self.state["completedByDate"].get(now.date().isoformat(), []) else
                           "POSITION_OPEN" if self.state["openPosition"] else
@@ -551,11 +660,14 @@ class SimpleMomentumPaper:
                 self.state["candidates"].append(decision)
                 if reason is None:
                     self.state["seenTriggers"][symbol] = decision["signalTimestamp"]
-                    self.state["pendingSignal"] = dict(decision, sessionCutoff=session["cutoff"])
+                    self.state["pendingSignal"] = dict(decision, sessionCutoff=session["cutoff"],
+                                                       triggerDecisionTimestamp=iso(now), executionModel=EXECUTION_MODEL)
                     self.state["currentCandidate"] = decision
                     self._commit("TRIGGER", now, signal=decision)
             if not self.state["pendingSignal"]:
                 self.state["currentCandidate"] = self.state["candidates"][0] if self.state["candidates"] else None
+            if self.state["openPosition"] and self.state["openPosition"].get("dataStatus") == "DATA_STALE":
+                self.state["lastError"] = "DATA_STALE: no fresh price; position unresolved"
             self._save()
             return self.status()
 
@@ -573,15 +685,15 @@ class SimpleMomentumPaper:
             # Open/pending instruments first, regardless of ranking availability.
             with self.lock:
                 symbols = [p["symbol"] for p in (self.state["openPosition"], self.state["pendingSignal"]) if p]
-            candidates, bars = [], {}
+            candidates, bars, observations = [], {}, {}
             for symbol in dict.fromkeys(symbols):
                 try:
-                    bars[symbol] = normalize_candles(self.market_data.candles(symbol), datetime.now(NY), self.config)
+                    observations[symbol] = self.market_data.observation(symbol, self.config)
                 except Exception as exc:
                     errors.append(f"{symbol}: {exc}")
             # Protect existing positions/resolve pending opens BEFORE spending
             # the scan budget on rankings and unrelated candidate requests.
-            self.process_snapshot([], bars, datetime.now(NY), session)
+            self.process_snapshot([], bars, datetime.now(NY), session, observations=observations)
             if session["status"] == "REGULAR":
                 try:
                     candidates = self.market_data.candidates(self.config)[:self.config.max_candidates]
@@ -598,7 +710,7 @@ class SimpleMomentumPaper:
                         except Exception as exc:
                             item["marketDataError"] = str(exc)
                             errors.append(f"{symbol}: {exc}")
-            result = self.process_snapshot(candidates, bars, datetime.now(NY), session)
+            result = self.process_snapshot(candidates, bars, datetime.now(NY), session, manage_positions=False)
             if errors:
                 with self.lock:
                     self.state["lastError"] = "; ".join(errors)
@@ -621,7 +733,10 @@ class SimpleMomentumPaper:
                           totalPnl=result["cumulativePnl"]+unrealized,
                           winRate=result["wins"]/result["completedTrades"] if result["completedTrades"] else 0,
                           recentTrades=copy.deepcopy(self.recent_trades), configuration=vars(self.config),
-                          persistencePath=str(self.directory), liveOrderCapability=False)
+                          persistencePath=str(self.directory), liveOrderCapability=False,
+                          executionModel=EXECUTION_MODEL,
+                          timestampWarning=None if self.config.timestamp_kind_confirmed else "TIMESTAMP_KIND_UNCONFIRMED: entry disabled",
+                          priceObservationWarning=(p or {}).get("entryObservation", {}).get("warning"))
             return result
 
     def start(self):

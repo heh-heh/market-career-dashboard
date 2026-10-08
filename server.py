@@ -457,8 +457,11 @@ def simple_paper():
     global SIMPLE_PAPER
     with SIMPLE_PAPER_LOCK:
         if SIMPLE_PAPER is None:
+            directory=persistent_directory()
+            if directory.resolve()==PAPER_V3.data_dir.resolve():
+                raise ValueError("V3 and Simple paper storage directories must be different")
             client=ReadOnlyTossMarketData(lambda force=False: toss_access_token(load_secrets(), force=force))
-            SIMPLE_PAPER=SimpleMomentumPaper(persistent_directory(),client)
+            SIMPLE_PAPER=SimpleMomentumPaper(directory,client)
             SIMPLE_PAPER.start()
         return SIMPLE_PAPER
 
