@@ -6,6 +6,7 @@ from trading import paper as paper_broker, strategy as trading_strategy
 from live_trader import LiveAutoTrader
 from toss_auth import get_token as shared_toss_token
 from toss_rate_limit import wait_for_slot, group_for_path
+from simple_momentum_v1 import SimpleMomentumPaper, ReadOnlyTossMarketData, persistent_directory
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -31,6 +32,8 @@ TRADING_STATE={
 }
 TRADING_LOCK=threading.Lock()
 LIVE_TRADER=LiveAutoTrader(ROOT)
+SIMPLE_PAPER=None
+SIMPLE_PAPER_LOCK=threading.Lock()
 STORAGE_CACHE={"at":0.0,"value":{}}
 STORAGE_CACHE_LOCK=threading.Lock()
 
@@ -448,6 +451,22 @@ def toss_quotes(cfg, items):
 
 LIVE_TRADER.set_token_provider(lambda force=False: toss_access_token(load_secrets(), force=force))
 
+def simple_paper():
+    """Lazy initialization keeps paper storage errors out of live startup."""
+    global SIMPLE_PAPER
+    with SIMPLE_PAPER_LOCK:
+        if SIMPLE_PAPER is None:
+            client=ReadOnlyTossMarketData(lambda force=False: toss_access_token(load_secrets(), force=force))
+            SIMPLE_PAPER=SimpleMomentumPaper(persistent_directory(),client)
+            SIMPLE_PAPER.start()
+        return SIMPLE_PAPER
+
+def restore_simple_paper():
+    try:
+        simple_paper()
+    except Exception as e:
+        print("Simple paper startup unavailable:",e,flush=True)
+
 def yahoo_quote(symbol):
     url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
     req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 market-career-dashboard/1.3"})
@@ -715,6 +734,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path=="/api/trading/paper/simple-v1/status":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**simple_paper().status()}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/trading/status":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -978,6 +1004,23 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path in {"/api/trading/paper/simple-v1/auto","/api/trading/paper/simple-v1/scan"}:
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                engine=simple_paper()
+                if path.endswith("/auto"):
+                    body=self.read_json()
+                    if not isinstance(body,dict) or not isinstance(body.get("enabled"),bool):
+                        raise ValueError("enabled must be a JSON boolean")
+                    result=engine.set_enabled(body["enabled"])
+                else:
+                    result=engine.scan()
+                self.send_json({"ok":True,**result}); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/trading/engine":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -1140,6 +1183,7 @@ if __name__=="__main__":
     threading.Thread(target=update_data,daemon=True).start()
     threading.Thread(target=start_realtime,daemon=True).start()
     LIVE_TRADER.start()
+    threading.Thread(target=restore_simple_paper,daemon=True,name="simple-paper-restore").start()
     print(f"API listening on {HOST}:{PORT}; update interval={INTERVAL}s",flush=True)
     if not ADMIN_PASSWORD:
         print("WARNING: ADMIN_PASSWORD is not set; /api/login is disabled.",flush=True)

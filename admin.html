@@ -25,7 +25,8 @@
   </div>
 
   <div class="tabs">
-    <button class="active" data-tab="trade">자동매매</button>
+    <button class="active" data-tab="trade">실거래</button>
+    <button data-tab="paper">모의매매</button>
     <button data-tab="server">서버 콘솔</button>
     <button data-tab="git">GitHub · Git</button>
   </div>
@@ -50,6 +51,30 @@
     </div>
     <div class="card"><div class="label">보유 종목</div><div id="holdings" class="signal">-</div></div>
     <div class="card"><div class="label">최근 주문</div><div id="orders" class="signal">-</div></div>
+  </section>
+
+  <section id="paper" class="panel">
+    <div class="card">
+      <div class="label">V3 · 기존 모의계좌</div>
+      <div class="mini">기존 모의 주문 계좌입니다. Simple V1과 잔고·포지션을 공유하지 않습니다.</div>
+      <div id="v3PaperState" class="signal">-</div>
+      <div class="actions"><button id="v3PaperRefresh">기존 계좌 갱신</button></div>
+    </div>
+    <div class="card">
+      <div class="label">Simple Momentum V1 · USD 모의매매</div>
+      <div id="simpleState" class="signal">-</div>
+      <div class="mini">중지는 신규 진입을 중단합니다. 보유 포지션의 손절·청산 관리는 계속됩니다.</div>
+      <div class="actions"><button id="simpleStart" class="primary">Simple V1 시작</button><button id="simpleStop">Simple V1 중지</button><button id="simpleScan">실데이터 갱신</button></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">Paper equity</div><div id="simpleEquity" class="value">-</div></div>
+      <div class="stat"><div class="label">누적 손익 / 실현</div><div id="simplePnl" class="value">-</div></div>
+      <div class="stat"><div class="label">미실현 손익</div><div id="simpleUnrealized" class="value">-</div></div>
+      <div class="stat"><div class="label">완료 거래 / 승률</div><div id="simpleStats" class="value">-</div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><div class="label">Simple V1 포지션 / 대기 신호</div><div id="simplePosition" class="signal">-</div></div>
+    <div class="card"><div class="label">현재 상위 후보</div><div id="simpleCandidates" class="signal">-</div></div>
+    <div class="card"><div class="label">최근 Simple V1 거래</div><div id="simpleTrades" class="signal">-</div></div>
   </section>
 
   <section id="server" class="panel">
@@ -121,6 +146,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));
   if(b.dataset.tab==="trade")refreshTrade();
+  if(b.dataset.tab==="paper")refreshPaper();
   if(b.dataset.tab==="git")refreshGit();
 });
 
@@ -167,6 +193,30 @@ document.getElementById("engineBtn").onclick=async()=>{try{await req("/api/tradi
 document.getElementById("autoBtn").onclick=async()=>{try{await req("/api/trading/live/auto",{method:"POST",body:JSON.stringify({enabled:!live.liveAutoEnabled})});await refreshTrade()}catch(e){alert(e.message)}};
 document.getElementById("scanBtn").onclick=async()=>{try{await req("/api/trading/live/scan",{method:"POST",body:"{}"});await refreshTrade()}catch(e){alert(e.message)}};
 
+async function refreshV3Paper(){
+  try{
+    const d=await req("/api/trading/paper/portfolio"),p=d.portfolio;
+    document.getElementById("v3PaperState").innerHTML='현금 '+esc(fmtKrw(p.cash))+' · 평가금 '+esc(fmtKrw(p.equity))+' · 손익 '+esc(fmtKrw(p.total_pnl))+'<br>'+(p.holdings||[]).map(h=>esc(h.symbol)+' × '+esc(h.quantity)).join('<br>');
+  }catch(e){setText("v3PaperState",e.message)}
+}
+async function refreshSimple(){
+  try{
+    const s=await req("/api/trading/paper/simple-v1/status"),p=s.openPosition;
+    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:''));
+    document.getElementById("simpleStart").disabled=!!s.enabled;
+    document.getElementById("simpleStop").disabled=!s.enabled;
+    setText("simpleEquity",fmtUsd(s.paperEquity));setText("simplePnl",fmtUsd(s.totalPnl)+' / '+fmtUsd(s.realizedPnl));
+    setText("simpleUnrealized",fmtUsd(s.unrealizedPnl));setText("simpleStats",s.completedTrades+' / '+(100*s.winRate).toFixed(1)+'%');
+    setText("simplePosition",p?p.symbol+' · 수량 '+Number(p.quantity).toFixed(4)+' · 진입 '+fmtUsd(p.entryFill)+' · 진입 후 고점 '+fmtUsd(p.highestPriceAfterEntry)+' · TRAIL '+(p.trailingActivated?'YES':'NO')+' · trailing stop '+fmtUsd(p.trailingStopPrice)+' · hard stop '+fmtUsd(p.stopPrice):s.pendingSignal?'다음 1분 시가 대기: '+s.pendingSignal.symbol+' · '+s.pendingSignal.signalTimestamp:'포지션 없음');
+    document.getElementById("simpleCandidates").innerHTML=(s.candidates||[]).map(c=>'<div class="row"><b>'+esc(c.symbol)+'</b> · '+esc(fmtUsd(c.price))+' · 일중 '+Number(c.dayChangePct).toFixed(2)+'% · impulse '+(c.recentImpulsePct==null?'-':Number(c.recentImpulsePct).toFixed(2)+'%')+' · pullback '+(c.pullbackPct==null?'-':Number(c.pullbackPct).toFixed(2)+'%')+' · '+esc(c.rejectionReason||'TRIGGER')+'</div>').join('')||'후보 없음';
+    document.getElementById("simpleTrades").innerHTML=[...(s.recentTrades||[])].reverse().map(t=>'<div class="row"><b>'+esc(t.symbol)+'</b> · '+esc(t.exitTimestamp)+' · '+esc(t.exitReason)+' · '+esc(fmtUsd(t.pnlUsd))+' · '+Number(t.returnPct).toFixed(2)+'%</div>').join('')||'완료 거래 없음';
+  }catch(e){setText("simpleState",e.message)}
+}
+async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refreshSimple()])}
+document.getElementById("v3PaperRefresh").onclick=refreshV3Paper;
+for(const [id,enabled] of [["simpleStart",true],["simpleStop",false]])document.getElementById(id).onclick=async()=>{try{await req("/api/trading/paper/simple-v1/auto",{method:"POST",body:JSON.stringify({enabled})});await refreshSimple()}catch(e){alert(e.message)}};
+document.getElementById("simpleScan").onclick=async()=>{const b=document.getElementById("simpleScan");b.disabled=true;try{await req("/api/trading/paper/simple-v1/scan",{method:"POST",body:"{}"});await refreshSimple()}catch(e){alert(e.message)}finally{b.disabled=false}};
+
 function appendConsole(v){const e=document.getElementById("consoleOut");e.textContent+=(e.textContent?"\n":"")+v;e.scrollTop=e.scrollHeight}
 async function runConsole(cmd){
   cmd=String(cmd||document.getElementById("consoleIn").value||"").trim();if(!cmd)return;
@@ -200,6 +250,7 @@ document.querySelectorAll("[data-git]").forEach(b=>b.onclick=()=>gitAction(b.dat
 
 authGate();
 setInterval(()=>{if(!document.getElementById("app").classList.contains("hidden")&&document.getElementById("trade").classList.contains("active"))refreshTrade()},15000);
+setInterval(()=>{if(!document.getElementById("app").classList.contains("hidden")&&document.getElementById("paper").classList.contains("active"))refreshSimple()},15000);
 </script>
 </body>
 </html>
