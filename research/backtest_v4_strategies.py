@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import csv
 import gzip
+import hashlib
 import json
 import math
 import statistics as st
@@ -70,10 +71,57 @@ class Bar:
     ask: float | None = None
 
 
-def load_1m_data(path, timestamp_kind):
+def validate_data_manifest(path, symbols, timestamp_kind):
+    """Require externally reviewed, byte-bound provenance, not a boolean alone.
+
+    OHLCV cannot prove corporate-action history. The manifest records that
+    external verification; hashes ensure the reviewed inputs are actually read.
+    """
+    if path is None:
+        raise ValueError("--data-manifest is required; --confirm-price-adjustment alone is not verification")
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict) or manifest.get("version") != 1:
+        raise ValueError("Data manifest must have version 1")
+    for field in ("verified_by", "verification_note"):
+        if not isinstance(manifest.get(field), str) or not manifest[field].strip():
+            raise ValueError(f"Manifest requires external review evidence: {field}")
+    files = manifest.get("symbols")
+    if not isinstance(files, dict):
+        raise ValueError("Manifest requires symbols metadata")
+    bases = set()
+    for symbol in sorted(symbols):
+        meta = files.get(symbol)
+        if not isinstance(meta, dict):
+            raise ValueError(f"Manifest lacks required symbol {symbol}")
+        digest = meta.get("sha256", "")
+        if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+            raise ValueError(f"{symbol}: manifest requires SHA256 of the compressed CSV bytes")
+        if meta.get("timestamp_kind") != timestamp_kind:
+            raise ValueError(f"{symbol}: manifest timestamp_kind disagrees with CLI")
+        expected = "minute_start" if timestamp_kind == "start" else "exclusive_minute_end"
+        if meta.get("timestamp_semantics") != expected:
+            raise ValueError(f"{symbol}: timestamp_semantics must be {expected}; inclusive :59 labels are unsupported")
+        if "naive_timezone" not in meta or meta["naive_timezone"] not in (None, "America/New_York"):
+            raise ValueError(f"{symbol}: declare naive_timezone=null (aware rows only) or America/New_York")
+        if meta.get("split_consistency_verified") is not True:
+            raise ValueError(f"{symbol}: split/leveraged-ETF adjustment consistency is unverified")
+        if meta.get("point_in_time_eligibility_verified") is not True:
+            raise ValueError(f"{symbol}: historical $5/ADV20 eligibility versus as-traded prices/volume is unverified")
+        basis = meta.get("price_basis")
+        if basis not in ("split_adjusted_ohlcv", "unadjusted_split_free_ohlcv"):
+            raise ValueError(f"{symbol}: unknown/unverified price and volume adjustment basis")
+        bases.add(basis)
+    if len(bases) != 1:
+        raise ValueError("Mixed symbol/benchmark adjustment bases are forbidden")
+    return manifest
+
+
+def load_1m_data(path, timestamp_kind, *, expected_sha256=None, naive_timezone="America/New_York"):
     """Retain invalid/missing observations; never silently drop a bad RTH row."""
     days = defaultdict(dict)
     errors = defaultdict(dict)
+    untrusted_open = set()
+    before = path.stat()
     with gzip.open(path, "rt", encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"timestamp", "open", "high", "low", "close", "volume"}
@@ -83,17 +131,19 @@ def load_1m_data(path, timestamp_kind):
             try:
                 dt = datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
                 if dt.tzinfo is None:
+                    if naive_timezone is None:
+                        raise ValueError("manifest requires timezone-aware rows")
                     dt = dt.replace(tzinfo=NY)  # Same naive-time convention as V2.
                 dt = dt.astimezone(NY)
                 start = dt - MINUTE if timestamp_kind == "end" else dt
+                if start.second or start.microsecond:
+                    raise ValueError("timestamp must be an exact minute boundary; inclusive :59 end labels are unsupported")
             except (ValueError, TypeError) as exc:
-                raise ValueError(f"{path}:{line}: unparseable timestamp") from exc
+                raise ValueError(f"{path}:{line}: invalid timestamp semantics: {exc}") from exc
             if not time(9, 30) <= start.time() < time(16):
                 continue
             day = start.date().isoformat()
             try:
-                if start.second or start.microsecond:
-                    raise ValueError("non-minute timestamp")
                 o, h, l, c, v = (float(row[k]) for k in ("open", "high", "low", "close", "volume"))
                 if not all(math.isfinite(x) for x in (o, h, l, c, v)):
                     raise ValueError("nonfinite OHLCV")
@@ -108,8 +158,11 @@ def load_1m_data(path, timestamp_kind):
                     raise ValueError("invalid quote")
                 bar = Bar(start, start + MINUTE, o, h, l, c, v, bid, ask)
                 if start in days[day] and days[day][start] != bar:
+                    if days[day][start].o != bar.o:
+                        untrusted_open.add(start)
                     raise ValueError("conflicting duplicate")
-                days[day][start] = bar
+                if start not in untrusted_open:
+                    days[day][start] = bar
             except (ValueError, TypeError) as exc:
                 errors[day][start] = str(exc)
                 # A malformed later H/L/C cannot veto a valid next-minute open
@@ -117,15 +170,32 @@ def load_1m_data(path, timestamp_kind):
                 # observation; NaNs are unavailable fields, never feature input.
                 try:
                     opening_price = float(row["open"])
-                    if math.isfinite(opening_price) and opening_price > 0:
+                    if math.isfinite(opening_price) and opening_price > 0 and start not in untrusted_open:
                         old = days[day].get(start)
                         if old is None:
                             days[day][start] = Bar(start, start+MINUTE, opening_price,
                                                   math.nan, math.nan, math.nan, math.nan)
                         elif old.o != opening_price:
+                            untrusted_open.add(start)
                             days[day].pop(start, None)
+                    elif not math.isfinite(opening_price) or opening_price <= 0:
+                        untrusted_open.add(start)
+                        days[day].pop(start, None)
                 except (ValueError, TypeError):
-                    pass
+                    untrusted_open.add(start)
+                    days[day].pop(start, None)
+                if start in untrusted_open:
+                    days[day].pop(start, None)
+    if expected_sha256 is not None:
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024*1024), b""):
+                digest.update(chunk)
+        after = path.stat()
+        if (before.st_size, before.st_mtime_ns, before.st_ino) != (after.st_size, after.st_mtime_ns, after.st_ino):
+            raise ValueError(f"{path}: input changed while reading; collector was not interrupted")
+        if digest.hexdigest() != expected_sha256:
+            raise ValueError(f"{path}: SHA256 disagrees with externally verified manifest")
     return dict(days), dict(errors)
 
 
@@ -150,6 +220,18 @@ def exchange_sessions(first, last):
                 values.append(stamp.to_pydatetime().astimezone(NY))
             sessions[day] = tuple(values)
     return sessions
+
+
+def include_symbol_history(days, errors, evaluation_sessions):
+    """Keep existing symbol warmup even when reference coverage starts later.
+
+    Evaluation/fold dates remain the reference-derived dates, unchanged.
+    """
+    available = sorted(set(days) | set(errors))
+    first, last = next(iter(evaluation_sessions)), next(reversed(evaluation_sessions))
+    if available and available[0] < first:
+        return exchange_sessions(available[0], last)
+    return evaluation_sessions
 
 
 def build_5m_bars(rows, opening, closing, errors):
@@ -782,7 +864,11 @@ def metrics(trades):
         balance += value
         peak = max(peak, balance)
         drawdown = max(drawdown, peak-balance)
-    return dict(trades=len(values), unresolvedTrades=len(trades)-len(values), wins=len(wins),
+    unresolved = len(trades)-len(values)
+    return dict(trades=len(values), unresolvedTrades=unresolved,
+                performanceValid=unresolved == 0,
+                metricScope="RESOLVED_TRADES_ONLY" if unresolved else "ALL_RECORDED_TRADES",
+                wins=len(wins),
                 losses=len(losses), breakeven=len(values)-len(wins)-len(losses),
                 winRate=len(wins)/len(values) if values else None,
                 expectancyR=st.fmean(values) if values else None,
@@ -888,6 +974,7 @@ def parse_args():
     p.add_argument("--symbols", help="Comma-separated frozen LONG instruments; default: universe_v3.json subset")
     p.add_argument("--timestamp-kind", choices=("start", "end"), help="Required runtime confirmation of raw timestamp meaning")
     p.add_argument("--confirm-price-adjustment", action="store_true", help="Confirm OHLC price units/split adjustments are consistent")
+    p.add_argument("--data-manifest", type=Path, help="Required externally reviewed timestamp/adjustment provenance and per-file SHA256")
     return p.parse_args()
 
 
@@ -910,7 +997,14 @@ def main():
     missing = [s for s in sorted(required | set(symbols)) if not (args.data_dir/f"{s}.csv.gz").is_file()]
     if missing:
         raise ValueError(f"Missing required existing SYMBOL.csv.gz data: {', '.join(missing)} ({args.data_dir})")
-    raw_refs = {s: load_1m_data(args.data_dir/f"{s}.csv.gz", args.timestamp_kind) for s in required}
+    manifest = validate_data_manifest(args.data_manifest, required | set(symbols), args.timestamp_kind)
+
+    def load_verified(symbol):
+        meta = manifest["symbols"][symbol]
+        return load_1m_data(args.data_dir/f"{symbol}.csv.gz", args.timestamp_kind,
+                            expected_sha256=meta["sha256"], naive_timezone=meta["naive_timezone"])
+
+    raw_refs = {s: load_verified(s) for s in required}
     dates = sorted({d for days, errors in raw_refs.values() for d in set(days) | set(errors)})
     if not dates:
         raise ValueError("Required references contain no minute data")
@@ -918,9 +1012,17 @@ def main():
     references = {s: SymbolData(s, *raw_refs[s], sessions) for s in required}
     raw_refs.clear()
     trades, decisions, transitions, skipped_signals = [], [], [], []
+    coverage = {}
     for symbol in symbols:
-        raw = load_1m_data(args.data_dir/f"{symbol}.csv.gz", args.timestamp_kind)
-        data = SymbolData(symbol, *raw, sessions)
+        raw = load_verified(symbol)
+        symbol_sessions = include_symbol_history(*raw, sessions)
+        data = SymbolData(symbol, *raw, symbol_sessions)
+        available_dates = sorted(set(raw[0]) | set(raw[1]))
+        coverage[symbol] = dict(availableDataStart=available_dates[0] if available_dates else None,
+                               availableDataEnd=available_dates[-1] if available_dates else None,
+                               historyCalendarStart=next(iter(symbol_sessions)),
+                               evaluationStart=next(iter(sessions)),
+                               evaluationEnd=next(reversed(sessions)))
         benchmark_name, _ = benchmark_for_symbol(symbol)
         for day in sessions:
             f = data.features(day)
@@ -945,6 +1047,11 @@ def main():
         print(f"{symbol}: processed {len(sessions)} sessions", flush=True)
         data.features.cache_clear()
     result = dict(specification="strategy_spec_v4.md@c9e12ce", parameters=PARAMS,
+                  dataCoverage=coverage,
+                  dataVerification=dict(manifestPath=str(args.data_manifest),
+                                        verifiedBy=manifest["verified_by"],
+                                        verificationNote=manifest["verification_note"],
+                                        symbols={s: manifest["symbols"][s] for s in sorted(required | set(symbols))}),
                   selectedStrategies=strategies, selectedSymbols=symbols,
                   assumptions=dict(timestampKind=args.timestamp_kind, calendar="XNYS",
                                    priceAdjustmentConfirmed=True, slippageBpsPerSide=2,
@@ -973,6 +1080,8 @@ def main():
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(json_safe(result), ensure_ascii=False, indent=2, allow_nan=False)+"\n")
     print("strategy trades winRate expectancyR PF maxDD_R")
+    if not result["metrics"]["performanceValid"]:
+        print("INCOMPLETE PERFORMANCE: unresolved trades excluded; conditional metrics cannot validate a strategy")
     for name in strategies:
         m = metrics([t for t in trades if t["strategy"] == name])
         print(name, m["trades"], m["winRate"], m["expectancyR"], m["profitFactorR"], m["maxDrawdownR"])
