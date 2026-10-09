@@ -7,21 +7,23 @@ Existing persisted controls are restored; starting paper never changes LIVE ARM.
 
 ## Data and signals (unchanged)
 
-Scan every 60 seconds. Use Toss US realtime MARKET_TRADING_VOLUME top-100,
-filter price >= $5, day gain >= 5%, volume >=100k, dollar amount >=$1M, and
-shortlist 15 (configurable, maximum20). Metadata excludes inactive/non-USD,
+Scan every 60 seconds. Use Toss US realtime MARKET_TRADING_VOLUME top-100.
+The forward-paper default profile is intentionally more active: price >= $5,
+day gain >= 3%, volume >=50k, dollar amount >=$500k, and shortlist up to20.
+Metadata excludes inactive/non-USD,
 non-common shares/warrants/rights/preferred/exotic/ETN/leveraged instruments.
 Fetch candles only for shortlisted symbols. No historical data collection.
 The read-only transport permits five whitelisted market-data GETs, uses shared
 OAuth/rate limiter, and cannot express POST or arbitrary/order/account paths.
 
-Most recent10 consecutive completed regular-session1m bars:
+Most recent10 consecutive completed 1m bars from the CURRENT eligible session
+(DAY, PRE or REGULAR by default):
 H = latest maximum high among first9 bars, excluding confirmation. At least
 one completed pullback bar must follow H before confirmation. Pullback low
 is the minimum of those pullback bars, excluding confirmation.
 
-- Impulse:100*(H/first bar open-1) >=2%.
-- Pullback:100*(1-confirmation close/H) in[1%,3%].
+- Impulse:100*(H/first bar open-1) >=1%.
+- Pullback:100*(1-confirmation close/H) in[0.5%,4%].
 - Confirmation:close>open AND close>previous high AND low>=pullback low.
 - One position/pending signal, $100 notional, fractional quantity, no borrowing,
   pyramiding, averaging or shorting. Independent initial cash:$10,000.
@@ -40,8 +42,11 @@ bar start/end, declared timestamp kind and scanTimestamp.
 A completed confirmation creates ENTRY_PENDING. It cannot fill in its creation
 scan. On the first subsequent scan with valid data, fill at the CURRENT observed
 price plus2bps. Never retrieve a previously completed candle's open for execution.
-Entry must be within90 seconds of trigger bar completion and before session
-cutoff. Too late cancels; missing fresh observation waits only until that limit.
+Entry must be within90 seconds of trigger bar completion and before the active
+session cutoff. DAY, PRE and REGULAR are eligible by default. Extended sessions
+exit two minutes before their reported Toss session close by default; REGULAR
+keeps the 15:50 NY / early-close cutoff. Too late cancels; missing fresh
+observation waits only until that limit.
 
 Prefer GET /api/v1/prices, matching symbol, positive finite lastPrice and aware
 source timestamp no more than15 seconds old (configurable), never future-dated.
@@ -76,9 +81,11 @@ Scheduled time/session exits use their known deadline as trigger time, but only
 fill when a valid observation arrives. Latency is decision minus trigger time.
 
 After15 minutes, exit if trail has never activated (+0.8% progress definition).
-Otherwise continue trailing. Session cutoff is15:50 NY or actual regular close
-minus10 minutes on early-close days, whichever is earlier. Toss calendar controls
-session eligibility. OFF cancels pending entries but continues open risk management.
+Otherwise continue trailing. DAY/PRE positions use their Toss calendar window
+and an extended-session close buffer (default2 minutes); REGULAR cutoff is15:50
+NY or actual regular close minus10 minutes on early-close days, whichever is
+earlier. Toss calendar controls session eligibility. OFF cancels pending entries
+but continues open risk management.
 
 Exit record:exitTriggerTimestamp, exitObservationTimestamp (receipt),
 exitDecisionTimestamp, exitTimestamp, exitMarketPrice, exitFillPrice, exitReason,
