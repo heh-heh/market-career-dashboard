@@ -138,6 +138,17 @@ class ExecutionTests(unittest.TestCase):
     def exit(self):
         self.engine._exit(observation(101, moment(10, 1)), moment(10, 1), "TEST", moment(10, 1))
 
+    def test_day_and_pre_sessions_can_trigger_when_enabled(self):
+        for name in ("DAY", "PRE"):
+            with self.subTest(session=name):
+                s = session()
+                s["status"] = name
+                self.engine.state["pendingSignal"] = None
+                self.engine.state["seenTriggers"] = {}
+                result = self.engine.process_snapshot([candidate()], {"ABC": valid_bars()}, moment(), s)
+                self.assertIsNotNone(result["pendingSignal"])
+                self.assertEqual(result["pendingSignal"]["sessionName"], name)
+
     def test_06_trigger_does_not_fill_same_bar_or_same_snapshot(self):
         current = candle(moment(), o=103.4, complete=False)
         self.engine.process_snapshot([candidate()], {"ABC": valid_bars()+[current]}, moment(), session(),
@@ -501,21 +512,53 @@ class DataSafetyTests(unittest.TestCase):
         self.assertNotIn("live_trader", imports)
         self.assertNotIn("trading", imports)
 
-    def test_real_calendar_early_close_cutoff_and_missing_calendar_fail(self):
+    def test_real_calendar_extended_sessions_early_close_and_missing_calendar_fail(self):
         client = simple.ReadOnlyTossMarketData(lambda force=False: "unused")
-        today = dict(regularMarket=dict(startTime="2026-11-27T09:30:00-05:00", endTime="2026-11-27T13:00:00-05:00"))
+        today = dict(
+            dayMarket=dict(startTime="2026-11-27T04:00:00-05:00", endTime="2026-11-27T07:00:00-05:00"),
+            preMarket=dict(startTime="2026-11-27T07:00:00-05:00", endTime="2026-11-27T09:30:00-05:00"),
+            regularMarket=dict(startTime="2026-11-27T09:30:00-05:00", endTime="2026-11-27T13:00:00-05:00"))
+        config = simple.Config()
         with patch.object(client, "get", return_value={"today": today}):
-            s = client.session(datetime(2026, 11, 27, 12, tzinfo=simple.NY), simple.Config())
-        self.assertEqual(s["cutoff"], "2026-11-27T12:50:00-05:00")
+            day = client.session(datetime(2026, 11, 27, 5, tzinfo=simple.NY), config)
+        self.assertEqual(day["status"], "DAY")
+        self.assertEqual(day["cutoff"], "2026-11-27T06:58:00-05:00")
+        client.calendar_cache = None
+        with patch.object(client, "get", return_value={"today": today}):
+            pre = client.session(datetime(2026, 11, 27, 8, tzinfo=simple.NY), config)
+        self.assertEqual(pre["status"], "PRE")
+        self.assertEqual(pre["cutoff"], "2026-11-27T09:28:00-05:00")
+        client.calendar_cache = None
+        with patch.object(client, "get", return_value={"today": today}):
+            regular = client.session(datetime(2026, 11, 27, 12, tzinfo=simple.NY), config)
+        self.assertEqual(regular["status"], "REGULAR")
+        self.assertEqual(regular["cutoff"], "2026-11-27T12:50:00-05:00")
         with patch.object(client, "get", return_value={}):
+            client.calendar_cache = None
             with self.assertRaises(ValueError):
-                client.session(moment(), simple.Config())
+                client.session(moment(), config)
+
+    def test_active_defaults_and_entry_sessions(self):
+        config = simple.Config()
+        self.assertEqual(config.min_day_change_pct, 3)
+        self.assertEqual(config.min_volume, 50000)
+        self.assertEqual(config.min_amount_usd, 500000)
+        self.assertEqual(config.max_candidates, 20)
+        self.assertEqual(config.impulse_pct, 1)
+        self.assertEqual(config.pullback_min_pct, .5)
+        self.assertEqual(config.pullback_max_pct, 4)
+        self.assertEqual(config.entry_sessions, ("DAY", "PRE", "REGULAR"))
+        with patch.dict(simple.os.environ, {"SIMPLE_ENTRY_SESSIONS": "PRE,REGULAR"}, clear=True):
+            parsed = simple.Config.from_env()
+        self.assertEqual(parsed.entry_sessions, ("PRE", "REGULAR"))
+        with self.assertRaises(ValueError):
+            simple.Config(entry_sessions=("AFTER",))
 
     def test_ranking_excludes_bad_metadata_and_shortlists_only(self):
         symbols = ["GOOD", "CHEAP", "LOW", "TQQQ", "PREF", "ETN", "EUR", "INACTIVE"]
         rankings = [dict(symbol=s, rank=i+1, price=dict(lastPrice=10, changeRate=.06), tradingVolume=200000, tradingAmount=2000000) for i, s in enumerate(symbols)]
         rankings[1]["price"]["lastPrice"] = 2
-        rankings[2]["price"]["changeRate"] = .04
+        rankings[2]["price"]["changeRate"] = .02
         metadata = [dict(symbol=s, securityType="STOCK", isCommonShare=True, currency="USD", status="ACTIVE") for s in symbols]
         metadata[4]["isCommonShare"] = False
         metadata[5]["securityType"] = "ETN"
