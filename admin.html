@@ -285,7 +285,8 @@ document.getElementById("paperScanBtn").onclick=async()=>{
 async function refreshSimple(){
   try{
     const s=await req("/api/trading/paper/simple-v1/status"),p=s.openPosition;
-    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:'')+(s.timestampWarning?' · '+s.timestampWarning:''));
+    const cfg=s.configuration||{}, sessions=(cfg.entry_sessions||[]).join('/');
+    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 세션 '+(sessions||'-')+' · 기준 +'+Number(cfg.min_day_change_pct||0).toFixed(1)+'% / impulse '+Number(cfg.impulse_pct||0).toFixed(1)+'% / pullback '+Number(cfg.pullback_min_pct||0).toFixed(1)+'~'+Number(cfg.pullback_max_pct||0).toFixed(1)+'% · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:'')+(s.timestampWarning?' · '+s.timestampWarning:''));
     document.getElementById("simpleStart").disabled=!!s.enabled;
     document.getElementById("simpleStop").disabled=!s.enabled;
     setText("simpleEquity",fmtUsd(s.paperEquity));setText("simplePnl",fmtUsd(s.totalPnl)+' / '+fmtUsd(s.realizedPnl));
