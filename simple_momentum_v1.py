@@ -56,14 +56,14 @@ def number(value):
 @dataclass(frozen=True)
 class Config:
     min_price: float = 5
-    min_day_change_pct: float = 5
-    min_volume: float = 100000
-    min_amount_usd: float = 1000000
-    max_candidates: int = 15
+    min_day_change_pct: float = 3
+    min_volume: float = 50000
+    min_amount_usd: float = 500000
+    max_candidates: int = 20
     window_minutes: int = 10
-    impulse_pct: float = 2
-    pullback_min_pct: float = 1
-    pullback_max_pct: float = 3
+    impulse_pct: float = 1
+    pullback_min_pct: float = .5
+    pullback_max_pct: float = 4
     hard_stop_pct: float = 1.2
     trail_activation_pct: float = .8
     trail_distance_pct: float = .6
@@ -73,6 +73,8 @@ class Config:
     initial_cash: float = 10000
     max_entry_delay_sec: float = 90
     force_exit_time: str = "15:50"
+    entry_sessions: tuple[str, ...] = ("DAY", "PRE", "REGULAR")
+    extended_exit_buffer_minutes: int = 2
     timestamp_kind: str = "start"
     timestamp_kind_confirmed: bool = True  # Direct Config is an explicit declaration.
     max_quote_age_sec: float = 15
@@ -91,6 +93,11 @@ class Config:
             raise ValueError("Invalid paper cash/time/slippage settings")
         if self.timestamp_kind not in ("start", "end"):
             raise ValueError("SIMPLE_TIMESTAMP_KIND must be start or exclusive end")
+        allowed_sessions = {"DAY", "PRE", "REGULAR"}
+        if not self.entry_sessions or any(x not in allowed_sessions for x in self.entry_sessions):
+            raise ValueError("SIMPLE_ENTRY_SESSIONS must contain only DAY,PRE,REGULAR")
+        if not 0 <= self.extended_exit_buffer_minutes <= 10:
+            raise ValueError("Invalid extended-session exit buffer")
         cutoff = time.fromisoformat(self.force_exit_time)
         if not time(9, 30) < cutoff < time(16):
             raise ValueError("Simple forced exit must be inside the regular session")
@@ -106,9 +113,12 @@ class Config:
                      time_stop_minutes="TIME_STOP_MINUTES", order_usd="PAPER_ORDER_USD",
                      slippage_bps="SLIPPAGE_BPS", initial_cash="PAPER_INITIAL_CASH_USD",
                      max_entry_delay_sec="MAX_ENTRY_DELAY_SEC", force_exit_time="FORCE_EXIT_TIME",
+                     extended_exit_buffer_minutes="EXTENDED_EXIT_BUFFER_MINUTES",
                      timestamp_kind="TIMESTAMP_KIND")
         defaults = cls()
         settings = {k: type(getattr(defaults, k))(os.getenv("SIMPLE_"+v, str(getattr(defaults, k)))) for k, v in names.items()}
+        raw_sessions = os.getenv("SIMPLE_ENTRY_SESSIONS", "DAY,PRE,REGULAR")
+        settings["entry_sessions"] = tuple(dict.fromkeys(x.strip().upper() for x in raw_sessions.split(",") if x.strip()))
         settings["timestamp_kind_confirmed"] = os.getenv("SIMPLE_TIMESTAMP_KIND_CONFIRMED", "false").lower() == "true"
         settings["max_quote_age_sec"] = number(os.getenv("SIMPLE_MAX_QUOTE_AGE_SEC", "15"))
         return cls(**settings)
@@ -150,15 +160,29 @@ class ReadOnlyTossMarketData:
             if not isinstance(obj, dict) or "today" not in obj:
                 raise ValueError("Toss US calendar response missing today")
             self.calendar_cache = day, obj["today"]
-        regular = (self.calendar_cache[1] or {}).get("regularMarket")
-        if not regular:
-            return dict(status="CLOSED", date=day)
-        opening, closing = timestamp(regular["startTime"]), timestamp(regular["endTime"])
-        if opening.date().isoformat() != day or closing <= opening:
-            raise ValueError("Invalid Toss regular-session bounds")
-        cutoff = min(datetime.combine(opening.date(), time.fromisoformat(config.force_exit_time), NY), closing-timedelta(minutes=10))
-        return dict(status="REGULAR" if opening <= now < closing else "CLOSED",
-                    date=day, open=iso(opening), close=iso(closing), cutoff=iso(cutoff))
+
+        today = self.calendar_cache[1] or {}
+        windows = (("DAY", "dayMarket"), ("PRE", "preMarket"), ("REGULAR", "regularMarket"))
+        available = []
+        for status, key in windows:
+            window = today.get(key)
+            if not window:
+                continue
+            opening, closing = timestamp(window["startTime"]), timestamp(window["endTime"])
+            if closing <= opening:
+                raise ValueError(f"Invalid Toss {status} session bounds")
+            if status == "REGULAR":
+                regular_cutoff = datetime.combine(closing.date(), time.fromisoformat(config.force_exit_time), NY)
+                cutoff = min(regular_cutoff, closing-timedelta(minutes=10))
+            else:
+                cutoff = closing-timedelta(minutes=config.extended_exit_buffer_minutes)
+                if cutoff <= opening:
+                    cutoff = closing
+            item = dict(status=status, date=day, open=iso(opening), close=iso(closing), cutoff=iso(cutoff))
+            available.append(item)
+            if opening <= now < closing:
+                return item
+        return dict(status="CLOSED", date=day, windows=available)
 
     def candidates(self, config):
         obj = self.get("/api/v1/rankings", dict(type="MARKET_TRADING_VOLUME", marketCountry="US",
@@ -312,7 +336,7 @@ def analyze_setup(bars, candidate, now, config, session):
                     pullbackPct=None, pullbackLow=None, current1m=None, previous1m=None,
                     bullishBar=False, closeAbovePrevHigh=False, noNewLow=False,
                     reversalConfirmed=False, eligibleForEntry=False, rejectionReason=None)
-    completed = [b for b in bars if b["complete"] and b["end"] <= now and b["start"].date() == now.date()
+    completed = [b for b in bars if b["complete"] and b["end"] <= now
                  and session.get("open") and timestamp(session["open"]) <= b["start"] < timestamp(session["close"])]
     decision.update(current1m=candle_record(completed[-1]) if completed else None,
                     previous1m=candle_record(completed[-2]) if len(completed) > 1 else None)
@@ -505,7 +529,8 @@ class SimpleMomentumPaper:
         self.state["pendingSignal"] = None
         self.state["openPosition"] = dict(
             symbol=signal["symbol"], tradeId=f"{signal['symbol']}:{signal['signalTimestamp']}",
-            date=now.date().isoformat(), entrySignalTimestamp=signal["signalTimestamp"],
+            date=signal.get("sessionDate") or now.date().isoformat(),
+            entrySession=signal.get("sessionName"), entrySignalTimestamp=signal["signalTimestamp"],
             triggerTimestamp=signal["signalTimestamp"], triggerDecisionTimestamp=signal["triggerDecisionTimestamp"],
             triggerBarTimestamp=signal["triggerBarTimestamp"], entryTimestamp=iso(now),
             entryDecisionTimestamp=iso(now), firstObservedPriceTimestamp=observation["observedAt"],
@@ -626,8 +651,10 @@ class SimpleMomentumPaper:
                 pending = self.state["pendingSignal"]
                 if pending:
                     trigger = timestamp(pending["signalTimestamp"])
-                    valid = (self.state["enabled"] and self.config.timestamp_kind_confirmed and session.get("status") == "REGULAR"
-                             and trigger.date() == now.date() and now < timestamp(pending["sessionCutoff"])
+                    session_ok = session.get("status") in self.config.entry_sessions
+                    valid = (self.state["enabled"] and self.config.timestamp_kind_confirmed and session_ok
+                             and session.get("date") == pending.get("sessionDate")
+                             and now < timestamp(pending["sessionCutoff"])
                              and 0 <= (now-trigger).total_seconds() <= self.config.max_entry_delay_sec)
                     observation = self._valid_observation(observations.get(pending["symbol"]), pending["symbol"], now)
                     if valid and observation and timestamp(observation["observedAt"]) > timestamp(pending["triggerDecisionTimestamp"]) and not self.state["openPosition"]:
@@ -636,19 +663,22 @@ class SimpleMomentumPaper:
                         self.state["pendingSignal"] = None
                         reason = ("PAPER_DISABLED" if not self.state["enabled"] else
                                   "TIMESTAMP_KIND_UNCONFIRMED" if not self.config.timestamp_kind_confirmed else
-                                  "SESSION_NO_LONGER_REGULAR" if session.get("status") != "REGULAR" else
+                                  "SESSION_NOT_ELIGIBLE" if session.get("status") not in self.config.entry_sessions else
+                                  "SESSION_DATE_CHANGED" if session.get("date") != pending.get("sessionDate") else
                                   "SESSION_CUTOFF" if now >= timestamp(pending["sessionCutoff"]) else
                                   "ENTRY_LATENCY_EXCEEDED")
                         self._commit("CANCEL", now, reason=reason, symbol=pending["symbol"])
                     else:
                         self.state["lastError"] = "ENTRY_PENDING: no fresh subsequent-scan observation"
+            trade_date = str(session.get("date") or now.date().isoformat())
             for candidate in candidates[:self.config.max_candidates]:
                 symbol = candidate["symbol"]
                 decision = analyze_setup(bars_by_symbol.get(symbol, []), candidate, now, self.config, session)
+                decision.update(sessionName=session.get("status"), sessionDate=trade_date)
                 reason = ("TIMESTAMP_KIND_UNCONFIRMED" if warning else
-                          "SESSION_NOT_REGULAR" if session.get("status") != "REGULAR" else
+                          "SESSION_NOT_ELIGIBLE" if session.get("status") not in self.config.entry_sessions else
                           "SESSION_CUTOFF" if now >= timestamp(session["cutoff"]) else
-                          "COMPLETED_TODAY" if symbol in self.state["completedByDate"].get(now.date().isoformat(), []) else
+                          "COMPLETED_TODAY" if symbol in self.state["completedByDate"].get(trade_date, []) else
                           "POSITION_OPEN" if self.state["openPosition"] else
                           "ENTRY_PENDING" if self.state["pendingSignal"] else
                           "PAPER_DISABLED" if not self.state["enabled"] else
@@ -694,7 +724,7 @@ class SimpleMomentumPaper:
             # Protect existing positions/resolve pending opens BEFORE spending
             # the scan budget on rankings and unrelated candidate requests.
             self.process_snapshot([], bars, datetime.now(NY), session, observations=observations)
-            if session["status"] == "REGULAR":
+            if session.get("status") in self.config.entry_sessions:
                 try:
                     candidates = self.market_data.candidates(self.config)[:self.config.max_candidates]
                 except Exception as exc:
