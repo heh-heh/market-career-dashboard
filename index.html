@@ -845,8 +845,9 @@ async function loadV4ResearchMonitor(){
    ).join("");
   }
 
-  const active=d.activeStage==="full"?d.full:d.activeStage==="smoke"?d.smoke:null;
-  const selected=active||(d.full&&d.full.available?d.full:d.smoke);
+  const active=d.activeStage==="funnel"?d.funnel:d.activeStage==="full"?d.full:d.activeStage==="smoke"?d.smoke:null;
+  const selected=active||(d.funnel&&d.funnel.available?d.funnel:d.full&&d.full.available?d.full:d.smoke);
+  const stageName=s=>({smoke:"Smoke",full:"Full",funnel:"Funnel diagnostics"})[s]||s;
   const cur=selected&&selected.current?selected.current:{};
   const pct=selected?Number(selected.progress||0):0;
   const bar=document.getElementById("v4ResearchProgressBar");if(bar)bar.style.width=Math.max(0,Math.min(100,pct))+"%";
@@ -859,12 +860,14 @@ async function loadV4ResearchMonitor(){
   const job=document.getElementById("v4ResearchCurrentJob");
   if(job){
    if(active){
-    job.innerHTML='<b class="up">'+esc(active.stage==="smoke"?"Smoke":"Full")+' · '+esc(active.currentJob||"준비 중")+'</b>'+
+    job.innerHTML='<b class="up">'+esc(stageName(active.stage))+' · '+esc(active.currentJob||"준비 중")+'</b>'+
      '<br>단계 '+esc(phaseLabel(cur.phase||active.phase))+
      (cur.currentDay?'<br>현재 일자 '+esc(cur.currentDay):'')+
-     (cur.currentTimestamp?'<br>현재 시각 '+esc(formatKSTDateTime(cur.currentTimestamp)):'');
+     (cur.currentTimestamp?'<br>현재 시각 '+esc(formatKSTDateTime(cur.currentTimestamp)):'')+
+     (cur.researchVariant?'<br>버전 '+esc(cur.researchVariant):'')+
+     (cur.topRejectionReason?'<br>Top rejection '+esc(JSON.stringify(cur.topRejectionReason)):'');
    }else if(selected&&selected.phase==="completed"){
-    job.innerHTML='<b class="bt-ok">'+esc(selected.stage==="smoke"?"Smoke":"Full")+' 완료</b>';
+    job.innerHTML='<b class="bt-ok">'+esc(stageName(selected.stage))+' 완료</b>';
    }else{
     job.innerHTML='<span class="muted">현재 실행 중인 V4 campaign 없음</span>';
    }

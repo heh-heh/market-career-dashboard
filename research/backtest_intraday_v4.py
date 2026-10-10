@@ -31,6 +31,7 @@ if __package__:
     from .intraday_v4_engine import (BASELINE,STOCKS,SEMI,WINDOWS,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from .intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
     from .intraday_v4_diagnostics import Diagnostics,eligibility_reason,idle_gate_reason,context_reason,snapshot_evidence,opening_reason
+    from .intraday_v4_funnel import GateTrace
     from .intraday_v4_candidates import VARIANTS,evaluate_candidate,maintenance_context,metadata
 else:
     from backtest_v4_strategies import (Bar,MINUTE,NY,exchange_sessions,file_sha256,
@@ -38,10 +39,11 @@ else:
     from intraday_v4_engine import (BASELINE,STOCKS,SEMI,WINDOWS,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
     from intraday_v4_diagnostics import Diagnostics,eligibility_reason,idle_gate_reason,context_reason,snapshot_evidence,opening_reason
+    from intraday_v4_funnel import GateTrace
     from intraday_v4_candidates import VARIANTS,evaluate_candidate,maintenance_context,metadata
 from build_v4_data_manifest import inspect_file,identity,source_file
 
-VERSION = "IR_SPEC_V1_IMPLEMENTATION_2_RESEARCH_1"
+VERSION = "IR_SPEC_V1_IMPLEMENTATION_2_RESEARCH_2_DIAGNOSTICS"
 
 
 def atomic_json(path,value):
@@ -222,7 +224,7 @@ def candidate_queue(sessions,T,slip):
     return scores,shortlist
 
 
-def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None,diagnostics=None,research_variant="baseline"):
+def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None,diagnostics=None,research_variant="baseline",gate_trace=None):
     if research_variant not in VARIANTS: raise ValueError("Unknown research variant")
     evaluator=evaluate if research_variant=="baseline" else evaluate_candidate
     diagnostics=diagnostics if diagnostics is not None else Diagnostics(strategies)
@@ -257,6 +259,9 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                 d=diagnostics.data[kind]
                 d["observationCounts"]["sessionsTotal"]+=1
                 eligible=sessions[symbol].eligibility is not None
+                if gate_trace is not None:
+                    gate_trace.probe(event,opening,{"direction":"PRE_SESSION","volatility":"PAST_ONLY"},
+                        "SESSION_ELIGIBILITY","symbol_strategy_session")("DAILY_ELIGIBILITY",eligible,eligibility_reason(sessions[symbol]))
                 d["observationCounts"]["dailyEligibleSessions"]+=int(eligible)
                 if kind=="ir3":
                     if (closing-opening).total_seconds()==390*60:
@@ -303,7 +308,7 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         bar=sessions[event.symbol].minutes.get(T)
                         if bar:
                             diagnostics.stage(event,"executionObserved")
-                            entered=book.enter(event,bar,T,ctx,sessions[event.symbol],sessions)
+                            entered=book.enter(event,bar,T,ctx,sessions[event.symbol],sessions,**({"gate_trace":gate_trace} if gate_trace is not None else {}))
                             if entered: diagnostics.stage(event,"tradeEntered")
                         else:
                             event.move("CANCELLED",T,"ENTRY_GAP_OR_LATENCY")
@@ -358,7 +363,31 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                                     diagnostics.stage(event,"contextAvailable")
                                 if gate_reason is None:
                                     diagnostics.stage(event,"setupCandidates")
-                    evaluator(event,session,sessions,T,ctx,score is not None)
+                    if gate_trace is not None and kind=="ir3" and before=="IDLE":
+                        # Independently inspect the frozen clock conjunction with
+                        # already observable inputs even when the waterfall exits
+                        # at an earlier gate. No event/history mutation or fills.
+                        opening_stats=session.opening_stats()
+                        opening_available=bool(opening_stats) and opening_stats["openingZ"] is not None and opening_stats["openingRVOL"] is not None
+                        components=dict(TARGET_BAR=T in session.minutes,DAILY_ELIGIBILITY=session.eligibility is not None,
+                            DIRECTION_AVAILABLE=ctx["direction"]!="UNKNOWN",VOLATILITY_AVAILABLE=ctx["volatility"]!="UNKNOWN",
+                            OPENING_HISTORY=opening_available)
+                        own,other=(ctx["qqq"],ctx["spy"]) if symbol=="QQQ" else (ctx["spy"],ctx["qqq"])
+                        if own is not None: components["OWN_UP"]=own=="UP"
+                        if other is not None: components["OTHER_NOT_DOWN"]=other!="DOWN"
+                        if ctx["volatility"]!="UNKNOWN": components["ALLOWED_VOLATILITY"]=ctx["volatility"] in {"NORMAL_VOL","HIGH_VOL"}
+                        if opening_available:
+                            components.update(OPENING_Z=opening_stats["openingZ"]>=.5,OPENING_RVOL=opening_stats["openingRVOL"]>=1.25)
+                        for name,passed in components.items():
+                            gate_trace.probe(event,T,ctx,"CLOCK_COMPONENT_"+name,"symbol_strategy_clock_decision",sessions=sessions)("COMPONENT",passed)
+                        all_inputs=T in session.minutes and session.eligibility is not None and ctx["direction"]!="UNKNOWN" and ctx["volatility"]!="UNKNOWN" and opening_available
+                        if all_inputs:
+                            five=session.fives[-1] if session.fives and session.fives[-1]["bar"].end==T else None
+                            ix=-2 if five else -1
+                            atr_available=len(session.fives)>=abs(ix) and bool(session.fives[ix]["atr"])
+                            gate_trace.probe(event,T,ctx,"CLOCK_CONJUNCTION","symbol_strategy_clock_decision",sessions=sessions)(
+                                "ALL_FROZEN_CLOCK_GATES",bool(atr_available and own=="UP" and other!="DOWN" and components["ALLOWED_VOLATILITY"] and components["OPENING_Z"] and components["OPENING_RVOL"]))
+                    evaluator(event,session,sessions,T,ctx,score is not None,**({"gate_trace":gate_trace} if gate_trace is not None else {}))
                     if kind=="ir3" and event.state=="IDLE":
                         # Original catch-all mislabeled EXPECTED filters as
                         # missing context. State outcome and timing are unchanged.
@@ -429,6 +458,11 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                             f.write(json.dumps(dict(strategy=e.strategy,symbol=e.symbol,date=day,state=e.state,
                                 transitions=e.transitions,diagnostics=e.fields),allow_nan=False)+"\n")
             if reporter:
+                rejected=Counter()
+                for kind,d in diagnostics.data.items():
+                    rejected.update({kind+":"+r:n for r,n in d["rejectReasons"].items()})
+                reporter.state.update(funnelDiagnosticsEnabled=gate_trace is not None,
+                    topRejectionReason=dict(rejected.most_common(1)),researchVariant=research_variant)
                 trades=[t for b in books.values() for t in b.trades]
                 reporter.update(phase="running",running=True,progress=10+85*completed/max(1,evaluated_count),
                     currentDay=day,currentTimestamp=closing.isoformat(),completedDays=completed,processedRows=processed,trades=len(trades),
@@ -450,6 +484,7 @@ def parse_args(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--run-id",help=argparse.SUPPRESS)
     p.add_argument("--strategy",choices=("ir1","ir2","ir3","all"),default="all")
+    p.add_argument("--funnel-diagnostics",action="store_true",help="Observe per-state conditional gates without changing strategy/execution")
     p.add_argument("--research-variant",choices=VARIANTS,default="baseline",help="Isolated pre-registered candidate; default keeps the frozen baseline")
     p.add_argument("--data-dir","--data",dest="data_dir",type=Path,default=ROOT/"data/toss_1m")
     p.add_argument("--timestamp-kind",choices=("start","end"),default="start",help="Must match reviewed manifest; current Toss API documents exclusive END labels")
@@ -540,8 +575,9 @@ def main(argv=None):
         args.decisions.parent.mkdir(parents=True,exist_ok=True); args.decisions.write_text("")
         before={s:identity(p.stat()) for s,p in paths.items()}
         diagnostics=Diagnostics(strategies)
+        gate_trace=GateTrace() if args.funnel_diagnostics else None
         trades,funnel,unresolved,days,overlap=run_sessions(day_stream(paths,manifest),schedules,required,strategies,args.slippage_bps,
-                     args.from_date,args.to_date,reporter,args.decisions,selected,diagnostics,args.research_variant)
+                     args.from_date,args.to_date,reporter,args.decisions,selected,diagnostics,args.research_variant,gate_trace)
         for trade in trades: trade["researchVariant"]=args.research_variant
         for s,p in paths.items():
             if identity(p.stat())!=before[s] or file_sha256(p)!=audits[s]["sha256"]:
@@ -553,8 +589,8 @@ def main(argv=None):
                 dataMode=data_mode,provisional=provisional,
                 parameters={k:BASELINE[k] for k in strategies+["common"]},oneAttemptPerSymbolStrategyDay=True,
                 specificationSha256=file_sha256(ROOT/"research/intraday_strategy_formulas_v1.md"),
-                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py",ROOT/"research/intraday_v4_candidates.py",ROOT/"research/intraday_v4_diagnostics.py")},
-                maxPositionsPerStrategy=1,initialCashPerStrategy=10000,notionalUSD=100,fromDate=args.from_date,toDate=args.to_date),
+                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py",ROOT/"research/intraday_v4_candidates.py",ROOT/"research/intraday_v4_diagnostics.py",ROOT/"research/intraday_v4_funnel.py")},
+                funnelDiagnosticsEnabled=args.funnel_diagnostics,maxPositionsPerStrategy=1,initialCashPerStrategy=10000,notionalUSD=100,fromDate=args.from_date,toDate=args.to_date),
             execution=dict(model="COMPLETED_CLOSE_OBSERVATION_PROXY_60S",timestampKind=args.timestamp_kind,slippageBpsPerSide=args.slippage_bps,
                 halfSpreadProxyBpsPerSide=1,feesUSD=0,feeVerified=False,quoteAgeVerified=False,executabilityConfirmed=False,
                 entry="First strictly subsequent completed minute close; missing minute cancels",stop="Observable close, never theoretical stop",
@@ -569,6 +605,7 @@ def main(argv=None):
                     "Point-in-time eligibility and symbol identity are not externally reviewed",
                     "Do not use this run for final performance claims",
                 ]),
+            frequencyDiagnostics=gate_trace.as_dict() if gate_trace is not None else dict(status="NOT_MEASURED",enable="--funnel-diagnostics"),
             diagnostics=diagnostics.as_dict(),funnel=funnel,overall=summarize(trades,10000*len(strategies)),
             byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"],10000*len(strategies)),
             byYear=grouped(trades,lambda t:t["date"][:4],10000*len(strategies)),byMonth=grouped(trades,lambda t:t["date"][:7],10000*len(strategies)),
@@ -577,6 +614,7 @@ def main(argv=None):
             byTimeOfDay=grouped(trades,time_bucket,10000*len(strategies)),chronologicalEvaluation=chronological_folds(trades,days,10000*len(strategies)),
             unresolvedPositions=unresolved,strategyOverlap=dict(**overlap,note="IR1 stocks and IR3 indices have disjoint entry universes; trade-day co-occurrence is not simultaneous trigger overlap"),
             metricSemantics=dict(drawdown="Chronological realized exit PnL/R, not mark-to-market",
+                fixedNotionalIdentity="pnlUsd = notionalUSD * returnPct / 100; at $100 the numeric values coincide, units differ",
                 groupCapital="By strategy: $10,000; other groups and folds: sum of selected strategy initial capital",
                 excursions="Completed-close observation MFE/MAE, not all intrabar extremes",
                 folds="No trades with exits outside their attributed fold period"),

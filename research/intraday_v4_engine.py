@@ -333,23 +333,46 @@ def idle_rejection_reason(strategy,event,session,sessions,T,ctx,queued):
     return "CLOCK_UNCLASSIFIED_IDLE" if clock else "UNCLASSIFIED_IDLE"
 
 
-def evaluate(event,session,sessions,T,ctx,queued,maintenance_context=None):
+def evaluate(event,session,sessions,T,ctx,queued,maintenance_context=None,gate_trace=None):
     """One state transition per event phase; cancellation checked before trigger."""
     s,kind,f = event.state,event.strategy,event.fields
     if s in {"CANCELLED","EXIT","MANAGING","TRIGGERED","ENTRY"}:
         return
+    lo,hi = WINDOWS[kind]
+    collect=gate_trace is not None and (s != "IDLE" or lo <= T.time() < hi)
+    gate=(gate_trace.probe(event,T,ctx,sessions=sessions) if collect else lambda name,passed,reason=None: passed)
     bar = session.minutes.get(T)
-    if bar is None:
+    if not gate("SYMBOL_COMPLETED_BAR",bar is not None):
         if s != "IDLE": event.move("CANCELLED",T,"MISSING_SYMBOL_DATA")
         return
     lo,hi = WINDOWS[kind]
-    if not lo <= T.time() < hi or T >= session.closing-10*MINUTE:
+    if not gate("ENTRY_WINDOW",lo <= T.time() < hi and T < session.closing-10*MINUTE):
         if s != "IDLE": event.move("CANCELLED",T,"ENTRY_WINDOW_ENDED")
         return
-    if s == "IDLE" and (session.eligibility is None or not queued):
-        return
+    if s == "IDLE":
+        reason=None
+        if collect and session.eligibility is None:
+            try:
+                from .intraday_v4_diagnostics import eligibility_reason
+            except ImportError:
+                from intraday_v4_diagnostics import eligibility_reason
+            reason=eligibility_reason(session)
+        if not gate("DAILY_ELIGIBILITY",session.eligibility is not None,reason): return
+        if not gate("DETAIL_QUEUE",queued): return
     valid = (maintenance_context or allowed_context)(kind,event.symbol,ctx,sessions,T,s)
-    if not valid:
+    if collect: gate_trace.observe_context(event,T,ctx,sessions)
+    explanation=None
+    if collect and not valid:
+        try:
+            from .intraday_v4_diagnostics import context_reason
+        except ImportError:
+            from intraday_v4_diagnostics import context_reason
+        explanation=context_reason(kind,event.symbol,ctx,sessions,T,s)[0]
+    if collect and maintenance_context is not None and valid and not allowed_context(kind,event.symbol,ctx,sessions,T,s):
+        f["maintenanceAdmissionCount"]=f.get("maintenanceAdmissionCount",0)+1
+        samples=f.setdefault("maintenanceAdmissions",[])
+        if len(samples)<5: samples.append(dict(timestamp=T.isoformat(),state=s,context=dict(ctx),gate="MIXED_PULLBACK_MAINTENANCE"))
+    if not gate("CONTEXT_ALLOWED",valid,explanation):
         required={"QQQ","SPY"}|({"SOXX"} if kind=="ir1" and event.symbol in SEMI else set())
         missing=any(x not in sessions or sessions[x].snapshots.get(T) is None for x in required)
         if s != "IDLE":
@@ -370,17 +393,17 @@ def evaluate(event,session,sessions,T,ctx,queued,maintenance_context=None):
     prior_index = -2 if five else -1
     prior_atr = session.fives[prior_index]["atr"] if len(session.fives)>=abs(prior_index) else None
     A = f.get("A",prior_atr)
-    if not A:
+    if not gate("PRIOR_ATR_AVAILABLE",bool(A)):
         if s != "IDLE": event.move("CANCELLED",T,"ATR_UNAVAILABLE")
         return
     if kind == "ir3":
         if T.time() != time(15,30) or s != "IDLE": return
         opening = session.opening_stats()
-        if (session.closing-session.opening).total_seconds() != 390*60:
+        if not gate("FULL_LENGTH_SESSION",(session.closing-session.opening).total_seconds() == 390*60):
             event.move("CANCELLED",T,"EARLY_CLOSE_DISABLED"); return
-        if not opening or opening["openingZ"] is None or opening["openingRVOL"] is None:
+        if not gate("OPENING_HISTORY_AVAILABLE",bool(opening) and opening["openingZ"] is not None and opening["openingRVOL"] is not None):
             event.move("CANCELLED",T,"OPENING_HISTORY_UNAVAILABLE"); return
-        if opening["openingZ"] < .5 or opening["openingRVOL"] < 1.25:
+        if not gate("OPENING_Z",opening["openingZ"] >= .5) or not gate("OPENING_RVOL",opening["openingRVOL"] >= 1.25):
             event.move("CANCELLED",T,"OPENING_CONDITION_FAILED"); return
         event.move("SETUP",T,A=A,**opening)
         event.move("ARMED",T)
@@ -388,30 +411,30 @@ def evaluate(event,session,sessions,T,ctx,queued,maintenance_context=None):
         return
     if kind == "ir2":
         if s == "IDLE":
-            if session.or15 is None: return
+            if not gate("OPENING_RANGE_AVAILABLE",session.or15 is not None): return
             orl,orh = session.or15
             g = (session.minutes[session.opening+MINUTE].o-session.eligibility["prevClose"])/session.eligibility["dailyATR"]
-            if .5 <= (orh-orl)/A <= 2.5 and abs(g) <= 1:
+            if gate("OR_WIDTH",.5 <= (orh-orl)/A <= 2.5) and gate("OPENING_GAP",abs(g) <= 1):
                 event.move("SETUP",T,A=A,ORL=orl,ORH=orh,target=(orl+orh)/2,gapATR=g)
             return
         if s == "SETUP":
-            if bar.l < f["ORL"]-.75*A:
+            if not gate("PENETRATION_NOT_EXCESSIVE",bar.l >= f["ORL"]-.75*A):
                 event.move("CANCELLED",T,"EXCESSIVE_PENETRATION"); return
-            if five and len(session.fives) >= 2:
+            if gate("BREAKDOWN_COMPLETED_5M_HISTORY",bool(five) and len(session.fives) >= 2):
                 prev = session.fives[-2]["bar"]
                 x = five["bar"]
                 penetration = (f["ORL"]-x.l)/A
-                if prev.end == x.start and prev.c >= f["ORL"] and x.c < f["ORL"]-.1*A and .1 <= penetration <= .75:
+                if gate("BREAKDOWN_CONTIGUOUS",prev.end == x.start) and gate("PREVIOUS_CLOSE_INSIDE_OR",prev.c >= f["ORL"]) and gate("BREAKDOWN_CLOSE_BELOW_OR",x.c < f["ORL"]-.1*A) and gate("BREAKDOWN_PENETRATION",.1 <= penetration <= .75):
                     event.move("ARMED",T,failureLow=x.l,breakdownTimestamp=T.isoformat(),penetrationATR=penetration,reclaimCount=0)
             return
-        if bar.l < f["failureLow"]:
+        if not gate("NO_NEW_LOWER_LOW",bar.l >= f["failureLow"]):
             event.move("CANCELLED",T,"NEW_LOWER_LOW"); return
-        if five:
+        if gate("RECLAIM_COMPLETED_5M",bool(five)):
             # Chronological ordinal, not number of surviving aggregates: gaps
             # must not turn a third physical bar into the second reclaim bar.
             elapsed = (T-datetime.fromisoformat(f["breakdownTimestamp"])).total_seconds()/300
             f["reclaimCount"] = int(elapsed)
-            if elapsed <= 2 and five["bar"].c > f["ORL"]+.1*A and ctx["recovery"]:
+            if gate("RECLAIM_WITHIN_TWO_BARS",elapsed <= 2) and gate("RECLAIM_CLOSE",five["bar"].c > f["ORL"]+.1*A) and gate("MARKET_RECOVERY",ctx["recovery"]):
                 event.move("TRIGGERED",T,triggerClose=bar.c,stop=f["failureLow"]-.1*A,signalTimestamp=T.isoformat(),noNewLow=True,marketRecovery=True)
             elif elapsed >= 2:
                 event.move("CANCELLED",T,"RECLAIM_EXPIRED")
@@ -419,43 +442,43 @@ def evaluate(event,session,sessions,T,ctx,queued,maintenance_context=None):
     # IR1: RS/reference only uses synchronized same-session completed windows.
     RS = rs20a(session,sessions[benchmark(event.symbol)],T,A)
     if s == "IDLE":
-        if not five or len(session.fives) < 9 or RS is None: return
+        if not gate("IMPULSE_COMPLETED_5M",bool(five)) or not gate("IMPULSE_9_BAR_HISTORY",len(session.fives) >= 9) or not gate("RELATIVE_STRENGTH_AVAILABLE",RS is not None): return
         nine = session.fives[-9:]
-        if any(a["bar"].end != b["bar"].start for a,b in zip(nine,nine[1:])): return
+        if not gate("IMPULSE_HISTORY_CONTIGUOUS",all(a["bar"].end == b["bar"].start for a,b in zip(nine,nine[1:]))): return
         impulse = [x["bar"] for x in nine[-3:]]
         origin,end = impulse[0].o,impulse[-1].c
         advance = end-origin
         prehigh = max(x["bar"].h for x in nine[:6])
         vol = st.fmean(x.v for x in impulse)
-        if advance >= A and end > prehigh+.1*A and snap["vwap"] is not None and end > snap["vwap"] and RS >= .25 and vol > 0:
+        if gate("IMPULSE_ADVANCE_ATR",advance >= A) and gate("IMPULSE_PRIOR_HIGH_BREAK",end > prehigh+.1*A) and gate("VWAP_AVAILABLE",snap["vwap"] is not None) and gate("IMPULSE_ABOVE_VWAP",end > snap["vwap"]) and gate("IMPULSE_RS",RS >= .25) and gate("IMPULSE_VOLUME_POSITIVE",vol > 0):
             event.move("SETUP",T,A=A,origin=origin,impulseEnd=end,advance=advance,impulseATR=advance/A,
                       impulseVolume=vol,relativeStrength=RS,pullbacks=[],impulseTimestamp=T.isoformat())
         return
-    if RS is None or snap["vwap"] is None:
+    if not gate("RS_AND_VWAP_AVAILABLE",RS is not None and snap["vwap"] is not None):
         event.move("CANCELLED",T,"MISSING_BENCHMARK_DATA"); return
-    if bar.c <= max(f["origin"],snap["vwap"]) or bar.l < f["impulseEnd"]-.5*f["advance"]:
+    if not gate("PULLBACK_CLOSE_ABOVE_ORIGIN_VWAP",bar.c > max(f["origin"],snap["vwap"])) or not gate("PULLBACK_LOW_DEPTH_CAP",bar.l >= f["impulseEnd"]-.5*f["advance"]):
         event.move("CANCELLED",T,"PULLBACK_INVALIDATED"); return
     if s == "SETUP":
-        if five:
+        if gate("PULLBACK_COMPLETED_5M",bool(five)):
             f["pullbacks"].append(dict(low=five["bar"].l,high=five["bar"].h,volume=five["bar"].v))
             pb = f["pullbacks"]
             low = min(x["low"] for x in pb)
             depth = (f["impulseEnd"]-low)/f["advance"]
             vc = st.fmean(x["volume"] for x in pb)/f["impulseVolume"]
-            if .2 <= depth <= .5 and vc <= .7:
+            if gate("PULLBACK_DEPTH",.2 <= depth <= .5) and gate("PULLBACK_VOLUME_CONTRACTION",vc <= .7):
                 event.move("ARMED",T,B=five["bar"].h+.1*A,L_arm=low,pullbackDepth=depth,volumeContraction=vc,stop=low-.1*A)
             elif len(pb) >= 3:
                 event.move("CANCELLED",T,"PULLBACK_EXPIRED")
         return
     arm = datetime.fromisoformat(f["armedTimestamp"])
-    if bar.l < f["L_arm"] or RS < .25:
+    if not gate("ARMED_LOW_HELD",bar.l >= f["L_arm"]) or not gate("ARMED_RS_HELD",RS >= .25):
         event.move("CANCELLED",T,"ARMED_INVALIDATED")
-    elif T > arm+5*MINUTE:
+    elif not gate("TRIGGER_NOT_EXPIRED",T <= arm+5*MINUTE):
         event.move("CANCELLED",T,"TRIGGER_EXPIRED")
-    elif T > arm and bar.c > f["B"] and snap["va1"] is not None and snap["va1"] >= 1:
+    elif gate("AFTER_ARMED_OBSERVATION",T > arm) and gate("TRIGGER_ABOVE_FROZEN_LEVEL",bar.c > f["B"]) and gate("TRIGGER_VOLUME_AVAILABLE",snap["va1"] is not None) and gate("TRIGGER_VOLUME_RATIO",snap["va1"] >= 1):
         # An isolated research candidate may preserve a setup during a neutral
         # pullback. Signal admission and Book.enter still use the frozen gate.
-        if maintenance_context is not None and not allowed_context(kind,event.symbol,ctx,sessions,T,s):
+        if maintenance_context is not None and not gate("BASELINE_SIGNAL_CONTEXT",allowed_context(kind,event.symbol,ctx,sessions,T,s)):
             return
         event.move("TRIGGERED",T,triggerClose=bar.c,signalTimestamp=T.isoformat(),relativeStrength=RS,breakoutDistanceATR=(bar.c-f["B"])/A)
 
@@ -468,7 +491,7 @@ class Book:
         self.trades = []
         self.funnel = Counter()
 
-    def enter(self,event,bar,T,ctx,session,sessions):
+    def enter(self,event,bar,T,ctx,session,sessions,gate_trace=None):
         f = event.fields
         signal = datetime.fromisoformat(f["signalTimestamp"])
         if T <= signal: return False
@@ -493,6 +516,25 @@ class Book:
             if not S < E < f["target"] or E <= f["ORL"] or bar.c < f["failureLow"] or not ctx["recovery"] or reward/max(risk,1e-12) < 1:
                 reason = reason or "ENTRY_REWARD_RECOVERY_FAILED"
         if self.cash < 100: reason = reason or "CASH_LIMIT"
+        if gate_trace is not None:
+            # Independent components, not reordered execution gates. The actual
+            # reason above retains its original priority (window override first).
+            checks=dict(CAPACITY=self.position is None,
+                LATENCY=(T-signal).total_seconds() <= 90 and bar.end-bar.start == MINUTE and T == signal+MINUTE,
+                WINDOW=lo <= T.time() < hi and T < session.closing-10*MINUTE,
+                CONTEXT=allowed_context(event.strategy,event.symbol,ctx,sessions,T,"TRIGGERED"),
+                RISK_POSITIVE=risk > 0,
+                COST_TO_RISK=risk > 0 and 2*(self.slip+.0001)*E/risk <= .2,
+                CHASE=E <= f["triggerClose"]+.3*f["A"],CASH=self.cash >= 100)
+            if event.strategy == "ir1":
+                checks.update(ABOVE_BREAKOUT=E > f["B"],PULLBACK_LOW_HELD=bar.c > f["L_arm"],
+                              RS_AVAILABLE=RS is not None,RS_HELD=RS is not None and RS >= .25)
+            elif event.strategy == "ir2":
+                checks.update(STOP_ENTRY_TARGET_ORDER=S < E < f["target"],ABOVE_OR_LOW=E > f["ORL"],
+                    FAILURE_LOW_HELD=bar.c >= f["failureLow"],RECOVERY=bool(ctx["recovery"]),NET_REWARD_R=reward/max(risk,1e-12) >= 1)
+            for name,passed in checks.items():
+                gate_trace.probe(event,T,ctx,"ENTRY_COMPONENT_"+name,"pending_execution_observation",sessions=sessions)("COMPONENT",passed)
+            gate_trace.probe(event,T,ctx,"ENTRY_RESOLUTION","pending_execution_observation",sessions=sessions)("ADMITTED",reason is None,reason)
         if reason:
             if reason in {"ENTRY_CONTEXT_FAILED","MISSING_BENCHMARK_DATA"}:
                 try:

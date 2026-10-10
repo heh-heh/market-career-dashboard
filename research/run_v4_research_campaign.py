@@ -35,6 +35,7 @@ def plan(args, directory):
                "--timestamp-kind", args.timestamp_kind, "--slippage-bps", str(slip),
                "--run-id", directory.name + "-" + name]
         if args.provisional: cmd.append("--provisional")
+        if getattr(args,"funnel_diagnostics",False): cmd.append("--funnel-diagnostics")
         for key in ("from_date", "to_date", "symbols"):
             value = getattr(args, key)
             if value: cmd += ["--" + key.replace("_", "-"), value]
@@ -121,6 +122,7 @@ def main(argv=None):
     p.add_argument("--to-date")
     p.add_argument("--symbols", help="Must be applicable to all four baselines; omit for the full baseline universe")
     p.add_argument("--cost-stress", action="store_true", help="Deprecated; use compare_v4_research fixed-trade cost sensitivity instead")
+    p.add_argument("--funnel-diagnostics",action="store_true",help="Observe frozen gates; does not add candidate variants")
     p.add_argument("--plan", action="store_true", help="Print commands without reading or writing data")
     args = p.parse_args(argv)
     if args.cost_stress: p.error("Cost sensitivity is fixed-trade analysis in compare_v4_research.py; no additional backtest jobs")

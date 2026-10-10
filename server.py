@@ -733,10 +733,30 @@ def _v4_stage_status(run_root,stage,processes):
             "entries":current_state.get("entries",0),
             "updatedAt":current_state.get("updatedAt"),
             "pid":current_state.get("pid"),
+            "researchVariant":current_state.get("researchVariant"),
+            "topRejectionReason":current_state.get("topRejectionReason"),
+            "funnelDiagnosticsEnabled":current_state.get("funnelDiagnosticsEnabled"),
             "error":current_state.get("error"),
         },
         "log":current_log,
     }
+
+
+
+def _v4_frequency_status(run_root):
+    """Read only the latest analysis state; never launch jobs or inspect raw data."""
+    folder=run_root/"funnel" if run_root else None
+    files=list(folder.glob("*/state.json")) if folder and folder.is_dir() else []
+    state_path=max(files,key=lambda p:p.stat().st_mtime) if files else None
+    state=_v4_read_dict(state_path) if state_path else {}
+    phase=state.get("phase","waiting")
+    running=phase=="running" and any(p.get("pid")==state.get("pid") for p in _v4_processes("analyze_v4_frequency.py"))
+    if phase=="running" and not running: phase="interrupted"
+    return dict(stage="funnel",available=bool(state),running=running,phase=phase,
+        progress=state.get("progress",0),completedJobs=state.get("completedJobs",0),totalJobs=state.get("totalJobs",5),
+        currentJob=state.get("currentJob"),current=state,verdict=state.get("verdict"),
+        candidateSelection=state.get("candidateSelection"),error=state.get("error"),
+        resultPath=state.get("resultPath"),log=state.get("error") or state.get("candidateSelection") or "Read-only artifact analysis")
 
 
 def v4_research_status():
@@ -781,6 +801,8 @@ def v4_research_status():
     audit_phase=("completed" if audit_status.startswith("PASS") else
                  "failed" if audit.get("resultReady") else audit.get("phase","waiting"))
 
+    frequency=_v4_frequency_status(run_root)
+    candidate_validation=dict(phase="blocked",running=False,reason="정량 funnel 검토 전 신규 후보 미선정; 기존 IR1-R1 보존")
     roadmap=[
         {"id":"audit","label":"데이터 감사","phase":audit_phase,
          "detail":audit_status or ("실행 중" if audit.get("running") else "대기")},
@@ -790,10 +812,16 @@ def v4_research_status():
          "detail":f'{full.get("completedJobs",0)}/{full.get("totalJobs",5)} 완료'},
         {"id":"compare","label":"비교/최종 판정","phase":compare_phase,
          "detail":str(comparison.get("verdict") or ("실행 가능" if compare_phase=="ready" else "대기"))},
+        {"id":"funnel","label":"Funnel diagnostics","phase":frequency["phase"],
+         "detail":frequency.get("candidateSelection") or "기존 artifact 읽기 / 추가 gate 계측"},
+        {"id":"candidate","label":"Candidate validation","phase":candidate_validation["phase"],
+         "detail":candidate_validation["reason"]},
     ]
 
     active_stage=None
-    if smoke.get("running"):
+    if frequency.get("running"):
+        active_stage="funnel"
+    elif smoke.get("running"):
         active_stage="smoke"
     elif full.get("running"):
         active_stage="full"
@@ -814,6 +842,8 @@ def v4_research_status():
             "updatedAt":_v4_file_time(comparison_path) if comparison_path and comparison_path.exists() else None,
             "allAnalysisReady":bool(all_analysis_path and all_analysis_path.exists()),
         },
+        "funnel":frequency,
+        "candidateValidation":candidate_validation,
         "roadmap":roadmap,
     }
 

@@ -29,9 +29,9 @@ def maintenance_context(strategy, symbol, ctx, sessions, timestamp, stage):
     return True
 
 
-def evaluate_candidate(event, session, sessions, timestamp, ctx, queued):
+def evaluate_candidate(event, session, sessions, timestamp, ctx, queued,gate_trace=None):
     evaluate(event, session, sessions, timestamp, ctx, queued,
-             maintenance_context=maintenance_context)
+             maintenance_context=maintenance_context,gate_trace=gate_trace)
 
 
 def metadata(variant):

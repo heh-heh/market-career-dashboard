@@ -1,0 +1,24 @@
+{
+  "evidenceType": "USER_REPORTED_NOT_ARTIFACT_VERIFIED",
+  "notABacktestRun": true,
+  "timestampKind": "end",
+  "approximatePeriod": ["2021-12", "2026-10"],
+  "reportedAudit": {
+    "status": "PASS_MECHANICAL_AUDIT_ONLY",
+    "regularCoveragePct": 99.3788,
+    "badTimezone": 0
+  },
+  "reportedCampaign": {"completedJobs": 5, "totalJobs": 5, "comparable": true},
+  "reportedResults": {
+    "IR1": {"trades": 2, "wins": 2, "losses": 0, "expectancyR": 1.2214, "maxDrawdownR": 0, "sumTradeReturnPct": 1.7466},
+    "IR2": {"trades": 4, "wins": 3, "losses": 1, "expectancyR": 0.8846, "profitFactorR": 7.0066, "maxDrawdownR": 0.5891, "sumTradeReturnPct": 1.3710},
+    "IR3": {"trades": 0, "wins": 0, "losses": 0, "expectancyR": null, "sumTradeReturnPct": 0},
+    "ALL": {"trades": 6, "wins": 5, "losses": 1, "expectancyR": 0.9969, "profitFactorR": 11.1535, "maxDrawdownR": 0.5891, "sumTradeReturnPct": 3.1176},
+    "IR1-R1": {"trades": 4, "wins": 4, "losses": 0, "expectancyR": 0.7033, "maxDrawdownR": 0, "sumTradeReturnPct": 1.9716}
+  },
+  "reportedLastCompleteOOS": {"period": ["2026-06-01", "2026-09-01"], "IR1Trades": 0, "IR1R1Trades": 0},
+  "actualArtifactAccess": "UNAVAILABLE_EC2_ONLY",
+  "newVariants": [],
+  "verdict": "INCONCLUSIVE_INSUFFICIENT_SAMPLE",
+  "missingEvidence": ["actual results", "terminal decisions", "nested gate counts", "source audits", "newly admitted trade identities"]
+}

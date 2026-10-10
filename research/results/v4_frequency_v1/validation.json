@@ -1,0 +1,62 @@
+{
+  "baseHead": "d97f3483826a74503bcc0fe59b6e8716a7e8a6b5",
+  "branch": "strategy-engine-v3",
+  "before": {
+    "command": "python -m unittest discover -s research -p 'test*.py'",
+    "tests": 256,
+    "result": "OK",
+    "seconds": 15.576
+  },
+  "after": {
+    "command": "python -m unittest discover -s research -p 'test*.py'",
+    "tests": 281,
+    "result": "OK",
+    "seconds": 15.61
+  },
+  "newTests": 25,
+  "syntax": "PASS",
+  "cliHelp": "PASS",
+  "campaignPlanOnly": {
+    "result": "PASS",
+    "jobs": 5,
+    "newStrategyVariants": 0
+  },
+  "javascriptSmokeTests": {
+    "result": "PASS",
+    "commands": [
+      "node research/test_admin_backtest_smoke.cjs",
+      "node research/test_admin_paper_smoke.cjs",
+      "node research/test_data_collection_smoke.cjs",
+      "node research/test_v4_frequency_monitor_smoke.cjs"
+    ]
+  },
+  "frozenASTUnchanged": [
+    "BASELINE",
+    "WINDOWS",
+    "STOCKS",
+    "History",
+    "Session",
+    "context",
+    "allowed_context",
+    "rs20a",
+    "benchmark",
+    "Book.manage"
+  ],
+  "syntheticReplay": {
+    "minuteRows": 780,
+    "strategies": [
+      "ir3"
+    ],
+    "optInTradesEqual": true,
+    "notHistoricalData": true
+  },
+  "historicalBacktestExecuted": false,
+  "ec2ConnectionAvailable": false,
+  "actualFullArtifactsInspected": false,
+  "thresholdChanges": false,
+  "executionChanges": false,
+  "newCandidatesImplemented": 0,
+  "dataOrLogDeleted": false,
+  "mainBranchChanged": false,
+  "ec2ServicesRestarted": false
+}
