@@ -12,6 +12,8 @@ from backtest_manager import BacktestManager, BACKTEST_ENGINES as RESEARCH_BACKT
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
+TICK_DATA_DIR=ROOT/"data"/"toss_ticks"
+TICK_STATUS=TICK_DATA_DIR/"status.json"
 SECRETS=ROOT/"server_secrets.json"
 HOST=os.getenv("HOST","0.0.0.0")
 PORT=int(os.getenv("PORT","8080"))
@@ -387,6 +389,88 @@ def storage_status():
         STORAGE_CACHE["value"]=dict(value)
     return value
 
+def tick_collector_status():
+    status=_read_json_file(TICK_STATUS)
+    session_date=str(status.get("sessionDate") or "")
+    session_dir=TICK_DATA_DIR/session_date if session_date else None
+    meta=_read_json_file(session_dir/"session_meta.json") if session_dir else {}
+
+    symbols=status.get("symbols") or meta.get("symbols") or []
+    if not isinstance(symbols,list):
+        symbols=[]
+    counts=meta.get("ticksBySymbol") or {}
+    if not isinstance(counts,dict):
+        counts={}
+    clean_counts={}
+    for symbol,value in counts.items():
+        try:
+            clean_counts[str(symbol)]=int(value or 0)
+        except Exception:
+            clean_counts[str(symbol)]=0
+
+    data_bytes=0
+    data_files=0
+    if session_dir and session_dir.exists():
+        for p in session_dir.iterdir():
+            try:
+                if p.is_file() and (p.name.endswith(".csv") or p.name.endswith(".csv.gz")):
+                    data_bytes+=p.stat().st_size
+                    data_files+=1
+            except OSError:
+                pass
+
+    updated_at=status.get("updatedAt") or meta.get("updatedAt")
+    stale_seconds=None
+    if updated_at:
+        try:
+            import datetime as _dt
+            ts=_dt.datetime.fromisoformat(str(updated_at).replace("Z","+00:00"))
+            if ts.tzinfo is None:
+                ts=ts.replace(tzinfo=_dt.timezone.utc)
+            stale_seconds=max(0.0,time.time()-ts.timestamp())
+        except Exception:
+            stale_seconds=None
+
+    state=str(status.get("state") or "unavailable")
+    healthy=bool(status) and state not in {"stopped","paused_low_disk"}
+    if stale_seconds is not None and stale_seconds>900:
+        healthy=False
+
+    return {
+        "available":bool(status),
+        "healthy":healthy,
+        "state":state,
+        "provider":status.get("provider") or meta.get("provider"),
+        "calendarSource":status.get("calendarSource") or meta.get("calendarSource"),
+        "calendarError":status.get("calendarError"),
+        "sessionDate":session_date or None,
+        "marketSession":status.get("marketSession") or meta.get("currentSession"),
+        "openAt":status.get("openAt") or meta.get("openAt"),
+        "closeAt":status.get("closeAt") or meta.get("closeAt"),
+        "nextOpenAt":status.get("nextOpenAt"),
+        "nextCloseAt":status.get("nextCloseAt"),
+        "connectionId":status.get("connectionId"),
+        "subscribed":int(status.get("subscribed") or len(meta.get("subscribed") or [])),
+        "symbolCount":len(symbols),
+        "symbols":symbols,
+        "ticksTotal":int(meta.get("ticksTotal") or sum(clean_counts.values())),
+        "ticksBySymbol":clean_counts,
+        "reconnects":int(meta.get("reconnects") or 0),
+        "localQueueDrops":int(meta.get("localQueueDrops") or 0),
+        "invalidMessages":int(meta.get("invalidMessages") or 0),
+        "queueDepth":int(meta.get("queueDepth") or 0),
+        "connectionAttempts":int(meta.get("connectionAttempts") or 0),
+        "dataBytes":data_bytes,
+        "dataFileCount":data_files,
+        "updatedAt":updated_at,
+        "staleSeconds":round(stale_seconds,1) if stale_seconds is not None else None,
+        "lastError":status.get("error") or meta.get("lastError"),
+        "lossySource":True,
+        "sourceSequenceAvailable":False,
+        "completenessClaim":"NONE",
+    }
+
+
 def load_secrets():
     if not SECRETS.exists():
         return {}
@@ -423,6 +507,7 @@ def trading_authorized(handler):
 ADMIN_CONSOLE_SERVICES={
     "market-career-dashboard.service",
     "collect-expanded-universe.service",
+    "collect-toss-ticks.service",
     "backtest-v2-tqqq.service",
     "backtest-multistrategy.service",
     "backtest-hybrid-watchdog.service",
@@ -1489,6 +1574,12 @@ class Handler(BaseHTTPRequestHandler):
                     "resultReady":result_path.exists(),"updatedAt":time.time(),"log":tail})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},500)
+            return
+        if path=="/api/ticks/status":
+            try:
+                self.send_json({"ok":True,**tick_collector_status()})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
             return
         if path=="/api/health":
             self.send_json({"ok":True,"service":"market-career-dashboard"})
