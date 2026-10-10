@@ -13,7 +13,12 @@ _PUBLIC_FIELDS = {
     "eliteCount", "latestLog", "dataMode", "dataOrigin", "updatedAt", "split",
     "researchOnly", "error", "performanceClaim", "runtimeSeconds", "pid",
     "requestedSessions", "completedSessions", "fromDate", "toDate", "createdAt",
-    "finishedAt", "smoke", "splitDays",
+    "finishedAt", "smoke", "splitDays", "adaptiveResources", "minPopulation",
+    "maxPopulation", "nextPopulation", "safePopulation", "peakPopulation",
+    "resourceDecision", "resourcePressure", "resourceCpuPct", "resourceProcessCpuPct",
+    "resourceMemoryPct", "resourceMemoryAvailableGb", "resourceSwapPct",
+    "resourceSwapUsedGb", "resourceSwapTotalGb", "resourceProcessRssMb",
+    "sessionRuntimeSeconds",
 }
 
 
@@ -70,6 +75,14 @@ def _run_summary(run_dir):
         "meanDailyReturn": result.get("meanDailyReturn"),
         "bestLifetimeEquity": result.get("bestLifetimeEquity"),
         "tradesToday": result.get("tradesToday"),
+        "adaptiveResources": result.get("adaptiveResources"),
+        "nextPopulation": result.get("nextPopulation"),
+        "safePopulation": result.get("safePopulation"),
+        "peakPopulation": result.get("peakPopulation"),
+        "resourceDecision": result.get("resourceDecision"),
+        "resourceMemoryPct": result.get("resourceMemoryPct"),
+        "resourceSwapPct": result.get("resourceSwapPct"),
+        "resourceCpuPct": result.get("resourceCpuPct"),
         "dataMode": result.get("dataMode"),
         "dataOrigin": result.get("dataOrigin"),
         "updatedAt": result.get("updatedAt") or result.get("finishedAt") or result.get("createdAt"),
