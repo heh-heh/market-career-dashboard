@@ -143,7 +143,10 @@ class BacktestManager:
         self.spec(engine)
         self.directory.mkdir(parents=True,exist_ok=True)
         with self.lock, (self.directory/"historical_backtest.lock").open("a") as lockfile:
-            fcntl.flock(lockfile,fcntl.LOCK_EX)
+            try:
+                fcntl.flock(lockfile,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise ValueError("Another historical backtest holds the execution lock") from None
             active=self.active_job()
             if active: raise ValueError("Another historical backtest is running: "+active)
             if legacy_start is not None: return legacy_start()
@@ -151,9 +154,17 @@ class BacktestManager:
             if not readiness["runnable"]: raise PreflightBlocked(readiness["blockedReason"])
             cmd=self.command(engine)
             paths=self.paths(engine)
-            # Keep failed/previous artifacts on preflight failure. Once accepted,
-            # create a new run; existing forward logs are never included here.
-            for p in paths.values(): p.unlink(missing_ok=True)
+            # A new V4 run must not delete the baseline it is meant to compare.
+            # Rename on the same filesystem; no raw data or forward paper paths.
+            archived=None
+            if engine.startswith("v4-"):
+                previous=[p for p in paths.values() if p.exists() or p.is_symlink()]
+                if previous:
+                    archived=self.directory/"backtest_archive"/(self.spec(engine)["prefix"]+"-"+uuid.uuid4().hex)
+                    archived.mkdir(parents=True,exist_ok=False)
+                    for p in previous: p.rename(archived/p.name)
+            else:
+                for p in paths.values(): p.unlink(missing_ok=True)
             def write_json(path,obj):
                 tmp=path.with_suffix(path.suffix+".tmp")
                 tmp.write_text(json.dumps(obj))
@@ -162,6 +173,7 @@ class BacktestManager:
             if engine.startswith("v4-"): cmd += ["--run-id",run_id]
             state=dict(runId=run_id,launchRequestedAt=time.time(),engine=engine,strategy=self.spec(engine).get("strategy"),pid=None,phase="starting",
                 running=True,progress=0,updatedAt=time.time(),trades=0,signals=0,entries=0,error=None)
+            if archived: state["previousArtifactArchive"]=str(archived)
             write_json(paths["state"],state)
             with paths["log"].open("ab") as log:
                 try:

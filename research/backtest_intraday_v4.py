@@ -31,15 +31,17 @@ if __package__:
     from .intraday_v4_engine import (BASELINE,STOCKS,SEMI,WINDOWS,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from .intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
     from .intraday_v4_diagnostics import Diagnostics,eligibility_reason,idle_gate_reason,context_reason,snapshot_evidence,opening_reason
+    from .intraday_v4_candidates import VARIANTS,evaluate_candidate,maintenance_context,metadata
 else:
     from backtest_v4_strategies import (Bar,MINUTE,NY,exchange_sessions,file_sha256,
             manifest_input_path,normalize_minute_timestamp,validate_data_manifest)
     from intraday_v4_engine import (BASELINE,STOCKS,SEMI,WINDOWS,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
     from intraday_v4_diagnostics import Diagnostics,eligibility_reason,idle_gate_reason,context_reason,snapshot_evidence,opening_reason
+    from intraday_v4_candidates import VARIANTS,evaluate_candidate,maintenance_context,metadata
 from build_v4_data_manifest import inspect_file,identity,source_file
 
-VERSION = "IR_SPEC_V1_IMPLEMENTATION_2_DIAGNOSTICS_1"
+VERSION = "IR_SPEC_V1_IMPLEMENTATION_2_RESEARCH_1"
 
 
 def atomic_json(path,value):
@@ -57,6 +59,7 @@ class Reporter:
         self.args = args
         self.state = dict(engine="v4-"+args.strategy,strategy=args.strategy,runId=getattr(args,"run_id",None) or uuid.uuid4().hex,pid=os.getpid(),phase="starting",
             running=True,progress=0,completedDays=0,processedRows=0,trades=0,signals=0,entries=0,error=None,summary={})
+        self.state["researchVariant"]=getattr(args,"research_variant","baseline")
 
     def update(self,**values):
         self.state.update(values,updatedAt=datetime.now(timezone.utc).isoformat())
@@ -219,7 +222,9 @@ def candidate_queue(sessions,T,slip):
     return scores,shortlist
 
 
-def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None,diagnostics=None):
+def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None,diagnostics=None,research_variant="baseline"):
+    if research_variant not in VARIANTS: raise ValueError("Unknown research variant")
+    evaluator=evaluate if research_variant=="baseline" else evaluate_candidate
     diagnostics=diagnostics if diagnostics is not None else Diagnostics(strategies)
     entry_symbols=set(symbols) if entry_symbols is None else set(entry_symbols)
     histories={s:History() for s in symbols}
@@ -321,6 +326,9 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         d=diagnostics.data[kind]["observationCounts"]
                         d["contextChecks"]+=1
                         rejected,_=context_reason(kind,symbol,ctx,sessions,T,before)
+                        if research_variant!="baseline" and rejected and maintenance_context(kind,symbol,ctx,sessions,T,before):
+                            d["candidatePersistenceAdmitted"]+=1
+                            rejected=None
                         d["contextRejected" if rejected else "contextAccepted"]+=1
                     if before=="IDLE":
                         lo,hi=WINDOWS[kind]
@@ -350,7 +358,7 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                                     diagnostics.stage(event,"contextAvailable")
                                 if gate_reason is None:
                                     diagnostics.stage(event,"setupCandidates")
-                    evaluate(event,session,sessions,T,ctx,score is not None)
+                    evaluator(event,session,sessions,T,ctx,score is not None)
                     if kind=="ir3" and event.state=="IDLE":
                         # Original catch-all mislabeled EXPECTED filters as
                         # missing context. State outcome and timing are unchanged.
@@ -382,6 +390,14 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                             else:
                                 funnel["signals"]+=1
                                 diagnostics.stage(event,"signalEmitted")
+                                source=(session.fives[-1]["bar"] if session.fives and session.fives[-1]["bar"].end==T else None) if kind=="ir2" else session.minutes[T]
+                                # Diagnostic absence must never fabricate a 5m
+                                # candle from a 1m row (including mocked signals).
+                                event.fields["signalCandle"]=None if source is None else dict(barStart=source.start.isoformat(),barObservable=source.end.isoformat(),
+                                    open=source.o,high=source.h,low=source.l,close=source.c,volume=source.v)
+                                event.fields["signalCandleStatus"]="UNAVAILABLE" if source is None else "COMPLETED_OBSERVATION"
+                                event.fields["signalContext"]=dict(ctx)
+                                event.fields["signalFeatures"]=dict(session.snapshots[T])
                                 event.fields["priority"]=priority
                                 event.fields["adv20"]=sessions[symbol].eligibility["adv20"]
                         if event.state=="CANCELLED":
@@ -434,6 +450,7 @@ def parse_args(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--run-id",help=argparse.SUPPRESS)
     p.add_argument("--strategy",choices=("ir1","ir2","ir3","all"),default="all")
+    p.add_argument("--research-variant",choices=VARIANTS,default="baseline",help="Isolated pre-registered candidate; default keeps the frozen baseline")
     p.add_argument("--data-dir","--data",dest="data_dir",type=Path,default=ROOT/"data/toss_1m")
     p.add_argument("--timestamp-kind",choices=("start","end"),default="start",help="Must match reviewed manifest; current Toss API documents exclusive END labels")
     p.add_argument("--manifest",type=Path,default=ROOT/"research/v4_data_manifest.json")
@@ -455,6 +472,7 @@ def parse_args(argv=None):
         if v: datetime.strptime(v,"%Y-%m-%d")
     if a.from_date and a.to_date and a.from_date>a.to_date: p.error("from-date > to-date")
     prefix=ROOT/"research"/f"backtest_v4_{a.strategy}"
+    if a.research_variant!="baseline": prefix=Path(str(prefix)+"_"+a.research_variant)
     for name,suffix in (("out","_result.json"),("state","_state.json"),("log",".log"),
                          ("trades_csv","_trades.csv"),("data_audit","_data_audit.json"),("decisions","_decisions.jsonl")):
         if getattr(a,name) is None: setattr(a,name,Path(str(prefix)+suffix))
@@ -523,17 +541,19 @@ def main(argv=None):
         before={s:identity(p.stat()) for s,p in paths.items()}
         diagnostics=Diagnostics(strategies)
         trades,funnel,unresolved,days,overlap=run_sessions(day_stream(paths,manifest),schedules,required,strategies,args.slippage_bps,
-                     args.from_date,args.to_date,reporter,args.decisions,selected,diagnostics)
+                     args.from_date,args.to_date,reporter,args.decisions,selected,diagnostics,args.research_variant)
+        for trade in trades: trade["researchVariant"]=args.research_variant
         for s,p in paths.items():
             if identity(p.stat())!=before[s] or file_sha256(p)!=audits[s]["sha256"]:
                 raise ValueError(f"{s}: source changed during run; results refused")
         data_mode="REVIEWED_MANIFEST" if reviewed_manifest else "PROVISIONAL_UNREVIEWED_DATA"
         result=dict(engine="v4-"+args.strategy,strategy=args.strategy,runId=reporter.state["runId"],generatedAt=datetime.now(timezone.utc).isoformat(),
             configuration=dict(contract="IR_SPEC_V1",implementationVersion=VERSION,strategy=strategies,selectedSymbols=sorted(selected),
+                researchVariant=args.research_variant,researchCandidate=metadata(args.research_variant),
                 dataMode=data_mode,provisional=provisional,
                 parameters={k:BASELINE[k] for k in strategies+["common"]},oneAttemptPerSymbolStrategyDay=True,
                 specificationSha256=file_sha256(ROOT/"research/intraday_strategy_formulas_v1.md"),
-                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py")},
+                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py",ROOT/"research/intraday_v4_candidates.py",ROOT/"research/intraday_v4_diagnostics.py")},
                 maxPositionsPerStrategy=1,initialCashPerStrategy=10000,notionalUSD=100,fromDate=args.from_date,toDate=args.to_date),
             execution=dict(model="COMPLETED_CLOSE_OBSERVATION_PROXY_60S",timestampKind=args.timestamp_kind,slippageBpsPerSide=args.slippage_bps,
                 halfSpreadProxyBpsPerSide=1,feesUSD=0,feeVerified=False,quoteAgeVerified=False,executabilityConfirmed=False,
@@ -550,13 +570,14 @@ def main(argv=None):
                     "Do not use this run for final performance claims",
                 ]),
             diagnostics=diagnostics.as_dict(),funnel=funnel,overall=summarize(trades,10000*len(strategies)),
-            byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"]),
+            byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"],10000*len(strategies)),
             byYear=grouped(trades,lambda t:t["date"][:4],10000*len(strategies)),byMonth=grouped(trades,lambda t:t["date"][:7],10000*len(strategies)),
             bySession=grouped(trades,lambda t:t["session"],10000*len(strategies)),byExitReason=grouped(trades,lambda t:t["exitReason"],10000*len(strategies)),
             byRegime=grouped(trades,lambda t:t["marketRegime"]["direction"]+"/"+t["marketRegime"]["volatility"],10000*len(strategies)),
-            byTimeOfDay=grouped(trades,time_bucket,10000*len(strategies)),chronologicalEvaluation=chronological_folds(trades,days),
+            byTimeOfDay=grouped(trades,time_bucket,10000*len(strategies)),chronologicalEvaluation=chronological_folds(trades,days,10000*len(strategies)),
             unresolvedPositions=unresolved,strategyOverlap=dict(**overlap,note="IR1 stocks and IR3 indices have disjoint entry universes; trade-day co-occurrence is not simultaneous trigger overlap"),
             metricSemantics=dict(drawdown="Chronological realized exit PnL/R, not mark-to-market",
+                groupCapital="By strategy: $10,000; other groups and folds: sum of selected strategy initial capital",
                 excursions="Completed-close observation MFE/MAE, not all intrabar extremes",
                 folds="No trades with exits outside their attributed fold period"),
             researchVerdict=("PROVISIONAL_UNREVIEWED_DATA" if provisional else "UNVALIDATED_DESCRIPTIVE_ONLY"),specBlocked=[],trades=trades)

@@ -333,6 +333,9 @@ class ExecutionTests(unittest.TestCase):
         self.assertTrue(all(t["symbol"]=="AAPL" for t in trades))
         self.assertEqual(funnel["CAPACITY"],2)
         self.assertEqual(unresolved,[])
+        mocked_ir2=next(t for t in trades if t["strategy"]=="ir2")
+        self.assertIsNone(mocked_ir2["signalCandle"])
+        self.assertEqual(mocked_ir2["diagnostics"]["signalCandleStatus"],"UNAVAILABLE")
 
 
 class ResultsTests(unittest.TestCase):

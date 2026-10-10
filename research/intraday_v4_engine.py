@@ -333,7 +333,7 @@ def idle_rejection_reason(strategy,event,session,sessions,T,ctx,queued):
     return "CLOCK_UNCLASSIFIED_IDLE" if clock else "UNCLASSIFIED_IDLE"
 
 
-def evaluate(event,session,sessions,T,ctx,queued):
+def evaluate(event,session,sessions,T,ctx,queued,maintenance_context=None):
     """One state transition per event phase; cancellation checked before trigger."""
     s,kind,f = event.state,event.strategy,event.fields
     if s in {"CANCELLED","EXIT","MANAGING","TRIGGERED","ENTRY"}:
@@ -348,7 +348,7 @@ def evaluate(event,session,sessions,T,ctx,queued):
         return
     if s == "IDLE" and (session.eligibility is None or not queued):
         return
-    valid = allowed_context(kind,event.symbol,ctx,sessions,T,s)
+    valid = (maintenance_context or allowed_context)(kind,event.symbol,ctx,sessions,T,s)
     if not valid:
         required={"QQQ","SPY"}|({"SOXX"} if kind=="ir1" and event.symbol in SEMI else set())
         missing=any(x not in sessions or sessions[x].snapshots.get(T) is None for x in required)
@@ -453,6 +453,10 @@ def evaluate(event,session,sessions,T,ctx,queued):
     elif T > arm+5*MINUTE:
         event.move("CANCELLED",T,"TRIGGER_EXPIRED")
     elif T > arm and bar.c > f["B"] and snap["va1"] is not None and snap["va1"] >= 1:
+        # An isolated research candidate may preserve a setup during a neutral
+        # pullback. Signal admission and Book.enter still use the frozen gate.
+        if maintenance_context is not None and not allowed_context(kind,event.symbol,ctx,sessions,T,s):
+            return
         event.move("TRIGGERED",T,triggerClose=bar.c,signalTimestamp=T.isoformat(),relativeStrength=RS,breakoutDistanceATR=(bar.c-f["B"])/A)
 
 
@@ -509,6 +513,9 @@ class Book:
                  signalTimeframe="5m" if event.strategy=="ir2" else "clock_snapshot" if event.strategy=="ir3" else "1m",
                  entryBarStart=bar.start.isoformat(),entryBarEnd=bar.end.isoformat(),
                  entryObservationTimestamp=T.isoformat(),entryTimestamp=T.isoformat(),
+                 signalCandle=f.get("signalCandle"),signalContext=f.get("signalContext"),
+                 entryCandle=dict(barStart=bar.start.isoformat(),barObservable=bar.end.isoformat(),
+                                  open=bar.o,high=bar.h,low=bar.l,close=bar.c,volume=bar.v),
                  entryMarketPrice=bar.c,entryFillPrice=E,entryPrice=E,quantity=100/E,
                  entryLatencySeconds=None,simulatedLatencySeconds=(T-signal).total_seconds(),
                  sourceTimestamp=None,receiptTimestamp=None,stopPrice=S,initialStop=S,
