@@ -490,6 +490,8 @@ class DataSafetyTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "timestamp kind unconfirmed"):
             self.observed([[]], config=simple.Config(timestamp_kind_confirmed=False))
         with patch.dict(simple.os.environ, {}, clear=True):
+            self.assertTrue(simple.Config.from_env().timestamp_kind_confirmed)
+        with patch.dict(simple.os.environ, {"SIMPLE_TIMESTAMP_KIND_CONFIRMED": "false"}, clear=True):
             self.assertFalse(simple.Config.from_env().timestamp_kind_confirmed)
 
     def test_18_read_only_transport_and_no_live_order_import(self):
