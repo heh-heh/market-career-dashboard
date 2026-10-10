@@ -351,6 +351,27 @@ class ResultsTests(unittest.TestCase):
             self.assertFalse(any(x in {"live_trader","paper_trader","simple_momentum_v1","trading","urllib.request","requests"} for x in imports))
             self.assertNotIn("/api/v1/orders",source)
 
+    def test_tiny_cli_provisional_smoke_without_reviewed_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);data=root/"data";data.mkdir()
+            for symbol in ("SPY","QQQ"):
+                with (data/(symbol+".csv")).open("w",newline="") as f:
+                    w=csv.writer(f);w.writerow(["timestamp","open","high","low","close","volume"])
+                    for n in range(35):w.writerow([(DAY+n*e.MINUTE).isoformat(),100,101,99,100,10])
+            argv=["--strategy","ir3","--data-dir",str(data),"--provisional"]
+            for option in ("out","state","log","trades-csv","data-audit","decisions"):
+                argv += ["--"+option,str(root/(option+".artifact"))]
+            self.assertEqual(main(argv),0)
+            result=json.loads((root/"out.artifact").read_text())
+            self.assertEqual(result["researchVerdict"],"PROVISIONAL_UNREVIEWED_DATA")
+            self.assertTrue(result["configuration"]["provisional"])
+            self.assertEqual(result["configuration"]["dataMode"],"PROVISIONAL_UNREVIEWED_DATA")
+            self.assertIsNone(result["data"]["manifestSha256"])
+            self.assertIn("PROVISIONAL_UNREVIEWED_DATA",result["data"]["warnings"])
+            audit=json.loads((root/"data-audit.artifact").read_text())
+            self.assertTrue(audit["validationPassed"])
+            self.assertTrue(audit["provisional"])
+
     def test_tiny_cli_smoke_audits_inputs_and_writes_engine_artifacts(self):
         from build_v4_data_manifest import build_manifest
         with tempfile.TemporaryDirectory() as tmp:
