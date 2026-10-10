@@ -37,7 +37,7 @@ else:
     from intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
 from build_v4_data_manifest import inspect_file,identity,source_file
 
-VERSION = "IR_SPEC_V1_IMPLEMENTATION_1"
+VERSION = "IR_SPEC_V1_IMPLEMENTATION_2"
 
 
 def atomic_json(path,value):
@@ -64,6 +64,98 @@ class Reporter:
         self.args.log.parent.mkdir(parents=True,exist_ok=True)
         with self.args.log.open("a",encoding="utf-8") as f:
             f.write(datetime.now(timezone.utc).isoformat()+" "+text+"\n")
+
+
+def provisional_inspect_file(path,symbol,timestamp_kind="start",naive_timezone=None):
+    """Bounded-memory mechanical audit for provisional runs.
+
+    Unlike the reviewed-manifest validator this never builds a temporary SQLite
+    index. Because provisional inputs must already be monotonic, any duplicate
+    timestamp is necessarily adjacent; an out-of-order transition fails closed.
+    This keeps the audit O(1) memory and avoids exhausting /tmp/root storage.
+    """
+    before=path.stat()
+    digest=file_sha256(path)
+    opener=gzip.open if path.suffix==".gz" else open
+    meta=dict(
+        symbol=symbol,path=path.name,sha256=digest,rows=0,
+        firstTimestamp=None,lastTimestamp=None,duplicates=0,exactDuplicates=0,
+        conflictingDuplicates=0,ohlcViolations=0,quoteViolations=0,
+        timestampViolations=0,symbolViolations=0,outOfOrderTransitions=0,
+        monotonicTimestampOrdering=True,strictlyIncreasingTimestamps=True,
+        timestamp_kind=timestamp_kind,
+        timestamp_semantics="minute_start" if timestamp_kind=="start" else "exclusive_minute_end",
+        naive_timezone=naive_timezone,validationErrors=[],errorExamples=[],
+        auditMode="streaming_bounded_memory",coverageCheck="deferred_to_causal_runner",
+    )
+    previous_start=None
+    previous_fingerprint=None
+    first=last=None
+    with opener(path,"rt",encoding="utf-8",newline="") as stream:
+        reader=csv.DictReader(stream)
+        columns=reader.fieldnames or []
+        required={"timestamp","open","high","low","close","volume"}
+        if not required.issubset(columns) or len(columns)!=len(set(columns)):
+            raise ValueError(f"{symbol}: missing/duplicate OHLCV columns; got {columns}")
+        identity_columns=[x for x in ("symbol","ticker") if x in columns]
+        for line,row in enumerate(reader,2):
+            meta["rows"]+=1
+            if any((row.get(col) or "").strip().upper()!=symbol for col in identity_columns):
+                meta["symbolViolations"]+=1
+            try:
+                start=normalize_minute_timestamp(row["timestamp"],timestamp_kind,naive_timezone)
+            except (ValueError,TypeError,AttributeError) as exc:
+                meta["timestampViolations"]+=1
+                if len(meta["errorExamples"])<5:
+                    meta["errorExamples"].append(f"line {line}: timestamp: {exc}")
+                continue
+            if previous_start is not None and start<previous_start:
+                meta["outOfOrderTransitions"]+=1
+                if len(meta["errorExamples"])<5:
+                    meta["errorExamples"].append(f"line {line}: out-of-order timestamp")
+            if first is None or start<first: first=start
+            if last is None or start>last: last=start
+            try:
+                vals=tuple(float(row[k]) for k in ("open","high","low","close","volume"))
+                o,h,l,close,volume=vals
+                if not all(math.isfinite(x) for x in vals) or min(o,h,l,close)<=0 or volume<0 or h<max(o,close) or l>min(o,close) or h<l:
+                    raise ValueError("invalid/nonfinite OHLCV")
+            except (ValueError,TypeError) as exc:
+                meta["ohlcViolations"]+=1
+                vals=tuple(row.get(k) for k in ("open","high","low","close","volume"))
+                if len(meta["errorExamples"])<5:
+                    meta["errorExamples"].append(f"line {line}: {exc}")
+            try:
+                bid=float(row["bid"]) if row.get("bid") else None
+                ask=float(row["ask"]) if row.get("ask") else None
+                if (bid is None)!=(ask is None) or (bid is not None and (not math.isfinite(bid) or not math.isfinite(ask) or not 0<bid<=ask)):
+                    raise ValueError("invalid/partial quote")
+            except (ValueError,TypeError):
+                meta["quoteViolations"]+=1
+                bid=ask=None
+            fingerprint=(vals,bid,ask)
+            if previous_start is not None and start==previous_start:
+                meta["duplicates"]+=1
+                meta["strictlyIncreasingTimestamps"]=False
+                if fingerprint==previous_fingerprint:
+                    meta["exactDuplicates"]+=1
+                else:
+                    meta["conflictingDuplicates"]+=1
+            previous_start=start
+            previous_fingerprint=fingerprint
+    meta["monotonicTimestampOrdering"]=meta["outOfOrderTransitions"]==0
+    if first is not None:
+        meta["firstTimestamp"]=(first if timestamp_kind=="start" else first+MINUTE).isoformat()
+        meta["lastTimestamp"]=(last if timestamp_kind=="start" else last+MINUTE).isoformat()
+    for field in ("conflictingDuplicates","ohlcViolations","timestampViolations","symbolViolations","quoteViolations","outOfOrderTransitions"):
+        if meta[field]:
+            meta["validationErrors"].append(f"{field}={meta[field]}")
+    if first is None:
+        meta["validationErrors"].append("No valid timestamped rows")
+    after=path.stat()
+    if file_sha256(path)!=digest or identity(after)!=identity(before):
+        meta["validationErrors"].append("Input changed during validation; wait for a finalized export and retry")
+    return meta
 
 
 def read_stream(path,symbol,meta):
@@ -295,7 +387,7 @@ def main(argv=None):
             for s in sorted(required):
                 paths[s]=source_file(args.data_dir,s)
                 reporter.update(phase="data_audit",progress=5*len(paths)/len(required),currentTimestamp=s)
-                meta=inspect_file(paths[s],s,"start",None)
+                meta=provisional_inspect_file(paths[s],s,"start",None)
                 meta["path"]=paths[s].name
                 manifest["symbols"][s]=meta
                 audits[s]=meta
