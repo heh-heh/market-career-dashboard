@@ -159,6 +159,20 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div class="bt-stat"><div class="label">Neutral / Invalid</div><div class="v" id="evolutionV0Neutral">-</div></div>
   </div>
 
+  <div class="label" style="margin-top:12px">Adaptive Resource Guard</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">CPU</div><div class="v" id="evolutionV0Cpu">-</div></div>
+    <div class="bt-stat"><div class="label">RAM</div><div class="v" id="evolutionV0Ram">-</div></div>
+    <div class="bt-stat"><div class="label">Swap</div><div class="v" id="evolutionV0Swap">-</div></div>
+    <div class="bt-stat"><div class="label">Process RAM</div><div class="v" id="evolutionV0ProcessRam">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Next Population</div><div class="v" id="evolutionV0NextPopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Safe Population</div><div class="v" id="evolutionV0SafePopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Peak Population</div><div class="v" id="evolutionV0PeakPopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Scale Decision</div><div class="v" id="evolutionV0ScaleDecision">-</div></div>
+  </div>
+
   <div class="label" style="margin-top:12px">최근 상태</div>
   <div id="evolutionV0Log" class="bt-log" style="max-height:120px">로그를 기다리는 중...</div>
 
@@ -867,6 +881,14 @@ async function loadEvolutionMonitor(){
   set("evolutionV0Parents",Number(d.parentPoolSize||0).toLocaleString());
   set("evolutionV0Mutations",Number(d.mutationCount||0).toLocaleString());
   set("evolutionV0Neutral",Number(d.neutral||0).toLocaleString()+" / "+Number(d.invalid||0).toLocaleString());
+  set("evolutionV0Cpu",d.resourceCpuPct==null?"-":Number(d.resourceCpuPct).toFixed(1)+"%");
+  set("evolutionV0Ram",d.resourceMemoryPct==null?"-":Number(d.resourceMemoryPct).toFixed(1)+"%");
+  set("evolutionV0Swap",d.resourceSwapPct==null?"-":Number(d.resourceSwapPct).toFixed(1)+"%");
+  set("evolutionV0ProcessRam",d.resourceProcessRssMb==null?"-":Number(d.resourceProcessRssMb).toFixed(0)+" MB");
+  set("evolutionV0NextPopulation",d.nextPopulation==null?"-":Number(d.nextPopulation).toLocaleString());
+  set("evolutionV0SafePopulation",d.safePopulation==null?"-":Number(d.safePopulation).toLocaleString());
+  set("evolutionV0PeakPopulation",d.peakPopulation==null?"-":Number(d.peakPopulation).toLocaleString());
+  set("evolutionV0ScaleDecision",d.adaptiveResources?(d.resourceDecision||"대기"):"OFF");
   if(log)log.textContent=(d.error?("ERROR: "+d.error+"\n"):"")+(d.latestLog||"");
   if(recent){
    const runs=(d.recentRuns||[]).slice(0,6);
