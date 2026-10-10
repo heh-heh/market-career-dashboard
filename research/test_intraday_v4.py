@@ -286,6 +286,30 @@ class ExecutionTests(unittest.TestCase):
         a.cash=42
         self.assertEqual(b.cash,10000);self.assertIsNone(b.position)
 
+    def test_runner_freezes_setup_priority_when_later_queue_score_is_missing(self):
+        from research import backtest_intraday_v4 as runner
+        opening,closing=clock(10,14),clock(10,20)
+        symbols={"AAPL","QQQ","SPY"}
+        rows={s:{(clock(10,m)-e.MINUTE):bar(clock(10,m)) for m in range(15,21)} for s in symbols}
+        calls={"n":0}
+        def queue(*args,**kwargs):
+            calls["n"]+=1
+            return ({"AAPL":50},["AAPL"]) if calls["n"]==1 else ({},["AAPL"])
+        def signal(event,session,sessions,T,context,queued):
+            if event.state=="IDLE":
+                event.move("SETUP",T,A=1,stop=98.9,B=99,L_arm=98)
+            elif event.state=="SETUP":
+                event.move("ARMED",T,B=99,L_arm=98,stop=98.9)
+                event.move("TRIGGERED",T,signalTimestamp=T.isoformat(),triggerClose=100)
+        with patch.object(e.History,"eligibility",return_value=dict(prevClose=100,dailyATR=2,adv20=1e8)), \
+             patch.object(runner,"context",return_value=ctx()),patch.object(e,"allowed_context",return_value=True), \
+             patch.object(e,"rs20a",return_value=.5),patch.object(runner,"evaluate",side_effect=signal), \
+             patch.object(runner,"candidate_queue",side_effect=queue):
+            trades,funnel,unresolved,days,overlap=run_sessions(iter([(DAY.date().isoformat(),rows)]),
+                {DAY.date().isoformat():(opening,closing)},symbols,["ir1"],entry_symbols={"AAPL"})
+        self.assertGreaterEqual(funnel["signals"],1)
+        self.assertNotIn("PRIORITY_UNAVAILABLE",funnel)
+
     def test_runner_day_strategy_capacity_and_duplicate_isolation(self):
         # Six minutes / four assets. Stub signal prerequisites only; exercise
         # real pending, fills, per-book capacity, terminal state and liquidation.
