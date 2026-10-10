@@ -69,16 +69,18 @@ class BacktestManager:
         data_dir=self.root/"data/toss_1m"
         has_data=data_dir.is_dir() and (any(data_dir.glob("*.csv.gz")) or any(data_dir.glob("*.csv")))
         manifest_path=Path(os.getenv("V4_DATA_MANIFEST",str(self.root/"research/v4_data_manifest.json")))
+        is_v4=engine.startswith("v4-")
+        manifest_available=manifest_path.is_file()
+        data_mode=("REVIEWED_MANIFEST" if manifest_available else "PROVISIONAL_UNREVIEWED_DATA") if is_v4 else None
         blocked_reason=None
         if not has_data:
             blocked_reason="historical Toss 1m data is unavailable"
-        elif engine.startswith("v4-") and not manifest_path.is_file():
-            blocked_reason="Reviewed V4 data manifest is missing; finish data collection/audit and build the reviewed manifest first"
         merged.update(engine=engine,label=self.spec(engine)["label"],pid=pid,running=running,phase=phase,
             summary=result.get("overall") or state.get("summary") or {},log=log,
             progress=state.get("progress",100 if result else 0),downloadAvailable=bool(result),resultAvailable=bool(result),
             runnable=blocked_reason is None,blockedReason=blocked_reason,
-            manifestAvailable=manifest_path.is_file() if engine.startswith("v4-") else None)
+            manifestAvailable=manifest_available if is_v4 else None,
+            dataMode=data_mode,provisional=(is_v4 and not manifest_available))
         return merged
 
     def active_job(self):
@@ -101,9 +103,13 @@ class BacktestManager:
         spec=self.spec(engine); paths=self.paths(engine); script=self.root/"research"/spec["script"]
         cmd=[sys.executable,str(script),"--out",str(paths["result"]),"--state",str(paths["state"]),"--log",str(paths["log"])]
         if "strategy" in spec:
+            manifest=os.getenv("V4_DATA_MANIFEST",str(self.root/"research/v4_data_manifest.json"))
             cmd += ["--strategy",spec["strategy"],"--data-dir",str(self.root/"data/toss_1m"),
-                    "--manifest",os.getenv("V4_DATA_MANIFEST",str(self.root/"research/v4_data_manifest.json")),
                     "--trades-csv",str(paths["trades"]),"--data-audit",str(paths["audit"]),"--decisions",str(paths["decisions"])]
+            if Path(manifest).is_file():
+                cmd += ["--manifest",manifest]
+            else:
+                cmd += ["--provisional"]
         else:
             cmd += ["--data",str(self.root/"data/toss_1m")]
             if engine=="simple-v1": cmd += ["--trades-csv",str(paths["trades"])]
@@ -122,8 +128,6 @@ class BacktestManager:
                 raise RuntimeError("historical Toss 1m data is unavailable")
             cmd=self.command(engine)
             if not Path(cmd[1]).is_file(): raise RuntimeError("Backtest script is missing")
-            if engine.startswith("v4-") and not Path(cmd[cmd.index("--manifest")+1]).is_file():
-                raise RuntimeError("Reviewed V4 data manifest is missing; build/review it first")
             paths=self.paths(engine)
             # Keep failed/previous artifacts on preflight failure. Once accepted,
             # create a new run; existing forward logs are never included here.
