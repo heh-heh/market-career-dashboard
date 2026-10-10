@@ -312,7 +312,11 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                                 event.fields["adv20"]=sessions[symbol].eligibility["adv20"]
                         if event.state=="CANCELLED":
                             funnel[event.fields["reason"]]+=1
-                            if diagnostics: diagnostics.record_rejection(event,day,T)
+                            if diagnostics:
+                                if kind=="ir3" and event.fields.get("reason")=="CLOCK_DIRECTION_FILTER_FAILED":
+                                    diagnostics.observe_ir3_direction_failure(
+                                        symbol,day,T,sessions,ctx,BASELINE["common"]["ERTrendMin"])
+                                diagnostics.record_rejection(event,day,T)
                         elif diagnostics:
                             diagnostics.record_transition(event,day,T,before)
                 if any(sessions[s].snapshots.get(T) is None for s in ("QQQ","SPY")):
