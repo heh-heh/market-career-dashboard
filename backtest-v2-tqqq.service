@@ -1,0 +1,17 @@
+[Unit]
+Description=TQQQ Mean Reversion V2 Walk-Forward Research
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/market-career-dashboard
+ExecStart=/usr/bin/python3 /home/ubuntu/market-career-dashboard/research/backtest_v2_tqqq_mr.py --data /home/ubuntu/market-career-dashboard/data/toss_1m/TQQQ.csv.gz --out /var/lib/market-career-dashboard/backtest_v2_tqqq_mr.json --state /var/lib/market-career-dashboard/backtest_v2_tqqq_mr_state.json
+StandardOutput=append:/var/lib/market-career-dashboard/backtest_v2_tqqq_mr.log
+StandardError=append:/var/lib/market-career-dashboard/backtest_v2_tqqq_mr.log
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

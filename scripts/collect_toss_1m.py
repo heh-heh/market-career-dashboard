@@ -17,12 +17,13 @@ from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
-sys.path.insert(0, str(ROOT))
-from toss_rate_limit import wait_for_slot, group_for_path
 
 ROOT = Path(__file__).resolve().parents[1]
-SECRETS = ROOT / "server_secrets.json"
+sys.path.insert(0, str(ROOT))
+from toss_rate_limit import wait_for_slot, group_for_path
 from toss_auth import get_token as shared_toss_token
+
+SECRETS = ROOT / "server_secrets.json"
 
 BASE = "https://openapi.tossinvest.com"
 DEFAULT_SYMBOLS = ["NVDA", "AMD", "INTC", "SOXL", "SOXS", "TQQQ"]

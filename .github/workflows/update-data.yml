@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Validate Python sources
-        run: python -m py_compile server.py live_trader.py trading.py pattern_engine.py scripts/update_data.py scripts/analyze_patterns.py
+        run: python -m py_compile server.py live_trader.py strategy_engine.py trading.py pattern_engine.py scripts/update_data.py scripts/analyze_patterns.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py
 
       - name: Collect public data
         run: python scripts/update_data.py

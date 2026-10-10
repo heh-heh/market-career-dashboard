@@ -1,2 +1,4 @@
 # Runtime dependency for Toss Securities realtime WebSocket streaming
 websockets>=10.4,<16
+# Research V4: exchange sessions, holidays and early closes (no trading changes)
+exchange_calendars>=4.5,<5
