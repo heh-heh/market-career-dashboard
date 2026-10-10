@@ -62,6 +62,7 @@
         <button id="paperScanBtn">실데이터 갱신</button>
       </div>
       <div class="mini" style="margin-top:8px">Toss 실제 시세·1분봉을 V3 전략 엔진에 넣어 가상 체결합니다. 실제 주문 API는 호출하지 않으며, 의사결정과 체결 결과는 서버에 누적 저장됩니다.</div>
+      <div class="actions" style="margin-top:8px"><button id="paperLogsDownload">모의매매 로그 전체 다운로드 (.zip)</button></div>
     </div>
     <div class="stats">
       <div class="stat"><div class="label">가상 자산</div><div id="paperEquity" class="value">-</div></div>
@@ -298,6 +299,23 @@ async function refreshSimple(){
     document.getElementById("simpleTrades").innerHTML=[...(s.recentTrades||[])].reverse().map(t=>'<div class="row"><b>'+esc(t.symbol)+'</b> · '+esc(t.exitTimestamp)+' · '+esc(t.exitReason)+' · '+esc(fmtUsd(t.pnlUsd))+' · '+Number(t.returnPct).toFixed(2)+'%'+(t.exitAffectedByDataStale?' · DATA_STALE 영향':'')+'</div>').join('')||'완료 거래 없음';
   }catch(e){setText("simpleState",e.message)}
 }
+async function downloadPaperLogs(){
+  const b=document.getElementById("paperLogsDownload");b.disabled=true;
+  try{
+    const headers={};if(token())headers.Authorization="Bearer "+token();
+    const r=await fetch(API+"/api/trading/paper/logs/download",{headers,cache:"no-store"});
+    if(!r.ok){
+      const d=await r.json().catch(()=>({}));
+      throw new Error(d.error||("HTTP "+r.status));
+    }
+    const blob=await r.blob();
+    const a=document.createElement("a"),u=URL.createObjectURL(blob);
+    a.href=u;a.download="paper-trading-logs-"+new Date().toISOString().replace(/[:.]/g,"-")+".zip";
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
+  }catch(e){alert(e.message)}finally{b.disabled=false}
+}
+document.getElementById("paperLogsDownload").onclick=downloadPaperLogs;
+
 async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refreshSimple()])}
 for(const [id,enabled] of [["simpleStart",true],["simpleStop",false]])document.getElementById(id).onclick=async()=>{try{await req("/api/trading/paper/simple-v1/auto",{method:"POST",body:JSON.stringify({enabled})});await refreshSimple()}catch(e){alert(e.message)}};
 document.getElementById("simpleScan").onclick=async()=>{const b=document.getElementById("simpleScan");b.disabled=true;try{await req("/api/trading/paper/simple-v1/scan",{method:"POST",body:"{}"});await refreshSimple()}catch(e){alert(e.message)}finally{b.disabled=false}};
