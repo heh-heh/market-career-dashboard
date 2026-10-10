@@ -28,14 +28,15 @@ sys.path.insert(0,str(ROOT/"research"))
 if __package__:
     from .backtest_v4_strategies import (Bar,MINUTE,NY,exchange_sessions,file_sha256,
             manifest_input_path,normalize_minute_timestamp,validate_data_manifest)
-    from .intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
+    from .intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate,idle_rejection_reason)
     from .intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
 else:
     from backtest_v4_strategies import (Bar,MINUTE,NY,exchange_sessions,file_sha256,
             manifest_input_path,normalize_minute_timestamp,validate_data_manifest)
-    from intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
+    from intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate,idle_rejection_reason)
     from intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
 from build_v4_data_manifest import inspect_file,identity,source_file
+from intraday_v4_diagnostics import DiagnosticCollector
 
 VERSION = "IR_SPEC_V1_IMPLEMENTATION_2"
 
@@ -217,7 +218,7 @@ def candidate_queue(sessions,T,slip):
     return scores,shortlist
 
 
-def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None):
+def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None,diagnostics=None):
     entry_symbols=set(symbols) if entry_symbols is None else set(entry_symbols)
     histories={s:History() for s in symbols}
     books={k:Book(k,slip) for k in strategies}
@@ -266,6 +267,7 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         if event.fields.get("priority") is None:
                             event.move("CANCELLED",T,"PRIORITY_UNAVAILABLE")
                             book.funnel["PRIORITY_UNAVAILABLE"]+=1
+                            if diagnostics: diagnostics.record_rejection(event,day,T)
                         else:
                             valid_pending.append(event)
                     valid_pending.sort(key=lambda e:(-e.fields["priority"],0 if kind=="ir3" else -e.fields.get("adv20",0),e.fields["signalTimestamp"],e.symbol))
@@ -276,6 +278,7 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         else:
                             event.move("CANCELLED",T,"ENTRY_GAP_OR_LATENCY")
                             book.funnel["ENTRY_GAP_OR_LATENCY"]+=1
+                            if diagnostics: diagnostics.record_rejection(event,day,T)
                 scores,shortlist=candidate_queue({s:v for s,v in sessions.items() if s in entry_symbols},T,slip/10000)
                 funnel["universeObservations"]+=len([s for s in sessions if s in STOCKS])
                 funnel["thresholdCandidates"]+=len(shortlist)
@@ -284,10 +287,12 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                     if kind=="ir3" and T.time().isoformat()!="15:30:00": continue
                     before=event.state
                     score=scores.get(symbol)
-                    if kind=="ir3": score=0
+                    if kind=="ir3":
+                        score=0
+                        if diagnostics: diagnostics.observe_ir3_clock(symbol,day,T,sessions[symbol],sessions,ctx)
                     evaluate(event,sessions[symbol],sessions,T,ctx,score is not None)
                     if kind=="ir3" and event.state=="IDLE":
-                        event.move("CANCELLED",T,"CLOCK_ELIGIBILITY_CONTEXT_UNAVAILABLE")
+                        event.move("CANCELLED",T,idle_rejection_reason(kind,event,sessions[symbol],sessions,T,ctx,score is not None))
                     if before=="IDLE" and event.state not in {"IDLE","CANCELLED"}:
                         # Freeze operational capacity priority when the setup is
                         # first admitted. Later queue membership may disappear;
@@ -305,7 +310,11 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                                 funnel["signals"]+=1
                                 event.fields["priority"]=priority
                                 event.fields["adv20"]=sessions[symbol].eligibility["adv20"]
-                        if event.state=="CANCELLED": funnel[event.fields["reason"]]+=1
+                        if event.state=="CANCELLED":
+                            funnel[event.fields["reason"]]+=1
+                            if diagnostics: diagnostics.record_rejection(event,day,T)
+                        elif diagnostics:
+                            diagnostics.record_transition(event,day,T,before)
                 if any(sessions[s].snapshots.get(T) is None for s in ("QQQ","SPY")):
                     funnel["MISSING_BENCHMARK_DATA"]+=1
                 elif ctx["direction"]=="UNKNOWN": funnel["MARKET_FEATURES_UNAVAILABLE"]+=1
@@ -431,8 +440,9 @@ def main(argv=None):
         schedules=exchange_sessions(first,last)
         args.decisions.parent.mkdir(parents=True,exist_ok=True); args.decisions.write_text("")
         before={s:identity(p.stat()) for s,p in paths.items()}
+        diagnostics=DiagnosticCollector(strategies)
         trades,funnel,unresolved,days,overlap=run_sessions(day_stream(paths,manifest),schedules,required,strategies,args.slippage_bps,
-                     args.from_date,args.to_date,reporter,args.decisions,selected)
+                     args.from_date,args.to_date,reporter,args.decisions,selected,diagnostics)
         for s,p in paths.items():
             if identity(p.stat())!=before[s] or file_sha256(p)!=audits[s]["sha256"]:
                 raise ValueError(f"{s}: source changed during run; results refused")
@@ -442,7 +452,7 @@ def main(argv=None):
                 dataMode=data_mode,provisional=provisional,
                 parameters={k:BASELINE[k] for k in strategies+["common"]},oneAttemptPerSymbolStrategyDay=True,
                 specificationSha256=file_sha256(ROOT/"research/intraday_strategy_formulas_v1.md"),
-                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py")},
+                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py",ROOT/"research/intraday_v4_diagnostics.py")},
                 maxPositionsPerStrategy=1,initialCashPerStrategy=10000,notionalUSD=100,fromDate=args.from_date,toDate=args.to_date),
             execution=dict(model="COMPLETED_CLOSE_OBSERVATION_PROXY_60S",timestampKind="start",slippageBpsPerSide=args.slippage_bps,
                 halfSpreadProxyBpsPerSide=1,feesUSD=0,feeVerified=False,quoteAgeVerified=False,executabilityConfirmed=False,
@@ -458,7 +468,7 @@ def main(argv=None):
                     "Point-in-time eligibility and symbol identity are not externally reviewed",
                     "Do not use this run for final performance claims",
                 ]),
-            funnel=funnel,overall=summarize(trades,10000*len(strategies)),
+            funnel=funnel,diagnostics=diagnostics.to_dict(),overall=summarize(trades,10000*len(strategies)),
             byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"]),
             byYear=grouped(trades,lambda t:t["date"][:4]),byMonth=grouped(trades,lambda t:t["date"][:7]),
             bySession=grouped(trades,lambda t:t["session"]),byExitReason=grouped(trades,lambda t:t["exitReason"]),

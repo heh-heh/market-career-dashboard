@@ -270,6 +270,66 @@ def allowed_context(strategy,symbol,ctx,sessions,T,stage):
     return own == "UP" and other != "DOWN" and ctx["volatility"] in {"NORMAL_VOL","HIGH_VOL"}
 
 
+def context_rejection_reason(strategy,symbol,ctx,sessions,T,stage):
+    """Explain a failed allowed_context() without changing strategy semantics."""
+    required={"QQQ","SPY"}|({"SOXX"} if strategy=="ir1" and symbol in SEMI else set())
+    if any(x not in sessions or sessions[x].snapshots.get(T) is None for x in required):
+        return "MISSING_BENCHMARK_DATA"
+    if ctx["direction"]=="UNKNOWN":
+        return "MARKET_FEATURES_UNAVAILABLE"
+    if ctx["volatility"]=="UNKNOWN":
+        return "REGIME_HISTORY_UNAVAILABLE"
+    if strategy=="ir1":
+        if ctx["direction"]!="TREND_UP":
+            return "CONTEXT_DIRECTION_FAILED"
+        if ctx["volatility"]!="NORMAL_VOL":
+            return "CONTEXT_VOLATILITY_FAILED"
+        if symbol in SEMI:
+            x=sessions["SOXX"].snapshots.get(T)
+            if x is None or x.get("u20") is None or x.get("vwap") is None:
+                return "SECTOR_CONTEXT_UNAVAILABLE"
+            if x["u20"]<0 or not (x["close"]>x["vwap"]):
+                return "SECTOR_CONTEXT_FAILED"
+    elif strategy=="ir2":
+        if ctx["volatility"]!="NORMAL_VOL":
+            return "CONTEXT_VOLATILITY_FAILED"
+        if stage in {"IDLE","SETUP"} and ctx["direction"] not in {"RANGE","MIXED"}:
+            return "CONTEXT_DIRECTION_FAILED"
+        if stage not in {"IDLE","SETUP"} and ctx["direction"]=="TREND_DOWN":
+            return "CONTEXT_DIRECTION_FAILED"
+    elif strategy=="ir3":
+        own,other=(ctx["qqq"],ctx["spy"]) if symbol=="QQQ" else (ctx["spy"],ctx["qqq"])
+        if own!="UP" or other=="DOWN":
+            return "CLOCK_DIRECTION_FILTER_FAILED"
+        if ctx["volatility"] not in {"NORMAL_VOL","HIGH_VOL"}:
+            return "CLOCK_VOLATILITY_FILTER_FAILED"
+    return "CONTEXT_FILTER_FAILED"
+
+
+def idle_rejection_reason(strategy,event,session,sessions,T,ctx,queued):
+    """Classify an IDLE outcome after evaluate(); diagnostics only."""
+    clock = strategy=="ir3"
+    if session.minutes.get(T) is None:
+        return "CLOCK_TARGET_BAR_MISSING" if clock else "MISSING_SYMBOL_DATA"
+    lo,hi=WINDOWS[strategy]
+    if not lo<=T.time()<hi or T>=session.closing-10*MINUTE:
+        return "CLOCK_OUTSIDE_ELIGIBLE_WINDOW" if clock else "ENTRY_WINDOW_ENDED"
+    if session.eligibility is None:
+        h=list(session.history.daily)[-61:]
+        return "DAILY_HISTORY_UNAVAILABLE" if len(h)<61 or None in h else "DAILY_LIQUIDITY_REJECTED"
+    if not queued:
+        return "QUEUE_UNAVAILABLE"
+    if not allowed_context(strategy,event.symbol,ctx,sessions,T,event.state):
+        return context_rejection_reason(strategy,event.symbol,ctx,sessions,T,event.state)
+    five=session.fives[-1] if session.fives and session.fives[-1]["bar"].end==T else None
+    prior_index=-2 if five else -1
+    prior_atr=session.fives[prior_index]["atr"] if len(session.fives)>=abs(prior_index) else None
+    A=event.fields.get("A",prior_atr)
+    if not A:
+        return "CLOCK_ATR_UNAVAILABLE" if clock else "ATR_UNAVAILABLE"
+    return "CLOCK_UNCLASSIFIED_IDLE" if clock else "UNCLASSIFIED_IDLE"
+
+
 def evaluate(event,session,sessions,T,ctx,queued):
     """One state transition per event phase; cancellation checked before trigger."""
     s,kind,f = event.state,event.strategy,event.fields
@@ -289,7 +349,7 @@ def evaluate(event,session,sessions,T,ctx,queued):
     if not valid:
         required={"QQQ","SPY"}|({"SOXX"} if kind=="ir1" and event.symbol in SEMI else set())
         missing=any(x not in sessions or sessions[x].snapshots.get(T) is None for x in required)
-        if s != "IDLE": event.move("CANCELLED",T,"MISSING_BENCHMARK_DATA" if missing else "REGIME_HISTORY_UNAVAILABLE" if ctx["volatility"]=="UNKNOWN" else "CONTEXT_FAILED")
+        if s != "IDLE": event.move("CANCELLED",T,context_rejection_reason(kind,event.symbol,ctx,sessions,T,s))
         return
     snap = session.snapshots[T]
     five = session.fives[-1] if session.fives and session.fives[-1]["bar"].end == T else None
