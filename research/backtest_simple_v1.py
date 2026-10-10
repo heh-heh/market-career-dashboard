@@ -129,6 +129,7 @@ def append_log(path, message):
 def write_state(path, log_path, **kwargs):
     payload = {
         "engine": "simple_momentum_v1_historical",
+        "pid": os.getpid(),
         "updatedAt": time.time(),
         **kwargs,
     }
