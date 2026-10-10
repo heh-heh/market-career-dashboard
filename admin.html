@@ -91,6 +91,35 @@
     <div class="card" style="margin-top:12px"><div class="label">Simple V1 포지션 / 대기 신호</div><div id="simplePosition" class="signal">-</div></div>
     <div class="card"><div class="label">현재 상위 후보</div><div id="simpleCandidates" class="signal">-</div></div>
     <div class="card"><div class="label">최근 Simple V1 거래</div><div id="simpleTrades" class="signal">-</div></div>
+
+    <div class="card">
+      <div class="label">Simple V1 히스토리 백테스트</div>
+      <div id="simpleBtState" class="signal">상태 확인 중...</div>
+      <div style="height:10px;background:#07111f;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:10px">
+        <div id="simpleBtProgress" style="height:100%;width:0%;background:var(--accent);transition:width .25s"></div>
+      </div>
+      <div class="actions">
+        <button id="simpleBtStart" class="primary">백테스트 실행</button>
+        <button id="simpleBtDownload">결과 다운로드 (.zip)</button>
+      </div>
+      <div class="mini" style="margin-top:8px">수집 완료된 Toss 1분봉 전체를 사용합니다. 과거 top-100 랭킹 스냅샷은 없으므로, 수집된 종목 안에서 누적 거래량 순위를 재구성합니다. 체결은 신호 다음 1분봉 종가 관측값을 사용해 실시간 스캔 지연을 보수적으로 근사합니다.</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">거래 수</div><div id="simpleBtTrades" class="value">-</div></div>
+      <div class="stat"><div class="label">승률</div><div id="simpleBtWinRate" class="value">-</div></div>
+      <div class="stat"><div class="label">거래수익률 합</div><div id="simpleBtReturn" class="value">-</div></div>
+      <div class="stat"><div class="label">Profit Factor</div><div id="simpleBtPf" class="value">-</div></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">성과 요약</div><div id="simpleBtSummary" class="signal">-</div></div>
+      <div class="card"><div class="label">실행 / 후보 Funnel</div><div id="simpleBtFunnel" class="signal">-</div></div>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="label">세션별 결과</div><div id="simpleBtSessions" class="signal">-</div></div>
+      <div class="card"><div class="label">청산 사유별 결과</div><div id="simpleBtExits" class="signal">-</div></div>
+    </div>
+    <div class="card"><div class="label">연도별 결과</div><div id="simpleBtYears" class="signal">-</div></div>
+    <div class="card"><div class="label">백테스트 로그</div><div id="simpleBtLog" class="terminal" style="min-height:120px;max-height:260px">-</div></div>
   </section>
 
   <section id="server" class="panel">
@@ -302,6 +331,67 @@ async function refreshSimple(){
     document.getElementById("simpleTrades").innerHTML=[...(s.recentTrades||[])].reverse().map(t=>'<div class="row"><b>'+esc(t.symbol)+'</b> · '+esc(t.exitTimestamp)+' · '+esc(t.exitReason)+' · '+esc(fmtUsd(t.pnlUsd))+' · '+Number(t.returnPct).toFixed(2)+'%'+(t.exitAffectedByDataStale?' · DATA_STALE 영향':'')+'</div>').join('')||'완료 거래 없음';
   }catch(e){setText("simpleState",e.message)}
 }
+function pct(v,d=2){return v==null?"-":Number(v).toFixed(d)+"%"}
+function metricRows(obj){
+  const entries=Object.entries(obj||{});
+  if(!entries.length)return '<span class="muted">결과 없음</span>';
+  return entries.map(([k,v])=>'<div class="row"><b>'+esc(k)+'</b> · '+Number(v.trades||0)+'건 · 승률 '+pct(v.winRatePct,1)+' · 평균 '+pct(v.expectancyPct,3)+' · PF '+Number(v.profitFactor||0).toFixed(2)+'</div>').join('');
+}
+async function refreshSimpleBacktest(){
+  try{
+    const s=await req("/api/backtest/simple-v1/status"),m=s.summary||{},f=s.funnel||{};
+    const phase=String(s.phase||"waiting").toUpperCase(),running=!!s.running,progress=Math.max(0,Math.min(100,Number(s.progress||0)));
+    document.getElementById("simpleBtProgress").style.width=progress+"%";
+    document.getElementById("simpleBtStart").disabled=running;
+    document.getElementById("simpleBtDownload").disabled=!s.downloadAvailable;
+    document.getElementById("simpleBtState").innerHTML=
+      '<b class="'+(running?'ok':phase==='ERROR'||phase==='INTERRUPTED'?'bad':'warn')+'">'+esc(phase)+'</b>'+
+      ' · '+progress.toFixed(1)+'% · '+Number(s.processedRows||0).toLocaleString()+' rows'+
+      ' · 신호 '+Number(s.signals||0).toLocaleString()+' · 진입 '+Number(s.entries||0).toLocaleString()+
+      (s.currentTimestamp?' · '+esc(s.currentTimestamp):'')+
+      (s.error?'<br><span class="bad">'+esc(s.error)+'</span>':'');
+    setText("simpleBtTrades",String(m.trades??s.trades??0));
+    setText("simpleBtWinRate",pct(m.winRatePct,1));
+    setText("simpleBtReturn",pct(m.sumTradeReturnPct,2));
+    setText("simpleBtPf",m.profitFactor==null?'-':Number(m.profitFactor).toFixed(2));
+    document.getElementById("simpleBtSummary").innerHTML=
+      '평균 '+pct(m.expectancyPct,3)+' · 중앙값 '+pct(m.medianReturnPct,3)+
+      '<br>평균 이익 '+pct(m.avgWinPct,3)+' · 평균 손실 '+pct(m.avgLossPct,3)+
+      '<br>Payoff '+Number(m.payoffRatio||0).toFixed(2)+' · MDD '+pct(m.maxDrawdownPct,3)+
+      '<br>가상계좌 손익 '+fmtUsd(m.pnlUsd)+' · 계좌수익률 '+pct(m.paperAccountReturnPct,4);
+    document.getElementById("simpleBtFunnel").innerHTML=
+      '관측 '+Number(f.universeObservations||0).toLocaleString()+
+      '<br>1차 후보 '+Number(f.thresholdCandidates||0).toLocaleString()+
+      '<br>셋업 평가 '+Number(f.candidateEvaluations||0).toLocaleString()+
+      '<br>신호 '+Number(f.signals||0).toLocaleString()+
+      '<br>진입 '+Number(f.entries||0).toLocaleString()+
+      '<br>만료 '+Number(f.pendingExpired||0).toLocaleString();
+    document.getElementById("simpleBtSessions").innerHTML=metricRows(s.bySession);
+    document.getElementById("simpleBtExits").innerHTML=metricRows(s.byExitReason);
+    document.getElementById("simpleBtYears").innerHTML=metricRows(s.byYear);
+    setText("simpleBtLog",s.log||"로그 없음");
+  }catch(e){document.getElementById("simpleBtState").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
+}
+async function startSimpleBacktest(){
+  const b=document.getElementById("simpleBtStart");b.disabled=true;b.textContent="시작 중...";
+  try{await req("/api/backtest/simple-v1/start",{method:"POST",body:"{}"});await refreshSimpleBacktest()}
+  catch(e){alert(e.message)}
+  finally{b.textContent="백테스트 실행"}
+}
+async function downloadSimpleBacktest(){
+  const b=document.getElementById("simpleBtDownload");b.disabled=true;
+  try{
+    const headers={};if(token())headers.Authorization="Bearer "+token();
+    const r=await fetch(API+"/api/backtest/simple-v1/download",{headers,cache:"no-store"});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||("HTTP "+r.status))}
+    const blob=await r.blob(),u=URL.createObjectURL(blob),a=document.createElement("a");
+    a.href=u;a.download="simple-v1-backtest-"+new Date().toISOString().replace(/[:.]/g,"-")+".zip";
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
+  }catch(e){alert(e.message)}finally{await refreshSimpleBacktest()}
+}
+document.getElementById("simpleBtStart").onclick=startSimpleBacktest;
+document.getElementById("simpleBtDownload").onclick=downloadSimpleBacktest;
+
 async function downloadPaperLogs(){
   const b=document.getElementById("paperLogsDownload");b.disabled=true;
   try{
@@ -319,7 +409,7 @@ async function downloadPaperLogs(){
 }
 document.getElementById("paperLogsDownload").onclick=downloadPaperLogs;
 
-async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refreshSimple()])}
+async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refreshSimple(),refreshSimpleBacktest()])}
 for(const [id,enabled] of [["simpleStart",true],["simpleStop",false]])document.getElementById(id).onclick=async()=>{try{await req("/api/trading/paper/simple-v1/auto",{method:"POST",body:JSON.stringify({enabled})});await refreshSimple()}catch(e){alert(e.message)}};
 document.getElementById("simpleScan").onclick=async()=>{const b=document.getElementById("simpleScan");b.disabled=true;try{await req("/api/trading/paper/simple-v1/scan",{method:"POST",body:"{}"});await refreshSimple()}catch(e){alert(e.message)}finally{b.disabled=false}};
 
