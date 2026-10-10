@@ -394,6 +394,7 @@ let backtestEngines={
   "v4-ir3":{name:"V4 · IR3 Late-Day Index Momentum"},
   "v4-all":{name:"V4 · All IR Strategies"}
 };
+let backtestServerEngines=new Set();
 function selectedBacktestEngine(){return document.getElementById("btEngineSelect").value||"simple-v1"}
 function pct(v,d=2){return v==null?"-":Number(v).toFixed(d)+"%"}
 function metricRows(obj,limit=30){
@@ -408,6 +409,7 @@ async function loadBacktestEngines(){
     if(Array.isArray(d.engines)&&d.engines.length){
       const current=sel.value;
       const serverMap=Object.fromEntries(d.engines.map(e=>[e.id,e]));
+      backtestServerEngines=new Set(Object.keys(serverMap));
       for(const e of d.engines)backtestEngines[e.id]={...(backtestEngines[e.id]||{}),...e};
       const preferred=["simple-v1","v3","v4-ir1","v4-ir2","v4-ir3","v4-all"];
       const ids=[...preferred,...Object.keys(backtestEngines).filter(id=>!preferred.includes(id))];
@@ -436,7 +438,7 @@ async function refreshSimpleBacktest(){
     if(engine!==selectedBacktestEngine())return;
     const phase=String(s.phase||"waiting").toUpperCase(),running=!!s.running,progress=Math.max(0,Math.min(100,Number(s.progress||0)));
     document.getElementById("simpleBtProgress").style.width=progress+"%";
-    document.getElementById("simpleBtStart").disabled=running;
+    document.getElementById("simpleBtStart").disabled=running||s.runnable===false;
     document.getElementById("simpleBtDownload").disabled=!s.downloadAvailable;
     const activity=s.processedRows==null
       ?(' · 거래일/시점 '+esc(s.currentTimestamp||'-'))
@@ -445,6 +447,7 @@ async function refreshSimpleBacktest(){
       '<b>'+esc(s.engineName||engine)+'</b> · <span class="'+(running?'ok':phase==='ERROR'||phase==='INTERRUPTED'?'bad':'warn')+'">'+esc(phase)+'</span>'+
       ' · '+progress.toFixed(1)+'%'+activity+
       ' · 신호 '+Number(s.signals||0).toLocaleString()+' · 진입 '+Number(s.entries||0).toLocaleString()+
+      (s.blockedReason?'<br><span class="warn">실행 대기: '+esc(s.blockedReason)+'</span>':'')+
       (s.error?'<br><span class="bad">'+esc(s.error)+'</span>':'');
     setText("simpleBtTrades",String(m.trades??s.trades??0));
     setText("simpleBtWinRate",pct(m.winRatePct,1));
@@ -466,13 +469,25 @@ async function refreshSimpleBacktest(){
     document.getElementById("btSymbolsCard").classList.toggle("hidden",engine==="v4-ir1"||engine==="v4-ir2");
     document.getElementById("btSymbols").innerHTML=metricRows(s.bySymbol);
     setText("simpleBtLog",s.log||"로그 없음");
-  }catch(e){if(engine===selectedBacktestEngine())document.getElementById("simpleBtState").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
+  }catch(e){
+    if(engine===selectedBacktestEngine()){
+      const syncNeeded=!backtestServerEngines.has(engine)&&engine.startsWith("v4-");
+      document.getElementById("simpleBtState").innerHTML=syncNeeded
+        ?'<span class="warn">EC2 백엔드가 아직 이 V4 엔진을 모릅니다. GitHub · Git → 배포 브랜치 맞추기 후 API를 재시작하세요.</span>'
+        :'<span class="bad">'+esc(e.message)+'</span>';
+      document.getElementById("simpleBtStart").disabled=syncNeeded;
+    }
+  }
 }
 async function startSimpleBacktest(){
   const engine=selectedBacktestEngine(),b=document.getElementById("simpleBtStart");
+  if(engine.startsWith("v4-")&&!backtestServerEngines.has(engine)){
+    alert("EC2 백엔드 동기화가 필요합니다. GitHub · Git → 배포 브랜치 맞추기 후 API를 재시작하세요.");
+    return;
+  }
   b.disabled=true;b.textContent="시작 중...";
   try{await req("/api/backtest/start",{method:"POST",body:JSON.stringify({engine})});await refreshSimpleBacktest()}
-  catch(e){alert(e.message)}
+  catch(e){alert(e.message);await refreshSimpleBacktest()}
   finally{b.textContent="백테스트 실행"}
 }
 async function downloadSimpleBacktest(){
