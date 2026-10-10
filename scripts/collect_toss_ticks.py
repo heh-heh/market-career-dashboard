@@ -40,7 +40,7 @@ from toss_auth import get_token as shared_toss_token
 SECRETS = ROOT / "server_secrets.json"
 UNIVERSE = ROOT / "research" / "universe_v3.json"
 DEFAULT_DATA_DIR = ROOT / "data" / "toss_ticks"
-STATUS_PATH = ROOT / "data" / "toss_ticks_status.json"
+STATUS_PATH = DEFAULT_DATA_DIR / "status.json"
 WS_URL = "wss://openapi-ws.tossinvest.com/ws/v1"
 CALENDAR = xcals.get_calendar("XNYS")
 
