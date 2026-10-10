@@ -216,12 +216,15 @@ async function refreshV3Paper(){
   try{
     paper=await req("/api/trading/paper/v3/status");
     const on=!!paper.enabled;
+    const entryOpen=paper.newEntriesEnabled!==false;
     document.getElementById("paperGate").innerHTML=
       '<b>'+(on?'<span class="ok">모의매매 수집 ON</span>':'<span class="warn">모의매매 정지</span>')+'</b>'+
       ' · '+esc(paper.engine||"strategy-engine-v3")+
       ' · '+esc(paper.session||"-")+
-      ' · '+Number(paper.scanIntervalSec||0)+'초 간격';
-    setText("paperAutoBtn",on?"V3 중지":"V3 시작");
+      ' · '+Number(paper.scanIntervalSec||0)+'초 간격'+
+      (entryOpen?'':'<br><span class="bad">신규 진입 PAUSED</span> · '+esc(paper.entryPauseReason||'forward 검증 실패로 신규진입 중지'));
+    setText("paperAutoBtn",entryOpen?(on?"V3 중지":"V3 시작"):"V3 신규진입 중지됨");
+    document.getElementById("paperAutoBtn").disabled=!entryOpen;
     setText("paperEquity",fmtUsd(paper.equityUsd));
     const pnl=Number(paper.totalPnlUsd||0);
     setText("paperPnl",(pnl>=0?"+":"")+fmtUsd(pnl));
@@ -287,7 +290,7 @@ async function refreshSimple(){
   try{
     const s=await req("/api/trading/paper/simple-v1/status"),p=s.openPosition;
     const cfg=s.configuration||{}, sessions=(cfg.entry_sessions||[]).join('/');
-    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 세션 '+(sessions||'-')+' · 기준 +'+Number(cfg.min_day_change_pct||0).toFixed(1)+'% / impulse '+Number(cfg.impulse_pct||0).toFixed(1)+'% / pullback '+Number(cfg.pullback_min_pct||0).toFixed(1)+'~'+Number(cfg.pullback_max_pct||0).toFixed(1)+'% · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:'')+(s.timestampWarning?' · '+s.timestampWarning:''));
+    setText("simpleState",(s.enabled?"ON":"OFF")+' · '+(s.session?.status||"UNKNOWN")+' · 세션 '+(sessions||'-')+' · 기준 +'+Number(cfg.min_day_change_pct||0).toFixed(1)+'% / impulse '+Number(cfg.impulse_pct||0).toFixed(1)+'% / pullback '+Number(cfg.pullback_min_pct||0).toFixed(1)+'~'+Number(cfg.pullback_max_pct||0).toFixed(1)+'% · timestamp '+(s.timestampWarning?'BLOCKED':'VERIFIED START')+' · 마지막 스캔 '+(s.lastScan||'-')+(s.lastError?' · 오류 '+s.lastError:'')+(s.timestampWarning?' · '+s.timestampWarning:''));
     document.getElementById("simpleStart").disabled=!!s.enabled;
     document.getElementById("simpleStop").disabled=!s.enabled;
     setText("simpleEquity",fmtUsd(s.paperEquity));setText("simplePnl",fmtUsd(s.totalPnl)+' / '+fmtUsd(s.realizedPnl));
