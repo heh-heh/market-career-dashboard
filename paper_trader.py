@@ -32,6 +32,10 @@ class PaperV3Trader:
         self.market_snapshot = market_snapshot
         self.lock = threading.RLock()
         self.stop_event = threading.Event()
+        # Forward sample gate: preserve all V3 research logs but keep NEW entries
+        # paused by default after the first 25-trade sample failed acceptance.
+        # This affects paper V3 only; it never changes live trading flags.
+        self.new_entries_enabled = os.getenv("PAPER_V3_NEW_ENTRIES_ENABLED", "false").lower() == "true"
 
         configured = os.getenv("PAPER_V3_DIR", "/var/lib/market-career-dashboard/paper_v3")
         self.data_dir = Path(configured)
@@ -62,6 +66,10 @@ class PaperV3Trader:
         self.session_message = ""
         self.last_mark = None
         self._load_state()
+        if self.enabled and not self.new_entries_enabled:
+            self.enabled = False
+            self.last_action = "V3_NEW_ENTRIES_PAUSED_AFTER_FORWARD_REVIEW"
+            self._save_state()
 
     @property
     def initial_cash(self):
@@ -311,16 +319,26 @@ class PaperV3Trader:
                 self.last_candidates = list(market.get("candidates") or [])[:20]
                 self._log_decisions(market)
 
-                # Manual refresh while disabled records/updates real market data but
-                # never changes simulated positions.
-                if self.enabled:
-                    if self.position:
-                        self._manage_position(market)
-                    if not self.position and self.session in self.entry_sessions:
-                        buy = next((x for x in self.last_candidates if x.get("signal") == "BUY"), None)
-                        if buy:
-                            self._open_position(buy)
-                elif not force:
+                # Risk management continues for an already-open paper position
+                # even after the V3 entry switch has been turned off.
+                if self.position:
+                    self._manage_position(market)
+
+                now_ny = datetime.now(NY)
+                before_cutoff = (now_ny.hour, now_ny.minute) < (15, 50)
+                if (self.enabled and self.new_entries_enabled and not self.position
+                        and self.session in self.entry_sessions and before_cutoff):
+                    buy = next((x for x in self.last_candidates if x.get("signal") == "BUY"), None)
+                    if buy:
+                        self._open_position(buy)
+                elif self.enabled and not self.new_entries_enabled:
+                    self.enabled = False
+                    self.last_action = "V3_NEW_ENTRIES_PAUSED_AFTER_FORWARD_REVIEW"
+                elif self.enabled and not before_cutoff and not self.position:
+                    self.last_action = "V3_ENTRY_BLOCKED_AFTER_1550_ET"
+
+                if not self.enabled and not self.position and not force:
+                    self._save_state()
                     return self.status()
 
                 self._save_state()
@@ -334,8 +352,15 @@ class PaperV3Trader:
 
     def set_enabled(self, enabled):
         with self.lock:
-            self.enabled = bool(enabled)
-            self.last_action = "PAPER_AUTO_ON" if self.enabled else "PAPER_AUTO_OFF"
+            requested = bool(enabled)
+            if requested and not self.new_entries_enabled:
+                self.enabled = False
+                self.last_action = "V3_NEW_ENTRIES_PAUSED_AFTER_FORWARD_REVIEW"
+                self.last_error = "V3 new paper entries are paused after forward-sample review"
+            else:
+                self.enabled = requested
+                self.last_action = "PAPER_AUTO_ON" if self.enabled else "PAPER_AUTO_OFF"
+                self.last_error = None
             self._save_state()
             return self.status()
 
@@ -362,6 +387,9 @@ class PaperV3Trader:
                 "engine": "strategy-engine-v3",
                 "dataSource": "Toss real market data / simulated fills only",
                 "enabled": self.enabled,
+                "newEntriesEnabled": self.new_entries_enabled,
+                "entryPauseReason": None if self.new_entries_enabled else "25-trade forward sample failed acceptance; logs retained for analysis",
+                "entryCutoffEt": "15:50",
                 "session": self.session,
                 "sessionMessage": self.session_message,
                 "scanIntervalSec": self.scan_interval,
@@ -396,7 +424,7 @@ class PaperV3Trader:
 
     def run_loop(self):
         while not self.stop_event.is_set():
-            if self.enabled:
+            if self.enabled or self.position:
                 try:
                     self.scan()
                 except Exception as exc:
