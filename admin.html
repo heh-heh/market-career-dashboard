@@ -135,6 +135,10 @@
         <select id="btEngineSelect">
           <option value="simple-v1">Simple Momentum V1</option>
           <option value="v3">Strategy Engine V3</option>
+          <option value="v4-ir1">V4 · IR1 Relative Strength Pullback</option>
+          <option value="v4-ir2">V4 · IR2 Failed Opening Breakdown</option>
+          <option value="v4-ir3">V4 · IR3 Late-Day Index Momentum</option>
+          <option value="v4-all">V4 · All IR Strategies</option>
         </select>
       </div>
       <div id="btEngineDesc" class="mini" style="margin-top:8px">선택한 엔진의 과거 데이터 백테스트를 실행합니다.</div>
@@ -165,6 +169,7 @@
       <div class="card"><div id="btSecondaryLabel" class="label">청산 사유별 결과</div><div id="simpleBtExits" class="signal">-</div></div>
     </div>
     <div class="card"><div class="label">연도별 결과</div><div id="simpleBtYears" class="signal">-</div></div>
+    <div id="btSymbolsCard" class="card"><div class="label">종목별 결과</div><div id="btSymbols" class="signal">-</div></div>
     <div class="card"><div class="label">백테스트 로그</div><div id="simpleBtLog" class="terminal" style="min-height:120px;max-height:260px">-</div></div>
   </section>
 
@@ -382,7 +387,11 @@ async function refreshSimple(){
 function pct(v,d=2){return v==null?"-":Number(v).toFixed(d)+"%"}
 let backtestEngines={
   "simple-v1":{name:"Simple Momentum V1",description:"급등 → 눌림 → 재상승 확인 기반 Simple V1"},
-  "v3":{name:"Strategy Engine V3",description:"기존 ORB/VWAP/Close Momentum multi-strategy V3"}
+  "v3":{name:"Strategy Engine V3",description:"기존 ORB/VWAP/Close Momentum multi-strategy V3"},
+  "v4-ir1":{name:"V4 · IR1 Relative Strength Pullback"},
+  "v4-ir2":{name:"V4 · IR2 Failed Opening Breakdown"},
+  "v4-ir3":{name:"V4 · IR3 Late-Day Index Momentum"},
+  "v4-all":{name:"V4 · All IR Strategies"}
 };
 function selectedBacktestEngine(){return document.getElementById("btEngineSelect").value||"simple-v1"}
 function pct(v,d=2){return v==null?"-":Number(v).toFixed(d)+"%"}
@@ -408,13 +417,15 @@ function updateBacktestEngineText(){
   setText("btEngineDesc",(info.name||id)+' · '+(info.description||''));
   setText("btEngineNote",id==="simple-v1"
     ?"수집 완료된 Toss 1분봉 전체를 사용합니다. 과거 top-100 랭킹 스냅샷은 없어서 수집 종목 내 누적 거래량 순위를 재구성하고, 체결은 신호 다음 1분봉 종가 관측값으로 보수적으로 근사합니다."
-    :"수집 완료된 Toss 1분봉으로 기존 V3 multi-strategy 엔진을 재생합니다. 다음 1분봉 시가 체결, stop-before-target 규칙과 엔진의 기존 점수 체계를 사용합니다.");
+    :id==="v3"?"수집 완료된 Toss 1분봉으로 기존 V3 multi-strategy 엔진을 재생합니다. 다음 1분봉 시가 체결, stop-before-target 규칙과 엔진의 기존 점수 체계를 사용합니다."
+    :"IR_SPEC_V1의 미검증 연구 가설입니다. START 봉 완료 후 다음 완료 1분봉 종가 관측값에 2bps slippage와 1bp spread proxy를 적용합니다. reviewed manifest가 필요하며 한 번에 한 엔진만 실행합니다.");
 }
 async function refreshSimpleBacktest(){
+  const engine=selectedBacktestEngine();
   try{
-    const engine=selectedBacktestEngine();
     updateBacktestEngineText();
     const s=await req("/api/backtest/status?engine="+encodeURIComponent(engine)),m=s.summary||{},f=s.funnel||{};
+    if(engine!==selectedBacktestEngine())return;
     const phase=String(s.phase||"waiting").toUpperCase(),running=!!s.running,progress=Math.max(0,Math.min(100,Number(s.progress||0)));
     document.getElementById("simpleBtProgress").style.width=progress+"%";
     document.getElementById("simpleBtStart").disabled=running;
@@ -444,8 +455,10 @@ async function refreshSimpleBacktest(){
     document.getElementById("simpleBtSessions").innerHTML=metricRows(s.breakdown);
     document.getElementById("simpleBtExits").innerHTML=metricRows(s.secondaryBreakdown);
     document.getElementById("simpleBtYears").innerHTML=metricRows(s.byYear);
+    document.getElementById("btSymbolsCard").classList.toggle("hidden",engine==="v4-ir1"||engine==="v4-ir2");
+    document.getElementById("btSymbols").innerHTML=metricRows(s.bySymbol);
     setText("simpleBtLog",s.log||"로그 없음");
-  }catch(e){document.getElementById("simpleBtState").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
+  }catch(e){if(engine===selectedBacktestEngine())document.getElementById("simpleBtState").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
 }
 async function startSimpleBacktest(){
   const engine=selectedBacktestEngine(),b=document.getElementById("simpleBtStart");

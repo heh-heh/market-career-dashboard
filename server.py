@@ -8,6 +8,7 @@ from paper_trader import PaperV3Trader
 from toss_auth import get_token as shared_toss_token
 from toss_rate_limit import wait_for_slot, group_for_path
 from simple_momentum_v1 import SimpleMomentumPaper, ReadOnlyTossMarketData, persistent_directory
+from backtest_manager import BacktestManager, BACKTEST_ENGINES as RESEARCH_BACKTEST_ENGINES
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -38,14 +39,14 @@ SIMPLE_PAPER_LOCK=threading.Lock()
 STORAGE_CACHE={"at":0.0,"value":{}}
 STORAGE_CACHE_LOCK=threading.Lock()
 
-SIMPLE_BT_DIR=Path("/var/lib/market-career-dashboard")
+SIMPLE_BT_DIR=Path(os.getenv("BACKTEST_DATA_DIR","/var/lib/market-career-dashboard"))
 SIMPLE_BT_STATE=SIMPLE_BT_DIR/"backtest_simple_v1_state.json"
 SIMPLE_BT_RESULT=SIMPLE_BT_DIR/"backtest_simple_v1_result.json"
 SIMPLE_BT_TRADES=SIMPLE_BT_DIR/"backtest_simple_v1_trades.csv"
 SIMPLE_BT_LOG=SIMPLE_BT_DIR/"backtest_simple_v1.log"
 SIMPLE_BT_LOCK=threading.Lock()
 
-V3_BT_DIR=Path("/var/lib/market-career-dashboard")
+V3_BT_DIR=Path(os.getenv("BACKTEST_DATA_DIR","/var/lib/market-career-dashboard"))
 V3_BT_STATE=V3_BT_DIR/"backtest_multistrategy_v1_state.json"
 V3_BT_RESULT=V3_BT_DIR/"backtest_multistrategy_v1_result.json"
 V3_BT_LOG=V3_BT_DIR/"backtest_multistrategy_v1.log"
@@ -63,6 +64,9 @@ BACKTEST_ENGINES={
         "description":"기존 ORB/VWAP/Close Momentum multi-strategy V3",
     },
 }
+BACKTEST_ENGINES.update({k:{"id":k,"name":v["label"],"description":"IR_SPEC_V1 · 미검증 연구 가설 · 완료봉 다음 관측값 체결"}
+                        for k,v in RESEARCH_BACKTEST_ENGINES.items() if k.startswith("v4-")})
+BACKTEST_MANAGER=BacktestManager(ROOT)
 
 def _read_json_file(path):
     try:
@@ -128,7 +132,7 @@ def simple_backtest_status():
         "log":log,
     }
 
-def start_simple_backtest():
+def _start_simple_backtest():
     with SIMPLE_BT_LOCK:
         current=simple_backtest_status()
         if current.get("running"):
@@ -228,7 +232,7 @@ def v3_backtest_status():
         "log":log,
     }
 
-def start_v3_backtest():
+def _start_v3_backtest():
     with V3_BT_LOCK:
         if simple_backtest_status().get("running"):
             raise ValueError("Simple V1 backtest is already running")
@@ -266,8 +270,21 @@ def start_v3_backtest():
                 return status
         return v3_backtest_status()
 
+def start_simple_backtest():
+    return BACKTEST_MANAGER.start("simple-v1",legacy_start=_start_simple_backtest)
+
+def start_v3_backtest():
+    return BACKTEST_MANAGER.start("v3",legacy_start=_start_v3_backtest)
+
 def backtest_engine_status(engine_id):
     engine_id=str(engine_id or "").strip().lower()
+    if engine_id.startswith("v4-") and engine_id in BACKTEST_ENGINES:
+        status=BACKTEST_MANAGER.status(engine_id)
+        status.update(engineId=engine_id,engineName=BACKTEST_ENGINES[engine_id]["name"],
+            breakdownLabel="전략별 결과" if engine_id=="v4-all" else "시장 regime별 결과" if engine_id=="v4-ir3" else "종목별 결과",
+            breakdown=status.get("byStrategy",{}) if engine_id=="v4-all" else status.get("byRegime",{}) if engine_id=="v4-ir3" else status.get("bySymbol",{}),
+            secondaryBreakdownLabel="청산 사유별 결과",secondaryBreakdown=status.get("byExitReason",{}))
+        return status
     if engine_id=="simple-v1":
         status=simple_backtest_status()
         status.update({
@@ -285,6 +302,9 @@ def backtest_engine_status(engine_id):
 
 def start_backtest_engine(engine_id):
     engine_id=str(engine_id or "").strip().lower()
+    if engine_id.startswith("v4-") and engine_id in BACKTEST_ENGINES:
+        BACKTEST_MANAGER.start(engine_id)
+        return backtest_engine_status(engine_id)
     if engine_id=="simple-v1":
         if v3_backtest_status().get("running"):
             raise ValueError("V3 backtest is already running")
@@ -299,6 +319,12 @@ def start_backtest_engine(engine_id):
 
 def backtest_download_files(engine_id):
     engine_id=str(engine_id or "").strip().lower()
+    if engine_id.startswith("v4-") and engine_id in BACKTEST_ENGINES:
+        status=BACKTEST_MANAGER.status(engine_id)
+        if status["running"]: raise ValueError("Backtest is still running")
+        if not status["downloadAvailable"]: raise FileNotFoundError("Current run has no completed result")
+        paths=BACKTEST_MANAGER.paths(engine_id)
+        return [(paths[k],paths[k].name) for k in ("result","trades","state","log","audit","decisions")],engine_id
     if engine_id=="simple-v1":
         if not SIMPLE_BT_RESULT.exists():
             raise FileNotFoundError("backtest result is not available yet")
@@ -1451,7 +1477,11 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             try:
                 body=self.read_json()
-                engine=str(body.get("engine") or "simple-v1")
+                if not isinstance(body,dict) or set(body)-{"engine"} or not isinstance(body.get("engine","simple-v1"),str):
+                    self.send_json({"ok":False,"error":"Only an allowlisted engine is permitted"},400); return
+                engine=str(body.get("engine") or "simple-v1").strip().lower()
+                if engine not in BACKTEST_ENGINES:
+                    self.send_json({"ok":False,"error":"Unknown backtest engine"},400); return
                 self.send_json({"ok":True,**start_backtest_engine(engine)}); return
             except ValueError as e:
                 self.send_json({"ok":False,"error":str(e)},409); return
