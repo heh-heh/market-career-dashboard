@@ -471,6 +471,128 @@ def tick_collector_status():
     }
 
 
+def _tail_json_line(path,max_bytes=131072):
+    path=Path(path)
+    if not path.exists() or not path.is_file():
+        return {}
+    try:
+        with path.open("rb") as f:
+            size=f.seek(0,os.SEEK_END)
+            f.seek(max(0,size-max_bytes))
+            raw=f.read().decode("utf-8","ignore")
+        lines=[line.strip() for line in raw.splitlines() if line.strip()]
+        for line in reversed(lines):
+            try:
+                obj=json.loads(line)
+                if isinstance(obj,dict):
+                    return obj
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return {}
+
+
+def _v4_audit_process():
+    matches=[]
+    proc=Path("/proc")
+    try:
+        entries=list(proc.iterdir())
+    except Exception:
+        return None
+    for p in entries:
+        if not p.name.isdigit():
+            continue
+        try:
+            parts=[x.decode("utf-8","ignore") for x in (p/"cmdline").read_bytes().split(b"\0") if x]
+        except Exception:
+            continue
+        if not any("audit_v4_clock_context.py" in x for x in parts):
+            continue
+        info={"pid":int(p.name),"args":parts}
+        for flag,key in (("--out","out"),("--report","report"),("--sessions-out","sessions"),("--timestamp-kind","timestampKind")):
+            try:
+                i=parts.index(flag)
+                if i+1<len(parts):
+                    info[key]=parts[i+1]
+            except ValueError:
+                pass
+        matches.append(info)
+    return max(matches,key=lambda x:x["pid"]) if matches else None
+
+
+def v4_audit_status():
+    root=Path(os.getenv("V4_RESEARCH_ROOT","/home/ubuntu/v4-research"))
+    proc=_v4_audit_process()
+    run_dir=None
+    out_path=None
+    sessions_path=None
+    report_path=None
+    timestamp_kind=None
+
+    if proc:
+        out_path=Path(proc["out"]) if proc.get("out") else None
+        sessions_path=Path(proc["sessions"]) if proc.get("sessions") else None
+        report_path=Path(proc["report"]) if proc.get("report") else None
+        timestamp_kind=proc.get("timestampKind")
+        run_dir=(out_path or sessions_path or report_path).parent if (out_path or sessions_path or report_path) else None
+
+    if run_dir is None and root.exists():
+        try:
+            dirs=[p for p in root.iterdir() if p.is_dir()]
+            if dirs:
+                run_dir=max(dirs,key=lambda p:p.stat().st_mtime)
+        except Exception:
+            run_dir=None
+
+    if run_dir is not None:
+        out_path=out_path or run_dir/"v4_data_audit.json"
+        sessions_path=sessions_path or run_dir/"v4_data_audit_sessions.jsonl"
+        report_path=report_path or run_dir/"v4_data_audit.md"
+
+    result=_read_json_file(out_path) if out_path else {}
+    last_session=_tail_json_line(sessions_path) if sessions_path else {}
+    sessions_bytes=0
+    updated_at=None
+    if sessions_path and sessions_path.exists():
+        try:
+            st=sessions_path.stat()
+            sessions_bytes=st.st_size
+            updated_at=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime(st.st_mtime))
+        except Exception:
+            pass
+
+    if proc:
+        phase="running"
+    elif result:
+        phase="completed" if str(result.get("status") or "").startswith("PASS") else "failed"
+    elif run_dir:
+        phase="interrupted"
+    else:
+        phase="idle"
+
+    current_date=(last_session.get("sessionDate") or last_session.get("date") or
+                  last_session.get("tradingDate") or last_session.get("day"))
+    current_symbol=last_session.get("symbol")
+    return {
+        "available":bool(proc or run_dir or result),
+        "running":bool(proc),
+        "phase":phase,
+        "pid":proc.get("pid") if proc else None,
+        "timestampKind":timestamp_kind or result.get("timestampKind"),
+        "runDir":str(run_dir) if run_dir else None,
+        "sessionsBytes":sessions_bytes,
+        "sessionsUpdatedAt":updated_at,
+        "currentSessionDate":current_date,
+        "currentSymbol":current_symbol,
+        "lastSession":last_session,
+        "resultReady":bool(result),
+        "resultStatus":result.get("status"),
+        "aggregate":result.get("aggregate") or {},
+        "reportReady":bool(report_path and report_path.exists()),
+    }
+
+
 def load_secrets():
     if not SECRETS.exists():
         return {}
@@ -1584,6 +1706,12 @@ class Handler(BaseHTTPRequestHandler):
         if path=="/api/ticks/status":
             try:
                 self.send_json({"ok":True,**tick_collector_status()})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
+            return
+        if path=="/api/research/v4/audit/status":
+            try:
+                self.send_json({"ok":True,**v4_audit_status()})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)
             return
