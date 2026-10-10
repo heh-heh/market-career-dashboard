@@ -32,10 +32,12 @@ is the minimum of those pullback bars, excluding confirmation.
 
 All timestamps require explicit timezone offsets. `start` means[T,T+1m);
 `end` means exclusive[T-1m,T). **No production semantics are inferred.**
-`SIMPLE_TIMESTAMP_KIND_CONFIRMED=false` is the runtime default and blocks NEW
-entries, with a status/UI warning. Confirm actual EC2 payload semantics before
-setting it true. Logs retain sourceTimestamp, sourceTimezone, parsedTimezone,
-bar start/end, declared timestamp kind and scanTimestamp.
+Forward-paper logs captured on 2026-10-10 verified that Toss 1m candle labels
+behave as START timestamps for [T,T+1m), so the runtime default is now
+`SIMPLE_TIMESTAMP_KIND_CONFIRMED=true`. An explicit environment override can
+still set it false and block new entries. Logs retain sourceTimestamp,
+sourceTimezone, parsedTimezone, bar start/end, declared timestamp kind and
+scanTimestamp.
 
 ## Forward execution (observable_scan_price_v2)
 
