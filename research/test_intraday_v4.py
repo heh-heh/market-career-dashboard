@@ -11,7 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from research import intraday_v4_engine as e
-from research.backtest_intraday_v4 import atomic_json,read_stream,run_sessions,main
+from research.backtest_intraday_v4 import atomic_json,provisional_inspect_file,read_stream,run_sessions,main
 from research.intraday_v4_metrics import summarize,chronological_folds
 
 DAY=datetime(2024,6,3,9,30,tzinfo=e.NY)
@@ -351,6 +351,22 @@ class ResultsTests(unittest.TestCase):
             self.assertFalse(any(x in {"live_trader","paper_trader","simple_momentum_v1","trading","urllib.request","requests"} for x in imports))
             self.assertNotIn("/api/v1/orders",source)
 
+    def test_provisional_streaming_audit_detects_duplicates_without_sqlite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/"AAPL.csv"
+            with p.open("w",newline="") as f:
+                w=csv.writer(f);w.writerow(["timestamp","open","high","low","close","volume"])
+                t=clock(9,31).isoformat()
+                w.writerow([t,100,101,99,100,10])
+                w.writerow([t,100,101,99,100,10])
+                w.writerow([clock(9,32).isoformat(),100,101,99,100,10])
+            meta=provisional_inspect_file(p,"AAPL")
+            self.assertEqual(meta["auditMode"],"streaming_bounded_memory")
+            self.assertEqual(meta["duplicates"],1)
+            self.assertEqual(meta["exactDuplicates"],1)
+            self.assertEqual(meta["conflictingDuplicates"],0)
+            self.assertEqual(meta["validationErrors"],[])
+
     def test_tiny_cli_provisional_smoke_without_reviewed_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);data=root/"data";data.mkdir()
@@ -361,7 +377,8 @@ class ResultsTests(unittest.TestCase):
             argv=["--strategy","ir3","--data-dir",str(data),"--provisional"]
             for option in ("out","state","log","trades-csv","data-audit","decisions"):
                 argv += ["--"+option,str(root/(option+".artifact"))]
-            self.assertEqual(main(argv),0)
+            with patch("research.backtest_intraday_v4.inspect_file",side_effect=AssertionError("SQLite audit must not run in provisional mode")):
+                self.assertEqual(main(argv),0)
             result=json.loads((root/"out.artifact").read_text())
             self.assertEqual(result["researchVerdict"],"PROVISIONAL_UNREVIEWED_DATA")
             self.assertTrue(result["configuration"]["provisional"])
