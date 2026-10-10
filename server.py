@@ -1219,7 +1219,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
-        if path in {"/ticks","/tick-status"}:
+        if path in {"/ticks","/tick-status","/api/ticks/view"}:
             try:
                 raw=(ROOT/"tick-status.html").read_bytes()
                 self.send_response(200)
