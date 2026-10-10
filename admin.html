@@ -428,7 +428,7 @@ function updateBacktestEngineText(){
   setText("btEngineNote",id==="simple-v1"
     ?"수집 완료된 Toss 1분봉 전체를 사용합니다. 과거 top-100 랭킹 스냅샷은 없어서 수집 종목 내 누적 거래량 순위를 재구성하고, 체결은 신호 다음 1분봉 종가 관측값으로 보수적으로 근사합니다."
     :id==="v3"?"수집 완료된 Toss 1분봉으로 기존 V3 multi-strategy 엔진을 재생합니다. 다음 1분봉 시가 체결, stop-before-target 규칙과 엔진의 기존 점수 체계를 사용합니다."
-    :"IR_SPEC_V1의 미검증 연구 가설입니다. START 봉 완료 후 다음 완료 1분봉 종가 관측값에 2bps slippage와 1bp spread proxy를 적용합니다. reviewed manifest가 필요하며 한 번에 한 엔진만 실행합니다.");
+    :"IR_SPEC_V1의 미검증 연구 가설입니다. reviewed manifest가 있으면 검토 데이터 모드로, 없으면 기계적 데이터 검사를 거친 PROVISIONAL_UNREVIEWED_DATA 모드로 실행합니다. 두 모드 모두 완료봉 이후 관측값만 사용하며 한 번에 한 엔진만 실행합니다.");
 }
 async function refreshSimpleBacktest(){
   const engine=selectedBacktestEngine();
@@ -447,6 +447,7 @@ async function refreshSimpleBacktest(){
       '<b>'+esc(s.engineName||engine)+'</b> · <span class="'+(running?'ok':phase==='ERROR'||phase==='INTERRUPTED'?'bad':'warn')+'">'+esc(phase)+'</span>'+
       ' · '+progress.toFixed(1)+'%'+activity+
       ' · 신호 '+Number(s.signals||0).toLocaleString()+' · 진입 '+Number(s.entries||0).toLocaleString()+
+      (s.dataMode?'<br><span class="'+(s.provisional?'warn':'ok')+'">데이터 모드: '+esc(s.dataMode)+(s.provisional?' · 최종 성과 판정 금지':'')+'</span>':'')+
       (s.blockedReason?'<br><span class="warn">실행 대기: '+esc(s.blockedReason)+'</span>':'')+
       (s.error?'<br><span class="bad">'+esc(s.error)+'</span>':'');
     setText("simpleBtTrades",String(m.trades??s.trades??0));
