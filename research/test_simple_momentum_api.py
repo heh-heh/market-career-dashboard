@@ -99,10 +99,18 @@ class PaperAPITests(unittest.TestCase):
         self.assertFalse(self.v3.enabled)
 
     def test_real_v3_runner_survives_and_accounts_controls_are_independent(self):
+        # Eligibility test must run before the NY cutoff regardless of wall clock.
+        from datetime import datetime
+        class BeforeCutoff(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                fixed = datetime(2024, 6, 3, 11, tzinfo=paper_trader.NY)
+                return fixed.astimezone(tz) if tz else fixed.replace(tzinfo=None)
         live_flags = (server.LIVE_TRADER.engine_enabled, server.LIVE_TRADER.live_armed,
                       server.LIVE_TRADER.auto_enabled)
         self.assertNotEqual(self.v3.state_path, self.engine.state_path)
-        with patch.object(server.LIVE_TRADER, "_api", side_effect=AssertionError("live orders forbidden")), \
+        with patch.object(paper_trader, "datetime", BeforeCutoff), \
+             patch.object(server.LIVE_TRADER, "_api", side_effect=AssertionError("live orders forbidden")), \
              patch.object(server.LIVE_TRADER, "arm", side_effect=AssertionError("ARM forbidden")):
             self.assertEqual(self.request("auto", {"enabled": True}, engine="v3")[0], 200)
             self.assertFalse(self.engine.state["enabled"])

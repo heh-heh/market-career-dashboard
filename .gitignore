@@ -19,6 +19,7 @@ live_trading_state.json
 
 data/toss_1m/
 research/backtest_toss_v4_result.json
+research/results/evolution/
 
 
 # Multi-strategy result is intentionally versioned for remote analysis.

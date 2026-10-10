@@ -1,0 +1,63 @@
+{
+  "population_size": 200,
+  "initial_capital": 100.0,
+  "elite_count": 10,
+  "parent_pool_size": 40,
+  "parent_fraction": 0.5,
+  "mutation_probability": 0.2,
+  "mutation_strength": 0.05,
+  "crossover_probability": 0.7,
+  "epsilon": 1e-06,
+  "slippage_bps": 2.0,
+  "half_spread_bps": 1.0,
+  "drawdown_penalty": 0.5,
+  "transaction_cost_penalty": 0.25,
+  "excessive_trading_penalty": 0.001,
+  "free_trade_count": 10,
+  "cutoff_minutes": 5,
+  "train": [
+    "2022-01-01",
+    "2024-12-31"
+  ],
+  "validation": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "final_oos": [
+    "2026-01-01",
+    "2026-12-31"
+  ],
+  "return_scale": 0.01,
+  "volume_scale": 100000.0,
+  "feature_clip": 5.0,
+  "gene_bounds": {
+    "weight": [
+      -2.0,
+      2.0
+    ],
+    "buy_threshold": [
+      0.25,
+      3.0
+    ],
+    "sell_threshold": [
+      -3.0,
+      -0.25
+    ],
+    "stop_loss_pct": [
+      0.005,
+      0.03
+    ],
+    "take_profit_pct": [
+      0.008,
+      0.06
+    ],
+    "max_hold_minutes": [
+      5,
+      120
+    ],
+    "position_fraction": [
+      0.1,
+      1.0
+    ]
+  }
+}

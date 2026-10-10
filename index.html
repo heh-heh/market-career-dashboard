@@ -128,6 +128,14 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   </div>
 </div>
 
+<div class="card" style="margin-top:12px" id="evolutionV0Card">
+  <div class="label">Evolution AI V0 · 연구 전용</div>
+  <div id="evolutionV0Status" class="signal">상태 확인 중...</div>
+  <div id="evolutionV0Metrics" class="bt-symbols" style="margin-top:10px"></div>
+  <div id="evolutionV0Log" class="mini" style="margin-top:8px"></div>
+  <div class="muted">Historical simulation · $100 일별 초기화 · 실거래 연결 없음</div>
+</div>
+
 <div class="card" style="margin-top:12px">
   <div class="backtest-head">
     <div>
@@ -787,6 +795,25 @@ async function loadTickCollectorMonitor(){
  }
 }
 
+async function loadEvolutionMonitor(){
+ const state=document.getElementById("evolutionV0Status"),metrics=document.getElementById("evolutionV0Metrics"),log=document.getElementById("evolutionV0Log");
+ if(!state)return;
+ try{
+  const base=(typeof AWS_API_BASE==="string"?AWS_API_BASE:"").replace(/\/$/,"");
+  const r=await fetch(base+"/api/research/evolution/status?"+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw new Error("Evolution API 미배포 또는 응답 오류 ("+r.status+")");
+  const d=await r.json();if(d.ok===false)throw new Error(d.error||"Evolution 상태 오류");
+  state.textContent=(d.phase||"waiting")+" · "+(d.split||"-")+" · "+(d.currentHistoricalDate||"-")+" · "+(d.dataMode||"연구 전용")+(d.dataOrigin==="synthetic"?" · SYNTHETIC TEST":"");
+  const number=(v,digits=0)=>v==null?"-":Number(v).toFixed(digits);
+  const pct=v=>v==null?"-":(100*Number(v)).toFixed(3)+"%";
+  const rows=[["Generation",d.generation],["Population",d.population],["Alive",d.alive],["Dead",d.dead],["Neutral",d.neutral],["Invalid",d.invalid],
+   ["Best Bot",d.bestBot||"-"],["Best Daily",pct(d.bestDailyReturn)],["Mean Daily",pct(d.meanDailyReturn)],["Median Daily",pct(d.medianDailyReturn)],
+   ["Best Lifetime","$"+number(d.bestLifetimeEquity,2)],["Trades Today",d.tradesToday],["Parent Pool",d.parentPoolSize],["Mutations",d.mutationCount]];
+  if(metrics)metrics.innerHTML=rows.map(([k,v])=>'<span class="bt-symbol">'+esc(k)+': '+esc(v==null?"-":v)+'</span>').join("");
+  if(log)log.textContent=d.error||d.latestLog||"";
+ }catch(e){state.textContent=e.message;if(metrics)metrics.textContent="";if(log)log.textContent="상태를 확인할 수 없습니다. 실행 중으로 표시하지 않습니다.";}
+}
+
 async function loadV4ResearchMonitor(){
  const base=AWS_API_BASE||"";if(!base)return;
  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
@@ -1019,8 +1046,9 @@ function startBacktestMonitor(){
  if(btTimer)clearInterval(btTimer);
  loadTickCollectorMonitor();
  loadV4ResearchMonitor();
+ loadEvolutionMonitor();
  loadBacktestMonitor();
- btTimer=setInterval(()=>{loadTickCollectorMonitor();loadV4ResearchMonitor();loadBacktestMonitor()},3000);
+ btTimer=setInterval(()=>{loadTickCollectorMonitor();loadV4ResearchMonitor();loadEvolutionMonitor();loadBacktestMonitor()},3000);
 }
 document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
 

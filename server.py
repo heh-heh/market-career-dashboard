@@ -1976,6 +1976,14 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)
             return
+        if path=="/api/research/evolution/status":
+            try:
+                from research.evolution.monitor import status as evolution_status
+                root=Path(os.getenv("EVOLUTION_RESULTS_DIR", str(ROOT/"research/results/evolution")))
+                self.send_json({"ok":True,**evolution_status(root)})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
+            return
         if path=="/api/health":
             self.send_json({"ok":True,"service":"market-career-dashboard"})
             return
