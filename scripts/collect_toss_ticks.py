@@ -159,8 +159,10 @@ class TickWriter:
         self.queue: asyncio.Queue[dict] = asyncio.Queue(maxsize=queue_size)
         self.flush_seconds = max(0.1, flush_seconds)
         self.meta = meta
-        self.counts = Counter()
-        self.local_drops = 0
+        self.counts = Counter({
+            str(k): int(v) for k, v in (meta.get("ticksBySymbol") or {}).items()
+        })
+        self.local_drops = int(meta.get("localQueueDrops") or 0)
         self.invalid_messages = 0
         self.handles = {}
         self.writers = {}
@@ -254,7 +256,7 @@ def compress_session(session_dir: Path) -> None:
         if dst.exists():
             # Never silently merge two tick streams.
             continue
-        tmp = dst.with_suffix(".csv.gz.tmp")
+        tmp = Path(str(dst) + ".tmp")
         try:
             with src.open("rb") as rf, gzip.open(tmp, "wb", compresslevel=3) as wf:
                 shutil.copyfileobj(rf, wf, length=1024 * 1024)
@@ -484,7 +486,26 @@ async def collect_regular_session(args, window: dict, stop: asyncio.Event) -> No
                     symbols, writer, close_at, meta, force_token=force_token
                 )
                 force_token = False
-                backoff = 1.0
+                now = as_utc_timestamp()
+                if now < close_at and not stop.is_set():
+                    meta["reconnects"] = int(meta.get("reconnects", 0)) + 1
+                    meta.setdefault("gaps", []).append(
+                        {"detectedAt": utc_now_iso(), "error": "connection_closed"}
+                    )
+                    if len(meta["gaps"]) > 200:
+                        meta["gaps"] = meta["gaps"][-200:]
+                    atomic_json(meta_path, meta)
+                    write_status(
+                        state="reconnecting",
+                        sessionDate=session_date,
+                        error="connection_closed",
+                        retrySeconds=backoff,
+                    )
+                    remaining = max(0.0, (close_at - now).total_seconds())
+                    await asyncio.sleep(min(backoff, remaining))
+                    backoff = min(30.0, backoff * 2)
+                else:
+                    backoff = 1.0
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
