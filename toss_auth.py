@@ -12,8 +12,9 @@ from pathlib import Path
 
 BASE = "https://openapi.tossinvest.com"
 TOKEN_URL = BASE + "/oauth2/token"
-CACHE = Path("/tmp/market-career-dashboard-toss-token.json")
-LOCK = Path("/tmp/market-career-dashboard-toss-token.lock")
+_UID = os.getuid()
+CACHE = Path(f"/tmp/market-career-dashboard-toss-token-{_UID}.json")
+LOCK = Path(f"/tmp/market-career-dashboard-toss-token-{_UID}.lock")
 
 def get_token(cfg: dict, force: bool = False) -> str:
     toss = cfg.get("toss", {}) if isinstance(cfg, dict) else {}
