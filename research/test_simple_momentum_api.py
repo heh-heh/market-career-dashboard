@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 # Import-time V3 construction must never touch production persistence in tests.
 _import_storage = tempfile.TemporaryDirectory()
-with patch.dict(os.environ, {"PAPER_V3_DIR": _import_storage.name}):
+with patch.dict(os.environ, {"PAPER_V3_DIR": _import_storage.name, "PAPER_V3_NEW_ENTRIES_ENABLED": "true"}):
     import server
 import paper_trader
 import simple_momentum_v1 as simple
@@ -30,7 +30,8 @@ class PaperAPITests(unittest.TestCase):
         self.addCleanup(self.engine.close)
         self.addCleanup(patch.stopall)
         patch.object(server, "SIMPLE_PAPER", self.engine).start()
-        with patch.dict(os.environ, {"PAPER_V3_DIR": str(Path(self.tmp.name)/"v3")}):
+        with patch.dict(os.environ, {"PAPER_V3_DIR": str(Path(self.tmp.name)/"v3"),
+                                     "PAPER_V3_NEW_ENTRIES_ENABLED": "true"}):
             self.v3 = paper_trader.PaperV3Trader(self.tmp.name, lambda symbol: {
                 "session": "REGULAR", "candidates": []})
         patch.object(server, "PAPER_V3", self.v3).start()
@@ -130,11 +131,27 @@ class PaperAPITests(unittest.TestCase):
             self.assertEqual(self.request("status", engine="v3")[1]["engine"], "strategy-engine-v3")
         self.assertEqual((server.LIVE_TRADER.engine_enabled, server.LIVE_TRADER.live_armed,
                           server.LIVE_TRADER.auto_enabled), live_flags)
-        with patch.dict(os.environ, {"PAPER_V3_DIR": str(self.v3.data_dir)}):
+        with patch.dict(os.environ, {"PAPER_V3_DIR": str(self.v3.data_dir),
+                                     "PAPER_V3_NEW_ENTRIES_ENABLED": "true"}):
             restored = paper_trader.PaperV3Trader(self.tmp.name, self.v3.market_snapshot)
         self.assertEqual(restored.closed_count, 1)
         self.assertEqual(restored.cash, self.v3.cash)
         self.assertEqual(restored.recent_trades, self.v3.recent_trades)
+
+    def test_v3_new_entries_are_paused_by_default_but_open_position_can_still_be_managed(self):
+        paused_dir = Path(self.tmp.name)/"v3-paused"
+        with patch.dict(os.environ, {"PAPER_V3_DIR": str(paused_dir)}, clear=False):
+            os.environ.pop("PAPER_V3_NEW_ENTRIES_ENABLED", None)
+            candidate = dict(symbol="PAUSED", price=100, stopPrice=98, targetPrice=105,
+                             bestStrategy="ORB_RETEST", signal="BUY")
+            trader = paper_trader.PaperV3Trader(self.tmp.name, lambda symbol: {
+                "session": "REGULAR", "candidates": [candidate]})
+        self.addCleanup(lambda: None)
+        status = trader.set_enabled(True)
+        self.assertFalse(status["enabled"])
+        self.assertFalse(status["newEntriesEnabled"])
+        trader.scan(force=True)
+        self.assertIsNone(trader.position)
 
     def test_authenticated_paper_log_download_contains_v3_and_simple_files(self):
         self.v3._save_state()
