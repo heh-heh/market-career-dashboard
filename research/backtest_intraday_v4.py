@@ -2,7 +2,7 @@
 """Isolated IR_SPEC_V1 historical backtester. Never submits orders.
 
 Reviewed v4_data_manifest.json is preferred. When --provisional is explicit and
-the reviewed manifest is unavailable, raw START labels are mechanically audited
+the reviewed manifest is unavailable, explicitly selected labels are mechanically audited
 and the run is permanently marked PROVISIONAL_UNREVIEWED_DATA.
 Full runs are manual. --from-date/--to-date permit bounded smoke evaluation
 while earlier rows are read as past-only warmup. No parameter search interface.
@@ -28,17 +28,18 @@ sys.path.insert(0,str(ROOT/"research"))
 if __package__:
     from .backtest_v4_strategies import (Bar,MINUTE,NY,exchange_sessions,file_sha256,
             manifest_input_path,normalize_minute_timestamp,validate_data_manifest)
-    from .intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate,idle_rejection_reason)
+    from .intraday_v4_engine import (BASELINE,STOCKS,SEMI,WINDOWS,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from .intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
+    from .intraday_v4_diagnostics import Diagnostics,eligibility_reason,idle_gate_reason,context_reason,snapshot_evidence,opening_reason
 else:
     from backtest_v4_strategies import (Bar,MINUTE,NY,exchange_sessions,file_sha256,
             manifest_input_path,normalize_minute_timestamp,validate_data_manifest)
-    from intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate,idle_rejection_reason)
+    from intraday_v4_engine import (BASELINE,STOCKS,SEMI,WINDOWS,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
+    from intraday_v4_diagnostics import Diagnostics,eligibility_reason,idle_gate_reason,context_reason,snapshot_evidence,opening_reason
 from build_v4_data_manifest import inspect_file,identity,source_file
-from intraday_v4_diagnostics import DiagnosticCollector
 
-VERSION = "IR_SPEC_V1_IMPLEMENTATION_2"
+VERSION = "IR_SPEC_V1_IMPLEMENTATION_2_DIAGNOSTICS_1"
 
 
 def atomic_json(path,value):
@@ -219,6 +220,7 @@ def candidate_queue(sessions,T,slip):
 
 
 def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_date=None,reporter=None,decisions_path=None,entry_symbols=None,diagnostics=None):
+    diagnostics=diagnostics if diagnostics is not None else Diagnostics(strategies)
     entry_symbols=set(symbols) if entry_symbols is None else set(entry_symbols)
     histories={s:History() for s in symbols}
     books={k:Book(k,slip) for k in strategies}
@@ -243,7 +245,26 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                 else:
                     h=list(histories[s].daily)[-61:]
                     funnel["DAILY_HISTORY_UNAVAILABLE" if len(h)<61 or None in h else "DAILY_LIQUIDITY_REJECTED"]+=1
+        diagnostics.new_session()
         events={(k,s):Event(k,s) for k in strategies for s in entry_symbols if (k=="ir3" and s in {"SPY","QQQ"}) or (k!="ir3" and s in STOCKS)}
+        if active:
+            for (kind,symbol),event in events.items():
+                d=diagnostics.data[kind]
+                d["observationCounts"]["sessionsTotal"]+=1
+                eligible=sessions[symbol].eligibility is not None
+                d["observationCounts"]["dailyEligibleSessions"]+=int(eligible)
+                if kind=="ir3":
+                    if (closing-opening).total_seconds()==390*60:
+                        diagnostics.stage(event,"eligibleSessions")
+                    else:
+                        d["clockCoverage"]["earlyCloseSessions"]+=1
+                        # Calendar exclusion is reported even though the original
+                        # engine never visits 15:30 on an early close.
+                        d["sessionExclusionReasons"]["CLOCK_SESSION_EARLY_CLOSE"]+=1
+                elif eligible:
+                    diagnostics.stage(event,"eligibleSessions")
+                else:
+                    d["observationCounts"][eligibility_reason(sessions[symbol])]+=1
         cutoff=min(closing-10*MINUTE,opening.replace(hour=15,minute=50))
         T=opening+MINUTE
         while T<=closing:
@@ -259,6 +280,8 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         if done:
                             event=events.get((book.strategy,symbol))
                             if event and event.state=="MANAGING": event.move("EXIT",T,done["exitReason"])
+                for (kind,symbol),event in events.items():
+                    diagnostics.data[kind]["observationCounts"]["rawObservations"]+=int(T in sessions[symbol].minutes)
                 ctx=context(sessions,T)
                 for kind,book in books.items():
                     pending=[e for (k,s),e in events.items() if k==kind and e.state=="TRIGGERED"]
@@ -267,18 +290,21 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         if event.fields.get("priority") is None:
                             event.move("CANCELLED",T,"PRIORITY_UNAVAILABLE")
                             book.funnel["PRIORITY_UNAVAILABLE"]+=1
-                            if diagnostics: diagnostics.record_rejection(event,day,T)
+                            diagnostics.reject(event,"PRIORITY_UNAVAILABLE",snapshot_evidence(event,sessions[event.symbol],sessions,T,ctx))
                         else:
                             valid_pending.append(event)
                     valid_pending.sort(key=lambda e:(-e.fields["priority"],0 if kind=="ir3" else -e.fields.get("adv20",0),e.fields["signalTimestamp"],e.symbol))
                     for event in valid_pending:
                         bar=sessions[event.symbol].minutes.get(T)
                         if bar:
-                            book.enter(event,bar,T,ctx,sessions[event.symbol],sessions)
+                            diagnostics.stage(event,"executionObserved")
+                            entered=book.enter(event,bar,T,ctx,sessions[event.symbol],sessions)
+                            if entered: diagnostics.stage(event,"tradeEntered")
                         else:
                             event.move("CANCELLED",T,"ENTRY_GAP_OR_LATENCY")
                             book.funnel["ENTRY_GAP_OR_LATENCY"]+=1
-                            if diagnostics: diagnostics.record_rejection(event,day,T)
+                        if event.state=="CANCELLED":
+                            diagnostics.reject(event,event.fields["reason"],event.fields.get("rejectionContext") or snapshot_evidence(event,sessions[event.symbol],sessions,T,ctx),event.fields.get("legacyReason"))
                 scores,shortlist=candidate_queue({s:v for s,v in sessions.items() if s in entry_symbols},T,slip/10000)
                 funnel["universeObservations"]+=len([s for s in sessions if s in STOCKS])
                 funnel["thresholdCandidates"]+=len(shortlist)
@@ -287,12 +313,56 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                     if kind=="ir3" and T.time().isoformat()!="15:30:00": continue
                     before=event.state
                     score=scores.get(symbol)
-                    if kind=="ir3":
-                        score=0
-                        if diagnostics: diagnostics.observe_ir3_clock(symbol,day,T,sessions[symbol],sessions,ctx)
-                    evaluate(event,sessions[symbol],sessions,T,ctx,score is not None)
+                    if kind=="ir3": score=0
+                    session=sessions[symbol]
+                    gate_reason=gate_ref=None
+                    lo,hi=WINDOWS[kind]
+                    if before in {"IDLE","SETUP","ARMED"} and lo<=T.time()<hi and T<closing-10*MINUTE and T in session.minutes and (before!="IDLE" or (session.eligibility is not None and score is not None)):
+                        d=diagnostics.data[kind]["observationCounts"]
+                        d["contextChecks"]+=1
+                        rejected,_=context_reason(kind,symbol,ctx,sessions,T,before)
+                        d["contextRejected" if rejected else "contextAccepted"]+=1
+                    if before=="IDLE":
+                        lo,hi=WINDOWS[kind]
+                        in_window=lo<=T.time()<hi and T<closing-10*MINUTE
+                        if in_window:
+                            gate_reason,gate_ref=idle_gate_reason(event,session,sessions,T,ctx,score is not None)
+                            if gate_reason:
+                                diagnostics.observation_reject(event,gate_reason,lambda: snapshot_evidence(event,session,sessions,T,ctx,gate_ref))
+                            data_context=(ctx["direction"]!="UNKNOWN" and ctx["volatility"]!="UNKNOWN")
+                            if kind=="ir3":
+                                diagnostics.stage(event,"clockReached")
+                                coverage=diagnostics.data[kind]["clockCoverage"]
+                                coverage["clockReached"]+=1
+                                coverage["targetCompletedBarPresent" if T in session.minutes else "targetCompletedBarMissing"]+=1
+                                coverage["benchmarkContextAvailable" if data_context else "benchmarkContextUnavailable"]+=1
+                                # Independent of expected direction/volatility filters.
+                                five=session.fives[-1] if session.fives and session.fives[-1]["bar"].end==T else None
+                                ix=-2 if five else -1
+                                own_available=(T in session.minutes and session.eligibility is not None and len(session.fives)>=abs(ix) and bool(session.fives[ix]["atr"]))
+                                if own_available:
+                                    diagnostics.stage(event,"targetContextAvailable")
+                                    if data_context:
+                                        diagnostics.stage(event,"benchmarkContextAvailable")
+                                        diagnostics.stage(event,"strategyConditionEvaluated")
+                            elif session.eligibility is not None and score is not None and T in session.minutes:
+                                if data_context:
+                                    diagnostics.stage(event,"contextAvailable")
+                                if gate_reason is None:
+                                    diagnostics.stage(event,"setupCandidates")
+                    evaluate(event,session,sessions,T,ctx,score is not None)
                     if kind=="ir3" and event.state=="IDLE":
-                        event.move("CANCELLED",T,idle_rejection_reason(kind,event,sessions[symbol],sessions,T,ctx,score is not None))
+                        # Original catch-all mislabeled EXPECTED filters as
+                        # missing context. State outcome and timing are unchanged.
+                        if gate_reason is None:
+                            raise AssertionError("IR3 IDLE gate returned without an explained reason")
+                        event.move("CANCELLED",T,gate_reason,legacyReason="CLOCK_ELIGIBILITY_CONTEXT_UNAVAILABLE",
+                                   rejectionContext=snapshot_evidence(event,session,sessions,T,ctx,gate_ref))
+                    elif kind=="ir3" and event.state=="CANCELLED" and event.fields["reason"]=="OPENING_HISTORY_UNAVAILABLE":
+                        event.fields["legacyReason"]="OPENING_HISTORY_UNAVAILABLE"
+                        event.fields["reason"]=opening_reason(session)
+                        event.transitions[-1]["reason"]=event.fields["reason"]
+                        event.fields["rejectionContext"]=snapshot_evidence(event,session,sessions,T,ctx,symbol)
                     if before=="IDLE" and event.state not in {"IDLE","CANCELLED"}:
                         # Freeze operational capacity priority when the setup is
                         # first admitted. Later queue membership may disappear;
@@ -300,25 +370,29 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                         event.fields["queuePriority"]=score
                     if before!=event.state:
                         funnel["candidateEvaluations"]+=1
-                        if before=="IDLE" and event.state!="CANCELLED": funnel["setups"]+=1
+                        if before=="IDLE" and event.state!="CANCELLED":
+                            funnel["setups"]+=1
+                            diagnostics.stage(event,"conditionPassed" if kind=="ir3" else "setupValid")
                         if event.state=="TRIGGERED":
+                            if kind!="ir3": diagnostics.stage(event,"triggerObserved")
                             priority=event.fields.get("openingZ") if kind=="ir3" else event.fields.get("queuePriority")
                             if priority is None:
                                 event.move("CANCELLED",T,"PRIORITY_UNAVAILABLE")
                                 funnel["PRIORITY_UNAVAILABLE"]+=1
                             else:
                                 funnel["signals"]+=1
+                                diagnostics.stage(event,"signalEmitted")
                                 event.fields["priority"]=priority
                                 event.fields["adv20"]=sessions[symbol].eligibility["adv20"]
                         if event.state=="CANCELLED":
-                            funnel[event.fields["reason"]]+=1
-                            if diagnostics:
-                                if kind=="ir3" and event.fields.get("reason")=="CLOCK_DIRECTION_FILTER_FAILED":
-                                    diagnostics.observe_ir3_direction_failure(
-                                        symbol,day,T,sessions,ctx,BASELINE["common"]["ERTrendMin"])
-                                diagnostics.record_rejection(event,day,T)
-                        elif diagnostics:
-                            diagnostics.record_transition(event,day,T,before)
+                            reason=event.fields["reason"];legacy=event.fields.get("legacyReason")
+                            # Compatibility totals do not represent additional
+                            # rejected events; exclusive counts live in diagnostics.
+                            funnel[reason]+=1
+                            if legacy and legacy!=reason: funnel[legacy]+=1
+                            diagnostics.reject(event,reason,event.fields.get("rejectionContext") or snapshot_evidence(event,session,sessions,T,ctx),legacy)
+                            if kind=="ir3" and reason in {"CLOCK_DIRECTION_FILTER_FAILED","CLOCK_OWN_DIRECTION_FILTER","CLOCK_OTHER_INDEX_DOWN"}:
+                                diagnostics.direction_collector.observe_ir3_direction_failure(symbol,day,T,sessions,ctx,BASELINE["common"]["ERTrendMin"])
                 if any(sessions[s].snapshots.get(T) is None for s in ("QQQ","SPY")):
                     funnel["MISSING_BENCHMARK_DATA"]+=1
                 elif ctx["direction"]=="UNKNOWN": funnel["MARKET_FEATURES_UNAVAILABLE"]+=1
@@ -402,37 +476,38 @@ def main(argv=None):
         if not selected or not selected<=allowed: raise ValueError("Selected symbols are unmapped/excluded for these IR strategies")
         required=selected|{"SPY","QQQ"}
         if "ir1" in strategies and selected&SEMI: required.add("SOXX")
+        reporter.update(phase="data_audit",currentTimestamp="MANIFEST_PREFLIGHT")
         reviewed_manifest=args.manifest.is_file()
         provisional=bool(args.provisional and not reviewed_manifest)
         if not reviewed_manifest and not provisional:
             raise ValueError("Reviewed V4 data manifest is missing; rerun with --provisional for an explicitly unreviewed research run")
         audits={}
         if reviewed_manifest:
-            manifest=validate_data_manifest(args.manifest,required,"start",data_dir=args.data_dir)
+            manifest=validate_data_manifest(args.manifest,required,args.timestamp_kind,data_dir=args.data_dir)
             paths={s:manifest_input_path(args.data_dir,s,manifest["symbols"][s]) for s in sorted(required)}
         else:
             # Provisional mode never fabricates provenance. It binds the exact
             # current bytes and performs the same mechanical audit used below.
-            manifest=dict(version=1,timestampKind="start",calendar="XNYS",validationPassed=False,
+            manifest=dict(version=1,timestampKind=args.timestamp_kind,calendar="XNYS",validationPassed=False,
                           reviewStatus="PROVISIONAL_UNREVIEWED_DATA",symbols={})
             paths={}
             for s in sorted(required):
                 paths[s]=source_file(args.data_dir,s)
                 reporter.update(phase="data_audit",progress=5*len(paths)/len(required),currentTimestamp=s)
-                meta=provisional_inspect_file(paths[s],s,"start",None)
+                meta=provisional_inspect_file(paths[s],s,args.timestamp_kind,None)
                 meta["path"]=paths[s].name
                 manifest["symbols"][s]=meta
                 audits[s]=meta
         for i,(s,path) in enumerate(paths.items()):
             reporter.update(phase="data_audit",progress=5+5*i/len(paths),currentTimestamp=s)
             if s not in audits:
-                audits[s]=inspect_file(path,s,"start",manifest["symbols"][s]["naive_timezone"])
+                audits[s]=inspect_file(path,s,args.timestamp_kind,manifest["symbols"][s]["naive_timezone"])
             if not audits[s]["monotonicTimestampOrdering"]:
                 audits[s]["validationErrors"].append("Input ordering is non-monotonic; raw files were not rewritten")
             if reviewed_manifest and audits[s]["sha256"]!=manifest["symbols"][s]["sha256"]:
                 audits[s]["validationErrors"].append("Manifest hash changed")
         manifest_sha=file_sha256(args.manifest) if reviewed_manifest else None
-        audit=dict(version=1,runId=reporter.state["runId"],generatedAt=datetime.now(timezone.utc).isoformat(),timestampKind="start",
+        audit=dict(version=1,runId=reporter.state["runId"],generatedAt=datetime.now(timezone.utc).isoformat(),timestampKind=args.timestamp_kind,
                    reviewStatus="REVIEWED_MANIFEST" if reviewed_manifest else "PROVISIONAL_UNREVIEWED_DATA",
                    provisional=provisional,manifestPath=str(args.manifest) if reviewed_manifest else None,manifestSha256=manifest_sha,symbols=audits,
                    dataRoot=str(args.data_dir.resolve()),requiredSymbols=sorted(required),
@@ -446,7 +521,7 @@ def main(argv=None):
         schedules=exchange_sessions(first,last)
         args.decisions.parent.mkdir(parents=True,exist_ok=True); args.decisions.write_text("")
         before={s:identity(p.stat()) for s,p in paths.items()}
-        diagnostics=DiagnosticCollector(strategies)
+        diagnostics=Diagnostics(strategies)
         trades,funnel,unresolved,days,overlap=run_sessions(day_stream(paths,manifest),schedules,required,strategies,args.slippage_bps,
                      args.from_date,args.to_date,reporter,args.decisions,selected,diagnostics)
         for s,p in paths.items():
@@ -458,7 +533,7 @@ def main(argv=None):
                 dataMode=data_mode,provisional=provisional,
                 parameters={k:BASELINE[k] for k in strategies+["common"]},oneAttemptPerSymbolStrategyDay=True,
                 specificationSha256=file_sha256(ROOT/"research/intraday_strategy_formulas_v1.md"),
-                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py",ROOT/"research/intraday_v4_diagnostics.py")},
+                codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py")},
                 maxPositionsPerStrategy=1,initialCashPerStrategy=10000,notionalUSD=100,fromDate=args.from_date,toDate=args.to_date),
             execution=dict(model="COMPLETED_CLOSE_OBSERVATION_PROXY_60S",timestampKind=args.timestamp_kind,slippageBpsPerSide=args.slippage_bps,
                 halfSpreadProxyBpsPerSide=1,feesUSD=0,feeVerified=False,quoteAgeVerified=False,executabilityConfirmed=False,
@@ -474,13 +549,16 @@ def main(argv=None):
                     "Point-in-time eligibility and symbol identity are not externally reviewed",
                     "Do not use this run for final performance claims",
                 ]),
-            funnel=funnel,diagnostics=diagnostics.to_dict(),overall=summarize(trades,10000*len(strategies)),
+            diagnostics=diagnostics.as_dict(),funnel=funnel,overall=summarize(trades,10000*len(strategies)),
             byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"]),
             byYear=grouped(trades,lambda t:t["date"][:4],10000*len(strategies)),byMonth=grouped(trades,lambda t:t["date"][:7],10000*len(strategies)),
             bySession=grouped(trades,lambda t:t["session"],10000*len(strategies)),byExitReason=grouped(trades,lambda t:t["exitReason"],10000*len(strategies)),
             byRegime=grouped(trades,lambda t:t["marketRegime"]["direction"]+"/"+t["marketRegime"]["volatility"],10000*len(strategies)),
             byTimeOfDay=grouped(trades,time_bucket,10000*len(strategies)),chronologicalEvaluation=chronological_folds(trades,days),
             unresolvedPositions=unresolved,strategyOverlap=dict(**overlap,note="IR1 stocks and IR3 indices have disjoint entry universes; trade-day co-occurrence is not simultaneous trigger overlap"),
+            metricSemantics=dict(drawdown="Chronological realized exit PnL/R, not mark-to-market",
+                excursions="Completed-close observation MFE/MAE, not all intrabar extremes",
+                folds="No trades with exits outside their attributed fold period"),
             researchVerdict=("PROVISIONAL_UNREVIEWED_DATA" if provisional else "UNVALIDATED_DESCRIPTIVE_ONLY"),specBlocked=[],trades=trades)
         result["overall"]["dailySharpeLike"]=daily_consistency(trades,days,10000*len(strategies))
         for kind in strategies:

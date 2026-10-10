@@ -101,6 +101,7 @@ class Session:
         self.cum_v = self.cum_pv = 0.0
         self.last_end = None
         self.prefix_complete = True
+        self.first_prefix_gap = None
         self.eligibility = history.eligibility()
         self.or15 = None
 
@@ -114,6 +115,8 @@ class Session:
         expected = self.last_end or self.opening
         if bar.start != expected:
             self.prefix_complete = False
+            if self.first_prefix_gap is None:
+                self.first_prefix_gap = dict(expectedBarStart=expected.isoformat(),observedBarStart=bar.start.isoformat(),detectedAt=bar.end.isoformat())
         self.minutes[bar.end] = bar
         self.last_end = bar.end
         self.cum_v += bar.v
@@ -349,7 +352,17 @@ def evaluate(event,session,sessions,T,ctx,queued):
     if not valid:
         required={"QQQ","SPY"}|({"SOXX"} if kind=="ir1" and event.symbol in SEMI else set())
         missing=any(x not in sessions or sessions[x].snapshots.get(T) is None for x in required)
-        if s != "IDLE": event.move("CANCELLED",T,context_rejection_reason(kind,event.symbol,ctx,sessions,T,s))
+        if s != "IDLE":
+            # Atomic explanation of the unchanged boolean gate. Legacy category
+            # remains available for old result consumers and before/after audit.
+            try:
+                from .intraday_v4_diagnostics import context_reason,snapshot_evidence
+            except ImportError:
+                from intraday_v4_diagnostics import context_reason,snapshot_evidence
+            reason,ref=context_reason(kind,event.symbol,ctx,sessions,T,s)
+            legacy="MISSING_BENCHMARK_DATA" if missing else "REGIME_HISTORY_UNAVAILABLE" if ctx["volatility"]=="UNKNOWN" else "CONTEXT_FAILED"
+            event.move("CANCELLED",T,"CONTEXT_"+reason,legacyReason=legacy,
+                       rejectionContext=snapshot_evidence(event,session,sessions,T,ctx,ref))
         return
     snap = session.snapshots[T]
     five = session.fives[-1] if session.fives and session.fives[-1]["bar"].end == T else None
@@ -477,6 +490,15 @@ class Book:
                 reason = reason or "ENTRY_REWARD_RECOVERY_FAILED"
         if self.cash < 100: reason = reason or "CASH_LIMIT"
         if reason:
+            if reason in {"ENTRY_CONTEXT_FAILED","MISSING_BENCHMARK_DATA"}:
+                try:
+                    from .intraday_v4_diagnostics import context_reason,snapshot_evidence
+                except ImportError:
+                    from intraday_v4_diagnostics import context_reason,snapshot_evidence
+                atomic,ref=context_reason(event.strategy,event.symbol,ctx,sessions,T,"TRIGGERED")
+                event.fields.update(legacyReason=reason,rejectionContext=snapshot_evidence(event,session,sessions,T,ctx,ref))
+                self.funnel[reason]+=1
+                reason="ENTRY_CONTEXT_"+atomic
             event.move("CANCELLED",T,reason); self.funnel[reason] += 1; return False
         event.move("ENTRY",T)
         p = dict(strategy=event.strategy,symbol=event.symbol,date=T.date().isoformat(),session="REGULAR",
