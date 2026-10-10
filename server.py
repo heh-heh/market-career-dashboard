@@ -595,6 +595,7 @@ def run_admin_console(command):
             "  (배포 브랜치 정리는 관리자 Git 탭의 전용 버튼 사용)\n"
             "  git log [N]\n"
             "  systemctl status|is-active|restart <service>\n"
+            "  api status|restart\n"
             "  journalctl <service> [N]\n"
             "  tail collector|v2|multi [N]\n"
             "  state collector|v2|multi\n"
@@ -638,12 +639,30 @@ def run_admin_console(command):
             raise ValueError("usage: git log [N]")
         return _git_run(["log","--oneline","-n",str(n)])
 
+    if parts and parts[0]=="api":
+        if parts==["api","status"]:
+            return _console_run(
+                ["systemctl","status","market-career-dashboard.service","--no-pager","--full"],
+                timeout=20,
+            )
+        if parts==["api","restart"]:
+            code,out=_console_run(
+                ["systemctl","--no-block","restart","market-career-dashboard.service"],
+                timeout=5,
+            )
+            if code==0:
+                return 0,"API 재시작을 예약했습니다. 약 5~10초 뒤 자동으로 다시 연결됩니다."
+            return code,out or "API 재시작 요청에 실패했습니다."
+        raise ValueError("usage: api status|restart")
+
     if parts and parts[0]=="systemctl":
         if len(parts)!=3 or parts[1] not in {"status","is-active","restart"}:
             raise ValueError("usage: systemctl status|is-active|restart <service>")
         service=parts[2]
         if service not in ADMIN_CONSOLE_SERVICES:
             raise ValueError("service not allowed")
+        if parts[1]=="restart" and service=="market-career-dashboard.service":
+            return _console_run(["systemctl","--no-block","restart",service],timeout=5)
         args=["systemctl",parts[1],service]
         if parts[1]=="status":
             args+=["--no-pager","--full"]
