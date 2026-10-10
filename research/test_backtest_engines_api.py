@@ -53,12 +53,21 @@ class RegistryTests(unittest.TestCase):
             self.assertEqual(proc.call_args.args[0][proc.call_args.args[0].index("--strategy")+1],"ir2")
             self.assertFalse(proc.call_args.kwargs.get("shell",False))
 
-    def test_missing_manifest_fails_before_any_subprocess(self):
+    def test_missing_manifest_launches_explicit_provisional_mode(self):
         data=self.root/"data/toss_1m";data.mkdir(parents=True);(data/"QQQ.csv").write_text("test")
         research=self.root/"research";research.mkdir();(research/"backtest_intraday_v4.py").write_text("test")
-        with patch.object(self.manager,"active_job",return_value=None),patch("backtest_manager.subprocess.Popen") as proc:
-            with self.assertRaisesRegex(RuntimeError,"manifest"):self.manager.start("v4-ir3")
-            proc.assert_not_called()
+        def launch(cmd,**kw):
+            path=Path(cmd[cmd.index("--state")+1])
+            path.write_text(json.dumps(dict(pid=321,phase="starting",running=True,progress=0)))
+            return Mock(pid=321)
+        with patch.object(self.manager,"active_job",return_value=None),patch("backtest_manager.subprocess.Popen",side_effect=launch) as proc,patch.object(self.manager,"running",return_value=True):
+            status=self.manager.start("v4-ir3")
+            cmd=proc.call_args.args[0]
+            self.assertIn("--provisional",cmd)
+            self.assertNotIn("--manifest",cmd)
+            self.assertTrue(status["provisional"])
+            self.assertEqual(status["dataMode"],"PROVISIONAL_UNREVIEWED_DATA")
+            self.assertTrue(status["runnable"])
 
     def test_interrupted_state_is_visible_on_new_manager_instance(self):
         paths=self.manager.paths("v4-ir1");self.manager.directory.mkdir()
