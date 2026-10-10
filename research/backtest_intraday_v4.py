@@ -261,8 +261,15 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                 ctx=context(sessions,T)
                 for kind,book in books.items():
                     pending=[e for (k,s),e in events.items() if k==kind and e.state=="TRIGGERED"]
-                    pending.sort(key=lambda e:(-e.fields["priority"],0 if kind=="ir3" else -e.fields.get("adv20",0),e.fields["signalTimestamp"],e.symbol))
+                    valid_pending=[]
                     for event in pending:
+                        if event.fields.get("priority") is None:
+                            event.move("CANCELLED",T,"PRIORITY_UNAVAILABLE")
+                            book.funnel["PRIORITY_UNAVAILABLE"]+=1
+                        else:
+                            valid_pending.append(event)
+                    valid_pending.sort(key=lambda e:(-e.fields["priority"],0 if kind=="ir3" else -e.fields.get("adv20",0),e.fields["signalTimestamp"],e.symbol))
+                    for event in valid_pending:
                         bar=sessions[event.symbol].minutes.get(T)
                         if bar:
                             book.enter(event,bar,T,ctx,sessions[event.symbol],sessions)
@@ -281,13 +288,23 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                     evaluate(event,sessions[symbol],sessions,T,ctx,score is not None)
                     if kind=="ir3" and event.state=="IDLE":
                         event.move("CANCELLED",T,"CLOCK_ELIGIBILITY_CONTEXT_UNAVAILABLE")
+                    if before=="IDLE" and event.state not in {"IDLE","CANCELLED"}:
+                        # Freeze operational capacity priority when the setup is
+                        # first admitted. Later queue membership may disappear;
+                        # pending signals must never inherit a future score.
+                        event.fields["queuePriority"]=score
                     if before!=event.state:
                         funnel["candidateEvaluations"]+=1
                         if before=="IDLE" and event.state!="CANCELLED": funnel["setups"]+=1
                         if event.state=="TRIGGERED":
-                            funnel["signals"]+=1
-                            event.fields["priority"]=event.fields.get("openingZ",score)
-                            event.fields["adv20"]=sessions[symbol].eligibility["adv20"]
+                            priority=event.fields.get("openingZ") if kind=="ir3" else event.fields.get("queuePriority")
+                            if priority is None:
+                                event.move("CANCELLED",T,"PRIORITY_UNAVAILABLE")
+                                funnel["PRIORITY_UNAVAILABLE"]+=1
+                            else:
+                                funnel["signals"]+=1
+                                event.fields["priority"]=priority
+                                event.fields["adv20"]=sessions[symbol].eligibility["adv20"]
                         if event.state=="CANCELLED": funnel[event.fields["reason"]]+=1
                 if any(sessions[s].snapshots.get(T) is None for s in ("QQQ","SPY")):
                     funnel["MISSING_BENCHMARK_DATA"]+=1
