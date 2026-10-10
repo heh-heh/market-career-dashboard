@@ -483,8 +483,14 @@ def save_secrets(obj):
     tmp=SECRETS.with_suffix(".tmp")
     tmp.write_text(json.dumps(obj,ensure_ascii=False,indent=2),encoding="utf-8")
     os.replace(tmp,SECRETS)
-    try: os.chmod(SECRETS,0o600)
-    except OSError: pass
+    try:
+        # The tick collector runs as ubuntu and needs read-only access to the
+        # same API credentials. Keep owner=root and grant only the ubuntu group.
+        ubuntu=pwd.getpwnam("ubuntu")
+        os.chown(SECRETS,-1,ubuntu.pw_gid)
+        os.chmod(SECRETS,0o640)
+    except OSError:
+        pass
 
 def auth_token(handler):
     value=handler.headers.get("Authorization","")
