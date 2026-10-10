@@ -21,6 +21,17 @@ class Config:
     excessive_trading_penalty: float = 0.001
     free_trade_count: int = 10
     cutoff_minutes: int = 5  # before actual XNYS close, including half days
+    # V0.1 resource-aware scaling is opt-in so V0 replay remains reproducible by default.
+    adaptive_resources: bool = False
+    min_population: int = 20
+    max_population: int = 1000
+    scale_up_factor: float = 1.25
+    scale_down_factor: float = 0.75
+    memory_soft_limit_pct: float = 70.0
+    memory_hard_limit_pct: float = 85.0
+    swap_soft_limit_pct: float = 5.0
+    swap_hard_limit_pct: float = 20.0
+    cpu_soft_limit_pct: float = 85.0
     train: tuple = ("2022-01-01", "2024-12-31")
     validation: tuple = ("2025-01-01", "2025-12-31")
     final_oos: tuple = ("2026-01-01", "2026-12-31")
@@ -42,10 +53,26 @@ class Config:
                 raise ValueError("Nonfinite config")
         if self.population_size < 1 or self.initial_capital <= 0:
             raise ValueError("Positive population and capital required")
-        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes)):
+        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes, self.min_population, self.max_population)):
             raise ValueError("Counts and cutoff must be integer")
         if min(self.elite_count, self.parent_pool_size, self.free_trade_count) < 0 or self.parent_pool_size < 1:
             raise ValueError("Invalid selection/trading counts")
+        if self.min_population < 1 or self.max_population < self.min_population:
+            raise ValueError("Invalid adaptive population bounds")
+        if self.adaptive_resources and not self.min_population <= self.population_size <= self.max_population:
+            raise ValueError("Adaptive initial population must be within min/max bounds")
+        if not 1 < self.scale_up_factor <= 2:
+            raise ValueError("scale_up_factor must be in (1,2]")
+        if not 0.1 <= self.scale_down_factor < 1:
+            raise ValueError("scale_down_factor must be in [0.1,1)")
+        limits = (self.memory_soft_limit_pct, self.memory_hard_limit_pct, self.swap_soft_limit_pct,
+                  self.swap_hard_limit_pct, self.cpu_soft_limit_pct)
+        if any(not 0 <= x <= 100 for x in limits):
+            raise ValueError("Resource limits must be percentages")
+        if self.memory_soft_limit_pct >= self.memory_hard_limit_pct:
+            raise ValueError("memory soft limit must be below hard limit")
+        if self.swap_soft_limit_pct >= self.swap_hard_limit_pct:
+            raise ValueError("swap soft limit must be below hard limit")
         if not 0 < self.parent_fraction <= 1:
             raise ValueError("parent_fraction must be in (0,1]")
         if any(not 0 <= v <= 1 for v in (self.mutation_probability, self.crossover_probability)):
