@@ -39,7 +39,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from toss_auth import get_token as shared_toss_token
-from toss_rate_limit import wait_for_slot
 
 SECRETS = ROOT / "server_secrets.json"
 UNIVERSE = ROOT / "research" / "universe_v3.json"
@@ -148,7 +147,6 @@ def _fetch_us_market_calendar(date_str: str) -> dict:
             token = access_token(force=attempt > 0)
             query = urllib.parse.urlencode({"date": date_str})
             url = TOSS_BASE + MARKET_CALENDAR_PATH + "?" + query
-            wait_for_slot("MARKET_INFO")
             req = urllib.request.Request(
                 url,
                 headers={
