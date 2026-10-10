@@ -79,6 +79,34 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <div class="card" style="margin-top:12px">
   <div class="backtest-head">
     <div>
+      <div class="label">Strategy Engine V4 · Read-only Audit</div>
+      <h2 style="margin:5px 0">V4 데이터 감사</h2>
+      <div id="v4AuditPhase" class="muted">감사 상태 확인 중...</div>
+    </div>
+    <div><span id="v4AuditBadge" class="bt-progress-text">-</span></div>
+  </div>
+  <div class="bt-grid" style="margin-top:12px">
+    <div class="bt-stat"><div class="label">실행 상태</div><div class="v" id="v4AuditState">-</div></div>
+    <div class="bt-stat"><div class="label">PID</div><div class="v" id="v4AuditPid">-</div></div>
+    <div class="bt-stat"><div class="label">Timestamp</div><div class="v" id="v4AuditTimestampKind">-</div></div>
+    <div class="bt-stat"><div class="label">세션 파일</div><div class="v" id="v4AuditBytes">-</div></div>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="card" style="margin-top:0">
+      <div class="label">현재 처리 위치</div>
+      <div id="v4AuditCurrent" class="signal">-</div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="label">최종 결과</div>
+      <div id="v4AuditResult" class="signal">아직 결과 JSON이 생성되지 않았습니다.</div>
+    </div>
+  </div>
+  <div id="v4AuditRunDir" class="mini" style="margin-top:8px">-</div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <div class="backtest-head">
+    <div>
       <div class="label">Toss 1분봉 · 확장 Universe</div>
       <h2 style="margin:5px 0">데이터 수집 모니터</h2>
       <div id="btPhase" class="muted">수집 상태 확인 중...</div>
@@ -735,6 +763,60 @@ async function loadTickCollectorMonitor(){
  }
 }
 
+async function loadV4AuditMonitor(){
+ const base=AWS_API_BASE||"";if(!base)return;
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ const fmtBytes=n=>{
+  n=Number(n||0);if(!n)return "0 B";
+  const u=["B","KB","MB","GB","TB"];let i=0;
+  while(n>=1024&&i<u.length-1){n/=1024;i++}
+  return n.toFixed(i>=3?2:i>=2?1:0)+" "+u[i];
+ };
+ try{
+  const r=await fetch(base+"/api/research/v4/audit/status?"+Date.now(),{cache:"no-store"});
+  const d=await r.json();
+  if(!r.ok||!d.ok)throw new Error(d.error||"audit status unavailable");
+
+  const labels={running:"진행 중",completed:"완료",failed:"실패",interrupted:"중단됨",idle:"대기"};
+  const label=labels[d.phase]||d.phase||"-";
+  const phase=document.getElementById("v4AuditPhase");
+  if(phase){
+   const cl=d.running?"up":d.phase==="completed"?"bt-ok":d.phase==="failed"||d.phase==="interrupted"?"down":"bt-wait";
+   phase.innerHTML='<b class="'+cl+'">● '+esc(label)+'</b>'+
+    (d.sessionsUpdatedAt?' · 마지막 기록 '+esc(formatKSTDateTime(d.sessionsUpdatedAt)):'');
+  }
+
+  set("v4AuditBadge",d.running?"LIVE":(d.resultStatus||label));
+  set("v4AuditState",label);
+  set("v4AuditPid",d.pid||"-");
+  set("v4AuditTimestampKind",d.timestampKind||"-");
+  set("v4AuditBytes",fmtBytes(d.sessionsBytes));
+
+  const current=document.getElementById("v4AuditCurrent");
+  if(current)current.innerHTML=
+   '세션 날짜 <b>'+esc(d.currentSessionDate||"-")+'</b>'+
+   (d.currentSymbol?' · 종목 <b>'+esc(d.currentSymbol)+'</b>':'')+
+   '<br>세션 로그 '+esc(fmtBytes(d.sessionsBytes));
+
+  const result=document.getElementById("v4AuditResult");
+  if(result){
+   if(d.resultReady){
+    const a=d.aggregate||{};
+    result.innerHTML='<b class="'+(String(d.resultStatus||"").startsWith("PASS")?"bt-ok":"down")+'">'+esc(d.resultStatus||"결과 생성")+'</b>'+
+     '<br>regular coverage '+(a.regularCoveragePct==null?"-":Number(a.regularCoveragePct).toFixed(2)+"%")+
+     '<br>bad timezone '+Number(a.rows_bad_timezone||a.sessions_bad_timezone||0).toLocaleString();
+   }else{
+    result.innerHTML=d.running?'<span class="up">감사 진행 중 · 최종 JSON 생성 대기</span>':'<span class="muted">최종 결과 없음</span>';
+   }
+  }
+
+  set("v4AuditRunDir",d.runDir?"실행 경로: "+d.runDir:"실행 경로 없음");
+ }catch(e){
+  const phase=document.getElementById("v4AuditPhase");
+  if(phase)phase.innerHTML='<span class="down">V4 감사 상태 조회 실패 · '+esc(e.message)+'</span>';
+ }
+}
+
 let btTimer=null;
 const btPhaseNames={starting:"시작 준비",syncing:"GitHub 동기화",building:"C++ 엔진 빌드",collecting:"Toss 1분봉 수집",backtest:"C++ 백테스트 계산",completed:"백테스트 완료",waiting:"대기"};
 async function loadBacktestMonitor(){
@@ -869,8 +951,9 @@ document.querySelectorAll("[data-console-cmd]").forEach(b=>b.addEventListener("c
 function startBacktestMonitor(){
  if(btTimer)clearInterval(btTimer);
  loadTickCollectorMonitor();
+ loadV4AuditMonitor();
  loadBacktestMonitor();
- btTimer=setInterval(()=>{loadTickCollectorMonitor();loadBacktestMonitor()},3000);
+ btTimer=setInterval(()=>{loadTickCollectorMonitor();loadV4AuditMonitor();loadBacktestMonitor()},3000);
 }
 document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
 
