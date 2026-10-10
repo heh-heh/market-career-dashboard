@@ -171,9 +171,10 @@ def _start_simple_backtest():
 def v3_backtest_status():
     state=_read_json_file(V3_BT_STATE)
     result=_read_json_file(V3_BT_RESULT)
-    pid=state.get("pid")
+    launch=_read_json_file(BACKTEST_MANAGER.paths("v3")["launch"])
+    pid=state.get("pid") or launch.get("pid")
     running=_backtest_pid_running(pid,"backtest_multistrategy_v1.py")
-    phase=str(state.get("phase") or ("completed" if result else "waiting"))
+    phase=str(state.get("phase") or ("starting" if running else "completed" if result else "waiting"))
     if state.get("running") and not running and phase not in {"completed","error"}:
         phase="interrupted"
     log=""
@@ -274,7 +275,8 @@ def start_simple_backtest():
     return BACKTEST_MANAGER.start("simple-v1",legacy_start=_start_simple_backtest)
 
 def start_v3_backtest():
-    return BACKTEST_MANAGER.start("v3",legacy_start=_start_v3_backtest)
+    BACKTEST_MANAGER.start("v3")
+    return v3_backtest_status()
 
 def backtest_engine_status(engine_id):
     engine_id=str(engine_id or "").strip().lower()
