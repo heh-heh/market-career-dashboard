@@ -1,0 +1,21 @@
+[Unit]
+Description=Toss US multi-symbol tick collector
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/market-career-dashboard
+ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python scripts/collect_toss_ticks.py
+Restart=always
+RestartSec=15
+KillSignal=SIGTERM
+TimeoutStopSec=45
+Nice=5
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+[Install]
+WantedBy=multi-user.target
