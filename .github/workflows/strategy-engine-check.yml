@@ -26,10 +26,10 @@ jobs:
           python-version: "3.x"
       - name: Compile strategy sources
         run: |
-          python -m py_compile strategy_engine.py live_trader.py paper_trader.py simple_momentum_v1.py server.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py research/backtest_v2_tqqq_mr.py research/test_simple_momentum_v1.py research/test_simple_momentum_api.py
+          python -m py_compile strategy_engine.py live_trader.py paper_trader.py simple_momentum_v1.py server.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py research/backtest_v2_tqqq_mr.py research/backtest_simple_v1.py research/test_simple_momentum_v1.py research/test_simple_momentum_api.py research/test_backtest_simple_v1.py
       - name: Test paper engines
         run: |
-          python -m unittest research.test_simple_momentum_v1 research.test_simple_momentum_api
+          python -m unittest research.test_simple_momentum_v1 research.test_simple_momentum_api research.test_backtest_simple_v1
       - name: Smoke-test feature and scoring engine
         run: |
           python - <<'PY'
