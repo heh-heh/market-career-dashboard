@@ -38,6 +38,110 @@ SIMPLE_PAPER_LOCK=threading.Lock()
 STORAGE_CACHE={"at":0.0,"value":{}}
 STORAGE_CACHE_LOCK=threading.Lock()
 
+SIMPLE_BT_DIR=Path("/var/lib/market-career-dashboard")
+SIMPLE_BT_STATE=SIMPLE_BT_DIR/"backtest_simple_v1_state.json"
+SIMPLE_BT_RESULT=SIMPLE_BT_DIR/"backtest_simple_v1_result.json"
+SIMPLE_BT_TRADES=SIMPLE_BT_DIR/"backtest_simple_v1_trades.csv"
+SIMPLE_BT_LOG=SIMPLE_BT_DIR/"backtest_simple_v1.log"
+SIMPLE_BT_LOCK=threading.Lock()
+
+def _read_json_file(path):
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8")) if Path(path).exists() else {}
+    except Exception:
+        return {}
+
+def _simple_bt_pid_running(pid):
+    try:
+        pid=int(pid or 0)
+        if pid<=0:
+            return False
+        cmd=Path(f"/proc/{pid}/cmdline")
+        if not cmd.exists():
+            return False
+        raw=cmd.read_bytes().replace(b"\\x00",b" ").decode("utf-8","ignore")
+        return "backtest_simple_v1.py" in raw
+    except Exception:
+        return False
+
+def simple_backtest_status():
+    state=_read_json_file(SIMPLE_BT_STATE)
+    result=_read_json_file(SIMPLE_BT_RESULT)
+    pid=state.get("pid")
+    running=_simple_bt_pid_running(pid)
+    phase=str(state.get("phase") or ("completed" if result else "waiting"))
+    if state.get("running") and not running and phase not in {"completed","error"}:
+        phase="interrupted"
+    log=""
+    if SIMPLE_BT_LOG.exists():
+        try:
+            log="\n".join(SIMPLE_BT_LOG.read_text(encoding="utf-8",errors="ignore").splitlines()[-80:])
+        except Exception:
+            log=""
+    return {
+        "running":running,
+        "phase":phase,
+        "progress":float(state.get("progress") or (100 if result else 0)),
+        "pid":pid if running else None,
+        "updatedAt":state.get("updatedAt"),
+        "currentTimestamp":state.get("currentTimestamp"),
+        "processedRows":state.get("processedRows",0),
+        "symbols":state.get("symbols",0),
+        "trades":state.get("trades",0),
+        "signals":state.get("signals",0),
+        "entries":state.get("entries",0),
+        "paperCash":state.get("paperCash"),
+        "error":state.get("error"),
+        "summary":result.get("overall") or state.get("summary") or {},
+        "funnel":result.get("funnel") or {},
+        "bySession":result.get("bySession") or {},
+        "byExitReason":result.get("byExitReason") or {},
+        "byYear":result.get("byYear") or {},
+        "bySymbol":result.get("bySymbol") or {},
+        "configuration":result.get("configuration") or {},
+        "execution":result.get("execution") or {},
+        "data":result.get("data") or {},
+        "resultAvailable":bool(result),
+        "downloadAvailable":SIMPLE_BT_RESULT.exists(),
+        "log":log,
+    }
+
+def start_simple_backtest():
+    with SIMPLE_BT_LOCK:
+        current=simple_backtest_status()
+        if current.get("running"):
+            raise ValueError("Simple V1 backtest is already running")
+        SIMPLE_BT_DIR.mkdir(parents=True,exist_ok=True)
+        for p in (SIMPLE_BT_STATE,SIMPLE_BT_RESULT,SIMPLE_BT_TRADES,SIMPLE_BT_LOG):
+            try: p.unlink(missing_ok=True)
+            except Exception: pass
+        script=ROOT/"research"/"backtest_simple_v1.py"
+        if not script.exists():
+            raise RuntimeError("research/backtest_simple_v1.py is missing")
+        data_dir=ROOT/"data"/"toss_1m"
+        if not data_dir.exists() or not any(data_dir.glob("*.csv.gz")):
+            raise RuntimeError("historical Toss 1m data is unavailable")
+        cmd=[
+            sys.executable,str(script),
+            "--data",str(data_dir),
+            "--out",str(SIMPLE_BT_RESULT),
+            "--trades-csv",str(SIMPLE_BT_TRADES),
+            "--state",str(SIMPLE_BT_STATE),
+            "--log",str(SIMPLE_BT_LOG),
+        ]
+        subprocess.Popen(
+            cmd,cwd=str(ROOT),stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+            start_new_session=True,close_fds=True,
+        )
+        deadline=time.time()+2.0
+        while time.time()<deadline:
+            time.sleep(0.05)
+            status=simple_backtest_status()
+            if status.get("running") or status.get("phase") in {"starting","running","error"}:
+                return status
+        return simple_backtest_status()
+
 def storage_status():
     now=time.time()
     with STORAGE_CACHE_LOCK:
@@ -767,6 +871,45 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path=="/api/backtest/simple-v1/status":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**simple_backtest_status()}); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
+        if path=="/api/backtest/simple-v1/download":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                files=[
+                    (SIMPLE_BT_RESULT,"backtest_simple_v1_result.json"),
+                    (SIMPLE_BT_TRADES,"backtest_simple_v1_trades.csv"),
+                    (SIMPLE_BT_STATE,"backtest_simple_v1_state.json"),
+                    (SIMPLE_BT_LOG,"backtest_simple_v1.log"),
+                ]
+                present=[(src,name) for src,name in files if src.exists()]
+                if not SIMPLE_BT_RESULT.exists():
+                    self.send_json({"ok":False,"error":"backtest result is not available yet"},404); return
+                buf=io.BytesIO()
+                with zipfile.ZipFile(buf,"w",compression=zipfile.ZIP_DEFLATED) as archive:
+                    for src,name in present:
+                        archive.write(src,name)
+                raw=buf.getvalue()
+                filename="simple-v1-backtest-"+time.strftime("%Y%m%d-%H%M%S",time.gmtime())+".zip"
+                self.send_response(200)
+                self.send_header("Content-Type","application/zip")
+                self.send_header("Content-Disposition",'attachment; filename="'+filename+'"')
+                self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
+                self.send_header("Access-Control-Allow-Headers","Content-Type, Authorization")
+                self.send_header("Access-Control-Expose-Headers","Content-Disposition")
+                self.send_header("Cache-Control","no-store")
+                self.send_header("Content-Length",str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/trading/paper/logs/download":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -1081,6 +1224,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path=="/api/backtest/simple-v1/start":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**start_simple_backtest()}); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},409); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path in {"/api/trading/paper/simple-v1/auto","/api/trading/paper/simple-v1/scan"}:
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
