@@ -406,9 +406,16 @@ async function loadBacktestEngines(){
     const d=await req("/api/backtest/engines"),sel=document.getElementById("btEngineSelect");
     if(Array.isArray(d.engines)&&d.engines.length){
       const current=sel.value;
-      sel.innerHTML=d.engines.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+'</option>').join('');
-      if(d.engines.some(e=>e.id===current))sel.value=current;
-      backtestEngines=Object.fromEntries(d.engines.map(e=>[e.id,e]));
+      const serverMap=Object.fromEntries(d.engines.map(e=>[e.id,e]));
+      for(const e of d.engines)backtestEngines[e.id]={...(backtestEngines[e.id]||{}),...e};
+      const preferred=["simple-v1","v3","v4-ir1","v4-ir2","v4-ir3","v4-all"];
+      const ids=[...preferred,...Object.keys(backtestEngines).filter(id=>!preferred.includes(id))];
+      sel.innerHTML=ids.filter(id=>backtestEngines[id]).map(id=>{
+        const e=backtestEngines[id],serverReady=!!serverMap[id];
+        const suffix=serverReady?"":" · 서버 동기화 필요";
+        return '<option value="'+esc(id)+'">'+esc((e.name||id)+suffix)+'</option>';
+      }).join('');
+      if(ids.includes(current)&&backtestEngines[current])sel.value=current;
     }
   }catch(e){}
 }
