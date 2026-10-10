@@ -1,37 +1,118 @@
-"""Bounded read-only status reader. No run/kill/broker operations."""
+"""Bounded read-only status reader for Evolution Trading AI V0."""
 import json
-import os
 from pathlib import Path
+
+_MAX_STATUS_BYTES = 2 * 1024 * 1024
+_MAX_RECENT_RUNS = 6
+
+_PUBLIC_FIELDS = {
+    "phase", "runId", "generation", "nextPopulationGeneration", "completedTrainGenerations",
+    "population", "alive", "dead", "neutral", "invalid", "bestBot", "bestDailyReturn",
+    "meanDailyReturn", "medianDailyReturn", "bestLifetimeEquity", "tradesToday",
+    "currentHistoricalDate", "parentPoolSize", "mutationCount", "crossoverCount",
+    "eliteCount", "latestLog", "dataMode", "dataOrigin", "updatedAt", "split",
+    "researchOnly", "error", "performanceClaim", "runtimeSeconds", "pid",
+    "requestedSessions", "completedSessions", "fromDate", "toDate", "createdAt",
+    "finishedAt", "smoke", "splitDays",
+}
+
+
+def _read_status(path):
+    if path.stat().st_size > _MAX_STATUS_BYTES:
+        raise ValueError("Oversized Evolution status metadata")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    result = {k: v for k, v in raw.items() if k in _PUBLIC_FIELDS}
+    symbols = raw.get("symbols")
+    result["symbolCount"] = len(symbols) if isinstance(symbols, list) else None
+    requested = int(result.get("requestedSessions") or 0)
+    completed = int(result.get("completedSessions") or 0)
+    result["progressPct"] = min(100.0, (100.0 * completed / requested)) if requested else 0.0
+    return result
+
+
+def _process_alive(pid):
+    try:
+        command = Path(f"/proc/{int(pid)}/cmdline").read_bytes()
+        return b"run_evolution_v0.py" in command
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _normalize_process_state(result):
+    result = dict(result)
+    if result.get("phase") == "running" and not _process_alive(result.get("pid")):
+        result.update(
+            phase="interrupted",
+            latestLog="Evolution process is no longer present; the last completed session is shown.",
+        )
+    return result
+
+
+def _run_summary(run_dir):
+    status_file = run_dir / "status.json"
+    if not status_file.is_file():
+        return None
+    result = _normalize_process_state(_read_status(status_file))
+    return {
+        "runId": result.get("runId") or run_dir.name,
+        "phase": result.get("phase"),
+        "smoke": bool(result.get("smoke")),
+        "fromDate": result.get("fromDate"),
+        "toDate": result.get("toDate"),
+        "currentHistoricalDate": result.get("currentHistoricalDate"),
+        "generation": result.get("generation"),
+        "population": result.get("population"),
+        "completedSessions": result.get("completedSessions"),
+        "requestedSessions": result.get("requestedSessions"),
+        "progressPct": result.get("progressPct"),
+        "bestBot": result.get("bestBot"),
+        "bestDailyReturn": result.get("bestDailyReturn"),
+        "meanDailyReturn": result.get("meanDailyReturn"),
+        "bestLifetimeEquity": result.get("bestLifetimeEquity"),
+        "tradesToday": result.get("tradesToday"),
+        "dataMode": result.get("dataMode"),
+        "dataOrigin": result.get("dataOrigin"),
+        "updatedAt": result.get("updatedAt") or result.get("finishedAt") or result.get("createdAt"),
+    }
 
 
 def status(root):
     root = Path(root)
     if not root.exists():
-        return {"available": False, "phase": "waiting", "researchOnly": True, "latestLog": "No Evolution V0 runs"}
-    latest = None
-    # ISO-date run names sort chronologically; no loading large generation data.
-    for p in root.iterdir():
-        if p.is_dir() and (p/"status.json").is_file() and (latest is None or p.name > latest.name):
-            latest = p
-    if latest is None:
-        return {"available": False, "phase": "waiting", "researchOnly": True}
-    path = latest/"status.json"
-    if path.stat().st_size > 2*1024*1024:
-        raise ValueError("Oversized Evolution status metadata")
-    result = json.loads(path.read_text())
-    # Do not expose input paths/provenance payload in the public monitor.
-    allowed = {"phase", "runId", "generation", "population", "alive", "dead", "neutral", "invalid", "bestBot",
-               "bestDailyReturn", "meanDailyReturn", "medianDailyReturn", "bestLifetimeEquity", "tradesToday",
-               "currentHistoricalDate", "parentPoolSize", "mutationCount", "latestLog", "dataMode", "dataOrigin",
-               "updatedAt", "split", "researchOnly", "error", "performanceClaim", "runtimeSeconds", "pid"}
-    result = {k: v for k, v in result.items() if k in allowed}
-    if result.get("phase") == "running":
-        pid = result.get("pid")
-        try:
-            command = Path(f"/proc/{int(pid)}/cmdline").read_bytes()
-            alive = b"run_evolution_v0.py" in command
-        except (OSError, ValueError, TypeError):
-            alive = False
-        if not alive:
-            result.update(phase="interrupted", latestLog="Process absent; no completed results claimed")
-    return dict(result, available=True, researchOnly=True)
+        return {
+            "available": False,
+            "phase": "waiting",
+            "researchOnly": True,
+            "progressPct": 0.0,
+            "recentRuns": [],
+            "latestLog": "No Evolution V0 runs",
+        }
+
+    run_dirs = sorted(
+        (p for p in root.iterdir() if p.is_dir() and (p / "status.json").is_file()),
+        key=lambda p: p.name,
+        reverse=True,
+    )
+    if not run_dirs:
+        return {
+            "available": False,
+            "phase": "waiting",
+            "researchOnly": True,
+            "progressPct": 0.0,
+            "recentRuns": [],
+            "latestLog": "No Evolution V0 runs",
+        }
+
+    latest = _normalize_process_state(_read_status(run_dirs[0] / "status.json"))
+    recent = []
+    for run_dir in run_dirs[:_MAX_RECENT_RUNS]:
+        item = _run_summary(run_dir)
+        if item is not None:
+            recent.append(item)
+
+    return {
+        **latest,
+        "available": True,
+        "researchOnly": True,
+        "recentRuns": recent,
+    }
