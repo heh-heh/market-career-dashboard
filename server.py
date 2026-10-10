@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import asyncio, json, os, pwd, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request
+import asyncio, io, json, os, pwd, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request, zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
@@ -767,6 +767,46 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path=="/api/trading/paper/logs/download":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                simple=simple_paper()
+                sources=[
+                    (PAPER_V3.state_path,"v3/state.json"),
+                    (PAPER_V3.trades_path,"v3/trades.jsonl"),
+                    (PAPER_V3.decisions_path,"v3/decisions.jsonl"),
+                    (simple.state_path,"simple_v1/state.json"),
+                    (simple.directory/"trades.jsonl","simple_v1/trades.jsonl"),
+                    (simple.directory/"decisions.jsonl","simple_v1/decisions.jsonl"),
+                    (simple.directory/"signals.jsonl","simple_v1/signals.jsonl"),
+                ]
+                present=[(Path(src),arc) for src,arc in sources if Path(src).is_file()]
+                if not present:
+                    self.send_json({"ok":False,"error":"paper logs unavailable"},404); return
+                buf=io.BytesIO()
+                manifest={"generatedAt":time.time(),"files":[]}
+                with zipfile.ZipFile(buf,"w",compression=zipfile.ZIP_DEFLATED) as archive:
+                    for src,arc in present:
+                        stat=src.stat()
+                        archive.write(src,arc)
+                        manifest["files"].append({"path":arc,"bytes":stat.st_size,"mtime":stat.st_mtime})
+                    archive.writestr("manifest.json",json.dumps(manifest,ensure_ascii=False,indent=2))
+                raw=buf.getvalue()
+                filename="paper-trading-logs-"+time.strftime("%Y%m%d-%H%M%S",time.gmtime())+".zip"
+                self.send_response(200)
+                self.send_header("Content-Type","application/zip")
+                self.send_header("Content-Disposition",'attachment; filename="'+filename+'"')
+                self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
+                self.send_header("Access-Control-Allow-Headers","Content-Type, Authorization")
+                self.send_header("Access-Control-Expose-Headers","Content-Disposition")
+                self.send_header("Cache-Control","no-store")
+                self.send_header("Content-Length",str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/trading/paper/simple-v1/status":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
