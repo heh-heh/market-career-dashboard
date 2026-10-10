@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Tick Collector Monitor</title>
+<style>
+:root{--bg:#08111f;--panel:#101b2f;--line:#263653;--text:#eaf1ff;--muted:#8fa2c2;--ok:#39d98a;--warn:#f0b84b;--bad:#ff667a;--accent:#7c8cff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07101d,#0b1730);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:1100px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.card{background:#101b2fee;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stat{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px}.label{font-size:12px;color:var(--muted)}.value{font-size:20px;font-weight:800;margin-top:5px}.signal{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;line-height:1.65}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}.row{background:#0b1527;border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;justify-content:space-between;gap:8px}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.muted{color:var(--muted)}button{background:#182742;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer}@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.rows{grid-template-columns:1fr 1fr}.top{flex-direction:column}}@media(max-width:430px){.stats,.rows{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="label">Market & Career Dashboard</div><h2 style="margin:5px 0">미국주식 Raw Tick 수집 상태</h2><div class="muted">Toss trade:us · DAY / PRE / REGULAR / AFTER · 5초 자동 갱신</div></div>
+    <button id="refresh">지금 갱신</button>
+  </div>
+
+  <div class="card"><div class="label">Collector</div><div id="state" class="signal">상태 확인 중...</div></div>
+
+  <div class="stats">
+    <div class="stat"><div class="label">현재 세션</div><div id="session" class="value">-</div></div>
+    <div class="stat"><div class="label">구독</div><div id="subscribed" class="value">-</div></div>
+    <div class="stat"><div class="label">수집 Tick</div><div id="ticks" class="value">-</div></div>
+    <div class="stat"><div class="label">저장량</div><div id="bytes" class="value">-</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="label">시장 시간</div><div id="window" class="signal">-</div></div>
+    <div class="card"><div class="label">연결 / 품질</div><div id="quality" class="signal">-</div></div>
+  </div>
+
+  <div class="card"><div class="label">종목별 Tick</div><div id="symbols" class="rows"></div></div>
+  <div class="card"><div class="label">데이터 주의</div><div class="signal warn">Toss 실시간 시세 채널은 LOSSY입니다. 이 페이지의 tick 수는 이 서버가 실제로 수신한 이벤트 수이며, 완전한 exchange tape를 의미하지 않습니다.</div></div>
+</div>
+<script>
+const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const fmtTime=v=>{if(!v)return "-";const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleString("ko-KR",{timeZone:"Asia/Seoul",hour12:false})};
+const fmtBytes=v=>{let n=Number(v||0),i=0;const u=["B","KB","MB","GB","TB"];while(n>=1024&&i<u.length-1){n/=1024;i++}return n.toLocaleString("ko-KR",{maximumFractionDigits:i>=3?2:1})+" "+u[i]};
+const set=(id,v)=>document.getElementById(id).textContent=v;
+async function refresh(){
+ try{
+  const r=await fetch("/api/ticks/status?"+Date.now(),{cache:"no-store"});
+  const d=await r.json(); if(!r.ok||!d.ok)throw new Error(d.error||("HTTP "+r.status));
+  const labels={waiting_for_market_open:"장 대기",opening_market_session:"세션 시작",connecting:"연결 중",collecting:"수집 중",reconnecting:"재연결 중",paused_low_disk:"디스크 부족",compressing:"압축 중",stopped:"중지됨",unavailable:"상태 없음"};
+  const cls=d.healthy?"ok":d.state==="paused_low_disk"||d.lastError?"bad":"warn";
+  document.getElementById("state").innerHTML='<b class="'+cls+'">'+esc(labels[d.state]||d.state||"-")+'</b> · 마지막 갱신 '+esc(fmtTime(d.updatedAt))+(d.lastError?'<br><span class="bad">'+esc(d.lastError)+'</span>':"")+(d.calendarError?'<br><span class="warn">캘린더 폴백: '+esc(d.calendarError)+'</span>':"");
+  set("session",(d.marketSession||"-")+" · "+(d.sessionDate||"-"));
+  set("subscribed",(d.subscribed||0)+" / "+(d.symbolCount||0));
+  set("ticks",Number(d.ticksTotal||0).toLocaleString("ko-KR"));
+  set("bytes",fmtBytes(d.dataBytes));
+  const open=d.openAt||d.nextOpenAt,close=d.closeAt||d.nextCloseAt;
+  document.getElementById("window").innerHTML='calendar: <b>'+esc(d.calendarSource||"-")+'</b><br>open: '+esc(fmtTime(open))+'<br>close: '+esc(fmtTime(close));
+  document.getElementById("quality").innerHTML='reconnects: <b>'+Number(d.reconnects||0).toLocaleString("ko-KR")+'</b><br>queue drops: <b class="'+(d.localQueueDrops?"bad":"ok")+'">'+Number(d.localQueueDrops||0).toLocaleString("ko-KR")+'</b><br>invalid messages: <b class="'+(d.invalidMessages?"warn":"ok")+'">'+Number(d.invalidMessages||0).toLocaleString("ko-KR")+'</b><br>queue depth: '+Number(d.queueDepth||0).toLocaleString("ko-KR")+' · files: '+Number(d.dataFileCount||0);
+  const counts=d.ticksBySymbol||{}; const syms=(d.symbols||Object.keys(counts)).slice().sort();
+  document.getElementById("symbols").innerHTML=syms.map(s=>'<div class="row"><b>'+esc(s)+'</b><span>'+Number(counts[s]||0).toLocaleString("ko-KR")+'</span></div>').join("")||'<div class="muted">아직 수집 데이터가 없습니다.</div>';
+ }catch(e){document.getElementById("state").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
+}
+document.getElementById("refresh").onclick=refresh;
+refresh();setInterval(refresh,5000);
+</script>
+</body>
+</html>
