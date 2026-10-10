@@ -430,7 +430,7 @@ async def close_at(ws, close_at: pd.Timestamp) -> None:
 async def stream_once(
     symbols: list[str],
     writer: TickWriter,
-    close_at: pd.Timestamp,
+    session_close: pd.Timestamp,
     meta: dict,
     force_token: bool,
 ) -> None:
@@ -475,7 +475,7 @@ async def stream_once(
         )
 
         keep_task = asyncio.create_task(keepalive(ws))
-        close_task = asyncio.create_task(close_at(ws, close_at))
+        close_task = asyncio.create_task(close_at(ws, session_close))
         seq = 0
         acked = False
         try:

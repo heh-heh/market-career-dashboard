@@ -73,7 +73,7 @@ class RegistryTests(unittest.TestCase):
             self.assertNotIn("--manifest",cmd)
             self.assertTrue(status["provisional"])
             self.assertEqual(status["dataMode"],"PROVISIONAL_UNREVIEWED_DATA")
-            self.assertTrue(status["runnable"])
+            self.assertFalse(status["runnable"])
     def test_parent_starting_is_not_interrupted_before_launch_record(self):
         paths=self.manager.paths("v4-ir1");self.manager.directory.mkdir()
         paths["state"].write_text(json.dumps(dict(runId="new",pid=None,running=True,phase="starting",launchRequestedAt=time.time())))

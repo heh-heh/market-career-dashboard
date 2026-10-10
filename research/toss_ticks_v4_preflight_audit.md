@@ -1,3 +1,8 @@
+> Historical audit of the previous local collector proposal, retained as an audit trail.
+> The CURRENT upstream collector is scripts/collect_toss_ticks.py (trade-only CSV/GZIP) with ops/collect-toss-ticks.service.
+> Its DAY/PRE/REGULAR/AFTER/calendar/status/UI implementation is preserved. Obsolete root service/SQLite installer are not deployed.
+> Do not use commands below to replace the running collector. Current integration evidence is in v4_revalidation_report.md.
+
 # Toss microstructure collector and V4 preflight audit
 
 Audit date: 2026-10-10. No production deployment, broker calls, historical runs,

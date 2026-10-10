@@ -4,7 +4,7 @@ Reason priority follows the evaluated gate order; one primary reason per
 terminal cancellation. Observation failures (potentially repeated each minute)
 are explicitly separate from terminal event counts.
 """
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime
 
 try:

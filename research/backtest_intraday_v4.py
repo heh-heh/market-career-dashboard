@@ -407,7 +407,7 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
                             funnel[reason]+=1
                             if legacy and legacy!=reason: funnel[legacy]+=1
                             diagnostics.reject(event,reason,event.fields.get("rejectionContext") or snapshot_evidence(event,session,sessions,T,ctx),legacy)
-                            if kind=="ir3" and reason in {"CLOCK_DIRECTION_FILTER_FAILED","CLOCK_OWN_DIRECTION_FILTER","CLOCK_OTHER_INDEX_DOWN"}:
+                            if kind=="ir3" and reason in {"CLOCK_DIRECTION_FILTER_FAILED","CLOCK_OWN_DIRECTION_FILTER","CLOCK_REFERENCE_DIRECTION_FILTER"}:
                                 diagnostics.direction_collector.observe_ir3_direction_failure(symbol,day,T,sessions,ctx,BASELINE["common"]["ERTrendMin"])
                 if any(sessions[s].snapshots.get(T) is None for s in ("QQQ","SPY")):
                     funnel["MISSING_BENCHMARK_DATA"]+=1

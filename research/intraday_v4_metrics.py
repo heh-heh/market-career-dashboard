@@ -4,6 +4,20 @@ from collections import defaultdict
 from datetime import datetime,timedelta
 
 
+def streaks(trades):
+    """Realized exit order; simultaneous exits use strategy/symbol as a fixed tie-break."""
+    wins=losses=max_wins=max_losses=0
+    def key(t):
+        ts=datetime.fromisoformat(t["exitTimestamp"])
+        return (ts.timestamp(),t.get("strategy",""),t.get("symbol",""))
+    for t in sorted(trades,key=key):
+        if t["returnPct"]>0: wins+=1;losses=0
+        elif t["returnPct"]<0: losses+=1;wins=0
+        else: wins=losses=0
+        max_wins=max(max_wins,wins);max_losses=max(max_losses,losses)
+    return dict(maxConsecutiveWins=max_wins,maxConsecutiveLosses=max_losses)
+
+
 def summarize(trades,initial_cash=10000):
     rets = [t["returnPct"] for t in trades]
     wins,losses = [r for r in rets if r > 0],[r for r in rets if r < 0]
@@ -26,7 +40,7 @@ def summarize(trades,initial_cash=10000):
     def avg(xs): return st.fmean(xs) if xs else None
     def field_avg(k): return avg([t[k] for t in trades if t.get(k) is not None])
     aw,al = avg(wins),avg([-v for v in losses])
-    return dict(trades=len(trades),wins=len(wins),losses=len(losses),breakeven=len(rets)-len(wins)-len(losses),
+    return dict(**streaks(trades),trades=len(trades),wins=len(wins),losses=len(losses),breakeven=len(rets)-len(wins)-len(losses),
                 winRatePct=100*len(wins)/len(rets) if rets else None,sumTradeReturnPct=sum(rets),
                 expectancyPct=avg(rets),medianReturnPct=st.median(rets) if rets else None,
                 avgWinPct=aw,avgLossPct=al,payoffRatio=aw/al if aw is not None and al else None,

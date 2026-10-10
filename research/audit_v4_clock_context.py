@@ -16,6 +16,7 @@ import sys
 import sqlite3
 import tempfile
 import zipfile
+from zoneinfo import ZoneInfo
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,12 +25,12 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"research"))
 try:
     from .backtest_intraday_v4 import atomic_json,day_stream
-    from .backtest_v4_strategies import MINUTE,NY,exchange_sessions,normalize_minute_timestamp
+    from .backtest_v4_strategies import MINUTE,NY,exchange_sessions,normalize_minute_timestamp,file_sha256
     from .intraday_v4_engine import History,Session,Event,context
     from .intraday_v4_diagnostics import idle_gate_reason,snapshot_evidence
 except ImportError:
     from backtest_intraday_v4 import atomic_json,day_stream
-    from backtest_v4_strategies import MINUTE,NY,exchange_sessions,normalize_minute_timestamp
+    from backtest_v4_strategies import MINUTE,NY,exchange_sessions,normalize_minute_timestamp,file_sha256
     from intraday_v4_engine import History,Session,Event,context
     from intraday_v4_diagnostics import idle_gate_reason,snapshot_evidence
 from build_v4_data_manifest import source_file,identity
@@ -48,13 +49,18 @@ def scan_file(path,symbol,kind,naive_zone=None,to_date=None,session_sink=None):
               outOfOrder=0,badTimezone=0,invalidOHLCV=0,sourceUTCOffsets=Counter(),
               firstTradingDate=None,lastTradingDate=None,errors=[],samples=[],
               timestamp_kind=kind,naive_timezone=naive_zone,duplicateCountIsLowerBound=False,
-              symbolViolations=0,sourceTimezoneInterpretation="Explicit per-row offset -> America/New_York; naive requires declaration")
+              symbolViolations=0,negativeVolume=0,zeroVolume=0,exactDuplicates=0,
+              firstTimestamp=None,lastTimestamp=None,schema=None,timestampExamples={},sha256=file_sha256(path),
+              sourceTimezoneInterpretation="Explicit per-row offset -> America/New_York; naive requires declaration")
     opener=gzip.open if path.suffix==".gz" else open
     previous=None;day=None;seen={}; day_counts=Counter(); before=identity(path.stat());currency=Counter()
     with opener(path,"rt",encoding="utf-8",newline="") as f:
         reader=csv.DictReader(f)
         if not {"timestamp","open","high","low","close","volume"}<=set(reader.fieldnames or []):
             raise ValueError(f"{symbol}: OHLCV schema missing")
+        meta["schema"]=reader.fieldnames
+        if len(reader.fieldnames)!=len(set(reader.fieldnames)):
+            raise ValueError(f"{symbol}: duplicate schema columns")
         for line,row in enumerate(reader,2):
             try:
                 raw=datetime.fromisoformat(row["timestamp"].replace("Z","+00:00"))
@@ -67,6 +73,15 @@ def scan_file(path,symbol,kind,naive_zone=None,to_date=None,session_sink=None):
             if to_date and date>to_date:
                 # Only a monotonic prefix is trusted; no statement about unread tail.
                 break
+            meta["firstTimestamp"]=meta["firstTimestamp"] or row["timestamp"]
+            meta["lastTimestamp"]=row["timestamp"]
+            offset=str(raw.utcoffset()) if raw.tzinfo else "naive:"+str(naive_zone)
+            ny_offset=str(start.utcoffset())
+            key=offset+" -> ET "+ny_offset
+            if key not in meta["timestampExamples"] and len(meta["timestampExamples"])<10:
+                meta["timestampExamples"][key]=dict(source=row["timestamp"],normalizedStartET=start.isoformat(),
+                    utc=start.astimezone(timezone.utc).isoformat(),kst=start.astimezone(ZoneInfo("Asia/Seoul")).isoformat(),
+                    observableET=(start+MINUTE).isoformat())
             meta["rows"]+=1
             if any((row.get(col) or "").strip().upper()!=symbol for col in ("symbol","ticker") if col in reader.fieldnames):
                 meta["symbolViolations"]+=1
@@ -77,6 +92,8 @@ def scan_file(path,symbol,kind,naive_zone=None,to_date=None,session_sink=None):
             except (ValueError,TypeError):
                 vals=(float("nan"),)*5
             o,h,l,c,v=vals
+            meta["negativeVolume"]+=int(v<0)
+            meta["zeroVolume"]+=int(v==0)
             if not all(math.isfinite(x) for x in vals) or min(o,h,l,c)<=0 or v<0 or h<max(o,c) or l>min(o,c) or h<l:
                 meta["invalidOHLCV"]+=1
             if date!=day:
@@ -91,15 +108,17 @@ def scan_file(path,symbol,kind,naive_zone=None,to_date=None,session_sink=None):
                 meta["duplicates"]+=1
                 day_counts["duplicateTimestampCount"]+=1
                 if seen[start]!=vals: meta["conflictingDuplicates"]+=1
+                else: meta["exactDuplicates"]+=1
             else: seen[start]=vals
             meta["firstTradingDate"]=min(meta["firstTradingDate"] or date,date)
             meta["lastTradingDate"]=max(meta["lastTradingDate"] or date,date)
     if day is not None and session_sink: session_sink(symbol,day,dict(day_counts))
     meta["currencies"]=dict(currency)
+    meta["currencyEvidence"]="COLUMN_PRESENT" if currency else "UNAVAILABLE_NOT_ASSUMED_USD"
     for key in ("badTimezone","outOfOrder","conflictingDuplicates","invalidOHLCV","symbolViolations"):
         if meta[key]: meta["errors"].append(f"{key}={meta[key]}")
     if currency and set(currency)!={"USD"}: meta["errors"].append("non-USD currency")
-    if identity(path.stat())!=before: meta["errors"].append("Source changed during audit")
+    if identity(path.stat())!=before or file_sha256(path)!=meta["sha256"]: meta["errors"].append("Source changed during audit")
     if not meta["rows"]: meta["errors"].append("No rows in requested prefix")
     meta["sourceIdentity"]=list(before)
     meta["scope"]="file prefix through to-date" if to_date else "entire file"
@@ -126,6 +145,10 @@ def coverage_record(symbol,day,rows,opening,closing,kind,benchmark_available,clo
                 expectedSourceTimestamp=(target if kind=="end" else decision_target).isoformat(),
                 decisionTargetPresent=decision_target in rows,benchmarkContextAvailable=benchmark_available,
                 clockGateReason=clock_reason,
+                sessionCountsClockProxy=dict(PRE=sum(opening.replace(hour=4,minute=0)<=t<opening for t in rows),
+                    REGULAR=len(regular),AFTER=sum(closing<=t<closing.replace(hour=20,minute=0) for t in rows),
+                    OTHER=sum(t<opening.replace(hour=4,minute=0) or t>=closing.replace(hour=20,minute=0) for t in rows)),
+                sessionClassificationNote="ET clock diagnostic only; outside RTH is not certified Toss DAY/PRE/AFTER classification",
                 nearestPreviousTimestamp=prev.isoformat() if prev else None,
                 nearestNextTimestamp=nxt.isoformat() if nxt else None,
                 neighborSemantics="Post-hoc coverage; next timestamp is never used for a signal/context")
@@ -230,6 +253,11 @@ def _audit_data(paths,kind,out,sessions_out,from_date,to_date,naive_zone,sample_
                     r=coverage_record(s,day,rows.get(s,{}),opening,closing,kind,available,reason)
                     stored=conn.execute("SELECT stats FROM counts WHERE symbol=? AND day=?",(s,day)).fetchone()
                     stats=json.loads(stored[0]) if stored else {}
+                    daily=list(hist[s].daily)[-61:]
+                    r["historyCoverage"]=dict(priorSessionCount=len(daily),completePriorSessions=sum(x is not None for x in daily),
+                        requiredDailySessions=61,dailyEligible=sessions[s].eligibility is not None,
+                        priorOpeningReturns=sum(x is not None for x in hist[s].opening_returns),
+                        requiredOpeningReturnsIR3=40,priorOpeningVolumes=sum(x is not None for x in hist[s].opening_volumes))
                     r.update(duplicateTimestampCount=stats.get("duplicateTimestampCount",0),outOfOrderCount=stats.get("outOfOrderCount",0))
                     output.write(json.dumps(r)+"\n")
                     totals=result["bySymbol"].setdefault(s,Counter())
@@ -243,6 +271,9 @@ def _audit_data(paths,kind,out,sessions_out,from_date,to_date,naive_zone,sample_
                         dest["expected_regular_minutes"]+=r["expectedRegularMinuteCount"]
                         dest["actual_regular_minutes"]+=r["actualRegularMinuteCount"]
                         dest["missing_regular_minutes"]+=r["missingMinuteCount"]
+                        dest["daily_eligible_sessions"]+=int(r["historyCoverage"]["dailyEligible"])
+                        dest["history_61_available_sessions"]+=int(r["historyCoverage"]["completePriorSessions"]==61)
+                        for label,n in r["sessionCountsClockProxy"].items(): dest[label+"_rows_clock_proxy"]+=n
                     if reason:
                         result["reasonCounts"][reason]+=1
                         samples=result["samplesByReason"].setdefault(reason,[])
@@ -252,13 +283,32 @@ def _audit_data(paths,kind,out,sessions_out,from_date,to_date,naive_zone,sample_
                             samples.append(sample)
             for session in sessions.values(): session.finish()
     stream.close()
-    if any(identity(p.stat())!=before[s] for s,p in paths.items()):
+    if any(identity(p.stat())!=before[s] or file_sha256(p)!=sources[s]["sha256"] for s,p in paths.items()):
         raise ValueError("Source changed during audit; discard diagnostics and wait for stable files")
+    for totals in [result["aggregate"],*result["bySymbol"].values()]:
+        totals["regularCoveragePct"]=100*totals["actual_regular_minutes"]/totals["expected_regular_minutes"] if totals["expected_regular_minutes"] else None
     result["aggregate"]["sessions_bad_timezone"]=0
     result["status"]="PASS_MECHANICAL_AUDIT_ONLY"
     result["sessionsPath"]=str(sessions_out)
     atomic_json(out,result)
     return result
+
+
+def write_report(path,result):
+    lines=["# V4 read-only data audit", "", "PROVISIONAL_UNREVIEWED_DATA · mechanical diagnostics only; no review flags or strategy results.",
+        "", "Status: `"+result["status"]+"`. Timestamp kind is an explicit declaration, not inferred.",
+        "", "| Symbol | Rows | First | Last | Dup / conflict | OHLC invalid | Volume negative / zero |", "|---|---:|---|---|---:|---:|---:|"]
+    for symbol,m in sorted(result["sources"].items()):
+        lines.append(f"| {symbol} | {m['rows']} | {m.get('firstTimestamp')} | {m.get('lastTimestamp')} | {m['duplicates']} / {m['conflictingDuplicates']} | {m['invalidOHLCV']} | {m.get('negativeVolume',0)} / {m.get('zeroVolume',0)} |")
+    for symbol,m in sorted(result["sources"].items()):
+        if m["errors"]: lines += ["",symbol+": "+"; ".join(m["errors"])]
+    lines += ["", "Per-symbol coverage/history counts:", "", "```json", json.dumps(result.get("bySymbol",{}),indent=2), "```",
+        "", "Out-of-order/timezone/OHLC errors prevent causal replay. Missing regular minutes are reported, never filled.",
+        "Clock counts include early-close exclusions. PRE/AFTER counts are ET clock proxies, not certified Toss extended-session labels.",
+        "Price adjustment, symbol provenance and currency when absent remain UNREVIEWED. This is not a reviewed manifest.",
+        "Per-file hashes, source/UTC/KST/ET/observable timestamp samples, errors and clock reasons are in JSON; session detail is streamed to JSONL."]
+    path.parent.mkdir(parents=True,exist_ok=True)
+    path.write_text("\n".join(lines)+"\n")
 
 
 def main(argv=None):
@@ -269,6 +319,7 @@ def main(argv=None):
     p.add_argument("--naive-timezone",help="Explicit source declaration; never assumed")
     p.add_argument("--from-date");p.add_argument("--to-date")
     p.add_argument("--out",type=Path,default=ROOT/"research/v4_clock_context_audit.json")
+    p.add_argument("--report",type=Path,help="Optional Markdown mechanical audit report")
     p.add_argument("--sessions-out",type=Path,help="Default: OUT stem + _sessions.jsonl")
     p.add_argument("--sample-limit",type=int,choices=range(21),default=5)
     p.add_argument("--result-zip",type=Path,help="Summarize existing artifact only; does not read minute data")
@@ -290,7 +341,14 @@ def main(argv=None):
         p.error("Audit outputs must be outside raw-data directory")
     if args.out.resolve()==sessions.resolve() or any(x.resolve() in {args.out.resolve(),sessions.resolve()} for x in paths.values()):
         p.error("Output paths must be distinct and cannot overwrite inputs")
+    if args.report and (args.report.resolve() in {args.out.resolve(),sessions.resolve()} or args.data_dir.resolve() in args.report.resolve().parents):
+        p.error("Markdown report must be distinct and outside raw-data directory")
     result=audit_data(paths,args.timestamp_kind,args.out,sessions,args.from_date,args.to_date,args.naive_timezone,args.sample_limit)
+    result["inventory"]=dict(selectedSymbols=len(paths),selectedFiles=len(paths),
+        availableCSVFiles=len(list(args.data_dir.glob("*.csv"))),availableGzipFiles=len(list(args.data_dir.glob("*.csv.gz"))),
+        priceAdjustment="UNREVIEWED_NOT_INFERRED",provenanceCertified=False)
+    atomic_json(args.out,result)
+    if args.report: write_report(args.report,result)
     print(json.dumps(dict(status=result["status"],aggregate=result["aggregate"],reasonCounts=result["reasonCounts"],errors={s:m["errors"] for s,m in result["sources"].items() if m["errors"]},out=str(args.out)),indent=2))
     return 0 if not result["status"]=="FAIL" else 1
 

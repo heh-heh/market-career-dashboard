@@ -1,47 +1,130 @@
 {
-  "version": 1,
-  "generatedAt": "2026-10-10T11:46:35.050369+00:00",
+  "version": 2,
+  "generatedAt": "2026-10-10T12:15:05.803175+00:00",
   "branch": "strategy-engine-v3",
+  "rebase": {
+    "onto": "744a2b2931899f28874c0a4bd6541f9e3aa30eef",
+    "method": "git rebase origin/strategy-engine-v3",
+    "backupTag": "v4-before-rebase-20261010",
+    "originalResearchCommits": [
+      "61af4f69c94c6a8c2d44d14a381c8995e14d4c6d",
+      "5fb06a54e3ca9f7a97b9aaa235bafbba3914e548"
+    ],
+    "rebasedResearchCommits": [
+      "2a2fabc",
+      "06bcdf0"
+    ],
+    "forcePush": false
+  },
   "historicalExecution": {
     "status": "NOT_RUN",
-    "reason": "DATA_ACCESS_UNAVAILABLE; user confirmed no EC2 connection",
+    "reason": "User confirmed no EC2 connection; no local historical minute data",
     "preflightExitCode": 2,
     "childLaunched": false
   },
   "baselineAnalysis": {
-    "source": "User-uploaded completed EC2 ZIP",
+    "source": "Previously committed analysis of user EC2 ZIP; original SHA retained",
     "newHistoricalRun": false,
-    "dataMode": "PROVISIONAL_UNREVIEWED_DATA"
+    "dataMode": "PROVISIONAL_UNREVIEWED_DATA",
+    "verdict": "inconclusive"
   },
   "candidate": {
     "name": "V4-IR1-R1",
     "status": "NOT_RUN",
     "productionEnabled": false
   },
+  "dataAudit": {
+    "status": "NOT_RUN_ON_EC2",
+    "tool": "research/audit_v4_clock_context.py",
+    "JSON": true,
+    "Markdown": true,
+    "sessionJSONL": true,
+    "reviewedManifestGenerated": false
+  },
   "validation": {
-    "beforeTests": 217,
-    "afterTests": 239,
-    "newTests": 22,
+    "previousLocalTests": 239,
+    "integratedRemoteTests": 247,
+    "finalTests": 256,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "addedIntegrationTests": 9,
     "pythonCompile": "PASS",
-    "cliHelp": "PASS",
+    "cliHelp": "PASS: backtest / audit / campaign / comparison",
+    "fiveJobPlan": "PASS",
     "adminBacktestSmoke": "PASS",
     "adminPaperSmoke": "PASS",
-    "frozenParameterEquality": "PASS",
-    "fiveDayGolden": "PASS: same trades/fills/funnel; synthetic only"
+    "dataCollectionSmoke": "PASS",
+    "frozenParameterEquality": "PASS: upstream AST and archived artifact values",
+    "fiveDayGolden": "PASS: unchanged trades/fills/funnel; synthetic only",
+    "collectorTests": "21 offline tests ported to current upstream CSV trade-only API; real close_at shadowing bug reproduced and fixed"
   },
   "preserve": {
     "rawDataUntouched": true,
     "forwardLogsUntouched": true,
     "baselineThresholdsUntouched": true,
-    "tickCollectorUntouched": true,
     "liveTradingUntouched": true,
-    "mainUntouched": true
+    "mainUntouched": true,
+    "indexHtmlByteIdenticalToUpstream": true,
+    "tossAuthByteIdenticalToUpstream": true,
+    "existingPaperStrategiesByteIdenticalToUpstream": true,
+    "existingMinuteCollectorByteIdenticalToUpstream": true,
+    "tickServiceByteIdenticalToUpstream": true,
+    "tickCollectorOnlyChange": "Rename shadowing stream_once close_at argument to session_close (2 lines)",
+    "standaloneTickPage": false
   },
   "remaining": [
-    "Actual source timestamp semantics/provenance",
-    "Stable source files and full-session/history coverage",
-    "Independent IR1/IR2/IR3/ALL real data campaign",
-    "IR1-R1 real chronological OOS/robustness evaluation"
+    "Actual timestamp/export provenance and price adjustment",
+    "EC2 stable source audit and regular/history coverage",
+    "5-job short-range smoke",
+    "4 independent full baselines plus IR1-R1",
+    "Final complete OOS fold verified against actual session coverage"
   ],
-  "validatedCodeCommit": "61af4f69c94c6a8c2d44d14a381c8995e14d4c6d"
+  "priorValidationRecord": {
+    "version": 1,
+    "generatedAt": "2026-10-10T11:46:35.050369+00:00",
+    "branch": "strategy-engine-v3",
+    "historicalExecution": {
+      "status": "NOT_RUN",
+      "reason": "DATA_ACCESS_UNAVAILABLE; user confirmed no EC2 connection",
+      "preflightExitCode": 2,
+      "childLaunched": false
+    },
+    "baselineAnalysis": {
+      "source": "User-uploaded completed EC2 ZIP",
+      "newHistoricalRun": false,
+      "dataMode": "PROVISIONAL_UNREVIEWED_DATA"
+    },
+    "candidate": {
+      "name": "V4-IR1-R1",
+      "status": "NOT_RUN",
+      "productionEnabled": false
+    },
+    "validation": {
+      "beforeTests": 217,
+      "afterTests": 239,
+      "newTests": 22,
+      "pythonCompile": "PASS",
+      "cliHelp": "PASS",
+      "adminBacktestSmoke": "PASS",
+      "adminPaperSmoke": "PASS",
+      "frozenParameterEquality": "PASS",
+      "fiveDayGolden": "PASS: same trades/fills/funnel; synthetic only"
+    },
+    "preserve": {
+      "rawDataUntouched": true,
+      "forwardLogsUntouched": true,
+      "baselineThresholdsUntouched": true,
+      "tickCollectorUntouched": true,
+      "liveTradingUntouched": true,
+      "mainUntouched": true
+    },
+    "remaining": [
+      "Actual source timestamp semantics/provenance",
+      "Stable source files and full-session/history coverage",
+      "Independent IR1/IR2/IR3/ALL real data campaign",
+      "IR1-R1 real chronological OOS/robustness evaluation"
+    ],
+    "validatedCodeCommit": "61af4f69c94c6a8c2d44d14a381c8995e14d4c6d"
+  }
 }

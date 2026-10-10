@@ -175,11 +175,11 @@ class CampaignTests(unittest.TestCase):
                          manager_dir=root/'manager',timestamp_kind='start',provisional=True,plan=False,
                          from_date='2024-01-02',to_date='2024-01-10',symbols=None,cost_stress=False)
 
-    def test_plan_contains_four_baselines_two_candidates_unique_outputs(self):
+    def test_plan_contains_four_baselines_one_candidate_unique_outputs(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp); jobs=plan(self.args(root),root/'unique')
-            self.assertEqual(len(jobs),6)
-            self.assertEqual(len({j['directory'] for j in jobs}),6)
+            self.assertEqual(len(jobs),5)
+            self.assertEqual(len({j['directory'] for j in jobs}),5)
             self.assertEqual([j['name'] for j in jobs[:4]],['baseline-ir1-2bps','baseline-ir2-2bps','baseline-ir3-2bps','baseline-all-2bps'])
             self.assertTrue(all('--timestamp-kind' in j['command'] for j in jobs))
             self.assertFalse((root/'unique').exists())

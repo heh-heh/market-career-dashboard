@@ -23,9 +23,8 @@ from research.backtest_intraday_v4 import atomic_json
 
 def plan(args, directory):
     jobs = [("baseline", s, 2) for s in ("ir1", "ir2", "ir3", "all")]
-    jobs += [("ir1-r1", s, 2) for s in ("ir1", "all")]
-    if args.cost_stress:
-        jobs += [("baseline", "all", 5), ("ir1-r1", "all", 5)]
+    jobs += [("ir1-r1", "ir1", 2)]
+
     commands = []
     for variant, strategy, slip in jobs:
         name = f"{variant}-{strategy}-{slip}bps"
@@ -121,9 +120,10 @@ def main(argv=None):
     p.add_argument("--from-date")
     p.add_argument("--to-date")
     p.add_argument("--symbols", help="Must be applicable to all four baselines; omit for the full baseline universe")
-    p.add_argument("--cost-stress", action="store_true", help="Two fixed 5bps ALL reruns, not a parameter search")
+    p.add_argument("--cost-stress", action="store_true", help="Deprecated; use compare_v4_research fixed-trade cost sensitivity instead")
     p.add_argument("--plan", action="store_true", help="Print commands without reading or writing data")
     args = p.parse_args(argv)
+    if args.cost_stress: p.error("Cost sensitivity is fixed-trade analysis in compare_v4_research.py; no additional backtest jobs")
     for value in (args.from_date, args.to_date):
         if value: datetime.strptime(value, "%Y-%m-%d")
     if args.from_date and args.to_date and args.from_date > args.to_date:

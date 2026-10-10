@@ -71,6 +71,29 @@ def cost_counterfactual(trades, slippage_bps, half_spread_bps):
     return out
 
 
+def archived_cost_sensitivity(records, baseline_cost_bps, slippage_bps, half_spread_bps, fixed_notional_usd):
+    """Algebra on logged returns/R; no price reconstruction or historical execution.
+
+    Only usable when entry notional is known and constant and fees were zero.
+    Verify original PnL == notional * original return before using this helper.
+    R denominator and original quantity remain fixed.
+    """
+    base=baseline_cost_bps/10000;cost=(slippage_bps+half_spread_bps)/10000
+    out=[]
+    for source in records:
+        r=source["returnPct"]/100
+        if not r or not source["netR"]: raise ValueError("Cannot recover R fraction from zero return/R")
+        risk_fraction=r/source["netR"]
+        if risk_fraction<=0: raise ValueError("Inconsistent archived return/R")
+        observed_ratio=(1+r)*(1+base)/(1-base)
+        difference=(observed_ratio*(1-cost)-(1+cost))/(1+base)
+        t=copy.deepcopy(source)
+        t.update(returnPct=100*(observed_ratio*(1-cost)/(1+cost)-1),
+            pnlUsd=fixed_notional_usd*difference,netR=difference/risk_fraction)
+        out.append(t)
+    return out
+
+
 def concentration(trades, key):
     pnl = defaultdict(float)
     counts = defaultdict(int)
@@ -97,6 +120,27 @@ def concentration_stress(trades,cash):
     out["removeUpToThreeLargestWinners"]=dict(removedTrades=len(winners),
         metrics=summarize([t for i,t in enumerate(trades) if i not in winners],cash))
     return dict(semantics="POST_HOC_DIAGNOSTIC_NOT_A_UNIVERSE_FILTER_OR_STRATEGY_RERUN",scenarios=out)
+
+
+def stability(trades):
+    def period_summary(key):
+        groups=defaultdict(float)
+        for t in trades: groups[key(t)]+=t["pnlUsd"]
+        return dict(periodsWithTrades=len(groups),positivePeriods=sum(x>0 for x in groups.values()),
+            negativePeriods=sum(x<0 for x in groups.values()),flatPeriods=sum(x==0 for x in groups.values()),
+            positiveFractionAmongNonempty=sum(x>0 for x in groups.values())/len(groups) if groups else None,
+            netPnlUsd=dict(sorted(groups.items())),note="Periods with no trades are not counted as profitable")
+    ordered=sorted(trades,key=lambda t:t["pnlUsd"])
+    total=sum(t["pnlUsd"] for t in trades)
+    absolute=sum(abs(t["pnlUsd"]) for t in trades)
+    def contribution(selected):
+        pnl=sum(t["pnlUsd"] for t in selected)
+        return dict(trades=len(selected),pnlUsd=pnl,shareOfAbsoluteTradePnl=abs(pnl)/absolute if absolute else None,
+            shareOfNetPnl=pnl/total if total else None,
+            records=[dict(symbol=t["symbol"],strategy=t["strategy"],date=t["date"],pnlUsd=t["pnlUsd"],netR=t["netR"]) for t in selected])
+    return dict(monthly=period_summary(lambda t:t["date"][:7]),yearly=period_summary(lambda t:t["date"][:4]),
+        topFiveContribution=contribution(list(reversed(ordered[-5:]))),worstFiveContribution=contribution(ordered[:5]),
+        note="Top/worst five overlap when fewer than ten trades; a diagnostic, not additive buckets or a universe filter")
 
 
 def folds(result, trades, cash):
@@ -136,10 +180,14 @@ def analyze(result):
                   byExitReason=grouped(trades, lambda t: t["exitReason"], cash),
                   byRegime=grouped(trades, lambda t: t["marketRegime"]["direction"] + "/" + t["marketRegime"]["volatility"], cash),
                   byTimeOfDay=grouped(trades, time_bucket, cash))
+    base_slip=result.get("execution",{}).get("slippageBpsPerSide",2)
+    base_spread=result.get("execution",{}).get("halfSpreadProxyBpsPerSide",1)
+    scenarios=[("zeroCostSameObservedMarks",0,0)]+[(f"{slip:g}bpsPlus{base_spread:g}bpsSpread",slip,base_spread) for slip in (base_slip,base_slip+3,base_slip+8)]
     costs = {name: summarize(cost_counterfactual(trades, slip, spread), cash)
-             for name, slip, spread in (("zeroCostSameObservedMarks", 0, 0), ("2bpsPlus1bpsSpread", 2, 1), ("5bpsPlus1bpsSpread", 5, 1))}
+             for name, slip, spread in scenarios}
     return dict(overall=summarize(trades, cash), byStrategy=by_strategy, **groups,
                 chronologicalEvaluation=folds(result, trades, cash),
+                finalCompleteOOSFold=next(reversed(folds(result,trades,cash)["folds"]),None),
                 foldsByStrategy={s: folds(result, [t for t in trades if t["strategy"] == s], cash / len(strategies)) for s in strategies},
                 equityCurve=dict(initialCashUsd=cash, marks=curve, semantics="REALIZED_EXIT_ONLY_NOT_MARK_TO_MARKET"),
                 tradeDistribution=[dict(strategy=t["strategy"], symbol=t["symbol"], date=t["date"], netR=t["netR"], returnPct=t["returnPct"],
@@ -149,12 +197,14 @@ def analyze(result):
                 concentration=dict(year=concentration(trades, lambda t:t["date"][:4]),
                                    month=concentration(trades, lambda t:t["date"][:7]),
                                    symbol=concentration(trades, lambda t:t["symbol"])),
-                concentrationStress=concentration_stress(trades,cash),
+                concentrationStress=concentration_stress(trades,cash),stability=stability(trades),
                 robustnessCounterfactuals=dict(model="FIXED_OBSERVED_TRADE_TIMES_QUANTITY_AND_ORIGINAL_R_DENOMINATOR_NOT_A_STRATEGY_RERUN",
                     feeUSD=0, feeVerified=False, quoteVerified=False, scenarios=costs,
                     warning="Signals, cost guard, sizing, stop path and universe would differ in a real rerun; no delayed-execution claim"),
                 funnel=result.get("funnel", {}), diagnostics=result.get("diagnostics", {}),
                 unresolvedPositions=result.get("unresolvedPositions", []),
+                verdict="inconclusive" if len(trades)<50 else "needs more data",
+                verdictReason="Too few trades" if len(trades)<50 else "Descriptive results require provenance, execution and OOS review",
                 sampleVerdict="INSUFFICIENT_SAMPLE" if len(trades) < 50 else "DESCRIPTIVE_REQUIRES_OOS_REVIEW",
                 dataMode=result["configuration"].get("dataMode", result.get("data", {}).get("reviewStatus", "UNKNOWN")),
                 warnings=["No profitability or significance claim", "Present-day seed universe retains survivorship bias",
@@ -198,6 +248,8 @@ def main(argv=None):
         report["candidate"] = analyze(other)
         report["candidateSource"] = dict(path=str(args.candidate),sha256=input_hash(args.candidate),runId=other.get("runId"),researchVariant=other["configuration"].get("researchVariant"))
         report["comparison"] = comparable(result, other, (audit, other_audit))
+    report["verdict"]="inconclusive" if report["baseline"]["overall"]["trades"]<50 or report["candidate"].get("status")=="NOT_RUN" or report["candidate"].get("overall",{}).get("trades",0)<50 else "needs more data"
+    report["dataAuditStatus"]="See referenced audit; no provenance review is conferred by analysis"
     atomic_json(args.out, report)
     rows = ["# V4 baseline / candidate comparison", "", "Descriptive only. Archived results are not a new historical rerun.", "",
             "| Version / strategy | Trades | Win % | Expectancy R | PF R | MDD R | Sum trade return % |",
@@ -210,7 +262,7 @@ def main(argv=None):
             rows.append(f"| {label} {kind} | {m['trades']} | {fmt(m['winRatePct'])} | {fmt(m['expectancyR'])} | {fmt(m['profitFactorR'])} | {fmt(m['maxDrawdownR'])} | {fmt(m['sumTradeReturnPct'])} |")
     rows += ["", "Baseline data mode: `" + report["baseline"]["dataMode"] + "`.",
              "Candidate: `" + (report["candidate"].get("status", "DESCRIPTIVE_RESULT")) + "`.",
-             "No winner selected. See JSON for every fold, excursions, concentration, costs and compatibility checks.",
+             "Verdict: `"+report["verdict"]+"`. No winner selected. See JSON for every fold, excursions, concentration, costs and compatibility checks.",
              "Cost scenarios are fixed-trade accounting counterfactuals, not ideal-execution or strategy backtests.",
              "Zero-loss PF is null with an explicit infinite flag; it does not establish an edge."]
     args.report.parent.mkdir(parents=True, exist_ok=True)

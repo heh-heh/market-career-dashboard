@@ -426,7 +426,9 @@
       "medianHoldSeconds": 930.0,
       "entryToMFESeconds": 340.0,
       "entryToMAESeconds": 930.0,
-      "affectedTrades": 0
+      "affectedTrades": 0,
+      "maxConsecutiveWins": 1,
+      "maxConsecutiveLosses": 2
     },
     "byStrategy": {
       "ir1": {
@@ -8458,9 +8460,45 @@
           "entryToMFESeconds": 340.0,
           "entryToMAESeconds": 930.0,
           "affectedTrades": 0
+        },
+        "10bpsPlus1bpsSpread": {
+          "maxConsecutiveWins": 1,
+          "maxConsecutiveLosses": 4,
+          "trades": 6,
+          "wins": 1,
+          "losses": 5,
+          "breakeven": 0,
+          "winRatePct": 16.666666666666668,
+          "sumTradeReturnPct": -3.05422889323389,
+          "expectancyPct": -0.509038148872315,
+          "medianReturnPct": -0.566061770575732,
+          "avgWinPct": 0.11255332178081723,
+          "avgLossPct": 0.6333564430029415,
+          "payoffRatio": 0.17770928680723075,
+          "profitFactor": 0.035541857361443614,
+          "profitFactorInfinite": false,
+          "profitFactorR": 0.030205259092144297,
+          "profitFactorRInfinite": false,
+          "expectancyR": -0.9778263076132102,
+          "maxDrawdownR": 5.866957845679261,
+          "maxDrawdownPct": 0.010188905145187164,
+          "pnlUsd": -3.0566715435533998,
+          "averageWinR": 0.18273246320714848,
+          "averageLossR": 1.209938061777282,
+          "paperAccountReturnPct": -0.010188905145177998,
+          "averageMFE_R": 0.47348878319651094,
+          "averageMAE_R": -0.7972325783463329,
+          "averageMFEPct": null,
+          "averageMAEPct": null,
+          "averageHoldSeconds": 1230.0,
+          "medianHoldSeconds": 930.0,
+          "entryToMFESeconds": 340.0,
+          "entryToMAESeconds": 930.0,
+          "affectedTrades": 0
         }
       },
-      "warning": "Signals, cost guard, sizing, stop path and universe would differ in a real rerun; no delayed-execution claim"
+      "warning": "Signals, cost guard, sizing, stop path and universe would differ in a real rerun; no delayed-execution claim",
+      "archivalAlgebraNote": "Fourth scenario derived from logged returnPct/netR and verified fixed $100 notional; no missing price/quote/latency was invented. Original cost 3bps per side, zero fee assumption preserved."
     },
     "funnel": {
       "evaluatedSessions": 1213,
@@ -8501,7 +8539,243 @@
       "Present-day seed universe retains survivorship bias",
       "Group/fold account percentages use the declared capital, not summed trade returns",
       "Only completed-close observations; intrabar highs/lows and quote executability are not fills"
-    ]
+    ],
+    "stability": {
+      "monthly": {
+        "periodsWithTrades": 6,
+        "positivePeriods": 2,
+        "negativePeriods": 4,
+        "flatPeriods": 0,
+        "positiveFractionAmongNonempty": 0.3333333333333333,
+        "netPnlUsd": {
+          "2022-09": -0.9761164978393633,
+          "2023-01": 0.034560770898539594,
+          "2023-08": -0.6159765422250829,
+          "2024-02": -0.4427093713828878,
+          "2025-04": 0.272861706705374,
+          "2026-04": -0.37097070757829975
+        },
+        "note": "Periods with no trades are not counted as profitable"
+      },
+      "yearly": {
+        "periodsWithTrades": 5,
+        "positivePeriods": 1,
+        "negativePeriods": 4,
+        "flatPeriods": 0,
+        "positiveFractionAmongNonempty": 0.2,
+        "netPnlUsd": {
+          "2022": -0.9761164978393633,
+          "2023": -0.5814157713265433,
+          "2024": -0.4427093713828878,
+          "2025": 0.272861706705374,
+          "2026": -0.37097070757829975
+        },
+        "note": "Periods with no trades are not counted as profitable"
+      },
+      "topFiveContribution": {
+        "trades": 5,
+        "pnlUsd": -1.1222341435823568,
+        "shareOfAbsoluteTradePnl": 0.41362080381394034,
+        "shareOfNetPnl": 0.5348172614382487,
+        "records": [
+          {
+            "symbol": "SPY",
+            "strategy": "ir3",
+            "date": "2025-04-09",
+            "pnlUsd": 0.272861706705374,
+            "netR": 0.44264217411525303
+          },
+          {
+            "symbol": "AMD",
+            "strategy": "ir1",
+            "date": "2023-01-20",
+            "pnlUsd": 0.034560770898539594,
+            "netR": 0.09297890255659559
+          },
+          {
+            "symbol": "TSM",
+            "strategy": "ir2",
+            "date": "2026-04-07",
+            "pnlUsd": -0.37097070757829975,
+            "netR": -1.1457719942663962
+          },
+          {
+            "symbol": "TSLA",
+            "strategy": "ir2",
+            "date": "2024-02-07",
+            "pnlUsd": -0.4427093713828878,
+            "netR": -1.0871313399728788
+          },
+          {
+            "symbol": "PLTR",
+            "strategy": "ir1",
+            "date": "2023-08-18",
+            "pnlUsd": -0.6159765422250829,
+            "netR": -1.069482164318964
+          }
+        ]
+      },
+      "worstFiveContribution": {
+        "trades": 5,
+        "pnlUsd": -2.371212348127094,
+        "shareOfAbsoluteTradePnl": 0.8739555493428929,
+        "shareOfNetPnl": 1.1300362776930832,
+        "records": [
+          {
+            "symbol": "NVDA",
+            "strategy": "ir1",
+            "date": "2022-09-02",
+            "pnlUsd": -0.9761164978393633,
+            "netR": -1.0725785450669933
+          },
+          {
+            "symbol": "PLTR",
+            "strategy": "ir1",
+            "date": "2023-08-18",
+            "pnlUsd": -0.6159765422250829,
+            "netR": -1.069482164318964
+          },
+          {
+            "symbol": "TSLA",
+            "strategy": "ir2",
+            "date": "2024-02-07",
+            "pnlUsd": -0.4427093713828878,
+            "netR": -1.0871313399728788
+          },
+          {
+            "symbol": "TSM",
+            "strategy": "ir2",
+            "date": "2026-04-07",
+            "pnlUsd": -0.37097070757829975,
+            "netR": -1.1457719942663962
+          },
+          {
+            "symbol": "AMD",
+            "strategy": "ir1",
+            "date": "2023-01-20",
+            "pnlUsd": 0.034560770898539594,
+            "netR": 0.09297890255659559
+          }
+        ]
+      },
+      "note": "Top/worst five overlap when fewer than ten trades; a diagnostic, not additive buckets or a universe filter"
+    },
+    "verdict": "inconclusive",
+    "verdictReason": "Six trades; candidate and real-data rerun not executed",
+    "finalCompleteOOSFold": {
+      "trainPeriod": [
+        "2025-03-01",
+        "2026-03-01"
+      ],
+      "validationPeriod": [
+        "2026-03-01",
+        "2026-06-01"
+      ],
+      "oosPeriod": [
+        "2026-06-01",
+        "2026-09-01"
+      ],
+      "embargoSession": "2026-05-29",
+      "train": {
+        "trades": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakeven": 0,
+        "winRatePct": 100.0,
+        "sumTradeReturnPct": 0.272861706705374,
+        "expectancyPct": 0.272861706705374,
+        "medianReturnPct": 0.272861706705374,
+        "avgWinPct": 0.272861706705374,
+        "avgLossPct": null,
+        "payoffRatio": null,
+        "profitFactor": null,
+        "profitFactorInfinite": true,
+        "profitFactorR": null,
+        "profitFactorRInfinite": true,
+        "expectancyR": 0.44264217411525303,
+        "maxDrawdownR": 0.0,
+        "maxDrawdownPct": 0.0,
+        "pnlUsd": 0.27286170670538423,
+        "averageWinR": 0.44264217411525303,
+        "averageLossR": null,
+        "paperAccountReturnPct": 0.0009095390223512809,
+        "averageMFE_R": 0.7704667176740674,
+        "averageMAE_R": -0.048652054547908406,
+        "averageMFEPct": 0.47494539797172663,
+        "averageMAEPct": -0.029991002699192304,
+        "averageHoldSeconds": 1140.0,
+        "medianHoldSeconds": 1140.0,
+        "entryToMFESeconds": 180.0,
+        "entryToMAESeconds": 0.0,
+        "affectedTrades": 0
+      },
+      "validation": {
+        "trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakeven": 0,
+        "winRatePct": 0.0,
+        "sumTradeReturnPct": -0.37097070757829975,
+        "expectancyPct": -0.37097070757829975,
+        "medianReturnPct": -0.37097070757829975,
+        "avgWinPct": null,
+        "avgLossPct": 0.37097070757829975,
+        "payoffRatio": null,
+        "profitFactor": 0.0,
+        "profitFactorInfinite": false,
+        "profitFactorR": 0.0,
+        "profitFactorRInfinite": false,
+        "expectancyR": -1.1457719942663962,
+        "maxDrawdownR": 1.1457719942663962,
+        "maxDrawdownPct": 0.0012365690252651499,
+        "pnlUsd": -0.37097070757829964,
+        "averageWinR": null,
+        "averageLossR": 1.1457719942663962,
+        "paperAccountReturnPct": -0.0012365690252609987,
+        "averageMFE_R": 0.0,
+        "averageMAE_R": -1.0534306811905878,
+        "averageMFEPct": 0.0,
+        "averageMAEPct": -0.3410730294871378,
+        "averageHoldSeconds": 480.0,
+        "medianHoldSeconds": 480.0,
+        "entryToMFESeconds": 0.0,
+        "entryToMAESeconds": 480.0,
+        "affectedTrades": 0
+      },
+      "oos": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakeven": 0,
+        "winRatePct": null,
+        "sumTradeReturnPct": 0,
+        "expectancyPct": null,
+        "medianReturnPct": null,
+        "avgWinPct": null,
+        "avgLossPct": null,
+        "payoffRatio": null,
+        "profitFactor": null,
+        "profitFactorInfinite": false,
+        "profitFactorR": null,
+        "profitFactorRInfinite": false,
+        "expectancyR": null,
+        "maxDrawdownR": 0.0,
+        "maxDrawdownPct": 0.0,
+        "pnlUsd": 0,
+        "averageWinR": null,
+        "averageLossR": null,
+        "paperAccountReturnPct": 0.0,
+        "averageMFE_R": null,
+        "averageMAE_R": null,
+        "averageMFEPct": null,
+        "averageMAEPct": null,
+        "averageHoldSeconds": null,
+        "medianHoldSeconds": null,
+        "entryToMFESeconds": null,
+        "entryToMAESeconds": null,
+        "affectedTrades": 0
+      }
+    }
   },
   "candidate": {
     "status": "NOT_RUN",
@@ -8510,5 +8784,9 @@
   "comparison": {
     "comparable": false,
     "reason": "No candidate result supplied"
-  }
+  },
+  "verdict": "inconclusive",
+  "dataAuditStatus": "NOT_RUN: EC2 minute data unavailable in this workspace",
+  "analysisUpdatedAt": "2026-10-10T12:09:27.760171+00:00",
+  "analysisUpdateBasis": "Existing committed analysis of the original EC2 ZIP; not a new historical run. Original ZIP SHA retained; archive not present in this fresh workspace."
 }

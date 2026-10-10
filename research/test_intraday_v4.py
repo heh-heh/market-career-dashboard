@@ -340,7 +340,7 @@ class ExecutionTests(unittest.TestCase):
 
 class ResultsTests(unittest.TestCase):
     def test_metrics_chronological_tied_drawdown_and_zero_loss_pf(self):
-        def t(ts,r):return dict(returnPct=r,netR=r,pnlUsd=r,exitTimestamp=ts,holdDurationSeconds=60)
+        def t(ts,r):return dict(returnPct=r,netR=r,pnlUsd=r,exitTimestamp={"a":"2024-06-03T10:00:00-04:00","b":"2024-06-03T10:01:00-04:00"}[ts],holdDurationSeconds=60)
         trades=[t("b",-2),t("a",3),t("b",1)]
         m=summarize(trades)
         self.assertEqual(m["maxDrawdownR"],1)
