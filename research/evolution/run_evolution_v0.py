@@ -26,6 +26,7 @@ from research.evolution.config import Config
 from research.evolution.engine import evaluate_day
 from research.evolution.features import BASE_FEATURES, POLICY_FEATURES, benchmark_for_symbol
 from research.evolution.population import daily_evaluation, initial_population, reproduce
+from research.evolution.resource import decide_population, sample_resources
 
 
 def parser():
@@ -40,6 +41,9 @@ def parser():
     p.add_argument("--config", type=Path, help="JSON Config fields, including chronological split boundaries and fitness coefficients")
     p.add_argument("--population", type=int)
     p.add_argument("--initial-capital", type=float)
+    p.add_argument("--adaptive-resources", action="store_true", help="Scale training population using CPU/RAM/swap pressure; validation/OOS stay frozen")
+    p.add_argument("--min-population", type=int, help="Lower bound for adaptive training population")
+    p.add_argument("--max-population", type=int, help="Upper bound for adaptive training population")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--from-date")
     p.add_argument("--to-date")
@@ -104,8 +108,19 @@ def run(args):
         changes["population_size"] = args.population
     if args.initial_capital is not None:
         changes["initial_capital"] = args.initial_capital
+    if args.adaptive_resources:
+        changes["adaptive_resources"] = True
+    if args.min_population is not None:
+        changes["min_population"] = args.min_population
+    if args.max_population is not None:
+        changes["max_population"] = args.max_population
     if args.smoke:
-        changes["population_size"] = min(changes.get("population_size", config.population_size), 32)
+        smoke_population = min(changes.get("population_size", config.population_size), 32)
+        changes["population_size"] = smoke_population
+        adaptive = changes.get("adaptive_resources", config.adaptive_resources)
+        if adaptive:
+            changes["max_population"] = min(changes.get("max_population", config.max_population), 32)
+            changes["min_population"] = min(changes.get("min_population", config.min_population), smoke_population)
     config = replace(config, **changes)
     if args.timestamp_kind != "end":
         raise ValueError("V0 requires exclusive minute-end timestamps")
@@ -156,6 +171,9 @@ def run(args):
                     runtimeVersions={"python": sys.version.split()[0], "numpy": version("numpy"), "exchange_calendars": version("exchange_calendars")},
                     fromDate=first, toDate=last, smoke=args.smoke, requestedSessions=len(calendar),
                     executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY", generation=0, completedSessions=0,
+                    adaptiveResources=config.adaptive_resources, minPopulation=config.min_population,
+                    maxPopulation=config.max_population, nextPopulation=config.population_size,
+                    safePopulation=config.population_size, peakPopulation=config.population_size,
                     createdAt=datetime.now(timezone.utc).isoformat())
     atomic_json(directory/"run.json", run_info)
     status = dict(run_info, population=config.population_size, latestLog="Mechanical audit passed; streaming historical sessions")
@@ -165,6 +183,11 @@ def run(args):
     frozen = None
     split_days = {n: 0 for n in ("train", "validation", "final_oos")}
     evaluation_ledger = {n: {} for n in ("validation", "final_oos")}
+    safe_population = len(bots)
+    peak_population = len(bots)
+    if config.adaptive_resources:
+        # Prime psutil interval counters before the first measured training session.
+        sample_resources()
     try:
         for day, rows in day_stream(paths, manifest):
             if day > max(calendar):
@@ -179,7 +202,10 @@ def run(args):
             if frozen is not None and population_hash(bots) != frozen:
                 raise AssertionError("Validation/OOS genome mutation detected")
             opening, closing = calendar[day]
+            session_started = time.perf_counter()
             accounts, diagnostics = evaluate_day(bots, rows, opening, closing, symbols, config)
+            session_runtime = time.perf_counter() - session_started
+            resources = sample_resources(session_runtime) if config.adaptive_resources else None
             # OOS never changes training lineage, accumulated lifetime or selection.
             evaluations = [daily_evaluation(b, a, day, config, update_lifetime=split == "train") for b, a in zip(bots, accounts)]
             if split != "train":
@@ -197,7 +223,47 @@ def run(args):
             selection = dict(parentPoolSize=0, mutationCount=0, frozen=True)
             following = bots
             if split == "train":
-                following, selection = reproduce(bots, evaluations, config, rng, generation+1, day)
+                decision = decide_population(len(bots), resources or {}, config, enabled=config.adaptive_resources)
+                target_population = decision["nextPopulation"]
+                next_config = replace(config, population_size=target_population)
+                following, selection = reproduce(bots, evaluations, next_config, rng, generation+1, day)
+                peak_population = max(peak_population, target_population, len(bots))
+                if decision["resourcePressure"] != "HARD":
+                    safe_population = max(safe_population, len(bots))
+                if config.adaptive_resources:
+                    selection.update(
+                        decision,
+                        adaptiveResources=True,
+                        safePopulation=safe_population,
+                        peakPopulation=peak_population,
+                        resourceCpuPct=resources["cpuPct"],
+                        resourceProcessCpuPct=resources["processCpuPct"],
+                        resourceMemoryPct=resources["memoryPct"],
+                        resourceMemoryAvailableGb=resources["memoryAvailableGb"],
+                        resourceSwapPct=resources["swapPct"],
+                        resourceSwapUsedGb=resources["swapUsedGb"],
+                        resourceSwapTotalGb=resources["swapTotalGb"],
+                        resourceProcessRssMb=resources["processRssMb"],
+                        sessionRuntimeSeconds=resources["sessionRuntimeSeconds"],
+                    )
+            elif config.adaptive_resources:
+                selection.update(
+                    resourceDecision="FROZEN_OOS",
+                    resourcePressure="FROZEN",
+                    nextPopulation=len(bots),
+                    adaptiveResources=True,
+                    safePopulation=safe_population,
+                    peakPopulation=peak_population,
+                    resourceCpuPct=resources["cpuPct"],
+                    resourceProcessCpuPct=resources["processCpuPct"],
+                    resourceMemoryPct=resources["memoryPct"],
+                    resourceMemoryAvailableGb=resources["memoryAvailableGb"],
+                    resourceSwapPct=resources["swapPct"],
+                    resourceSwapUsedGb=resources["swapUsedGb"],
+                    resourceSwapTotalGb=resources["swapTotalGb"],
+                    resourceProcessRssMb=resources["processRssMb"],
+                    sessionRuntimeSeconds=resources["sessionRuntimeSeconds"],
+                )
             split_days[split] += 1
             day_dir = directory/(f"generation_{generation:04d}" if split == "train" else f"{split}_{split_days[split]:04d}")
             save_day(day_dir, bots, accounts, evaluations, following, selection, diagnostics)
@@ -240,6 +306,7 @@ def run(args):
         run_info.update(phase="completed", generation=summary["generation"], nextPopulationGeneration=generation,
                         completedTrainGenerations=split_days["train"], completedSessions=len(processed),
                         missingSessions=missing_days, splitDays=split_days, frozenPopulationHash=frozen,
+                        safePopulation=safe_population, peakPopulation=peak_population,
                         runtimeSeconds=time.perf_counter()-started, inputHashesVerified=True,
                         finishedAt=datetime.now(timezone.utc).isoformat())
         status.update(run_info, latestLog="Completed offline evaluation; no live orders or deployment")
