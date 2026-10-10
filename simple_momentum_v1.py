@@ -549,7 +549,7 @@ class SimpleMomentumPaper:
             sessionCutoff=signal["sessionCutoff"], timeStopMinutes=self.config.time_stop_minutes,
             trailDistancePct=self.config.trail_distance_pct, slippageBps=self.config.slippage_bps,
             dataStatus="LIVE", staleSince=None, staleObservationCount=0, everDataStale=False,
-            configurationAtEntry=dict(vars(self.config)),
+            configurationAtEntry={**vars(self.config), "entry_sessions": list(self.config.entry_sessions)},
             excursionMethod="sampled fresh post-entry observations; unobserved intrabar extremes excluded")
         self._commit("ENTRY", now, entry=copy.deepcopy(self.state["openPosition"]))
 
