@@ -593,6 +593,224 @@ def v4_audit_status():
     }
 
 
+
+def _v4_processes(script_name):
+    matches=[]
+    try:
+        entries=list(Path("/proc").iterdir())
+    except Exception:
+        return matches
+    for p in entries:
+        if not p.name.isdigit():
+            continue
+        try:
+            parts=[x.decode("utf-8","ignore") for x in (p/"cmdline").read_bytes().split(b"\0") if x]
+        except Exception:
+            continue
+        if not any(script_name in x for x in parts):
+            continue
+        item={"pid":int(p.name),"args":parts}
+        for flag,key in (
+            ("--results-dir","resultsDir"),("--from-date","fromDate"),("--to-date","toDate"),
+            ("--strategy","strategy"),("--research-variant","researchVariant"),
+            ("--state","state"),("--out","out")
+        ):
+            try:
+                i=parts.index(flag)
+                if i+1<len(parts):
+                    item[key]=parts[i+1]
+            except ValueError:
+                pass
+        matches.append(item)
+    return matches
+
+
+def _v4_latest_campaign(stage_dir):
+    stage_dir=Path(stage_dir)
+    if not stage_dir.exists():
+        return None,None
+    try:
+        paths=list(stage_dir.glob("*/campaign.json"))
+    except Exception:
+        return None,None
+    if not paths:
+        return None,None
+    path=max(paths,key=lambda p:p.stat().st_mtime)
+    return path.parent,_read_json_file(path)
+
+
+def _v4_file_time(path):
+    try:
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime(Path(path).stat().st_mtime))
+    except Exception:
+        return None
+
+
+def _v4_stage_status(run_root,stage,processes):
+    stage_root=Path(run_root)/stage
+    campaign_dir,state=_v4_latest_campaign(stage_root)
+    relevant=[]
+    stage_resolved=str(stage_root.resolve())
+    for proc in processes:
+        value=proc.get("resultsDir")
+        if not value:
+            continue
+        try:
+            if str(Path(value).resolve())==stage_resolved:
+                relevant.append(proc)
+        except Exception:
+            continue
+    running=bool(relevant)
+    total=len(state.get("jobs") or []) if state else 0
+    completed=len(state.get("completed") or []) if state else 0
+    current_job=state.get("currentJob") if state else None
+    phase=str(state.get("phase") or ("running" if running else "waiting"))
+    if running and phase in {"starting","running"}:
+        phase="running"
+    elif not running and phase in {"starting","running"}:
+        phase="interrupted"
+    elif not state:
+        phase="waiting"
+
+    current_state={}
+    current_log=""
+    current_dir=None
+    if state and current_job:
+        for job in state.get("jobs") or []:
+            if job.get("name")==current_job:
+                current_dir=Path(job.get("directory",""))
+                break
+    if current_dir:
+        current_state=_read_json_file(current_dir/"state.json")
+        for candidate in (current_dir/"run.log",current_dir/"terminal.log"):
+            if candidate.exists():
+                try:
+                    current_log="\n".join(candidate.read_text(encoding="utf-8",errors="ignore").splitlines()[-30:])
+                except Exception:
+                    current_log=""
+                if current_log:
+                    break
+
+    progress=0.0
+    if total:
+        progress=100.0*completed/total
+        if current_job and completed<total:
+            try:
+                progress+=float(current_state.get("progress") or 0)/total
+            except Exception:
+                pass
+    progress=max(0.0,min(100.0,progress))
+
+    return {
+        "stage":stage,
+        "available":bool(state or campaign_dir),
+        "running":running,
+        "phase":phase,
+        "campaignDir":str(campaign_dir) if campaign_dir else None,
+        "updatedAt":_v4_file_time(campaign_dir/"campaign.json") if campaign_dir else None,
+        "totalJobs":total or 5,
+        "completedJobs":completed,
+        "progress":round(progress,2),
+        "currentJob":current_job,
+        "error":state.get("error") if state else None,
+        "dataMode":state.get("dataMode") if state else None,
+        "current":{
+            "phase":current_state.get("phase"),
+            "progress":current_state.get("progress"),
+            "processedRows":current_state.get("processedRows",0),
+            "completedDays":current_state.get("completedDays",0),
+            "currentDay":current_state.get("currentDay"),
+            "currentTimestamp":current_state.get("currentTimestamp"),
+            "trades":current_state.get("trades",0),
+            "signals":current_state.get("signals",0),
+            "entries":current_state.get("entries",0),
+            "updatedAt":current_state.get("updatedAt"),
+            "pid":current_state.get("pid"),
+            "error":current_state.get("error"),
+        },
+        "log":current_log,
+    }
+
+
+def v4_research_status():
+    root=Path(os.getenv("V4_RESEARCH_ROOT","/home/ubuntu/v4-research"))
+    run_root=None
+    if root.exists():
+        try:
+            dirs=[p for p in root.iterdir() if p.is_dir()]
+            if dirs:
+                run_root=max(dirs,key=lambda p:p.stat().st_mtime)
+        except Exception:
+            run_root=None
+
+    audit=v4_audit_status()
+    if run_root is None and audit.get("runDir"):
+        run_root=Path(audit["runDir"])
+
+    campaigns=_v4_processes("run_v4_research_campaign.py")
+    if run_root:
+        smoke=_v4_stage_status(run_root,"smoke",campaigns)
+        full=_v4_stage_status(run_root,"full",campaigns)
+    else:
+        smoke={"stage":"smoke","available":False,"running":False,"phase":"waiting","totalJobs":5,"completedJobs":0,"progress":0}
+        full={"stage":"full","available":False,"running":False,"phase":"waiting","totalJobs":5,"completedJobs":0,"progress":0}
+
+    comparison={}
+    comparison_path=None
+    all_analysis_path=None
+    full_dir=Path(full["campaignDir"]) if full.get("campaignDir") else None
+    if full_dir:
+        comparison_path=full_dir/"v4_comparison.json"
+        all_analysis_path=full_dir/"v4_all_analysis.json"
+        comparison=_read_json_file(comparison_path)
+
+    compare_phase="completed" if comparison else "waiting"
+    if full.get("phase")=="completed" and not comparison:
+        compare_phase="ready"
+    if full.get("phase") in {"error","interrupted","failed"}:
+        compare_phase="blocked"
+
+    audit_status=str(audit.get("resultStatus") or "")
+    audit_phase=("completed" if audit_status.startswith("PASS") else
+                 "failed" if audit.get("resultReady") else audit.get("phase","waiting"))
+
+    roadmap=[
+        {"id":"audit","label":"데이터 감사","phase":audit_phase,
+         "detail":audit_status or ("실행 중" if audit.get("running") else "대기")},
+        {"id":"smoke","label":"Smoke 5개","phase":smoke.get("phase","waiting"),
+         "detail":f'{smoke.get("completedJobs",0)}/{smoke.get("totalJobs",5)} 완료'},
+        {"id":"full","label":"전체 백테스트","phase":full.get("phase","waiting"),
+         "detail":f'{full.get("completedJobs",0)}/{full.get("totalJobs",5)} 완료'},
+        {"id":"compare","label":"비교/최종 판정","phase":compare_phase,
+         "detail":str(comparison.get("verdict") or ("실행 가능" if compare_phase=="ready" else "대기"))},
+    ]
+
+    active_stage=None
+    if smoke.get("running"):
+        active_stage="smoke"
+    elif full.get("running"):
+        active_stage="full"
+    elif audit.get("running"):
+        active_stage="audit"
+
+    return {
+        "runRoot":str(run_root) if run_root else None,
+        "activeStage":active_stage,
+        "audit":audit,
+        "smoke":smoke,
+        "full":full,
+        "comparison":{
+            "phase":compare_phase,
+            "resultReady":bool(comparison),
+            "verdict":comparison.get("verdict"),
+            "comparison":comparison.get("comparison"),
+            "updatedAt":_v4_file_time(comparison_path) if comparison_path and comparison_path.exists() else None,
+            "allAnalysisReady":bool(all_analysis_path and all_analysis_path.exists()),
+        },
+        "roadmap":roadmap,
+    }
+
+
 def load_secrets():
     if not SECRETS.exists():
         return {}
@@ -1712,6 +1930,12 @@ class Handler(BaseHTTPRequestHandler):
         if path=="/api/research/v4/audit/status":
             try:
                 self.send_json({"ok":True,**v4_audit_status()})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
+            return
+        if path=="/api/research/v4/status":
+            try:
+                self.send_json({"ok":True,**v4_research_status()})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)
             return
