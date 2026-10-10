@@ -21,7 +21,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style><style>.bt-symbol-pct{font-size:22px;font-weight:900;margin-top:8px;font-variant-numeric:tabular-nums}</style></head>
 <body><div class="app">
 <header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
-<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장·고용률</button><button data-view="v5">채용공고</button><button data-view="v4">신기술 · IT</button><button data-view="v9">백테스트 모니터</button><button data-view="v7">설정</button></nav>
+<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업시장·고용률</button><button data-view="v5">채용공고</button><button data-view="v4">신기술 · IT</button><button data-view="v9">데이터 수집</button><button data-view="v7">설정</button></nav>
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
   <div class="stock-layout">
@@ -45,6 +45,38 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
 <section id="v9" class="view">
 <div class="card">
+  <div class="backtest-head">
+    <div>
+      <div class="label">Toss Raw Tick · 미국주식 30종목</div>
+      <h2 style="margin:5px 0">실시간 Tick 수집</h2>
+      <div id="tickCollectorPhase" class="muted">Tick collector 상태 확인 중...</div>
+    </div>
+    <div><span id="tickSessionBadge" class="bt-progress-text">-</span></div>
+  </div>
+  <div class="bt-grid" style="margin-top:12px">
+    <div class="bt-stat"><div class="label">현재 세션</div><div class="v" id="tickMarketSession">-</div></div>
+    <div class="bt-stat"><div class="label">구독 종목</div><div class="v" id="tickSubscribed">-</div></div>
+    <div class="bt-stat"><div class="label">누적 Tick</div><div class="v" id="tickTotal">-</div></div>
+    <div class="bt-stat"><div class="label">현재 세션 저장량</div><div class="v" id="tickDataSize">-</div></div>
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div class="card" style="margin-top:0">
+      <div class="label">장 운영 정보</div>
+      <div id="tickWindow" class="signal">상태 확인 중...</div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="label">연결 / 데이터 품질</div>
+      <div id="tickQuality" class="signal">상태 확인 중...</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="label">종목별 수신 Tick</div>
+    <div id="tickBySymbol" class="bt-symbols" style="margin-top:10px"></div>
+  </div>
+  <div class="mini" style="margin-top:10px;color:#f0b84b">Toss 실시간 WebSocket은 LOSSY입니다. 표시되는 수치는 이 서버가 실제 수신한 Tick이며 완전한 exchange tape를 의미하지 않습니다.</div>
+</div>
+
+<div class="card" style="margin-top:12px">
   <div class="backtest-head">
     <div>
       <div class="label">Toss 1분봉 · 확장 Universe</div>
@@ -631,6 +663,78 @@ function startRealtime(){
  window.addEventListener("beforeunload",()=>{stopped=true;},{once:true});
 }
 
+async function loadTickCollectorMonitor(){
+ const base=AWS_API_BASE||"";if(!base)return;
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ const fmtBytes=n=>{
+  n=Number(n||0);if(!n)return "0 B";
+  const u=["B","KB","MB","GB","TB"];let i=0;
+  while(n>=1024&&i<u.length-1){n/=1024;i++}
+  return n.toFixed(i>=3?2:i>=2?1:0)+" "+u[i];
+ };
+ try{
+  const r=await fetch(base+"/api/ticks/status?"+Date.now(),{cache:"no-store"});
+  const d=await r.json();
+  if(!r.ok||!d.ok)throw new Error(d.error||"tick status unavailable");
+
+  const phase=document.getElementById("tickCollectorPhase");
+  const labels={
+   waiting_for_market_open:"장 대기",
+   opening_market_session:"세션 시작",
+   connecting:"WebSocket 연결 중",
+   collecting:"수집 중",
+   reconnecting:"재연결 중",
+   paused_low_disk:"디스크 부족",
+   compressing:"압축 중",
+   stopped:"중지",
+   unavailable:"상태 없음"
+  };
+  if(phase){
+   const label=labels[d.state]||d.state||"-";
+   const cl=d.state==="collecting"?"up":d.healthy?"bt-ok":d.lastError?"down":"bt-wait";
+   phase.innerHTML='<b class="'+cl+'">● '+esc(label)+'</b> · 갱신 '+esc(formatKSTDateTime(d.updatedAt));
+   if(d.lastError)phase.innerHTML+='<br><span class="down">'+esc(d.lastError)+'</span>';
+   if(d.calendarError)phase.innerHTML+='<br><span style="color:#f0b84b">calendar fallback: '+esc(d.calendarError)+'</span>';
+  }
+
+  set("tickSessionBadge",d.state==="collecting"?"LIVE":(d.marketSession||"-"));
+  set("tickMarketSession",(d.marketSession||"-")+" · "+(d.sessionDate||"-"));
+  set("tickSubscribed",Number(d.subscribed||0).toLocaleString()+" / "+Number(d.symbolCount||0).toLocaleString());
+  set("tickTotal",Number(d.ticksTotal||0).toLocaleString());
+  set("tickDataSize",fmtBytes(d.dataBytes));
+
+  const open=d.openAt||d.nextOpenAt;
+  const close=d.closeAt||d.nextCloseAt;
+  const win=document.getElementById("tickWindow");
+  if(win)win.innerHTML=
+   'calendar <b>'+esc(d.calendarSource||"-")+'</b><br>'+
+   'open '+esc(formatKSTDateTime(open))+'<br>'+
+   'close '+esc(formatKSTDateTime(close));
+
+  const quality=document.getElementById("tickQuality");
+  if(quality)quality.innerHTML=
+   'reconnects <b>'+Number(d.reconnects||0).toLocaleString()+'</b><br>'+
+   'queue drops <b class="'+(d.localQueueDrops?"down":"bt-ok")+'">'+Number(d.localQueueDrops||0).toLocaleString()+'</b><br>'+
+   'invalid messages <b class="'+(d.invalidMessages?"down":"bt-ok")+'">'+Number(d.invalidMessages||0).toLocaleString()+'</b><br>'+
+   'queue depth '+Number(d.queueDepth||0).toLocaleString()+' · files '+Number(d.dataFileCount||0).toLocaleString();
+
+  const cards=document.getElementById("tickBySymbol");
+  if(cards){
+   const counts=d.ticksBySymbol||{};
+   const symbols=(d.symbols||Object.keys(counts)).slice().sort();
+   cards.innerHTML=symbols.map(symbol=>
+    '<div class="bt-symbol">'+
+     '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(symbol)+'</b><span class="'+(Number(counts[symbol]||0)>0?"bt-ok":"bt-wait")+'">'+Number(counts[symbol]||0).toLocaleString()+'</span></div>'+
+     '<div class="mini" style="margin-top:5px">수신 Tick</div>'+
+    '</div>'
+   ).join("")||'<div class="muted">아직 수집 데이터가 없습니다.</div>';
+  }
+ }catch(e){
+  const phase=document.getElementById("tickCollectorPhase");
+  if(phase)phase.innerHTML='<span class="down">Tick 상태 조회 실패 · '+esc(e.message)+'</span>';
+ }
+}
+
 let btTimer=null;
 const btPhaseNames={starting:"시작 준비",syncing:"GitHub 동기화",building:"C++ 엔진 빌드",collecting:"Toss 1분봉 수집",backtest:"C++ 백테스트 계산",completed:"백테스트 완료",waiting:"대기"};
 async function loadBacktestMonitor(){
@@ -762,7 +866,12 @@ document.getElementById("adminConsoleInput")?.addEventListener("keydown",e=>{if(
 document.getElementById("adminConsoleClear")?.addEventListener("click",()=>{const x=document.getElementById("adminConsoleOutput");if(x)x.textContent="";});
 document.querySelectorAll("[data-console-cmd]").forEach(b=>b.addEventListener("click",()=>runAdminConsole(b.dataset.consoleCmd||"")));
 
-function startBacktestMonitor(){if(btTimer)clearInterval(btTimer);loadBacktestMonitor();btTimer=setInterval(loadBacktestMonitor,3000)}
+function startBacktestMonitor(){
+ if(btTimer)clearInterval(btTimer);
+ loadTickCollectorMonitor();
+ loadBacktestMonitor();
+ btTimer=setInterval(()=>{loadTickCollectorMonitor();loadBacktestMonitor()},3000);
+}
 document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
 
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
