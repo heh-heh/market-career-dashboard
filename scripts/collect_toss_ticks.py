@@ -739,6 +739,11 @@ async def daemon(args) -> None:
                 calendarError=window.get("calendarError"),
                 nextOpenAt=window["openAt"],
                 nextCloseAt=window["closeAt"],
+                openAt=None,
+                closeAt=None,
+                connectionId=None,
+                subscribed=0,
+                error=None,
                 symbols=args.symbols_list,
             )
             try:
