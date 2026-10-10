@@ -85,6 +85,45 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(cov["targetCompletedBarAvailable"],1)
         self.assertEqual(cov["benchmarkContextAvailable"],1)
 
+    def test_ir3_direction_breakdown_counts_overlapping_components(self):
+        d=DiagnosticCollector(["ir3"],sample_limit=2)
+        T=clock(15,30)
+        q=session("QQQ");p=session("SPY")
+        install(q,T);install(p,T)
+        q.snapshots[T]["u20"]=-.01
+        q.snapshots[T]["vwap"]=101
+        q.snapshots[T]["er"]=.2
+        p.snapshots[T]["u20"]=-.01
+        p.snapshots[T]["vwap"]=101
+        p.snapshots[T]["er"]=.5
+        sessions={"QQQ":q,"SPY":p}
+        c=context(direction="MIXED",qqq="OTHER",spy="DOWN")
+        d.observe_ir3_direction_failure("QQQ","2024-06-03",T,sessions,c,.4)
+        out=d.to_dict()["ir3"]["directionFailureBreakdown"]
+        self.assertEqual(out["failuresObserved"],1)
+        self.assertEqual(out["componentCounts"]["OWN_U20_NONPOSITIVE"],1)
+        self.assertEqual(out["componentCounts"]["OWN_NOT_ABOVE_VWAP"],1)
+        self.assertEqual(out["componentCounts"]["OWN_ER_BELOW_TREND_MIN"],1)
+        self.assertEqual(out["componentCounts"]["OTHER_INDEX_DOWN"],1)
+        signature="OWN_U20_NONPOSITIVE+OWN_NOT_ABOVE_VWAP+OWN_ER_BELOW_TREND_MIN+OTHER_INDEX_DOWN"
+        self.assertEqual(out["signatureCounts"][signature],1)
+        self.assertEqual(out["requirements"]["ownER20Min"],.4)
+
+    def test_ir3_direction_breakdown_samples_are_bounded(self):
+        d=DiagnosticCollector(["ir3"],sample_limit=1)
+        T=clock(15,30)
+        q=session("QQQ");p=session("SPY")
+        install(q,T);install(p,T)
+        q.snapshots[T]["er"]=.2
+        sessions={"QQQ":q,"SPY":p}
+        c=context(direction="MIXED",qqq="OTHER",spy="OTHER")
+        for day in ("2024-06-03","2024-06-04"):
+            d.observe_ir3_direction_failure("QQQ",day,T,sessions,c,.4)
+        out=d.to_dict()["ir3"]["directionFailureBreakdown"]
+        self.assertEqual(out["failuresObserved"],2)
+        self.assertEqual(out["componentCounts"]["OWN_ER_BELOW_TREND_MIN"],2)
+        self.assertEqual(len(out["samplesBySignature"]["OWN_ER_BELOW_TREND_MIN"]),1)
+
 
 if __name__=="__main__":
     unittest.main()
