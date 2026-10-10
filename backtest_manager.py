@@ -66,9 +66,19 @@ class BacktestManager:
                 log=f.read().decode(errors="replace")
         except OSError: log=""
         merged={**state,**{k:result.get(k,{}) for k in ("funnel","overall","byStrategy","bySymbol","byYear","byMonth","bySession","byExitReason","byRegime","configuration","execution","data") if result}}
+        data_dir=self.root/"data/toss_1m"
+        has_data=data_dir.is_dir() and (any(data_dir.glob("*.csv.gz")) or any(data_dir.glob("*.csv")))
+        manifest_path=Path(os.getenv("V4_DATA_MANIFEST",str(self.root/"research/v4_data_manifest.json")))
+        blocked_reason=None
+        if not has_data:
+            blocked_reason="historical Toss 1m data is unavailable"
+        elif engine.startswith("v4-") and not manifest_path.is_file():
+            blocked_reason="Reviewed V4 data manifest is missing; finish data collection/audit and build the reviewed manifest first"
         merged.update(engine=engine,label=self.spec(engine)["label"],pid=pid,running=running,phase=phase,
             summary=result.get("overall") or state.get("summary") or {},log=log,
-            progress=state.get("progress",100 if result else 0),downloadAvailable=bool(result),resultAvailable=bool(result))
+            progress=state.get("progress",100 if result else 0),downloadAvailable=bool(result),resultAvailable=bool(result),
+            runnable=blocked_reason is None,blockedReason=blocked_reason,
+            manifestAvailable=manifest_path.is_file() if engine.startswith("v4-") else None)
         return merged
 
     def active_job(self):
