@@ -7,7 +7,7 @@
 <title>Market Dashboard Admin</title>
 <style>
 :root{--bg:#08111f;--panel:#101b2f;--line:#263653;--text:#eaf1ff;--muted:#8fa2c2;--accent:#7c8cff;--ok:#39d98a;--bad:#ff667a;--warn:#f0b84b}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07101d,#0b1730);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}button,input{font:inherit}button{background:#182742;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 13px}button.primary{background:var(--accent);color:white}button.danger{border-color:#693040;color:#ffb0bb}.wrap{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted,.mini{color:var(--muted)}.mini{font-size:12px;line-height:1.6}.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tabs button.active{background:var(--accent)}.panel{display:none}.panel.active{display:block}.card{background:#101b2feF;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.paper-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.paper-column .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.paper-column .card{margin-bottom:10px}.section-title{font-size:20px;font-weight:800;margin:0 0 10px}.section-subtitle{font-size:12px;color:var(--muted);margin:-4px 0 12px}.stat{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800;margin-top:5px}.signal{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;line-height:1.6}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.terminal{white-space:pre-wrap;word-break:break-word;background:#050c17;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:260px;max-height:55vh;overflow:auto;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.command{display:flex;gap:8px;margin-top:8px}.command input,.field input{width:100%;background:#07111f;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px}.row{padding:9px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}#gate{max-width:560px;margin:18vh auto}.hidden{display:none!important}@media(max-width:850px){.paper-split{grid-template-columns:1fr}}@media(max-width:650px){.grid,.stats,.paper-column .stats{grid-template-columns:1fr 1fr}.top{align-items:flex-start}.wrap{padding:10px}.terminal{min-height:340px}.command{flex-direction:column}} 
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#07101d,#0b1730);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}button,input,select{font:inherit}button{background:#182742;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 13px}button.primary{background:var(--accent);color:white}button.danger{border-color:#693040;color:#ffb0bb}.wrap{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted,.mini{color:var(--muted)}.mini{font-size:12px;line-height:1.6}.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tabs button.active{background:var(--accent)}.panel{display:none}.panel.active{display:block}.card{background:#101b2feF;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.paper-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}.paper-column .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.paper-column .card{margin-bottom:10px}.section-title{font-size:20px;font-weight:800;margin:0 0 10px}.section-subtitle{font-size:12px;color:var(--muted);margin:-4px 0 12px}.stat{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px}.label{font-size:12px;color:var(--muted)}.value{font-size:18px;font-weight:800;margin-top:5px}.signal{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;line-height:1.6}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.terminal{white-space:pre-wrap;word-break:break-word;background:#050c17;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:260px;max-height:55vh;overflow:auto;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.command{display:flex;gap:8px;margin-top:8px}.command input,.field input,select{width:100%;background:#07111f;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px}.row{padding:9px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}#gate{max-width:560px;margin:18vh auto}.hidden{display:none!important}@media(max-width:850px){.paper-split{grid-template-columns:1fr}}@media(max-width:650px){.grid,.stats,.paper-column .stats{grid-template-columns:1fr 1fr}.top{align-items:flex-start}.wrap{padding:10px}.terminal{min-height:340px}.command{flex-direction:column}} 
 </style>
 </head>
 <body>
@@ -130,8 +130,15 @@
     <div class="section-subtitle">히스토리 전략 검증은 모의매매 화면과 분리해서 실행·결과·다운로드만 집중해서 볼 수 있게 구성했습니다.</div>
 
     <div class="card">
-      <div class="label">Simple V1 히스토리 백테스트</div>
-      <div id="simpleBtState" class="signal">상태 확인 중...</div>
+      <div class="label">백테스트 엔진 선택</div>
+      <div class="field" style="margin-top:8px">
+        <select id="btEngineSelect">
+          <option value="simple-v1">Simple Momentum V1</option>
+          <option value="v3">Strategy Engine V3</option>
+        </select>
+      </div>
+      <div id="btEngineDesc" class="mini" style="margin-top:8px">선택한 엔진의 과거 데이터 백테스트를 실행합니다.</div>
+      <div id="simpleBtState" class="signal" style="margin-top:10px">상태 확인 중...</div>
       <div style="height:10px;background:#07111f;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:10px">
         <div id="simpleBtProgress" style="height:100%;width:0%;background:var(--accent);transition:width .25s"></div>
       </div>
@@ -139,7 +146,7 @@
         <button id="simpleBtStart" class="primary">백테스트 실행</button>
         <button id="simpleBtDownload">결과 다운로드 (.zip)</button>
       </div>
-      <div class="mini" style="margin-top:8px">수집 완료된 Toss 1분봉 전체를 사용합니다. 과거 top-100 랭킹 스냅샷은 없으므로 수집된 종목 안에서 누적 거래량 순위를 재구성합니다. 체결은 신호 다음 1분봉 종가 관측값으로 보수적으로 근사합니다.</div>
+      <div id="btEngineNote" class="mini" style="margin-top:8px">수집 완료된 Toss 1분봉 전체를 사용합니다. 엔진별 실행 모델과 데이터 제약은 결과에 함께 표시됩니다.</div>
     </div>
 
     <div class="stats">
@@ -154,8 +161,8 @@
       <div class="card"><div class="label">실행 / 후보 Funnel</div><div id="simpleBtFunnel" class="signal">-</div></div>
     </div>
     <div class="grid">
-      <div class="card"><div class="label">세션별 결과</div><div id="simpleBtSessions" class="signal">-</div></div>
-      <div class="card"><div class="label">청산 사유별 결과</div><div id="simpleBtExits" class="signal">-</div></div>
+      <div class="card"><div id="btBreakdownLabel" class="label">세션별 결과</div><div id="simpleBtSessions" class="signal">-</div></div>
+      <div class="card"><div id="btSecondaryLabel" class="label">청산 사유별 결과</div><div id="simpleBtExits" class="signal">-</div></div>
     </div>
     <div class="card"><div class="label">연도별 결과</div><div id="simpleBtYears" class="signal">-</div></div>
     <div class="card"><div class="label">백테스트 로그</div><div id="simpleBtLog" class="terminal" style="min-height:120px;max-height:260px">-</div></div>
@@ -221,6 +228,7 @@ async function authGate(){
     await req("/api/settings");
     document.getElementById("gate").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
+    await loadBacktestEngines();
     await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshGit()]);
   }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
 }
@@ -372,23 +380,52 @@ async function refreshSimple(){
   }catch(e){setText("simpleState",e.message)}
 }
 function pct(v,d=2){return v==null?"-":Number(v).toFixed(d)+"%"}
-function metricRows(obj){
-  const entries=Object.entries(obj||{});
+let backtestEngines={
+  "simple-v1":{name:"Simple Momentum V1",description:"급등 → 눌림 → 재상승 확인 기반 Simple V1"},
+  "v3":{name:"Strategy Engine V3",description:"기존 ORB/VWAP/Close Momentum multi-strategy V3"}
+};
+function selectedBacktestEngine(){return document.getElementById("btEngineSelect").value||"simple-v1"}
+function pct(v,d=2){return v==null?"-":Number(v).toFixed(d)+"%"}
+function metricRows(obj,limit=30){
+  let entries=Object.entries(obj||{});
   if(!entries.length)return '<span class="muted">결과 없음</span>';
+  entries=entries.sort((a,b)=>Number(b[1]?.trades||0)-Number(a[1]?.trades||0)).slice(0,limit);
   return entries.map(([k,v])=>'<div class="row"><b>'+esc(k)+'</b> · '+Number(v.trades||0)+'건 · 승률 '+pct(v.winRatePct,1)+' · 평균 '+pct(v.expectancyPct,3)+' · PF '+Number(v.profitFactor||0).toFixed(2)+'</div>').join('');
+}
+async function loadBacktestEngines(){
+  try{
+    const d=await req("/api/backtest/engines"),sel=document.getElementById("btEngineSelect");
+    if(Array.isArray(d.engines)&&d.engines.length){
+      const current=sel.value;
+      sel.innerHTML=d.engines.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+'</option>').join('');
+      if(d.engines.some(e=>e.id===current))sel.value=current;
+      backtestEngines=Object.fromEntries(d.engines.map(e=>[e.id,e]));
+    }
+  }catch(e){}
+}
+function updateBacktestEngineText(){
+  const id=selectedBacktestEngine(),info=backtestEngines[id]||{};
+  setText("btEngineDesc",(info.name||id)+' · '+(info.description||''));
+  setText("btEngineNote",id==="simple-v1"
+    ?"수집 완료된 Toss 1분봉 전체를 사용합니다. 과거 top-100 랭킹 스냅샷은 없어서 수집 종목 내 누적 거래량 순위를 재구성하고, 체결은 신호 다음 1분봉 종가 관측값으로 보수적으로 근사합니다."
+    :"수집 완료된 Toss 1분봉으로 기존 V3 multi-strategy 엔진을 재생합니다. 다음 1분봉 시가 체결, stop-before-target 규칙과 엔진의 기존 점수 체계를 사용합니다.");
 }
 async function refreshSimpleBacktest(){
   try{
-    const s=await req("/api/backtest/simple-v1/status"),m=s.summary||{},f=s.funnel||{};
+    const engine=selectedBacktestEngine();
+    updateBacktestEngineText();
+    const s=await req("/api/backtest/status?engine="+encodeURIComponent(engine)),m=s.summary||{},f=s.funnel||{};
     const phase=String(s.phase||"waiting").toUpperCase(),running=!!s.running,progress=Math.max(0,Math.min(100,Number(s.progress||0)));
     document.getElementById("simpleBtProgress").style.width=progress+"%";
     document.getElementById("simpleBtStart").disabled=running;
     document.getElementById("simpleBtDownload").disabled=!s.downloadAvailable;
+    const activity=s.processedRows==null
+      ?(' · 거래일/시점 '+esc(s.currentTimestamp||'-'))
+      :(' · '+Number(s.processedRows||0).toLocaleString()+' rows'+(s.currentTimestamp?' · '+esc(s.currentTimestamp):''));
     document.getElementById("simpleBtState").innerHTML=
-      '<b class="'+(running?'ok':phase==='ERROR'||phase==='INTERRUPTED'?'bad':'warn')+'">'+esc(phase)+'</b>'+
-      ' · '+progress.toFixed(1)+'% · '+Number(s.processedRows||0).toLocaleString()+' rows'+
+      '<b>'+esc(s.engineName||engine)+'</b> · <span class="'+(running?'ok':phase==='ERROR'||phase==='INTERRUPTED'?'bad':'warn')+'">'+esc(phase)+'</span>'+
+      ' · '+progress.toFixed(1)+'%'+activity+
       ' · 신호 '+Number(s.signals||0).toLocaleString()+' · 진입 '+Number(s.entries||0).toLocaleString()+
-      (s.currentTimestamp?' · '+esc(s.currentTimestamp):'')+
       (s.error?'<br><span class="bad">'+esc(s.error)+'</span>':'');
     setText("simpleBtTrades",String(m.trades??s.trades??0));
     setText("simpleBtWinRate",pct(m.winRatePct,1));
@@ -399,36 +436,36 @@ async function refreshSimpleBacktest(){
       '<br>평균 이익 '+pct(m.avgWinPct,3)+' · 평균 손실 '+pct(m.avgLossPct,3)+
       '<br>Payoff '+Number(m.payoffRatio||0).toFixed(2)+' · MDD '+pct(m.maxDrawdownPct,3)+
       '<br>가상계좌 손익 '+fmtUsd(m.pnlUsd)+' · 계좌수익률 '+pct(m.paperAccountReturnPct,4);
-    document.getElementById("simpleBtFunnel").innerHTML=
-      '관측 '+Number(f.universeObservations||0).toLocaleString()+
-      '<br>1차 후보 '+Number(f.thresholdCandidates||0).toLocaleString()+
-      '<br>셋업 평가 '+Number(f.candidateEvaluations||0).toLocaleString()+
-      '<br>신호 '+Number(f.signals||0).toLocaleString()+
-      '<br>진입 '+Number(f.entries||0).toLocaleString()+
-      '<br>만료 '+Number(f.pendingExpired||0).toLocaleString();
-    document.getElementById("simpleBtSessions").innerHTML=metricRows(s.bySession);
-    document.getElementById("simpleBtExits").innerHTML=metricRows(s.byExitReason);
+    document.getElementById("simpleBtFunnel").innerHTML=Object.entries(f).slice(0,12).map(([k,v])=>
+      '<div class="row"><b>'+esc(k)+'</b> · '+Number(v||0).toLocaleString()+'</div>'
+    ).join('')||'<span class="muted">결과 없음</span>';
+    setText("btBreakdownLabel",s.breakdownLabel||"세부 결과");
+    setText("btSecondaryLabel",s.secondaryBreakdownLabel||"추가 결과");
+    document.getElementById("simpleBtSessions").innerHTML=metricRows(s.breakdown);
+    document.getElementById("simpleBtExits").innerHTML=metricRows(s.secondaryBreakdown);
     document.getElementById("simpleBtYears").innerHTML=metricRows(s.byYear);
     setText("simpleBtLog",s.log||"로그 없음");
   }catch(e){document.getElementById("simpleBtState").innerHTML='<span class="bad">'+esc(e.message)+'</span>'}
 }
 async function startSimpleBacktest(){
-  const b=document.getElementById("simpleBtStart");b.disabled=true;b.textContent="시작 중...";
-  try{await req("/api/backtest/simple-v1/start",{method:"POST",body:"{}"});await refreshSimpleBacktest()}
+  const engine=selectedBacktestEngine(),b=document.getElementById("simpleBtStart");
+  b.disabled=true;b.textContent="시작 중...";
+  try{await req("/api/backtest/start",{method:"POST",body:JSON.stringify({engine})});await refreshSimpleBacktest()}
   catch(e){alert(e.message)}
   finally{b.textContent="백테스트 실행"}
 }
 async function downloadSimpleBacktest(){
-  const b=document.getElementById("simpleBtDownload");b.disabled=true;
+  const engine=selectedBacktestEngine(),b=document.getElementById("simpleBtDownload");b.disabled=true;
   try{
     const headers={};if(token())headers.Authorization="Bearer "+token();
-    const r=await fetch(API+"/api/backtest/simple-v1/download",{headers,cache:"no-store"});
+    const r=await fetch(API+"/api/backtest/download?engine="+encodeURIComponent(engine),{headers,cache:"no-store"});
     if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||("HTTP "+r.status))}
     const blob=await r.blob(),u=URL.createObjectURL(blob),a=document.createElement("a");
-    a.href=u;a.download="simple-v1-backtest-"+new Date().toISOString().replace(/[:.]/g,"-")+".zip";
+    a.href=u;a.download=engine+"-backtest-"+new Date().toISOString().replace(/[:.]/g,"-")+".zip";
     document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);
   }catch(e){alert(e.message)}finally{await refreshSimpleBacktest()}
 }
+document.getElementById("btEngineSelect").onchange=refreshSimpleBacktest;
 document.getElementById("simpleBtStart").onclick=startSimpleBacktest;
 document.getElementById("simpleBtDownload").onclick=downloadSimpleBacktest;
 
