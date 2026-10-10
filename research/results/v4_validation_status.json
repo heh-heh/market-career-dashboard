@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-10T11:46:35.050369+00:00",
+  "branch": "strategy-engine-v3",
+  "historicalExecution": {
+    "status": "NOT_RUN",
+    "reason": "DATA_ACCESS_UNAVAILABLE; user confirmed no EC2 connection",
+    "preflightExitCode": 2,
+    "childLaunched": false
+  },
+  "baselineAnalysis": {
+    "source": "User-uploaded completed EC2 ZIP",
+    "newHistoricalRun": false,
+    "dataMode": "PROVISIONAL_UNREVIEWED_DATA"
+  },
+  "candidate": {
+    "name": "V4-IR1-R1",
+    "status": "NOT_RUN",
+    "productionEnabled": false
+  },
+  "validation": {
+    "beforeTests": 217,
+    "afterTests": 239,
+    "newTests": 22,
+    "pythonCompile": "PASS",
+    "cliHelp": "PASS",
+    "adminBacktestSmoke": "PASS",
+    "adminPaperSmoke": "PASS",
+    "frozenParameterEquality": "PASS",
+    "fiveDayGolden": "PASS: same trades/fills/funnel; synthetic only"
+  },
+  "preserve": {
+    "rawDataUntouched": true,
+    "forwardLogsUntouched": true,
+    "baselineThresholdsUntouched": true,
+    "tickCollectorUntouched": true,
+    "liveTradingUntouched": true,
+    "mainUntouched": true
+  },
+  "remaining": [
+    "Actual source timestamp semantics/provenance",
+    "Stable source files and full-session/history coverage",
+    "Independent IR1/IR2/IR3/ALL real data campaign",
+    "IR1-R1 real chronological OOS/robustness evaluation"
+  ],
+  "validatedCodeCommit": "61af4f69c94c6a8c2d44d14a381c8995e14d4c6d"
+}
