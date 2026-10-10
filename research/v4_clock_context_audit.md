@@ -8,6 +8,8 @@ The old runner converted every IR3 `IDLE` result at 15:30 into `CLOCK_ELIGIBILIT
 
 The runner now classifies the immediate cause without changing the decision. IR1/IR2 context cancellation also uses atomic reason codes instead of the generic `CONTEXT_FAILED`.
 
+IR3 `CLOCK_DIRECTION_FILTER_FAILED` now has a diagnostic-only sub-breakdown. It records overlapping component failures for the selected index's 20-minute return sign, close-vs-VWAP relation, ER threshold, and the other index being DOWN. Exact intersections are also counted as signatures, with bounded raw-value examples. The parent rejection reason and every strategy threshold remain unchanged.
+
 ## Causality
 
 Minute labels are normalized to START semantics. At decision time 15:30 ET, the most recent completed one-minute bar is the bar that starts at 15:29 and ends at 15:30. A 15:30 START bar is not observable until 15:31.
