@@ -28,6 +28,7 @@
     <button class="active" data-tab="trade">실거래</button>
     <button data-tab="paper">모의매매</button>
     <button data-tab="backtest">백테스트</button>
+    <button data-tab="collector">틱 수집</button>
     <button data-tab="server">서버 콘솔</button>
     <button data-tab="git">GitHub · Git</button>
   </div>
@@ -173,6 +174,35 @@
     <div class="card"><div class="label">백테스트 로그</div><div id="simpleBtLog" class="terminal" style="min-height:120px;max-height:260px">-</div></div>
   </section>
 
+  <section id="collector" class="panel">
+    <div class="section-title">미국주식 Raw Tick 수집</div>
+    <div class="section-subtitle">Toss trade:us WebSocket · 다종목 동시 수집 · DAY / PRE / REGULAR / AFTER 세션 자동 추적</div>
+
+    <div class="card">
+      <div class="label">Collector 상태</div>
+      <div id="tickCollectorState" class="signal">상태 확인 중...</div>
+      <div class="actions"><button id="tickRefresh" class="primary">지금 갱신</button></div>
+      <div class="mini" style="margin-top:8px">Toss 실시간 시세 채널은 LOSSY입니다. 이 데이터는 서버가 실제 수신한 raw tick이며 완전한 exchange tape를 의미하지 않습니다.</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="label">현재 세션</div><div id="tickSession" class="value">-</div></div>
+      <div class="stat"><div class="label">구독 종목</div><div id="tickSubscribed" class="value">-</div></div>
+      <div class="stat"><div class="label">수집 Tick</div><div id="tickTotal" class="value">-</div></div>
+      <div class="stat"><div class="label">현재 세션 저장량</div><div id="tickBytes" class="value">-</div></div>
+    </div>
+
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">장 운영 시간</div><div id="tickWindow" class="signal">-</div></div>
+      <div class="card"><div class="label">수집 품질 / 연결</div><div id="tickQuality" class="signal">-</div></div>
+    </div>
+
+    <div class="card">
+      <div class="label">종목별 수신 Tick</div>
+      <div id="tickBySymbol" class="signal">아직 수집 데이터가 없습니다.</div>
+    </div>
+  </section>
+
   <section id="server" class="panel">
     <div class="card">
       <div class="label">제한형 서버 관리 콘솔</div>
@@ -180,8 +210,10 @@
       <div class="actions">
         <button data-cmd="df -h /">디스크</button>
         <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
-        <button data-cmd="systemctl status collect-expanded-universe.service">수집 서비스</button>
-        <button data-cmd="systemctl restart collect-expanded-universe.service" class="primary">수집 재시작</button>
+        <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 수집 서비스</button>
+        <button data-cmd="systemctl restart collect-expanded-universe.service" class="primary">1분봉 수집 재시작</button>
+        <button data-cmd="systemctl status collect-toss-ticks.service">Tick 수집 서비스</button>
+        <button data-cmd="systemctl restart collect-toss-ticks.service" class="primary">Tick 수집 재시작</button>
         <button data-cmd="tail collector 80">수집 로그</button>
         <button data-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
         <button data-cmd="deps status">V4 의존성 확인</button>
@@ -237,7 +269,7 @@ async function authGate(){
     document.getElementById("gate").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     await loadBacktestEngines();
-    await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshGit()]);
+    await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshTickCollector(),refreshGit()]);
   }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
 }
 function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
@@ -249,8 +281,75 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
   if(b.dataset.tab==="trade")refreshTrade();
   if(b.dataset.tab==="paper")refreshPaper();
   if(b.dataset.tab==="backtest")refreshSimpleBacktest();
+  if(b.dataset.tab==="collector")refreshTickCollector();
   if(b.dataset.tab==="git")refreshGit();
 });
+
+function fmtBytes(v){
+ const n=Number(v||0); if(!Number.isFinite(n)||n<=0)return "0 B";
+ const u=["B","KB","MB","GB","TB"]; let i=0,x=n;
+ while(x>=1024&&i<u.length-1){x/=1024;i++}
+ return x.toLocaleString("ko-KR",{maximumFractionDigits:i>=3?2:1})+" "+u[i];
+}
+function fmtDateTime(v){
+ if(!v)return "-";
+ const d=new Date(v); if(Number.isNaN(d.getTime()))return String(v);
+ return d.toLocaleString("ko-KR",{hour12:false});
+}
+async function refreshTickCollector(){
+ try{
+  const d=await req("/api/ticks/status");
+  const good=!!d.healthy;
+  const stateLabels={
+   waiting_for_market_open:"장 대기",
+   opening_market_session:"세션 시작",
+   connecting:"WebSocket 연결 중",
+   collecting:"수집 중",
+   reconnecting:"재연결 중",
+   paused_low_disk:"디스크 부족으로 일시정지",
+   compressing:"압축 중",
+   stopped:"중지됨",
+   unavailable:"상태 없음"
+  };
+  const label=stateLabels[d.state]||d.state||"-";
+  document.getElementById("tickCollectorState").innerHTML=
+   '<b class="'+(good?"ok":"warn")+'">'+esc(label)+'</b>'+
+   ' · 상태 갱신 '+esc(fmtDateTime(d.updatedAt))+
+   (d.lastError?'<br><span class="bad">오류: '+esc(d.lastError)+'</span>':"")+
+   (d.calendarError?'<br><span class="warn">캘린더 폴백: '+esc(d.calendarError)+'</span>':"");
+
+  setText("tickSession",(d.marketSession||"-")+" · "+(d.sessionDate||"-"));
+  setText("tickSubscribed",(d.subscribed||0)+" / "+(d.symbolCount||0));
+  setText("tickTotal",Number(d.ticksTotal||0).toLocaleString("ko-KR"));
+  setText("tickBytes",fmtBytes(d.dataBytes));
+
+  const open=d.openAt||d.nextOpenAt, close=d.closeAt||d.nextCloseAt;
+  document.getElementById("tickWindow").innerHTML=
+   'calendar: <b>'+esc(d.calendarSource||"-")+'</b><br>'+
+   'open: '+esc(fmtDateTime(open))+'<br>'+
+   'close: '+esc(fmtDateTime(close));
+
+  document.getElementById("tickQuality").innerHTML=
+   'reconnects: <b>'+Number(d.reconnects||0).toLocaleString("ko-KR")+'</b><br>'+
+   'queue drops: <b class="'+(d.localQueueDrops?"bad":"ok")+'">'+Number(d.localQueueDrops||0).toLocaleString("ko-KR")+'</b><br>'+
+   'invalid messages: <b class="'+(d.invalidMessages?"warn":"ok")+'">'+Number(d.invalidMessages||0).toLocaleString("ko-KR")+'</b><br>'+
+   'queue depth: '+Number(d.queueDepth||0).toLocaleString("ko-KR")+
+   ' · files: '+Number(d.dataFileCount||0).toLocaleString("ko-KR");
+
+  const counts=d.ticksBySymbol||{};
+  const symbols=(d.symbols||Object.keys(counts)).slice().sort();
+  document.getElementById("tickBySymbol").innerHTML=symbols.length
+   ? symbols.map(s=>'<div class="row"><b>'+esc(s)+'</b> · '+Number(counts[s]||0).toLocaleString("ko-KR")+' ticks</div>').join("")
+   : "아직 수집 데이터가 없습니다.";
+ }catch(e){
+  document.getElementById("tickCollectorState").innerHTML='<span class="bad">'+esc(e.message)+'</span>';
+ }
+}
+document.getElementById("tickRefresh")?.addEventListener("click",refreshTickCollector);
+setInterval(()=>{
+ const p=document.getElementById("collector");
+ if(p&&p.classList.contains("active"))refreshTickCollector();
+},5000);
 
 let live={};
 async function refreshTrade(){
