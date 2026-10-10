@@ -45,13 +45,32 @@ SIMPLE_BT_TRADES=SIMPLE_BT_DIR/"backtest_simple_v1_trades.csv"
 SIMPLE_BT_LOG=SIMPLE_BT_DIR/"backtest_simple_v1.log"
 SIMPLE_BT_LOCK=threading.Lock()
 
+V3_BT_DIR=Path("/var/lib/market-career-dashboard")
+V3_BT_STATE=V3_BT_DIR/"backtest_multistrategy_v1_state.json"
+V3_BT_RESULT=V3_BT_DIR/"backtest_multistrategy_v1_result.json"
+V3_BT_LOG=V3_BT_DIR/"backtest_multistrategy_v1.log"
+V3_BT_LOCK=threading.Lock()
+
+BACKTEST_ENGINES={
+    "simple-v1":{
+        "id":"simple-v1",
+        "name":"Simple Momentum V1",
+        "description":"급등 → 눌림 → 재상승 확인 기반 Simple V1",
+    },
+    "v3":{
+        "id":"v3",
+        "name":"Strategy Engine V3",
+        "description":"기존 ORB/VWAP/Close Momentum multi-strategy V3",
+    },
+}
+
 def _read_json_file(path):
     try:
         return json.loads(Path(path).read_text(encoding="utf-8")) if Path(path).exists() else {}
     except Exception:
         return {}
 
-def _simple_bt_pid_running(pid):
+def _backtest_pid_running(pid, script_name):
     try:
         pid=int(pid or 0)
         if pid<=0:
@@ -60,9 +79,12 @@ def _simple_bt_pid_running(pid):
         if not cmd.exists():
             return False
         raw=cmd.read_bytes().replace(b"\\x00",b" ").decode("utf-8","ignore")
-        return "backtest_simple_v1.py" in raw
+        return script_name in raw
     except Exception:
         return False
+
+def _simple_bt_pid_running(pid):
+    return _backtest_pid_running(pid,"backtest_simple_v1.py")
 
 def simple_backtest_status():
     state=_read_json_file(SIMPLE_BT_STATE)
@@ -141,6 +163,160 @@ def start_simple_backtest():
             if status.get("running") or status.get("phase") in {"starting","running","error"}:
                 return status
         return simple_backtest_status()
+
+def v3_backtest_status():
+    state=_read_json_file(V3_BT_STATE)
+    result=_read_json_file(V3_BT_RESULT)
+    pid=state.get("pid")
+    running=_backtest_pid_running(pid,"backtest_multistrategy_v1.py")
+    phase=str(state.get("phase") or ("completed" if result else "waiting"))
+    if state.get("running") and not running and phase not in {"completed","error"}:
+        phase="interrupted"
+    log=""
+    if V3_BT_LOG.exists():
+        try:
+            log="\n".join(V3_BT_LOG.read_text(encoding="utf-8",errors="ignore").splitlines()[-80:])
+        except Exception:
+            log=""
+    overall=result.get("overall") or state.get("summary") or {}
+    summary={
+        "trades":overall.get("trades",state.get("trades",0)),
+        "wins":None,
+        "losses":None,
+        "winRatePct":overall.get("winRatePct",0),
+        "sumTradeReturnPct":overall.get("totalReturnPct",0),
+        "expectancyPct":overall.get("expectancyPct",0),
+        "medianReturnPct":None,
+        "avgWinPct":overall.get("avgWinPct",0),
+        "avgLossPct":overall.get("avgLossPct",0),
+        "payoffRatio":(
+            float(overall.get("avgWinPct") or 0)/float(overall.get("avgLossPct") or 1)
+            if float(overall.get("avgLossPct") or 0)>0 else 0
+        ),
+        "profitFactor":overall.get("profitFactor",0),
+        "pnlUsd":None,
+        "paperAccountReturnPct":None,
+        "maxDrawdownPct":overall.get("maxDrawdownPct",0),
+    }
+    return {
+        "engineId":"v3",
+        "engineName":BACKTEST_ENGINES["v3"]["name"],
+        "running":running,
+        "phase":phase,
+        "progress":float(state.get("progress") or (100 if result else 0)),
+        "pid":pid if running else None,
+        "updatedAt":state.get("updatedAt"),
+        "currentTimestamp":state.get("currentDay"),
+        "processedRows":None,
+        "symbols":len(result.get("symbols") or state.get("symbols") or []),
+        "trades":summary.get("trades",0),
+        "signals":(result.get("funnel") or {}).get("buySignals",0),
+        "entries":(result.get("funnel") or {}).get("trades",summary.get("trades",0)),
+        "error":state.get("error"),
+        "summary":summary,
+        "funnel":result.get("funnel") or {},
+        "breakdownLabel":"전략별 결과",
+        "breakdown":result.get("byStrategy") or {},
+        "secondaryBreakdownLabel":"종목·전략별 결과",
+        "secondaryBreakdown":result.get("byTickerStrategy") or {},
+        "byYear":{},
+        "configuration":{"minFinalScore":result.get("minFinalScore")},
+        "execution":result.get("execution") or {},
+        "data":{"symbols":result.get("symbols") or []},
+        "resultAvailable":bool(result),
+        "downloadAvailable":V3_BT_RESULT.exists(),
+        "log":log,
+    }
+
+def start_v3_backtest():
+    with V3_BT_LOCK:
+        if simple_backtest_status().get("running"):
+            raise ValueError("Simple V1 backtest is already running")
+        current=v3_backtest_status()
+        if current.get("running"):
+            raise ValueError("V3 backtest is already running")
+        V3_BT_DIR.mkdir(parents=True,exist_ok=True)
+        for p in (V3_BT_STATE,V3_BT_RESULT,V3_BT_LOG):
+            try: p.unlink(missing_ok=True)
+            except Exception: pass
+        script=ROOT/"research"/"backtest_multistrategy_v1.py"
+        if not script.exists():
+            raise RuntimeError("research/backtest_multistrategy_v1.py is missing")
+        data_dir=ROOT/"data"/"toss_1m"
+        if not data_dir.exists() or not any(data_dir.glob("*.csv.gz")):
+            raise RuntimeError("historical Toss 1m data is unavailable")
+        cmd=[
+            sys.executable,str(script),
+            "--data",str(data_dir),
+            "--symbols","auto",
+            "--out",str(V3_BT_RESULT),
+            "--state",str(V3_BT_STATE),
+            "--log",str(V3_BT_LOG),
+        ]
+        subprocess.Popen(
+            cmd,cwd=str(ROOT),stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+            start_new_session=True,close_fds=True,
+        )
+        deadline=time.time()+2.0
+        while time.time()<deadline:
+            time.sleep(0.05)
+            status=v3_backtest_status()
+            if status.get("running") or status.get("phase") in {"starting","backtest","error"}:
+                return status
+        return v3_backtest_status()
+
+def backtest_engine_status(engine_id):
+    engine_id=str(engine_id or "").strip().lower()
+    if engine_id=="simple-v1":
+        status=simple_backtest_status()
+        status.update({
+            "engineId":"simple-v1",
+            "engineName":BACKTEST_ENGINES["simple-v1"]["name"],
+            "breakdownLabel":"세션별 결과",
+            "breakdown":status.get("bySession") or {},
+            "secondaryBreakdownLabel":"청산 사유별 결과",
+            "secondaryBreakdown":status.get("byExitReason") or {},
+        })
+        return status
+    if engine_id=="v3":
+        return v3_backtest_status()
+    raise ValueError("unsupported backtest engine")
+
+def start_backtest_engine(engine_id):
+    engine_id=str(engine_id or "").strip().lower()
+    if engine_id=="simple-v1":
+        if v3_backtest_status().get("running"):
+            raise ValueError("V3 backtest is already running")
+        return backtest_engine_status(engine_id) if simple_backtest_status().get("running") else {
+            **start_simple_backtest(),
+            "engineId":"simple-v1",
+            "engineName":BACKTEST_ENGINES["simple-v1"]["name"],
+        }
+    if engine_id=="v3":
+        return start_v3_backtest()
+    raise ValueError("unsupported backtest engine")
+
+def backtest_download_files(engine_id):
+    engine_id=str(engine_id or "").strip().lower()
+    if engine_id=="simple-v1":
+        if not SIMPLE_BT_RESULT.exists():
+            raise FileNotFoundError("backtest result is not available yet")
+        return [
+            (SIMPLE_BT_RESULT,"backtest_simple_v1_result.json"),
+            (SIMPLE_BT_TRADES,"backtest_simple_v1_trades.csv"),
+            (SIMPLE_BT_STATE,"backtest_simple_v1_state.json"),
+            (SIMPLE_BT_LOG,"backtest_simple_v1.log"),
+        ],"simple-v1"
+    if engine_id=="v3":
+        if not V3_BT_RESULT.exists():
+            raise FileNotFoundError("backtest result is not available yet")
+        return [
+            (V3_BT_RESULT,"backtest_v3_result.json"),
+            (V3_BT_STATE,"backtest_v3_state.json"),
+            (V3_BT_LOG,"backtest_v3.log"),
+        ],"v3"
+    raise ValueError("unsupported backtest engine")
 
 def storage_status():
     now=time.time()
@@ -871,6 +1047,52 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path=="/api/backtest/engines":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({"ok":True,"engines":list(BACKTEST_ENGINES.values())}); return
+        if path=="/api/backtest/status":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+                engine=(qs.get("engine") or ["simple-v1"])[0]
+                self.send_json({"ok":True,**backtest_engine_status(engine)}); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
+        if path=="/api/backtest/download":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+                engine=(qs.get("engine") or ["simple-v1"])[0]
+                files,label=backtest_download_files(engine)
+                present=[(src,name) for src,name in files if Path(src).exists()]
+                buf=io.BytesIO()
+                with zipfile.ZipFile(buf,"w",compression=zipfile.ZIP_DEFLATED) as archive:
+                    for src,name in present:
+                        archive.write(src,name)
+                raw=buf.getvalue()
+                filename=label+"-backtest-"+time.strftime("%Y%m%d-%H%M%S",time.gmtime())+".zip"
+                self.send_response(200)
+                self.send_header("Content-Type","application/zip")
+                self.send_header("Content-Disposition",'attachment; filename="'+filename+'"')
+                self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
+                self.send_header("Access-Control-Allow-Headers","Content-Type, Authorization")
+                self.send_header("Access-Control-Expose-Headers","Content-Disposition")
+                self.send_header("Cache-Control","no-store")
+                self.send_header("Content-Length",str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                return
+            except FileNotFoundError as e:
+                self.send_json({"ok":False,"error":str(e)},404); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/backtest/simple-v1/status":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -1224,6 +1446,17 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path=="/api/backtest/start":
+            if not trading_authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                engine=str(body.get("engine") or "simple-v1")
+                self.send_json({"ok":True,**start_backtest_engine(engine)}); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},409); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/backtest/simple-v1/start":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
