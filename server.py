@@ -654,6 +654,8 @@ def _v4_file_time(path):
 def _v4_stage_status(run_root,stage,processes):
     stage_root=Path(run_root)/stage
     campaign_dir,state=_v4_latest_campaign(stage_root)
+    if not isinstance(state,dict):
+        state={}
     relevant=[]
     stage_resolved=str(stage_root.resolve())
     for proc in processes:
