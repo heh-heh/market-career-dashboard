@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Isolated IR_SPEC_V1 historical backtester. Never submits orders.
 
-Requires reviewed v4_data_manifest.json; raw START labels complete at T+1m.
+Reviewed v4_data_manifest.json is preferred. When --provisional is explicit and
+the reviewed manifest is unavailable, raw START labels are mechanically audited
+and the run is permanently marked PROVISIONAL_UNREVIEWED_DATA.
 Full runs are manual. --from-date/--to-date permit bounded smoke evaluation
 while earlier rows are read as past-only warmup. No parameter search interface.
 """
@@ -33,7 +35,7 @@ else:
             manifest_input_path,normalize_minute_timestamp,validate_data_manifest)
     from intraday_v4_engine import (BASELINE,STOCKS,SEMI,Book,Event,History,Session,benchmark,context,cross_ranks,evaluate)
     from intraday_v4_metrics import summarize,grouped,time_bucket,chronological_folds,daily_consistency
-from build_v4_data_manifest import inspect_file,identity
+from build_v4_data_manifest import inspect_file,identity,source_file
 
 VERSION = "IR_SPEC_V1_IMPLEMENTATION_1"
 
@@ -237,6 +239,8 @@ def parse_args(argv=None):
     p.add_argument("--strategy",choices=("ir1","ir2","ir3","all"),default="all")
     p.add_argument("--data-dir","--data",dest="data_dir",type=Path,default=ROOT/"data/toss_1m")
     p.add_argument("--manifest",type=Path,default=ROOT/"research/v4_data_manifest.json")
+    p.add_argument("--provisional",action="store_true",
+                   help="Allow an explicitly unreviewed research run when the reviewed manifest is unavailable; mechanical audits still apply")
     p.add_argument("--symbols",help="Selected entry symbols; required references automatically added")
     p.add_argument("--out",type=Path)
     p.add_argument("--state",type=Path)
@@ -274,18 +278,39 @@ def main(argv=None):
         if not selected or not selected<=allowed: raise ValueError("Selected symbols are unmapped/excluded for these IR strategies")
         required=selected|{"SPY","QQQ"}
         if "ir1" in strategies and selected&SEMI: required.add("SOXX")
-        manifest=validate_data_manifest(args.manifest,required,"start",data_dir=args.data_dir)
-        paths={s:manifest_input_path(args.data_dir,s,manifest["symbols"][s]) for s in sorted(required)}
+        reviewed_manifest=args.manifest.is_file()
+        provisional=bool(args.provisional and not reviewed_manifest)
+        if not reviewed_manifest and not provisional:
+            raise ValueError("Reviewed V4 data manifest is missing; rerun with --provisional for an explicitly unreviewed research run")
         audits={}
+        if reviewed_manifest:
+            manifest=validate_data_manifest(args.manifest,required,"start",data_dir=args.data_dir)
+            paths={s:manifest_input_path(args.data_dir,s,manifest["symbols"][s]) for s in sorted(required)}
+        else:
+            # Provisional mode never fabricates provenance. It binds the exact
+            # current bytes and performs the same mechanical audit used below.
+            manifest=dict(version=1,timestampKind="start",calendar="XNYS",validationPassed=False,
+                          reviewStatus="PROVISIONAL_UNREVIEWED_DATA",symbols={})
+            paths={}
+            for s in sorted(required):
+                paths[s]=source_file(args.data_dir,s)
+                reporter.update(phase="data_audit",progress=5*len(paths)/len(required),currentTimestamp=s)
+                meta=inspect_file(paths[s],s,"start",None)
+                meta["path"]=paths[s].name
+                manifest["symbols"][s]=meta
+                audits[s]=meta
         for i,(s,path) in enumerate(paths.items()):
-            reporter.update(phase="data_audit",progress=10*i/len(paths),currentTimestamp=s)
-            audits[s]=inspect_file(path,s,"start",manifest["symbols"][s]["naive_timezone"])
+            reporter.update(phase="data_audit",progress=5+5*i/len(paths),currentTimestamp=s)
+            if s not in audits:
+                audits[s]=inspect_file(path,s,"start",manifest["symbols"][s]["naive_timezone"])
             if not audits[s]["monotonicTimestampOrdering"]:
                 audits[s]["validationErrors"].append("Input ordering is non-monotonic; raw files were not rewritten")
-            if audits[s]["sha256"]!=manifest["symbols"][s]["sha256"]:
+            if reviewed_manifest and audits[s]["sha256"]!=manifest["symbols"][s]["sha256"]:
                 audits[s]["validationErrors"].append("Manifest hash changed")
+        manifest_sha=file_sha256(args.manifest) if reviewed_manifest else None
         audit=dict(version=1,runId=reporter.state["runId"],generatedAt=datetime.now(timezone.utc).isoformat(),timestampKind="start",
-                   manifestPath=str(args.manifest),manifestSha256=file_sha256(args.manifest),symbols=audits,
+                   reviewStatus="REVIEWED_MANIFEST" if reviewed_manifest else "PROVISIONAL_UNREVIEWED_DATA",
+                   provisional=provisional,manifestPath=str(args.manifest) if reviewed_manifest else None,manifestSha256=manifest_sha,symbols=audits,
                    dataRoot=str(args.data_dir.resolve()),requiredSymbols=sorted(required),
                    availableSymbols=sorted({p.name[:-7] for p in args.data_dir.glob("*.csv.gz")}|
                                            {p.stem for p in args.data_dir.glob("*.csv")}),
@@ -302,8 +327,10 @@ def main(argv=None):
         for s,p in paths.items():
             if identity(p.stat())!=before[s] or file_sha256(p)!=audits[s]["sha256"]:
                 raise ValueError(f"{s}: source changed during run; results refused")
+        data_mode="REVIEWED_MANIFEST" if reviewed_manifest else "PROVISIONAL_UNREVIEWED_DATA"
         result=dict(engine="v4-"+args.strategy,strategy=args.strategy,runId=reporter.state["runId"],generatedAt=datetime.now(timezone.utc).isoformat(),
             configuration=dict(contract="IR_SPEC_V1",implementationVersion=VERSION,strategy=strategies,selectedSymbols=sorted(selected),
+                dataMode=data_mode,provisional=provisional,
                 parameters={k:BASELINE[k] for k in strategies+["common"]},oneAttemptPerSymbolStrategyDay=True,
                 specificationSha256=file_sha256(ROOT/"research/intraday_strategy_formulas_v1.md"),
                 codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py")},
@@ -313,7 +340,15 @@ def main(argv=None):
                 entry="First strictly subsequent completed minute close; missing minute cancels",stop="Observable close, never theoretical stop",
                 intrabar="OHLC extremes not executable; sampled-close model only",sourceQuoteTimestamps=None),
             data=dict(auditPath=str(args.data_audit),manifestSha256=audit["manifestSha256"],symbols=sorted(required),
-                firstSession=first,lastSession=last,pointInTimeEligibility="Externally reviewed manifest; seed instrument taxonomy; survivor bias remains"),
+                reviewStatus=data_mode,firstSession=first,lastSession=last,
+                pointInTimeEligibility=("Externally reviewed manifest; seed instrument taxonomy; survivor bias remains"
+                    if reviewed_manifest else "UNREVIEWED in provisional mode; historical $5/ADV20 eligibility and corporate-action basis may be biased"),
+                warnings=[] if reviewed_manifest else [
+                    "PROVISIONAL_UNREVIEWED_DATA",
+                    "Price-adjustment/corporate-action basis is not externally verified",
+                    "Point-in-time eligibility and symbol identity are not externally reviewed",
+                    "Do not use this run for final performance claims",
+                ]),
             funnel=funnel,overall=summarize(trades,10000*len(strategies)),
             byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"]),
             byYear=grouped(trades,lambda t:t["date"][:4]),byMonth=grouped(trades,lambda t:t["date"][:7]),
@@ -321,7 +356,7 @@ def main(argv=None):
             byRegime=grouped(trades,lambda t:t["marketRegime"]["direction"]+"/"+t["marketRegime"]["volatility"]),
             byTimeOfDay=grouped(trades,time_bucket),chronologicalEvaluation=chronological_folds(trades,days),
             unresolvedPositions=unresolved,strategyOverlap=dict(**overlap,note="IR1 stocks and IR3 indices have disjoint entry universes; trade-day co-occurrence is not simultaneous trigger overlap"),
-            researchVerdict="UNVALIDATED_DESCRIPTIVE_ONLY",specBlocked=[],trades=trades)
+            researchVerdict=("PROVISIONAL_UNREVIEWED_DATA" if provisional else "UNVALIDATED_DESCRIPTIVE_ONLY"),specBlocked=[],trades=trades)
         result["overall"]["dailySharpeLike"]=daily_consistency(trades,days,10000*len(strategies))
         for kind in strategies:
             result["byStrategy"].setdefault(kind,summarize([]))
@@ -332,7 +367,7 @@ def main(argv=None):
             w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
             for t in trades: w.writerow({k:json.dumps(v,ensure_ascii=False) if isinstance(v,(dict,list)) else v for k,v in t.items()})
         reporter.update(phase="completed",running=False,progress=100,summary=result["overall"],funnel=funnel,
-                        unresolvedPositions=len(unresolved),error=None)
+                        dataMode=data_mode,provisional=provisional,unresolvedPositions=len(unresolved),error=None)
         reporter.log(f"COMPLETED trades={len(trades)} unresolved={len(unresolved)}; no profitability claim")
         print(json.dumps(dict(engine=result["engine"],overall=result["overall"],out=str(args.out)),ensure_ascii=False))
         return 0
