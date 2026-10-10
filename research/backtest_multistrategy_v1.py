@@ -40,34 +40,46 @@ def parse_ts(value):
     return dt.astimezone(NY)
 
 
-def load_symbol(path):
-    rows = []
-    with gzip.open(path, "rt", newline="", encoding="utf-8") as f:
-        for r in csv.DictReader(f):
+def iter_symbol_days(path):
+    """Yield one regular-session day at a time without loading multi-year history.
+
+    Collector exports are expected to be timestamp-ordered. Refuse decreasing
+    timestamps instead of silently sorting the full file into RAM.
+    """
+    current_day = None
+    day_rows = []
+    previous_ts = None
+    with gzip.open(path, "rt", newline="", encoding="utf-8") as stream:
+        for raw in csv.DictReader(stream):
             try:
-                ts = parse_ts(r["timestamp"])
-                o, h, l, c = map(float, (r["open"], r["high"], r["low"], r["close"]))
-                v = float(r.get("volume") or 0)
-                if min(o, h, l, c) <= 0:
+                ts = parse_ts(raw["timestamp"])
+                o, h, l, close = map(float, (raw["open"], raw["high"], raw["low"], raw["close"]))
+                volume = float(raw.get("volume") or 0)
+                if min(o, h, l, close) <= 0:
                     continue
-                rows.append({
-                    "timestamp": ts.isoformat(),
-                    "openPrice": o,
-                    "highPrice": h,
-                    "lowPrice": l,
-                    "closePrice": c,
-                    "volume": v,
-                    "_dt": ts,
-                })
             except Exception:
                 continue
-    rows.sort(key=lambda x: x["_dt"])
-    by_day = defaultdict(list)
-    for r in rows:
-        dt = r["_dt"]
-        if dtime(9, 30) <= dt.time() < dtime(16, 0):
-            by_day[dt.date().isoformat()].append(r)
-    return dict(by_day)
+            if previous_ts is not None and ts < previous_ts:
+                raise RuntimeError(f"{path.name}: timestamps are not monotonic")
+            previous_ts = ts
+            if not (dtime(9, 30) <= ts.time() < dtime(16, 0)):
+                continue
+            day = ts.date().isoformat()
+            if current_day is not None and day != current_day:
+                yield current_day, day_rows
+                day_rows = []
+            current_day = day
+            day_rows.append({
+                "timestamp": ts.isoformat(),
+                "openPrice": o,
+                "highPrice": h,
+                "lowPrice": l,
+                "closePrice": close,
+                "volume": volume,
+                "_dt": ts,
+            })
+    if current_day is not None and day_rows:
+        yield current_day, day_rows
 
 
 def at_or_before(rows, hh, mm):
@@ -228,24 +240,30 @@ def progress_state(state_path, log_path, **kwargs):
 
 
 def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=None):
-    datasets = {}
-    for sym in symbols:
-        path = data_dir / f"{sym}.csv.gz"
-        if path.exists():
-            datasets[sym] = load_symbol(path)
-
-    if not datasets:
+    data_dir = Path(data_dir)
+    available = {sym: data_dir / f"{sym}.csv.gz" for sym in symbols if (data_dir / f"{sym}.csv.gz").exists()}
+    if not available:
         raise RuntimeError(f"데이터 파일을 열지 못했습니다: {data_dir}")
-    all_days = sorted(set().union(*(set(v.keys()) for v in datasets.values()))) if datasets else []
-    if not all_days:
-        raise RuntimeError("정규장 1분봉 거래일을 하나도 읽지 못했습니다.")
+
     progress_state(
         state_path, log_path,
         phase="backtest", progress=1, running=True,
-        symbols=sorted(datasets), totalDays=len(all_days), completedDays=0,
+        symbols=sorted(available), totalDays=None, completedDays=0,
         trades=0, currentDay=None,
-        message=f"백테스트 시작 · {len(datasets)}종목 · {len(all_days)}거래일",
+        message=f"백테스트 시작 · {len(available)}종목 · 스트리밍 모드",
     )
+
+    streams = {sym: iter(iter_symbol_days(path)) for sym, path in available.items()}
+    heads = {}
+    for sym, iterator in streams.items():
+        try:
+            heads[sym] = next(iterator)
+        except StopIteration:
+            pass
+
+    if not heads:
+        raise RuntimeError("정규장 1분봉 거래일을 하나도 읽지 못했습니다.")
+
     checkpoints = [
         (10, 0), (10, 15), (10, 30), (10, 45),
         (11, 0), (11, 30), (12, 0), (12, 30),
@@ -256,28 +274,33 @@ def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=No
     trades = []
     funnel = defaultdict(int)
     used = set()
+    day_no = 0
 
-    for day_no, day in enumerate(all_days, start=1):
-        progress = 2 + int((day_no - 1) / max(1, len(all_days)) * 94)
+    while heads:
+        day = min(item[0] for item in heads.values())
+        day_no += 1
+        current = {sym: rows for sym, (d, rows) in heads.items() if d == day}
+
+        # The dataset spans roughly several years; this is deliberately only a
+        # monotonic UI estimate. Completion always sets 100%.
+        progress = min(96, 2 + int(day_no / 1500 * 94))
         progress_state(
             state_path, log_path,
             phase="backtest", progress=progress, running=True,
-            symbols=sorted(datasets), totalDays=len(all_days), completedDays=day_no-1,
+            symbols=sorted(available), totalDays=None, completedDays=day_no-1,
             trades=len(trades), currentDay=day,
-            message=(f"진행 {day_no}/{len(all_days)} · {day}" if day_no == 1 or day_no % 10 == 0 else None),
+            message=(f"진행 {day_no}일 · {day}" if day_no == 1 or day_no % 10 == 0 else None),
         )
+
         for hh, mm in checkpoints:
             candidates, idx_map = [], {}
-            for sym, days in datasets.items():
-                rows = days.get(day)
-                if not rows:
-                    continue
+            for sym, rows in current.items():
                 idx = at_or_before(rows, hh, mm)
                 if idx < 5:
                     continue
-                c = build_candidate(sym, rows, idx)
-                if c:
-                    candidates.append(c)
+                candidate = build_candidate(sym, rows, idx)
+                if candidate:
+                    candidates.append(candidate)
                     idx_map[sym] = idx
                     funnel["evaluations"] += 1
 
@@ -285,22 +308,23 @@ def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=No
                 continue
 
             ranked = score_universe(candidates)
-            for c in ranked:
-                apply_trade_decision(c, min_score)
-                if c.get("strategyActive"):
+            for candidate in ranked:
+                apply_trade_decision(candidate, min_score)
+                if candidate.get("strategyActive"):
                     funnel["activeStrategySetups"] += 1
-                if c.get("signal") == "BUY":
+                if candidate.get("signal") == "BUY":
                     funnel["buySignals"] += 1
 
             chosen = next(
-                (c for c in ranked if c.get("signal") == "BUY" and (day, c["symbol"]) not in used),
+                (candidate for candidate in ranked
+                 if candidate.get("signal") == "BUY" and (day, candidate["symbol"]) not in used),
                 None,
             )
             if not chosen:
                 continue
 
             sym = chosen["symbol"]
-            rows = datasets[sym][day]
+            rows = current[sym]
             result = simulate_long(rows, idx_map[sym] + 1, chosen, slippage_bps=slippage_bps)
             if not result:
                 continue
@@ -316,11 +340,17 @@ def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=No
                 **result,
             })
 
+        for sym in list(current):
+            try:
+                heads[sym] = next(streams[sym])
+            except StopIteration:
+                heads.pop(sym, None)
+
     by_strategy = defaultdict(list)
     by_combo = defaultdict(list)
-    for t in trades:
-        by_strategy[t["strategy"]].append(t)
-        by_combo[f"{t['symbol']}::{t['strategy']}"].append(t)
+    for trade in trades:
+        by_strategy[trade["strategy"]].append(trade)
+        by_combo[f"{trade['symbol']}::{trade['strategy']}"].append(trade)
 
     result = {
         "engine": "strategy_engine_v3",
@@ -330,9 +360,10 @@ def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=No
             "entry": "next-minute-open",
             "maxHoldMinutes": 60,
             "sameBarRule": "stop-before-target",
+            "dataAccess": "stream-one-session-per-symbol",
         },
-        "symbols": sorted(datasets),
-        "days": len(all_days),
+        "symbols": sorted(available),
+        "days": day_no,
         "minFinalScore": min_score,
         "funnel": dict(funnel),
         "overall": summarize(trades),
@@ -343,13 +374,12 @@ def run(data_dir, symbols, min_score, slippage_bps, state_path=None, log_path=No
     progress_state(
         state_path, log_path,
         phase="completed", progress=100, running=False,
-        symbols=sorted(datasets), totalDays=len(all_days), completedDays=len(all_days),
+        symbols=sorted(available), totalDays=day_no, completedDays=day_no,
         trades=len(trades), currentDay=None,
         summary=result["overall"], byStrategy=result["byStrategy"],
         message=f"백테스트 완료 · 거래 {len(trades)}건",
     )
     return result
-
 
 def main():
     ap = argparse.ArgumentParser()
