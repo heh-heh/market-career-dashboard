@@ -4,3 +4,5 @@ websockets>=10.4,<16
 exchange_calendars>=4.5,<5
 # Evolution V0 shared CPU feature/policy arrays (no GPU/ML framework)
 numpy>=1.26,<3
+# Evolution V0.1 host resource guard (CPU/RAM/swap observation only)
+psutil>=5.9,<8
