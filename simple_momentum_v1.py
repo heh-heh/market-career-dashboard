@@ -119,7 +119,7 @@ class Config:
         settings = {k: type(getattr(defaults, k))(os.getenv("SIMPLE_"+v, str(getattr(defaults, k)))) for k, v in names.items()}
         raw_sessions = os.getenv("SIMPLE_ENTRY_SESSIONS", "DAY,PRE,REGULAR")
         settings["entry_sessions"] = tuple(dict.fromkeys(x.strip().upper() for x in raw_sessions.split(",") if x.strip()))
-        settings["timestamp_kind_confirmed"] = os.getenv("SIMPLE_TIMESTAMP_KIND_CONFIRMED", "false").lower() == "true"
+        settings["timestamp_kind_confirmed"] = os.getenv("SIMPLE_TIMESTAMP_KIND_CONFIRMED", "true").lower() == "true"
         settings["max_quote_age_sec"] = number(os.getenv("SIMPLE_MAX_QUOTE_AGE_SEC", "15"))
         return cls(**settings)
 
