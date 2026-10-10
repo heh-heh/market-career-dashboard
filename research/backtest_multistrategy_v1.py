@@ -217,6 +217,7 @@ def append_log(path, message):
 def progress_state(state_path, log_path, **kwargs):
     payload = {
         "engine": "strategy_engine_v3",
+        "pid": os.getpid(),
         "updatedAt": time.time(),
         **kwargs,
     }
