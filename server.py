@@ -1213,6 +1213,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path in {"/ticks","/tick-status"}:
+            try:
+                raw=(ROOT/"tick-status.html").read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type","text/html; charset=utf-8")
+                self.send_header("Cache-Control","no-store")
+                self.send_header("Content-Length",str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
+            return
         if path=="/api/backtest/engines":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
