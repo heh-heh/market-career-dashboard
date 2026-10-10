@@ -23,6 +23,9 @@ import shutil
 import signal
 import sys
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid
 from collections import Counter
 from datetime import datetime, timezone
@@ -36,13 +39,22 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from toss_auth import get_token as shared_toss_token
+from toss_rate_limit import wait_for_slot
 
 SECRETS = ROOT / "server_secrets.json"
 UNIVERSE = ROOT / "research" / "universe_v3.json"
 DEFAULT_DATA_DIR = ROOT / "data" / "toss_ticks"
 STATUS_PATH = DEFAULT_DATA_DIR / "status.json"
 WS_URL = "wss://openapi-ws.tossinvest.com/ws/v1"
+TOSS_BASE = "https://openapi.tossinvest.com"
+MARKET_CALENDAR_PATH = "/api/v1/market-calendar/US"
 CALENDAR = xcals.get_calendar("XNYS")
+SESSION_FIELDS = [
+    ("DAY", "dayMarket"),
+    ("PRE", "preMarket"),
+    ("REGULAR", "regularMarket"),
+    ("AFTER", "afterMarket"),
+]
 
 FIELDS = [
     "source_timestamp",
@@ -99,16 +111,14 @@ def as_utc_timestamp(value=None) -> pd.Timestamp:
     return ts.tz_convert("UTC")
 
 
-def market_window(now=None) -> dict:
-    """Return current XNYS regular-session state and the current/next session."""
+def _fallback_regular_window(now=None, error: str | None = None) -> dict:
+    """Fallback to XNYS regular hours when Toss market-calendar is unavailable."""
     now = as_utc_timestamp(now)
     minute = now.floor("min")
     session = CALENDAR.minute_to_session(minute, direction="next")
     open_at = CALENDAR.session_open(session)
     close_at = CALENDAR.session_close(session)
 
-    # At a close-boundary minute exchange_calendars can still map the minute to
-    # the just-finished session. Move forward before computing the next wakeup.
     if now >= close_at:
         session = CALENDAR.minute_to_session(
             (minute + pd.Timedelta(minutes=1)), direction="next"
@@ -120,10 +130,151 @@ def market_window(now=None) -> dict:
     return {
         "isOpen": opened,
         "sessionDate": session.date().isoformat(),
+        "marketSession": "REGULAR",
         "openAt": open_at.isoformat(),
         "closeAt": close_at.isoformat(),
         "now": now.isoformat(),
+        "calendarSource": "xnys_fallback",
+        "calendarError": error,
+        "isFinalSession": True,
     }
+
+
+def _fetch_us_market_calendar(date_str: str) -> dict:
+    """Fetch one US-local date from Toss Market Info without an account header."""
+    last_error = None
+    for attempt in range(2):
+        try:
+            token = access_token(force=attempt > 0)
+            query = urllib.parse.urlencode({"date": date_str})
+            url = TOSS_BASE + MARKET_CALENDAR_PATH + "?" + query
+            wait_for_slot("MARKET_INFO")
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json",
+                    "User-Agent": "market-career-dashboard/tick-collector",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=10) as r:
+                obj = json.loads(r.read())
+            result = obj.get("result", obj) if isinstance(obj, dict) else {}
+            return result if isinstance(result, dict) else {}
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", "ignore")
+            last_error = f"HTTP {exc.code}: {body[:300]}"
+            if exc.code == 401 and attempt == 0:
+                continue
+            raise RuntimeError(last_error) from exc
+        except Exception as exc:
+            last_error = str(exc)
+            if attempt == 0:
+                continue
+            raise RuntimeError(last_error) from exc
+    raise RuntimeError(last_error or "market calendar unavailable")
+
+
+def _calendar_windows(day_obj: dict, session_date: str) -> list[dict]:
+    windows = []
+    if not isinstance(day_obj, dict):
+        return windows
+    for session_name, field in SESSION_FIELDS:
+        raw = day_obj.get(field)
+        if not isinstance(raw, dict):
+            continue
+        start = raw.get("startTime")
+        end = raw.get("endTime")
+        if not start or not end:
+            continue
+        try:
+            start_ts = as_utc_timestamp(start)
+            end_ts = as_utc_timestamp(end)
+        except Exception:
+            continue
+        if end_ts <= start_ts:
+            continue
+        windows.append(
+            {
+                "sessionDate": session_date,
+                "marketSession": session_name,
+                "openAt": start_ts.isoformat(),
+                "closeAt": end_ts.isoformat(),
+                "_open": start_ts,
+                "_close": end_ts,
+            }
+        )
+    windows.sort(key=lambda x: x["_open"])
+    for idx, item in enumerate(windows):
+        item["isFinalSession"] = idx == len(windows) - 1
+    return windows
+
+
+def market_window(now=None) -> dict:
+    """Return Toss DAY/PRE/REGULAR/AFTER state, with XNYS regular fallback."""
+    now = as_utc_timestamp(now)
+    try:
+        ny_now = now.tz_convert("America/New_York")
+        requested_dates = [ny_now.date().isoformat()]
+
+        # DAY market for a trading date can begin on the previous US calendar
+        # day, so also query the next XNYS session date and merge the windows.
+        minute = now.floor("min")
+        next_session = CALENDAR.minute_to_session(minute, direction="next")
+        next_date = next_session.date().isoformat()
+        if next_date not in requested_dates:
+            requested_dates.append(next_date)
+
+        windows = []
+        for date_str in requested_dates:
+            result = _fetch_us_market_calendar(date_str)
+            day_obj = result.get("today") if isinstance(result, dict) else None
+            if not isinstance(day_obj, dict):
+                day_obj = result if isinstance(result, dict) else {}
+            windows.extend(_calendar_windows(day_obj, date_str))
+
+        # Deduplicate in case current date and next-session date resolve to the
+        # same Toss window set.
+        deduped = {}
+        for item in windows:
+            key = (item["marketSession"], item["openAt"], item["closeAt"])
+            deduped[key] = item
+        windows = sorted(deduped.values(), key=lambda x: x["_open"])
+
+        active = next(
+            (item for item in windows if item["_open"] <= now < item["_close"]),
+            None,
+        )
+        if active is not None:
+            return {
+                "isOpen": True,
+                "sessionDate": active["sessionDate"],
+                "marketSession": active["marketSession"],
+                "openAt": active["openAt"],
+                "closeAt": active["closeAt"],
+                "now": now.isoformat(),
+                "calendarSource": "toss_market_calendar",
+                "calendarError": None,
+                "isFinalSession": bool(active.get("isFinalSession")),
+            }
+
+        future = next((item for item in windows if item["_open"] > now), None)
+        if future is not None:
+            return {
+                "isOpen": False,
+                "sessionDate": future["sessionDate"],
+                "marketSession": future["marketSession"],
+                "openAt": future["openAt"],
+                "closeAt": future["closeAt"],
+                "now": now.isoformat(),
+                "calendarSource": "toss_market_calendar",
+                "calendarError": None,
+                "isFinalSession": bool(future.get("isFinalSession")),
+            }
+
+        return _fallback_regular_window(now, "Toss calendar returned no usable session windows")
+    except Exception as exc:
+        return _fallback_regular_window(now, str(exc))
 
 
 def write_status(**values) -> None:
@@ -275,7 +426,7 @@ async def keepalive(ws) -> None:
 async def close_at(ws, close_at: pd.Timestamp) -> None:
     delay = max(0.0, (close_at - as_utc_timestamp()).total_seconds())
     await asyncio.sleep(delay)
-    await ws.close(code=1000, reason="XNYS regular session closed")
+    await ws.close(code=1000, reason="market session closed")
 
 
 async def stream_once(
@@ -409,7 +560,7 @@ async def stream_once(
             atomic_json(writer.meta_path, meta)
 
 
-async def collect_regular_session(args, window: dict, stop: asyncio.Event) -> None:
+async def collect_market_session(args, window: dict, stop: asyncio.Event) -> None:
     session_date = window["sessionDate"]
     close_at = as_utc_timestamp(window["closeAt"])
     symbols = args.symbols_list
@@ -431,10 +582,12 @@ async def collect_regular_session(args, window: dict, stop: asyncio.Event) -> No
             "transport": "websocket",
             "channel": "trade:us",
             "market": "US",
-            "session": "XNYS_REGULAR",
+            "session": "TOSS_US_EXTENDED",
+            "currentSession": window.get("marketSession", "REGULAR"),
             "sessionDate": session_date,
             "openAt": window["openAt"],
             "closeAt": window["closeAt"],
+            "calendarSource": window.get("calendarSource"),
             "symbols": symbols,
             "lossySource": True,
             "sourceSequenceAvailable": False,
@@ -448,6 +601,15 @@ async def collect_regular_session(args, window: dict, stop: asyncio.Event) -> No
             "endedAt": None,
         }
     )
+    session_window = {
+        "session": window.get("marketSession", "REGULAR"),
+        "openAt": window["openAt"],
+        "closeAt": window["closeAt"],
+        "calendarSource": window.get("calendarSource"),
+    }
+    history = meta.setdefault("sessionWindows", [])
+    if session_window not in history:
+        history.append(session_window)
     atomic_json(meta_path, meta)
 
     writer = TickWriter(
@@ -540,8 +702,13 @@ async def collect_regular_session(args, window: dict, stop: asyncio.Event) -> No
         meta["endReason"] = "regular_session_closed" if ended_after_close else "service_stopped"
         atomic_json(meta_path, meta)
 
-        if ended_after_close:
-            write_status(state="compressing", sessionDate=session_date)
+        if ended_after_close and window.get("isFinalSession", False):
+            write_status(
+                state="compressing",
+                sessionDate=session_date,
+                marketSession=window.get("marketSession"),
+                calendarSource=window.get("calendarSource"),
+            )
             await asyncio.to_thread(compress_session, session_dir)
             meta["compressedAt"] = utc_now_iso()
             atomic_json(meta_path, meta)
@@ -564,9 +731,12 @@ async def daemon(args) -> None:
                 (as_utc_timestamp(window["openAt"]) - as_utc_timestamp()).total_seconds(),
             )
             write_status(
-                state="waiting_for_regular_open",
+                state="waiting_for_market_open",
                 provider="toss_ws",
                 sessionDate=window["sessionDate"],
+                marketSession=window.get("marketSession"),
+                calendarSource=window.get("calendarSource"),
+                calendarError=window.get("calendarError"),
                 nextOpenAt=window["openAt"],
                 nextCloseAt=window["closeAt"],
                 symbols=args.symbols_list,
@@ -577,7 +747,17 @@ async def daemon(args) -> None:
                 pass
             continue
 
-        await collect_regular_session(args, window, stop)
+        write_status(
+            state="opening_market_session",
+            provider="toss_ws",
+            sessionDate=window["sessionDate"],
+            marketSession=window.get("marketSession"),
+            calendarSource=window.get("calendarSource"),
+            openAt=window["openAt"],
+            closeAt=window["closeAt"],
+            symbols=args.symbols_list,
+        )
+        await collect_market_session(args, window, stop)
 
     write_status(state="stopped")
 
@@ -595,7 +775,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--status-once",
         action="store_true",
-        help="Print current XNYS regular-session state and exit",
+        help="Print current Toss US market-session state and exit",
     )
     args = ap.parse_args()
     args.symbols_list = load_symbols(args.symbols)
@@ -615,6 +795,7 @@ def main() -> int:
             json.dumps(
                 {
                     **market_window(),
+                    "supportedSessions": [x[0] for x in SESSION_FIELDS],
                     "symbols": args.symbols_list,
                     "symbolCount": len(args.symbols_list),
                     "dataDir": str(args.data_dir),
