@@ -245,6 +245,48 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Adaptive resource runner (V0.1)
+
+Longer research runs can opt into host-aware population scaling with
+`--adaptive-resources`. The initial population is still explicit; scaling happens only
+after a completed **train** session. Validation/final OOS populations are frozen.
+
+Default guardrails:
+
+- start/min population: 20 when requested by the caller
+- maximum population: 1000 (override with `--max-population`)
+- normal resources: next population = current x 1.25
+- RAM >= 70%, swap >= 5%, or CPU >= 85%: HOLD
+- RAM >= 85% or swap >= 20%: SCALE_DOWN x 0.75
+- never scales below `min_population` or above `max_population`
+- records CPU, RAM, swap, process RSS, session runtime, safe/peak/next population
+- resource pressure never changes genomes during validation/OOS
+
+Adaptive mode is intentionally **not bit-for-bit reproducible across hosts**, because
+population size depends on observed system load. The seed still controls genome
+randomness for a given scaling path.
+
+Example bounded research run:
+
+```bash
+python research/evolution/run_evolution_v0.py \
+  --data-dir data/toss_1m --timestamp-kind end --provisional \
+  --symbols TQQQ,AAPL --population 20 --adaptive-resources \
+  --min-population 20 --max-population 500 \
+  --initial-capital 100 --seed 42 \
+  --from-date 2024-06-03 --to-date 2024-06-28 \
+  --results-dir /home/ubuntu/evolution-results
+```
+
+Swap is an OOM safety net, not a performance tier. The runner never creates swap
+itself. On an EC2 host, `scripts/install_evolution_swap.sh` can create one guarded
+`/swapfile` (default 4 GiB) and set `vm.swappiness=10`. It refuses to overwrite an
+existing inactive file.
+
+```bash
+sudo bash scripts/install_evolution_swap.sh
+```
+
 ## Manual bounded EC2 smoke
 
 No new data collection/download, live order, service restart or full training:
