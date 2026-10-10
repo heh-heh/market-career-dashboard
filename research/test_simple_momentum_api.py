@@ -1,7 +1,9 @@
 """Real local HTTP handlers with synthetic paper state, never broker access."""
 import copy
+import io
 import json
 import os
+import zipfile
 import tempfile
 import threading
 import time
@@ -133,6 +135,33 @@ class PaperAPITests(unittest.TestCase):
         self.assertEqual(restored.closed_count, 1)
         self.assertEqual(restored.cash, self.v3.cash)
         self.assertEqual(restored.recent_trades, self.v3.recent_trades)
+
+    def test_authenticated_paper_log_download_contains_v3_and_simple_files(self):
+        self.v3._save_state()
+        (self.v3.trades_path).write_text('{"strategy":"v3"}\n', encoding="utf-8")
+        (self.v3.decisions_path).write_text('{"decision":"v3"}\n', encoding="utf-8")
+        self.engine._save()
+        (self.engine.directory/"decisions.jsonl").write_text('{"strategy":"simple"}\n', encoding="utf-8")
+        req = urllib.request.Request(self.base+"/api/trading/paper/logs/download",
+                                     headers={"Authorization": "Bearer "+self.token}, method="GET")
+        with urllib.request.urlopen(req, timeout=3) as response:
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get_content_type(), "application/zip")
+            payload = response.read()
+        with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+            names = set(archive.namelist())
+        self.assertIn("manifest.json", names)
+        self.assertIn("v3/state.json", names)
+        self.assertIn("v3/trades.jsonl", names)
+        self.assertIn("v3/decisions.jsonl", names)
+        self.assertIn("simple_v1/state.json", names)
+        self.assertIn("simple_v1/decisions.jsonl", names)
+
+    def test_paper_log_download_requires_admin_auth(self):
+        req = urllib.request.Request(self.base+"/api/trading/paper/logs/download", method="GET")
+        with self.assertRaises(urllib.error.HTTPError) as caught:
+            urllib.request.urlopen(req, timeout=3)
+        self.assertEqual(caught.exception.code, 401)
 
     def test_same_storage_configuration_fails_before_initialization(self):
         with patch.object(server, "SIMPLE_PAPER", None), \
