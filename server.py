@@ -594,6 +594,11 @@ def v4_audit_status():
 
 
 
+def _v4_read_dict(path):
+    value=_read_json_file(path)
+    return value if isinstance(value,dict) else {}
+
+
 def _v4_processes(script_name):
     matches=[]
     try:
@@ -636,7 +641,7 @@ def _v4_latest_campaign(stage_dir):
     if not paths:
         return None,None
     path=max(paths,key=lambda p:p.stat().st_mtime)
-    return path.parent,_read_json_file(path)
+    return path.parent,_v4_read_dict(path)
 
 
 def _v4_file_time(path):
@@ -681,7 +686,7 @@ def _v4_stage_status(run_root,stage,processes):
                 current_dir=Path(job.get("directory",""))
                 break
     if current_dir:
-        current_state=_read_json_file(current_dir/"state.json")
+        current_state=_v4_read_dict(current_dir/"state.json")
         for candidate in (current_dir/"run.log",current_dir/"terminal.log"):
             if candidate.exists():
                 try:
@@ -762,7 +767,7 @@ def v4_research_status():
     if full_dir:
         comparison_path=full_dir/"v4_comparison.json"
         all_analysis_path=full_dir/"v4_all_analysis.json"
-        comparison=_read_json_file(comparison_path)
+        comparison=_v4_read_dict(comparison_path)
 
     compare_phase="completed" if comparison else "waiting"
     if full.get("phase")=="completed" and not comparison:
