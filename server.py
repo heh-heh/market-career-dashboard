@@ -453,6 +453,23 @@ def _git_run(args,timeout=60):
         out=out[-30000:]+"\n[output truncated]"
     return p.returncode,out.rstrip()
 
+def _install_runtime_requirements(timeout=300):
+    python=ROOT/".venv"/"bin"/"python"
+    requirements=ROOT/"requirements.txt"
+    if not python.is_file():
+        return 2,f"virtualenv python not found: {python}"
+    if not requirements.is_file():
+        return 2,f"requirements.txt not found: {requirements}"
+    p=subprocess.run(
+        [str(python),"-m","pip","install","-r",str(requirements)],
+        cwd=str(ROOT),capture_output=True,text=True,
+        timeout=timeout,check=False,
+    )
+    out=(p.stdout or "")+(p.stderr or "")
+    if len(out)>30000:
+        out=out[-30000:]+"\n[output truncated]"
+    return p.returncode,out.rstrip()
+
 def _git_branch():
     code,out=_git_run(["rev-parse","--abbrev-ref","HEAD"])
     branch=out.strip() if code==0 else ""
@@ -555,7 +572,10 @@ def run_git_action(action):
         if code2!=0:
             return code2,(out+"\n"+out2).strip()
         code3,out3=_git_run(["branch","--set-upstream-to=origin/strategy-engine-v3","strategy-engine-v3"])
-        return code3,(out+"\n"+out2+"\n"+out3).strip()
+        if code3!=0:
+            return code3,(out+"\n"+out2+"\n"+out3).strip()
+        code4,out4=_install_runtime_requirements()
+        return code4,(out+"\n"+out2+"\n"+out3+"\n[dependencies]\n"+out4).strip()
     if action=="push":
         branch=_git_branch()
         return _git_run(["push","origin",f"HEAD:{branch}"],timeout=120)
@@ -598,6 +618,7 @@ def run_admin_console(command):
             "  git log [N]\n"
             "  systemctl status|is-active|restart <service>\n"
             "  api status|restart\n"
+            "  deps status|install\n"
             "  journalctl <service> [N]\n"
             "  tail collector|v2|multi [N]\n"
             "  state collector|v2|multi\n"
@@ -656,6 +677,19 @@ def run_admin_console(command):
                 return 0,"API 재시작을 예약했습니다. 약 5~10초 뒤 자동으로 다시 연결됩니다."
             return code,out or "API 재시작 요청에 실패했습니다."
         raise ValueError("usage: api status|restart")
+
+    if parts and parts[0]=="deps":
+        if parts==["deps","status"]:
+            py=ROOT/".venv"/"bin"/"python"
+            if not py.is_file():
+                return 2,f"virtualenv python not found: {py}"
+            return _console_run(
+                [str(py),"-c","import exchange_calendars, websockets; print('exchange_calendars='+exchange_calendars.__version__); print('websockets='+websockets.__version__)"],
+                timeout=20,
+            )
+        if parts==["deps","install"]:
+            return _install_runtime_requirements()
+        raise ValueError("usage: deps status|install")
 
     if parts and parts[0]=="systemctl":
         if len(parts)!=3 or parts[1] not in {"status","is-active","restart"}:
