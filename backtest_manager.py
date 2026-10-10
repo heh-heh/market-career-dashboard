@@ -8,6 +8,7 @@ import sys
 import threading
 import time
 import zipfile
+import uuid
 from pathlib import Path
 
 BACKTEST_ENGINES = {
@@ -21,7 +22,9 @@ BACKTEST_ENGINES = {
 
 
 def read_json(path):
-    try: return json.loads(path.read_text())
+    try:
+        value=json.loads(path.read_text())
+        return value if isinstance(value,dict) else {}
     except (OSError,ValueError): return {}
 
 
@@ -30,6 +33,10 @@ def process_args(pid):
         values=Path(f"/proc/{int(pid)}/cmdline").read_bytes().split(b"\0")
         return [v.decode(errors="replace") for v in values if v]
     except (OSError,TypeError,ValueError): return []
+
+
+class PreflightBlocked(RuntimeError):
+    """A missing prerequisite: HTTP 412, no subprocess has been launched."""
 
 
 class BacktestManager:
@@ -51,36 +58,50 @@ class BacktestManager:
         script=str(self.root/"research"/self.spec(engine)["script"])
         return script in process_args(pid)
 
+    def preflight(self,engine):
+        self.spec(engine)
+        manifest=Path(os.getenv("V4_DATA_MANIFEST",str(self.root/"research/v4_data_manifest.json")))
+        data=self.root/"data/toss_1m"
+        reasons=[]
+        if not data.is_dir() or not (any(data.glob("*.csv.gz")) or any(data.glob("*.csv"))):
+            reasons.append("HISTORICAL_DATA_REQUIRED: historical Toss 1m data is unavailable")
+        if not (self.root/"research"/self.spec(engine)["script"]).is_file():
+            reasons.append("BACKTEST_SCRIPT_REQUIRED: Backtest script is missing")
+        return dict(runnable=not reasons,blockedReason="; ".join(reasons) or None,
+                    preflightReasons=reasons,manifestAvailable=manifest.is_file() if engine.startswith("v4-") else None,
+                    dataMode=("REVIEWED_MANIFEST" if manifest.is_file() else "PROVISIONAL_UNREVIEWED_DATA") if engine.startswith("v4-") else None,
+                    provisional=engine.startswith("v4-") and not manifest.is_file())
+
     def status(self,engine):
         paths=self.paths(engine); state=read_json(paths["state"]); result=read_json(paths["result"])
+        launch=read_json(paths["launch"])
         if state.get("runId") and state["runId"]!=result.get("runId"): result={}
-        pid=state.get("pid") or read_json(paths["launch"]).get("pid")
+        if state.get("runId") and launch.get("runId") != state["runId"]: launch={}
+        pid=state.get("pid") or launch.get("pid")
         running=self.running(pid,engine)
         phase=state.get("phase") or ("completed" if result else "waiting")
+        starting=(phase=="starting" and not pid and time.time()-state.get("launchRequestedAt",0)<10)
         if running and phase=="backtest": phase="running"
-        if state.get("running") and not running and phase not in {"completed","error"}: phase="interrupted"
+        if state.get("running") and not running and not starting and phase not in {"completed","error"}: phase="interrupted"
+        readiness=self.preflight(engine)
+        if not running and not starting:
+            active=self.active_job()
+            if active:
+                readiness["runnable"]=False
+                readiness["blockedReason"]="Another historical backtest is running: "+active
+                readiness["preflightReasons"].append(readiness["blockedReason"])
+        if phase in {"waiting","blocked"} and not running: phase="waiting" if readiness["runnable"] else "blocked"
+        if running or starting: readiness["runnable"]=False
         try:
-            # Read a bounded tail, not a multi-GB historical log.
             with paths["log"].open("rb") as f:
                 f.seek(max(0,paths["log"].stat().st_size-16000))
                 log=f.read().decode(errors="replace")
         except OSError: log=""
         merged={**state,**{k:result.get(k,{}) for k in ("funnel","overall","byStrategy","bySymbol","byYear","byMonth","bySession","byExitReason","byRegime","configuration","execution","data") if result}}
-        data_dir=self.root/"data/toss_1m"
-        has_data=data_dir.is_dir() and (any(data_dir.glob("*.csv.gz")) or any(data_dir.glob("*.csv")))
-        manifest_path=Path(os.getenv("V4_DATA_MANIFEST",str(self.root/"research/v4_data_manifest.json")))
-        is_v4=engine.startswith("v4-")
-        manifest_available=manifest_path.is_file()
-        data_mode=("REVIEWED_MANIFEST" if manifest_available else "PROVISIONAL_UNREVIEWED_DATA") if is_v4 else None
-        blocked_reason=None
-        if not has_data:
-            blocked_reason="historical Toss 1m data is unavailable"
         merged.update(engine=engine,label=self.spec(engine)["label"],pid=pid,running=running,phase=phase,
             summary=result.get("overall") or state.get("summary") or {},log=log,
             progress=state.get("progress",100 if result else 0),downloadAvailable=bool(result),resultAvailable=bool(result),
-            runnable=blocked_reason is None,blockedReason=blocked_reason,
-            manifestAvailable=manifest_available if is_v4 else None,
-            dataMode=data_mode,provisional=(is_v4 and not manifest_available))
+            **readiness)
         return merged
 
     def active_job(self):
@@ -89,6 +110,7 @@ class BacktestManager:
             state=read_json(paths["state"])
             pid=state.get("pid") or read_json(paths["launch"]).get("pid")
             if self.running(pid,engine): return engine
+            if state.get("phase")=="starting" and not pid and time.time()-state.get("launchRequestedAt",0)<10: return engine
         # Also guard manual CLI/systemd historical runs not launched by us.
         for p in Path("/proc").iterdir():
             if not p.name.isdigit(): continue
@@ -108,6 +130,8 @@ class BacktestManager:
                     "--trades-csv",str(paths["trades"]),"--data-audit",str(paths["audit"]),"--decisions",str(paths["decisions"])]
             if Path(manifest).is_file():
                 cmd += ["--manifest",manifest]
+                reviewed=read_json(Path(manifest))
+                if reviewed.get("timestampKind") in {"start","end"}: cmd += ["--timestamp-kind",reviewed["timestampKind"]]
             else:
                 cmd += ["--provisional"]
         else:
@@ -123,11 +147,9 @@ class BacktestManager:
             active=self.active_job()
             if active: raise ValueError("Another historical backtest is running: "+active)
             if legacy_start is not None: return legacy_start()
-            data=self.root/"data/toss_1m"
-            if not data.is_dir() or not (any(data.glob("*.csv.gz")) or any(data.glob("*.csv"))):
-                raise RuntimeError("historical Toss 1m data is unavailable")
+            readiness=self.preflight(engine)
+            if not readiness["runnable"]: raise PreflightBlocked(readiness["blockedReason"])
             cmd=self.command(engine)
-            if not Path(cmd[1]).is_file(): raise RuntimeError("Backtest script is missing")
             paths=self.paths(engine)
             # Keep failed/previous artifacts on preflight failure. Once accepted,
             # create a new run; existing forward logs are never included here.
@@ -136,7 +158,9 @@ class BacktestManager:
                 tmp=path.with_suffix(path.suffix+".tmp")
                 tmp.write_text(json.dumps(obj))
                 os.replace(tmp,path)
-            state=dict(engine=engine,strategy=self.spec(engine).get("strategy"),pid=None,phase="starting",
+            run_id=uuid.uuid4().hex
+            if engine.startswith("v4-"): cmd += ["--run-id",run_id]
+            state=dict(runId=run_id,launchRequestedAt=time.time(),engine=engine,strategy=self.spec(engine).get("strategy"),pid=None,phase="starting",
                 running=True,progress=0,updatedAt=time.time(),trades=0,signals=0,entries=0,error=None)
             write_json(paths["state"],state)
             with paths["log"].open("ab") as log:
@@ -148,7 +172,7 @@ class BacktestManager:
                     write_json(paths["state"],state)
                     raise
             # Separate launch metadata never overwrites the child's progress.
-            write_json(paths["launch"],dict(pid=proc.pid,engine=engine))
+            write_json(paths["launch"],dict(pid=proc.pid,engine=engine,runId=run_id))
             return self.status(engine)
 
     def download(self,engine):

@@ -8,7 +8,7 @@ from paper_trader import PaperV3Trader
 from toss_auth import get_token as shared_toss_token
 from toss_rate_limit import wait_for_slot, group_for_path
 from simple_momentum_v1 import SimpleMomentumPaper, ReadOnlyTossMarketData, persistent_directory
-from backtest_manager import BacktestManager, BACKTEST_ENGINES as RESEARCH_BACKTEST_ENGINES
+from backtest_manager import PreflightBlocked, BacktestManager, BACKTEST_ENGINES as RESEARCH_BACKTEST_ENGINES
 
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/"data"/"dashboard.json"
@@ -1635,6 +1635,9 @@ class Handler(BaseHTTPRequestHandler):
                 if engine not in BACKTEST_ENGINES:
                     self.send_json({"ok":False,"error":"Unknown backtest engine"},400); return
                 self.send_json({"ok":True,**start_backtest_engine(engine)}); return
+            except PreflightBlocked as e:
+                self.send_json({"ok":False,"error":str(e),"phase":"blocked","runnable":False,
+                                "blockedReason":str(e),"manifestAvailable":BACKTEST_MANAGER.preflight(engine)["manifestAvailable"]},412); return
             except ValueError as e:
                 self.send_json({"ok":False,"error":str(e)},409); return
             except Exception as e:

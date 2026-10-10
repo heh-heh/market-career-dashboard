@@ -359,6 +359,36 @@ class ResultsTests(unittest.TestCase):
             self.assertEqual(json.loads(p.read_text())["progress"],17)
             self.assertFalse(list(Path(tmp).glob("*.tmp")))
 
+    def test_start_and_end_labels_have_identical_causal_availability(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            files=[]
+            for kind in ("start","end"):
+                path=Path(tmp)/(kind+".csv")
+                with path.open("w",newline="") as f:
+                    w=csv.writer(f);w.writerow(["timestamp","open","high","low","close","volume"])
+                    for n in range(5):
+                        label=DAY+(n+(kind=="end"))*e.MINUTE
+                        w.writerow([label.isoformat(),100,101,99,100,10])
+                files.append(list(read_stream(path,"AAPL",dict(naive_timezone=None,timestamp_kind=kind))))
+            self.assertEqual(files[0],files[1])
+            s=session()
+            for n,b in enumerate(files[1]):
+                s.observe(b)
+                self.assertEqual(len(s.fives),1 if n==4 else 0)
+            self.assertEqual(s.fives[0]["bar"].end,clock(9,35))
+
+    def test_grouped_combined_book_uses_correct_capital(self):
+        from research.intraday_v4_metrics import grouped
+        trade=dict(returnPct=1,netR=1,pnlUsd=300,exitTimestamp="2024-01-01T10:00",holdDurationSeconds=60)
+        result=grouped([trade],lambda t:"2024",30000)["2024"]
+        self.assertEqual(result["paperAccountReturnPct"],1)
+
+    def test_fold_excludes_exit_from_future_oos_after_data_outage(self):
+        days=[f"{y}-{m:02d}-01" for y in range(2021,2025) for m in range(1,13)]
+        trade=dict(date="2021-12-31",exitTimestamp="2022-04-01T10:00",returnPct=100,netR=100,pnlUsd=100,holdDurationSeconds=1)
+        first=chronological_folds([trade],days)["folds"][0]
+        self.assertEqual(first["train"]["trades"],0)
+
     def test_stream_disorder_fails_no_arbitrary_sort(self):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/"AAPL.csv"
@@ -412,6 +442,18 @@ class ResultsTests(unittest.TestCase):
             audit=json.loads((root/"data-audit.artifact").read_text())
             self.assertTrue(audit["validationPassed"])
             self.assertTrue(audit["provisional"])
+    def test_invalid_manifest_child_has_explicit_data_audit_error(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);manifest=root/"manifest.json";manifest.write_text("{}")
+            argv=["--strategy","ir3","--manifest",str(manifest),"--data-dir",str(root/"data"),"--run-id","audit-test-run"]
+            for option in ("out","state","log","trades-csv","data-audit","decisions"):
+                argv += ["--"+option,str(root/(option+".artifact"))]
+            with self.assertRaisesRegex(ValueError,"version 1"):main(argv)
+            state=json.loads((root/"state.artifact").read_text())
+            self.assertEqual(state["phase"],"error");self.assertFalse(state["running"])
+            self.assertEqual(state["runId"],"audit-test-run")
+            self.assertIn("version 1",state["error"])
+            self.assertFalse(json.loads((root/"data-audit.artifact").read_text())["validationPassed"])
 
     def test_tiny_cli_smoke_audits_inputs_and_writes_engine_artifacts(self):
         from build_v4_data_manifest import build_manifest

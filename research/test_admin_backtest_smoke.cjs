@@ -8,7 +8,7 @@ for(const id of engines)assert.ok(html.includes(`option value="${id}"`));
 const nodes=new Map(ids.map(id=>[id,{value:'',style:{},innerHTML:'',textContent:'',disabled:false,
   classList:{add(){},remove(){},toggle(){},contains(){return false;}}}]));
 nodes.get('btEngineSelect').value='simple-v1';
-let calls=[],downloads=[],delayed=null;
+let calls=[],downloads=[],delayed=null,blocked=false,supported=[...engines];
 class LocalURL extends URL{}
 LocalURL.createObjectURL=()=> 'synthetic-url';LocalURL.revokeObjectURL=()=>{};
 const context=vm.createContext({console,URL:LocalURL,location:{},setInterval(){},alert(e){throw Error(e)},
@@ -20,7 +20,7 @@ const context=vm.createContext({console,URL:LocalURL,location:{},setInterval(){}
    const engine=parsed.searchParams.get('engine')||body.engine;
    calls.push({path:parsed.pathname,engine,method:options.method||'GET'});
    assert.match(parsed.pathname,/^\/api\/backtest\/(engines|status|start|download)$/);
-   const data={engine,breakdown:engine==='v4-all'||engine==='v3'?{IR_SENTINEL:{trades:2}}:engine==='v4-ir3'?{REGIME_SENTINEL:{trades:2}}:engine?.startsWith('v4-')?{STOCK_SENTINEL:{trades:2}}:{SESSION_SENTINEL:{trades:2}},phase:'completed',progress:100,downloadAvailable:true,summary:{trades:2,winRatePct:50,sumTradeReturnPct:1},
+   const data=parsed.pathname.endsWith('/engines')?{engines:supported.map(id=>({id,name:id}))}:{engine,breakdown:engine==='v4-all'||engine==='v3'?{IR_SENTINEL:{trades:2}}:engine==='v4-ir3'?{REGIME_SENTINEL:{trades:2}}:engine?.startsWith('v4-')?{STOCK_SENTINEL:{trades:2}}:{SESSION_SENTINEL:{trades:2}},phase:blocked?'blocked':'completed',runnable:!blocked,blockedReason:blocked?'DATA_MANIFEST_REQUIRED: reviewed manifest missing':null,progress:100,downloadAvailable:true,summary:{trades:2,winRatePct:50,sumTradeReturnPct:1},
      byStrategy:{IR_SENTINEL:{trades:2}},bySymbol:{STOCK_SENTINEL:{trades:2}},byRegime:{REGIME_SENTINEL:{trades:2}},
      bySession:{SESSION_SENTINEL:{trades:2}},byYear:{2024:{trades:2}},byExitReason:{STOP:{trades:2}}};
    if(delayed&&engine==='v4-ir1'){await new Promise(resolve=>delayed.resolve=resolve)}
@@ -28,6 +28,7 @@ const context=vm.createContext({console,URL:LocalURL,location:{},setInterval(){}
  }});
 new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1],{filename:'admin.html'}).runInContext(context);
 (async()=>{
+ await vm.runInContext('loadBacktestEngines()',context);
  for(const engine of engines){
    nodes.get('btEngineSelect').value=engine;
    await nodes.get('btEngineSelect').onchange();
@@ -44,5 +45,15 @@ new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1],{filename:'admin.htm
  nodes.get('btEngineSelect').value='v4-ir2';await vm.runInContext('refreshSimpleBacktest()',context);
  delayed.resolve();await old;
  assert.match(nodes.get('simpleBtState').innerHTML,/v4-ir2/);
+ delayed=null;blocked=true;nodes.get('btEngineSelect').value='v4-ir1';
+ await vm.runInContext('refreshSimpleBacktest()',context);
+ assert.match(nodes.get('simpleBtState').innerHTML,/BLOCKED/);
+ assert.match(nodes.get('simpleBtState').innerHTML,/DATA_MANIFEST_REQUIRED/);
+ assert.equal(nodes.get('simpleBtStart').disabled,true);
+ blocked=false;supported=['simple-v1','v3'];
+ await vm.runInContext('loadBacktestEngines()',context);
+ const count=calls.filter(c=>c.path==='/api/backtest/start').length;
+ await assert.rejects(nodes.get('simpleBtStart').onclick(),/EC2/);
+ assert.equal(calls.filter(c=>c.path==='/api/backtest/start').length,count);
  console.log('PASS: 6 engine status/start/download routes, dynamic breakdowns, stale responses ignored');
 })().catch(e=>{console.error(e);process.exitCode=1});

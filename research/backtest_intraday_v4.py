@@ -54,7 +54,7 @@ def atomic_json(path,value):
 class Reporter:
     def __init__(self,args):
         self.args = args
-        self.state = dict(engine="v4-"+args.strategy,strategy=args.strategy,runId=uuid.uuid4().hex,pid=os.getpid(),phase="starting",
+        self.state = dict(engine="v4-"+args.strategy,strategy=args.strategy,runId=getattr(args,"run_id",None) or uuid.uuid4().hex,pid=os.getpid(),phase="starting",
             running=True,progress=0,completedDays=0,processedRows=0,trades=0,signals=0,entries=0,error=None,summary={})
 
     def update(self,**values):
@@ -165,7 +165,7 @@ def read_stream(path,symbol,meta):
     opener = gzip.open if path.suffix == ".gz" else open
     with opener(path,"rt",encoding="utf-8",newline="") as f:
         for row in csv.DictReader(f):
-            start = normalize_minute_timestamp(row["timestamp"],"start",meta["naive_timezone"])
+            start = normalize_minute_timestamp(row["timestamp"],meta.get("timestamp_kind","start"),meta["naive_timezone"])
             vals = [float(row[k]) for k in ("open","high","low","close","volume")]
             bar = Bar(start,start+MINUTE,*vals)
             if not all(math.isfinite(x) for x in vals) or min(vals[:4])<=0 or vals[4]<0 or bar.h<max(bar.o,bar.c) or bar.l>min(bar.o,bar.c) or bar.h<bar.l:
@@ -358,8 +358,10 @@ def run_sessions(day_rows,schedules,symbols,strategies,slip=2,from_date=None,to_
 
 def parse_args(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--run-id",help=argparse.SUPPRESS)
     p.add_argument("--strategy",choices=("ir1","ir2","ir3","all"),default="all")
     p.add_argument("--data-dir","--data",dest="data_dir",type=Path,default=ROOT/"data/toss_1m")
+    p.add_argument("--timestamp-kind",choices=("start","end"),default="start",help="Must match reviewed manifest; current Toss API documents exclusive END labels")
     p.add_argument("--manifest",type=Path,default=ROOT/"research/v4_data_manifest.json")
     p.add_argument("--provisional",action="store_true",
                    help="Allow an explicitly unreviewed research run when the reviewed manifest is unavailable; mechanical audits still apply")
@@ -458,7 +460,7 @@ def main(argv=None):
                 specificationSha256=file_sha256(ROOT/"research/intraday_strategy_formulas_v1.md"),
                 codeHashes={p.name:file_sha256(p) for p in (Path(__file__),ROOT/"research/intraday_v4_engine.py",ROOT/"research/intraday_v4_metrics.py",ROOT/"research/intraday_v4_diagnostics.py")},
                 maxPositionsPerStrategy=1,initialCashPerStrategy=10000,notionalUSD=100,fromDate=args.from_date,toDate=args.to_date),
-            execution=dict(model="COMPLETED_CLOSE_OBSERVATION_PROXY_60S",timestampKind="start",slippageBpsPerSide=args.slippage_bps,
+            execution=dict(model="COMPLETED_CLOSE_OBSERVATION_PROXY_60S",timestampKind=args.timestamp_kind,slippageBpsPerSide=args.slippage_bps,
                 halfSpreadProxyBpsPerSide=1,feesUSD=0,feeVerified=False,quoteAgeVerified=False,executabilityConfirmed=False,
                 entry="First strictly subsequent completed minute close; missing minute cancels",stop="Observable close, never theoretical stop",
                 intrabar="OHLC extremes not executable; sampled-close model only",sourceQuoteTimestamps=None),
@@ -474,10 +476,10 @@ def main(argv=None):
                 ]),
             funnel=funnel,diagnostics=diagnostics.to_dict(),overall=summarize(trades,10000*len(strategies)),
             byStrategy=grouped(trades,lambda t:t["strategy"]),bySymbol=grouped(trades,lambda t:t["symbol"]),
-            byYear=grouped(trades,lambda t:t["date"][:4]),byMonth=grouped(trades,lambda t:t["date"][:7]),
-            bySession=grouped(trades,lambda t:t["session"]),byExitReason=grouped(trades,lambda t:t["exitReason"]),
-            byRegime=grouped(trades,lambda t:t["marketRegime"]["direction"]+"/"+t["marketRegime"]["volatility"]),
-            byTimeOfDay=grouped(trades,time_bucket),chronologicalEvaluation=chronological_folds(trades,days),
+            byYear=grouped(trades,lambda t:t["date"][:4],10000*len(strategies)),byMonth=grouped(trades,lambda t:t["date"][:7],10000*len(strategies)),
+            bySession=grouped(trades,lambda t:t["session"],10000*len(strategies)),byExitReason=grouped(trades,lambda t:t["exitReason"],10000*len(strategies)),
+            byRegime=grouped(trades,lambda t:t["marketRegime"]["direction"]+"/"+t["marketRegime"]["volatility"],10000*len(strategies)),
+            byTimeOfDay=grouped(trades,time_bucket,10000*len(strategies)),chronologicalEvaluation=chronological_folds(trades,days),
             unresolvedPositions=unresolved,strategyOverlap=dict(**overlap,note="IR1 stocks and IR3 indices have disjoint entry universes; trade-day co-occurrence is not simultaneous trigger overlap"),
             researchVerdict=("PROVISIONAL_UNREVIEWED_DATA" if provisional else "UNVALIDATED_DESCRIPTIVE_ONLY"),specBlocked=[],trades=trades)
         result["overall"]["dailySharpeLike"]=daily_consistency(trades,days,10000*len(strategies))

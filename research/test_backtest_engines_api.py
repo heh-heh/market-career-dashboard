@@ -16,7 +16,7 @@ from unittest.mock import Mock,patch
 _import_tmp=tempfile.TemporaryDirectory()
 with patch.dict(os.environ,{"PAPER_V3_DIR":_import_tmp.name}):
     import server
-from backtest_manager import BacktestManager,BACKTEST_ENGINES
+from backtest_manager import BacktestManager,BACKTEST_ENGINES,PreflightBlocked
 
 
 class RegistryTests(unittest.TestCase):
@@ -33,6 +33,12 @@ class RegistryTests(unittest.TestCase):
                 self.assertEqual(cmd[cmd.index("--strategy")+1],k.removeprefix("v4-"))
             self.assertNotIn("shell",cmd)
         with self.assertRaises(ValueError):self.manager.command("../../orders")
+
+    def test_manager_end_kind_is_bound_to_manifest(self):
+        research=self.root/"research";research.mkdir()
+        (research/"v4_data_manifest.json").write_text(json.dumps(dict(timestampKind="end")))
+        cmd=self.manager.command("v4-ir3")
+        self.assertEqual(cmd[cmd.index("--timestamp-kind")+1],"end")
 
     def test_conflict_blocks_every_engine_and_legacy_simple(self):
         with patch.object(self.manager,"active_job",return_value="v3"),patch("backtest_manager.subprocess.Popen") as popen:
@@ -68,6 +74,24 @@ class RegistryTests(unittest.TestCase):
             self.assertTrue(status["provisional"])
             self.assertEqual(status["dataMode"],"PROVISIONAL_UNREVIEWED_DATA")
             self.assertTrue(status["runnable"])
+    def test_parent_starting_is_not_interrupted_before_launch_record(self):
+        paths=self.manager.paths("v4-ir1");self.manager.directory.mkdir()
+        paths["state"].write_text(json.dumps(dict(runId="new",pid=None,running=True,phase="starting",launchRequestedAt=time.time())))
+        status=self.manager.status("v4-ir1")
+        self.assertEqual(status["phase"],"starting");self.assertFalse(status["running"]);self.assertFalse(status["runnable"])
+
+    def test_stale_launch_pid_never_attached_to_current_run(self):
+        paths=self.manager.paths("v4-ir1");self.manager.directory.mkdir()
+        paths["state"].write_text(json.dumps(dict(runId="new",pid=None,running=True,phase="starting",launchRequestedAt=0)))
+        paths["launch"].write_text(json.dumps(dict(runId="old",pid=123)))
+        status=self.manager.status("v4-ir1")
+        self.assertIsNone(status["pid"]);self.assertEqual(status["phase"],"interrupted")
+
+    def test_other_job_blocks_idle_status(self):
+        with patch.object(self.manager,"active_job",return_value="v3"):
+            status=self.manager.status("v4-ir1")
+            self.assertEqual(status["phase"],"blocked");self.assertFalse(status["runnable"])
+            self.assertIn("v3",status["blockedReason"])
 
     def test_interrupted_state_is_visible_on_new_manager_instance(self):
         paths=self.manager.paths("v4-ir1");self.manager.directory.mkdir()
@@ -138,6 +162,14 @@ class HTTPTests(unittest.TestCase):
     def test_arbitrary_subprocess_extra_arguments_rejected(self):
         for body in (dict(engine="not-allowed"),dict(engine=["v4-ir1"]),dict(engine="v4-ir1",args="--optimize")):
             self.assertEqual(self.req("/api/backtest/start",body)[0],400)
+
+    def test_missing_precondition_is_412_with_explicit_body(self):
+        with patch.object(self.manager,"start",side_effect=PreflightBlocked("DATA_MANIFEST_REQUIRED")):
+            code,raw=self.req("/api/backtest/start",dict(engine="v4-ir1"))
+            self.assertEqual(code,412)
+            value=json.loads(raw)
+            self.assertEqual(value["phase"],"blocked");self.assertFalse(value["runnable"])
+            self.assertEqual(value["error"],"DATA_MANIFEST_REQUIRED")
 
     def test_conflict_is_409(self):
         with patch.object(self.manager,"start",side_effect=ValueError("Another historical backtest is running")):

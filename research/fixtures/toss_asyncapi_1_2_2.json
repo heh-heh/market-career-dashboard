@@ -1,0 +1,140 @@
+{
+  "source": "https://openapi.tossinvest.com/openapi-docs/latest/asyncapi.json",
+  "version": "1.2.2",
+  "sha256": "130251057fd9535a3e276099f9166b445f8c51f505f30540758e4b209231282e",
+  "retrievedAt": "2026-10-10",
+  "examples": {
+    "subscriptionsAck": {
+      "type": "subscriptions",
+      "id": "req-1",
+      "subscribed": [
+        "trade:us:AAPL",
+        "trade:us:TSLA",
+        "orderbook:kr:005930",
+        "personal:order:3"
+      ],
+      "rejected": []
+    },
+    "subscriptionsAckPartialReject": {
+      "type": "subscriptions",
+      "id": "req-2",
+      "subscribed": [
+        "trade:kr:005930"
+      ],
+      "rejected": [
+        {
+          "target": "trade:kr:999999",
+          "code": "stock-not-found",
+          "message": "해당 종목을 찾을 수 없습니다."
+        }
+      ]
+    },
+    "errorFrame": {
+      "type": "error",
+      "error": {
+        "code": "no-codes",
+        "message": "codes must be a non-empty array of strings"
+      },
+      "id": "req-1"
+    },
+    "serverShutdown": {
+      "type": "error",
+      "error": {
+        "code": "server-shutdown",
+        "message": "서버가 재시작됩니다. 재연결해주세요."
+      }
+    },
+    "pong": {
+      "type": "pong"
+    },
+    "tradeMessage": {
+      "type": "message",
+      "topic": "trade:us:AAPL",
+      "data": {
+        "price": "243.26",
+        "volume": "8",
+        "timestamp": "2026-06-18T23:30:00.000+09:00",
+        "currency": "USD"
+      }
+    },
+    "orderbookMessage": {
+      "type": "message",
+      "topic": "orderbook:kr:005930",
+      "data": {
+        "timestamp": "2026-06-18T23:30:00.000+09:00",
+        "currency": "KRW",
+        "asks": [
+          {
+            "price": "71500",
+            "volume": "5"
+          }
+        ],
+        "bids": [
+          {
+            "price": "71400",
+            "volume": "10"
+          }
+        ]
+      }
+    }
+  },
+  "calendar": {
+    "today": {
+      "date": "2026-03-25",
+      "dayMarket": {
+        "startTime": "2026-03-25T09:00:00+09:00",
+        "endTime": "2026-03-25T16:50:00+09:00"
+      },
+      "preMarket": {
+        "startTime": "2026-03-25T17:00:00+09:00",
+        "endTime": "2026-03-25T22:30:00+09:00"
+      },
+      "regularMarket": {
+        "startTime": "2026-03-25T22:30:00+09:00",
+        "endTime": "2026-03-26T05:00:00+09:00"
+      },
+      "afterMarket": {
+        "startTime": "2026-03-26T05:00:00+09:00",
+        "endTime": "2026-03-26T07:00:00+09:00"
+      }
+    },
+    "previousBusinessDay": {
+      "date": "2026-03-24",
+      "dayMarket": {
+        "startTime": "2026-03-24T09:00:00+09:00",
+        "endTime": "2026-03-24T16:50:00+09:00"
+      },
+      "preMarket": {
+        "startTime": "2026-03-24T17:00:00+09:00",
+        "endTime": "2026-03-24T22:30:00+09:00"
+      },
+      "regularMarket": {
+        "startTime": "2026-03-24T22:30:00+09:00",
+        "endTime": "2026-03-25T05:00:00+09:00"
+      },
+      "afterMarket": {
+        "startTime": "2026-03-25T05:00:00+09:00",
+        "endTime": "2026-03-25T07:00:00+09:00"
+      }
+    },
+    "nextBusinessDay": {
+      "date": "2026-03-26",
+      "dayMarket": {
+        "startTime": "2026-03-26T09:00:00+09:00",
+        "endTime": "2026-03-26T16:50:00+09:00"
+      },
+      "preMarket": {
+        "startTime": "2026-03-26T17:00:00+09:00",
+        "endTime": "2026-03-26T22:30:00+09:00"
+      },
+      "regularMarket": {
+        "startTime": "2026-03-26T22:30:00+09:00",
+        "endTime": "2026-03-27T05:00:00+09:00"
+      },
+      "afterMarket": {
+        "startTime": "2026-03-27T05:00:00+09:00",
+        "endTime": "2026-03-27T07:00:00+09:00"
+      }
+    }
+  }
+}

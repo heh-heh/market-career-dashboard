@@ -424,7 +424,11 @@ async function loadBacktestEngines(){
       }).join('');
       if(ids.includes(current)&&backtestEngines[current])sel.value=current;
     }
-  }catch(e){}
+  }catch(e){
+    backtestServerEngines.clear();
+    setText("simpleBtState","백엔드 엔진 목록 확인 실패: "+e.message);
+    document.getElementById("simpleBtStart").disabled=true;
+  }
 }
 function updateBacktestEngineText(){
   const id=selectedBacktestEngine(),info=backtestEngines[id]||{};
@@ -442,7 +446,7 @@ async function refreshSimpleBacktest(){
     if(engine!==selectedBacktestEngine())return;
     const phase=String(s.phase||"waiting").toUpperCase(),running=!!s.running,progress=Math.max(0,Math.min(100,Number(s.progress||0)));
     document.getElementById("simpleBtProgress").style.width=progress+"%";
-    document.getElementById("simpleBtStart").disabled=running||s.runnable===false;
+    document.getElementById("simpleBtStart").disabled=running||phase==="STARTING"||s.runnable===false||!backtestServerEngines.has(engine);
     document.getElementById("simpleBtDownload").disabled=!s.downloadAvailable;
     const activity=s.processedRows==null
       ?(' · 거래일/시점 '+esc(s.currentTimestamp||'-'))
@@ -452,7 +456,7 @@ async function refreshSimpleBacktest(){
       ' · '+progress.toFixed(1)+'%'+activity+
       ' · 신호 '+Number(s.signals||0).toLocaleString()+' · 진입 '+Number(s.entries||0).toLocaleString()+
       (s.dataMode?'<br><span class="'+(s.provisional?'warn':'ok')+'">데이터 모드: '+esc(s.dataMode)+(s.provisional?' · 최종 성과 판정 금지':'')+'</span>':'')+
-      (s.blockedReason?'<br><span class="warn">실행 대기: '+esc(s.blockedReason)+'</span>':'')+
+      (s.blockedReason?'<br><span class="warn">백테스트 미시작 · 사전 검증 차단: '+esc(s.blockedReason)+'</span>':'')+
       (s.error?'<br><span class="bad">'+esc(s.error)+'</span>':'');
     setText("simpleBtTrades",String(m.trades??s.trades??0));
     setText("simpleBtWinRate",pct(m.winRatePct,1));
@@ -480,13 +484,13 @@ async function refreshSimpleBacktest(){
       document.getElementById("simpleBtState").innerHTML=syncNeeded
         ?'<span class="warn">EC2 백엔드가 아직 이 V4 엔진을 모릅니다. GitHub · Git → 배포 브랜치 맞추기 후 API를 재시작하세요.</span>'
         :'<span class="bad">'+esc(e.message)+'</span>';
-      document.getElementById("simpleBtStart").disabled=syncNeeded;
+      document.getElementById("simpleBtStart").disabled=true;
     }
   }
 }
 async function startSimpleBacktest(){
   const engine=selectedBacktestEngine(),b=document.getElementById("simpleBtStart");
-  if(engine.startsWith("v4-")&&!backtestServerEngines.has(engine)){
+  if(!backtestServerEngines.has(engine)){
     alert("EC2 백엔드 동기화가 필요합니다. GitHub · Git → 배포 브랜치 맞추기 후 API를 재시작하세요.");
     return;
   }

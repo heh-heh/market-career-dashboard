@@ -50,10 +50,10 @@ def daily_consistency(trades,days,initial_cash=10000):
     return st.fmean(values)/st.stdev(values)*252**.5
 
 
-def grouped(trades,key):
+def grouped(trades,key,initial_cash=10000):
     groups = defaultdict(list)
     for t in trades: groups[str(key(t))].append(t)
-    return {k:summarize(v) for k,v in sorted(groups.items())}
+    return {k:summarize(v,initial_cash) for k,v in sorted(groups.items())}
 
 
 def time_bucket(t):
@@ -77,7 +77,7 @@ def chronological_folds(trades,days):
         a,b,c,d = [add_months(start,n).date().isoformat() for n in (0,12,15,18)]
         if d > days[-1]: break
         embargo = max((x for x in days if x < c),default=None)
-        select = lambda lo,hi: [t for t in trades if lo <= t["date"] < hi and t["date"] != embargo]
+        select = lambda lo,hi: [t for t in trades if lo <= t["date"] < hi and t["date"] != embargo and lo <= t["exitTimestamp"][:10] < hi]
         folds.append(dict(trainPeriod=[a,b],validationPeriod=[b,c],oosPeriod=[c,d],embargoSession=embargo,
                           train=summarize(select(a,b)),validation=summarize(select(b,c)),oos=summarize(select(c,d))))
         start = add_months(start,3)
