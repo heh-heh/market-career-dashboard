@@ -22,6 +22,10 @@ _PUBLIC_FIELDS = {
     "sessionRuntimeSeconds", "evaluationWindowSessions", "windowSessionsCompleted",
     "windowStartDate", "windowEndDate", "windowComplete", "bestWindowReturn",
     "meanWindowReturn", "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral",
+    "evaluationMode", "sourceRunId", "sourceTrainFrom", "sourceTrainTo",
+    "sourceTrainGenerations", "sourcePopulation", "sourcePopulationHash",
+    "bestValidationReturn", "meanValidationReturn", "medianValidationReturn",
+    "validationTotalTrades", "sourcePopulationVerified",
 }
 
 
@@ -41,7 +45,7 @@ def _read_status(path):
 def _process_alive(pid):
     try:
         command = Path(f"/proc/{int(pid)}/cmdline").read_bytes()
-        return b"run_evolution_v0.py" in command
+        return b"run_evolution_v0.py" in command or b"evaluate_population_v03.py" in command
     except (OSError, ValueError, TypeError):
         return False
 
@@ -94,6 +98,15 @@ def _run_summary(run_dir):
         "resourceMemoryPct": result.get("resourceMemoryPct"),
         "resourceSwapPct": result.get("resourceSwapPct"),
         "resourceCpuPct": result.get("resourceCpuPct"),
+        "evaluationMode": result.get("evaluationMode"),
+        "sourceRunId": result.get("sourceRunId"),
+        "sourceTrainFrom": result.get("sourceTrainFrom"),
+        "sourceTrainTo": result.get("sourceTrainTo"),
+        "sourceTrainGenerations": result.get("sourceTrainGenerations"),
+        "sourcePopulation": result.get("sourcePopulation"),
+        "bestValidationReturn": result.get("bestValidationReturn"),
+        "meanValidationReturn": result.get("meanValidationReturn"),
+        "validationTotalTrades": result.get("validationTotalTrades"),
         "dataMode": result.get("dataMode"),
         "dataOrigin": result.get("dataOrigin"),
         "updatedAt": result.get("updatedAt") or result.get("finishedAt") or result.get("createdAt"),
