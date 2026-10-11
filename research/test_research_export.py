@@ -214,6 +214,33 @@ class ExportTests(ExportFixtures):
         p=self.roots['evolution']/'run-a/trades.csv'
         with gzip.open(str(p)+'.gz','wb') as f:f.write(p.read_bytes())
         self.assertIn('Ambiguous',self.run_job({'type':'evolution_full'},False)['error'])
+    def test_native_v07_metadata_periods_and_aggregation(self):
+        docs={'run.json':dict(version='evolution-v0.7',evaluationMode='FROZEN_VALIDATION',sourceTrainFrom='2022-01-03',sourceTrainTo='2023-12-29',fromDate='2025-01-02',toDate='2025-12-31',config={'validation':['2024-01-01','2024-12-31']},fitnessMode='v05_structural',selectionMode='V07_INTERNAL_HOLDOUT_SHORTLIST',generation=0),
+              'status.json':dict(meanValidationReturn=99,bestValidationReturn=99,generation=10,population=10),
+              'validation_summary.json':dict(bots=[dict(validationReturn=.1,trades=2,transactionCost=.3,invalidDays=0),dict(validationReturn=-.04,trades=4,transactionCost=.5,invalidDays=0),dict(validationReturn=99,invalidDays=1)])}
+        row=summarize_run('abc',[],docs)
+        self.assertEqual(row['label'],'V0.7 Internal Holdout Shortlist');self.assertEqual(row['validationPeriod'],['2025-01-02','2025-12-31'])
+        self.assertEqual(row['trainPeriod'],['2022-01-03','2023-12-29']);self.assertAlmostEqual(row['meanValidation'],.03)
+        self.assertEqual(row['tradeCount'],6);self.assertEqual(row['generation'],10);self.assertEqual(row['positiveBots'],1)
+        self.assertEqual(row['negativeBots'],1);self.assertEqual(row['population'],10)
+        self.assertIn(b'STORED_VALID_BOT',summary_csv([summarize_run('def',[],{}),row]))
+        for version,fitness,label in [('evolution-v0.5','v05_structural','V0.5 Structural'),('evolution-v0.6','v06_stability','V0.6 Stability')]:
+            self.assertEqual(summarize_run('abc',[],{'run.json':dict(version=version,fitnessMode=fitness)})['label'],label)
+    def test_native_campaign_bundle_links_not_hashes(self):
+        root=str(self.roots['evolution'])
+        self.write('evolution','campaign/campaign.json',dict(version='evolution-v07-campaign',campaignId='campaign',trainFrom='2022-01-03',trainTo='2023-12-29',trainRun=root+'/run-a',holdoutRun=root+'/holdout',shortlistDir=root+'/campaign/shortlist',developmentValidationRun=root+'/development'))
+        for name,year in [('holdout','2024'),('development','2025')]:
+            self.write('evolution',name+'/run.json',dict(version='evolution-v0.7',runId=name,evaluationMode='FROZEN_VALIDATION',sourceRunId='run-a',sourceRunDir=root+'/run-a',sourcePopulationHash='f'*64,sourcePopulationFileHash='e'*64,fromDate=year+'-01-02',toDate=year+'-12-31'))
+            self.write('evolution',name+'/validation_summary.json',dict(bots=[dict(validationReturn=.01,trades=1,transactionCost=.1,invalidDays=0)]))
+        self.write('evolution','campaign/shortlist/run.json',dict(version='evolution-v0.7',runId='shortlist',evaluationMode='SHORTLIST_ARTIFACT',selectionMode='V07_INTERNAL_HOLDOUT_SHORTLIST',sourceTrainingRunId='run-a',holdoutRunId='holdout'))
+        self.write('evolution','campaign/shortlist/shortlist.json',dict(selectedBots=[{'botId':'1'}]));self.write('evolution','campaign/shortlist/final_population.json',[{'bot_id':'1'}])
+        self.write('evolution','development/generalization_diagnostics.json',dict(validationFrom='2025-01-02',validationTo='2025-12-31',verdict='WEAK'))
+        campaign=next(r['id'] for r in self.manager.catalog()['public']['runs'] if r['runId']=='campaign')
+        job=self.run_job({'type':'V07_FULL_RESEARCH_BUNDLE','runIds':[campaign]})
+        self.assertTrue(job['bundleEvidence']['completeEvidence']);self.assertFalse(job['warnings'])
+        with self.archive(job) as z:
+            self.assertIn('evolution/holdout/validation_summary.json',z.namelist());self.assertIn('evolution/development/validation_summary.json',z.namelist())
+
     def test_empty_date_range_fails(self):
         self.minute_source();j=self.run_job({'type':'toss_1m','symbols':['TQQQ'],'from':'2020-01-01','to':'2020-01-02'},False)
         self.assertIn('no candles',j['error'])

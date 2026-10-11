@@ -388,7 +388,7 @@ class ResearchExporter:
                 references = []
                 for doc in layers(*docs.values()):
                     for field, value in doc.items():
-                        if re.search(r"(?:source|parent|train|holdout|shortlist|validation).*(?:run|population|path|dir)", field, re.I):
+                        if re.search(r"(?:source|parent|train|holdout|shortlist|validation).*(?:run(?:Id|Dir)?|population(?:File|Path)?|path|dir)$", field, re.I):
                             references.extend((field, ref) for ref in (value if isinstance(value, list) else [value]) if isinstance(ref, str))
                 runs[key] = dict(root=kind, directory=directory, files=subset, references=references[:1000], summary=summary)
         rows = sorted((r["summary"] for r in runs.values()), key=lambda r: r["updatedAt"] or "", reverse=True)
@@ -535,7 +535,7 @@ class ResearchExporter:
                 plain_paths = [f["relative"].removesuffix(".gz") for f in matches]
                 if len(set(plain_paths)) != len(plain_paths): raise ValueError(f"{symbol}: both CSV and CSV.GZ present; wait for finalized rotation")
         if "metadata" in sources:
-            selected.extend(dict(f, root="metadata") for f in sources["metadata"]["entries"] if f["relative"].lower().endswith(".md") or PurePosixPath(f["relative"]).name == "default_config.json")
+            selected.extend(dict(f, root="metadata") for f in sources["metadata"]["entries"] if f["relative"].lower().endswith((".md", "_config.json")) or PurePosixPath(f["relative"]).name == "config.json")
         selected = sorted({(f["root"], f["relative"]): f for f in selected}.values(), key=lambda f: (f["root"], f["relative"]))
         names = [(f["root"], f["relative"].removesuffix(".gz")) for f in selected]
         if len(set(names)) != len(names): raise ValueError("Ambiguous compressed/plain artifact names; wait for finalized files")

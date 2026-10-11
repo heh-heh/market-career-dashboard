@@ -80,7 +80,10 @@ The manifest reports unresolved links and partial bundles. Complete evidence
 requires populations, both validation summaries, shortlist, diagnostics, declared
 2022–23 training / 2024 holdout / 2025 development periods and no unresolved links.
 This is packaging evidence, not an endorsement of performance or Final OOS access.
-Production artifact layouts/metadata must be confirmed on EC2; they are absent
+Adapters follow the current V0.7 campaign/shortlist/frozen-validation writers.
+Frozen-validation period statistics use stored valid bot rows, never the last-day
+status return. Population/genome hashes are not interpreted as filesystem links.
+The production artifact contents still require confirmation on EC2; they are absent
 from this workspace. Unsupported nested provenance remains visibly unverified.
 
 ## Safety / consistency
@@ -136,7 +139,7 @@ From the existing checkout:
 cd /home/ubuntu/market-career-dashboard
 git branch --show-current
 git status --short
-git fetch origin strategy-engine-v3
+git fetch origin refs/heads/strategy-engine-v3:refs/remotes/origin/strategy-engine-v3
 git merge --ff-only origin/strategy-engine-v3
 install -d -m 700 /home/ubuntu/research-exports
 .venv/bin/python -m py_compile server.py research_export.py research_export_metadata.py
