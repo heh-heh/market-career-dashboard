@@ -443,7 +443,7 @@ async function refreshAI(){
     setText("aiState",c.state||"waiting"); setText("aiIteration",c.iteration??"-"); setText("aiCandidate",c.candidateVersion||"-"); setText("aiOos",d.finalOosGate||"CLOSED");
     setText("aiHypothesis",c.hypothesis||"V0.8 계획 대기");
     const reviewedDry=d.reviewedDryRun||{};
-    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
+    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>Baseline: <b>'+esc(c.baselineRunId||"-")+'</b> · 후보 '+esc(c.baselineCandidates??"-")+' · 탈락 '+esc(c.baselineRejected??"-")+'<br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
     const p=(d.processes||[])[0]||{};
     setText("aiProcessPid",p.pid??"-");
     setText("aiProcessState",p.processState||"-");
