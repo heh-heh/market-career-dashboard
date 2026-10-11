@@ -339,6 +339,50 @@ class EvolutionTests(unittest.TestCase):
         self.assertEqual(out["profitableSessions"],3)
         self.assertFalse(out["reproductionEligible"])
 
+    def test_v06_requires_stability_across_four_folds(self):
+        c = Config(
+            population_size=2,
+            fitness_mode="v06_stability",
+            evaluation_window_sessions=28,
+            stability_fold_sessions=7,
+            stability_min_positive_folds=3,
+            max_trades_per_session=3,
+            entry_cooldown_minutes=30,
+        )
+        bots = initial_population(c, random.Random(6), "2024-01-02")
+        fold_a=[.01,.01,.01,-.001]
+        fold_b=[.015,.015,-.001,-.001]
+        batches=[]
+        for day in range(28):
+            fa=fold_a[day//7]/7
+            fb=fold_b[day//7]/7
+            batch=[]
+            for bot,r in zip(bots,(fa,fb)):
+                batch.append(dict(
+                    botId=bot.bot_id,date=f"2024-02-{day+1:02d}",
+                    survival="SURVIVE" if r>0 else "DEAD",
+                    reproductionEligible=r>0,evaluationValid=True,
+                    dailyPnl=r*100,dailyReturn=r,fitness=r,
+                    maxDrawdown=.001,trades=1,transactionCost=.01,turnover=10,
+                ))
+            batches.append(batch)
+        out=aggregate_window_evaluations(bots,batches,c,complete=True,mark_death=False)
+        by={x["botId"]:x for x in out}
+        stable=by[bots[0].bot_id]
+        unstable=by[bots[1].bot_id]
+        self.assertEqual(stable["positiveFolds"],3)
+        self.assertEqual(len(stable["foldReturns"]),4)
+        self.assertTrue(stable["stabilityEligible"])
+        self.assertTrue(stable["reproductionEligible"])
+        self.assertEqual(unstable["positiveFolds"],2)
+        self.assertFalse(unstable["stabilityEligible"])
+        self.assertFalse(unstable["reproductionEligible"])
+
+    def test_v06_rejects_invalid_fold_configuration(self):
+        with self.assertRaises(ValueError):
+            Config(fitness_mode="v06_stability",evaluation_window_sessions=28,
+                   stability_fold_sessions=6,stability_min_positive_folds=3)
+
     def test_elite_preservation_and_dead_parent_exclusion(self):
         c = Config(population_size=20, elite_count=2, parent_fraction=1)
         bots = initial_population(c, random.Random(1), "2024-06-03")
