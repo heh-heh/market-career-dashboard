@@ -1,0 +1,20 @@
+[Unit]
+Description=Toss OAuth single-issuer broker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+RuntimeDirectory=market-career-dashboard-toss
+RuntimeDirectoryMode=0750
+ExecStartPre=/usr/bin/chgrp ubuntu /run/market-career-dashboard-toss
+ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python /home/ubuntu/market-career-dashboard/toss_token_broker.py --socket /run/market-career-dashboard-toss/token.sock --secrets /home/ubuntu/market-career-dashboard/server_secrets.json --group-gid 1000 --allow-uid 0 --allow-uid 1000
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
