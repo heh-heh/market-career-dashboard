@@ -19,6 +19,26 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ValueError("EXPORT_REDIRECT_BLOCKED")
 
 
+def extraction_disk_reserve(job, config):
+    """Disk working-set estimate; security extraction cap remains max_extracted_bytes."""
+    archive = job.get("archiveBytes")
+    payload = job.get("bytesProcessed")
+    if not isinstance(archive, int) or archive <= 0:
+        raise ValueError("Invalid export archive size")
+    if not isinstance(payload, int) or payload < 0:
+        payload = job.get("estimatedBytes")
+    if not isinstance(payload, int) or payload < 0:
+        # Fail closed when a completed export does not report any bounded size evidence.
+        return archive + config.max_extracted_bytes
+
+    # bytesProcessed is the exporter's completed sanitized/uncompressed payload.
+    # Keep 64 MiB plus 25% headroom for generated manifests/summaries and filesystem
+    # overhead, while preserving max_extracted_bytes as the hard ZIP verification cap.
+    headroom = 64 * 1024**2
+    extraction = min(config.max_extracted_bytes, max(headroom, payload + payload // 4 + headroom))
+    return archive + extraction
+
+
 class ExportClient:
     def __init__(self, config, *, opener=None):
         self.config = config
@@ -124,7 +144,16 @@ class ExportClient:
         if not isinstance(expected, int) or not 0 < expected <= self.config.max_archive_bytes:
             raise ValueError("Invalid/oversized export")
         from .safety_gate import resource_gate
-        resource_gate(self.config, expected_bytes=expected + self.config.max_extracted_bytes)
+        working_set = extraction_disk_reserve(job, self.config)
+        resource_gate(self.config, expected_bytes=working_set)
+        print(json.dumps({
+            "event":"export_disk_guard",
+            "jobId":job_id,
+            "archiveBytes":expected,
+            "payloadBytes":job.get("bytesProcessed"),
+            "workingSetBytes":working_set,
+            "hardExtractionLimitBytes":self.config.max_extracted_bytes,
+        },sort_keys=True),flush=True)
         path = cache / (uuid.uuid4().hex + ".zip")
         size = 0
         next_report=16*1024*1024
