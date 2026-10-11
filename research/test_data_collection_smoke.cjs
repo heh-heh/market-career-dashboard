@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 for(const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
-assert.match(html,/data-view="v9">데이터 수집/);
+assert.match(html,/data-view="v9">연구·데이터/);
 assert.ok(html.includes('Toss Raw Tick'));
 assert.ok(html.includes('/api/backtest/monitor'));
 assert.ok(!fs.existsSync(path.join(root,'tick-status.html')));
