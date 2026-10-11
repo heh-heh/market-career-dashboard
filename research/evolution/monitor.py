@@ -29,6 +29,8 @@ _PUBLIC_FIELDS = {
     "sourceTrainGenerations", "sourcePopulation", "sourcePopulationHash",
     "bestValidationReturn", "meanValidationReturn", "medianValidationReturn",
     "validationTotalTrades", "sourcePopulationVerified",
+    "expectedSplit", "evaluationLabel", "selectionMode", "shortlistCount",
+    "holdoutRunId",
 }
 
 
@@ -111,6 +113,10 @@ def _run_summary(run_dir):
         "resourceSwapPct": result.get("resourceSwapPct"),
         "resourceCpuPct": result.get("resourceCpuPct"),
         "evaluationMode": result.get("evaluationMode"),
+        "evaluationLabel": result.get("evaluationLabel"),
+        "selectionMode": result.get("selectionMode"),
+        "shortlistCount": result.get("shortlistCount"),
+        "holdoutRunId": result.get("holdoutRunId"),
         "sourceRunId": result.get("sourceRunId"),
         "sourceTrainFrom": result.get("sourceTrainFrom"),
         "sourceTrainTo": result.get("sourceTrainTo"),
