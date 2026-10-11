@@ -54,7 +54,8 @@ def main(argv=None):
             "--symbols",args.symbols,"--population",str(args.population),
             "--adaptive-resources","--min-population",str(args.population),
             "--max-population",str(args.max_population),
-            "--evaluation-window-sessions","7","--initial-capital","100",
+            "--evaluation-window-sessions",str(profile.get("evaluation_window_sessions", 7)),
+            "--initial-capital","100",
             "--seed",str(args.seed),"--from-date",args.train_from,"--to-date",args.train_to,
             "--results-dir",str(args.results_dir),"--config",str(args.config),
         ]
