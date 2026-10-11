@@ -34,15 +34,18 @@ def parser():
 
 def main(argv=None):
     args=parser().parse_args(argv)
-    campaign_id=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-v04"
+    profile=json.loads(args.config.read_text(encoding="utf-8"))
+    fitness_mode=str(profile.get("fitness_mode") or "unknown")
+    suffix="v05" if fitness_mode=="v05_structural" else "v04"
+    campaign_id=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-"+suffix
     campaign_dir=args.results_dir.resolve()/("campaign-"+campaign_id)
     campaign_dir.mkdir(parents=True,exist_ok=False)
     state=dict(
-        version="evolution-v0.4-campaign", campaignId=campaign_id, phase="training",
+        version=f"evolution-{suffix}-campaign", campaignId=campaign_id, phase="training",
         trainFrom=args.train_from, trainTo=args.train_to,
         validationFrom=args.validation_from, validationTo=args.validation_to,
         population=args.population,maxPopulation=args.max_population,seed=args.seed,
-        fitnessMode="v04_generalization",createdAt=datetime.now(timezone.utc).isoformat(),
+        fitnessMode=fitness_mode,createdAt=datetime.now(timezone.utc).isoformat(),
     )
     atomic_json(campaign_dir/"campaign.json",state)
     try:
