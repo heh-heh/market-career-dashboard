@@ -437,7 +437,8 @@ async function refreshAI(){
     document.getElementById("aiGate").innerHTML='<b>'+(running?'<span class="ok">연구 프로세스 실행 중</span>':'<span class="warn">대기</span>')+'</b> · Research Only · Final OOS <b>CLOSED</b>';
     setText("aiState",c.state||"waiting"); setText("aiIteration",c.iteration??"-"); setText("aiCandidate",c.candidateVersion||"-"); setText("aiOos",d.finalOosGate||"CLOSED");
     setText("aiHypothesis",c.hypothesis||"V0.8 계획 대기");
-    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
+    const reviewedDry=d.reviewedDryRun||{};
+    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
     const p=(d.processes||[])[0]||{};
     setText("aiProcessPid",p.pid??"-");
     setText("aiProcessState",p.processState||"-");
@@ -453,7 +454,9 @@ async function refreshAI(){
     document.getElementById("aiMetrics").innerHTML='Positive bots: <b>'+esc(c.positiveBots??"-")+'</b><br>Validation mean: <b>'+esc(c.validationMean??"-")+'</b><br>Validation median: <b>'+esc(c.validationMedian??"-")+'</b><br>Avg trades: <b>'+esc(c.avgTrades??"-")+'</b>';
     document.getElementById("aiDecision").innerHTML='Decision: <b>'+esc(c.decision||"-")+'</b>'+(c.failureCode?'<br><span class="bad">Failure: '+esc(c.failureCode)+'</span>':'')+(c.error?'<br><span class="bad">'+esc(c.error)+'</span>':'')+(c.validationStage?'<br>Validation attempt: <b>'+esc(c.validationStage.attempt??"-")+'</b> · PID '+esc(c.validationStage.pid??"-"):'');
     document.getElementById("aiRecent").innerHTML=(d.recent||[]).map(x=>'<div class="row"><b>Iteration '+esc(x.iteration??"-")+' · '+esc(x.candidateVersion||"-")+'</b> · '+esc(x.state||"-")+(x.decision?' · '+esc(x.decision):'')+(x.failureCode?' · <span class="bad">'+esc(x.failureCode)+'</span>':'')+'</div>').join("")||'<span class="muted">아직 기록이 없습니다.</span>';
-    document.getElementById("aiDryRunBtn").disabled=running; document.getElementById("aiRunBtn").disabled=running;
+    document.getElementById("aiDryRunBtn").disabled=running;
+    document.getElementById("aiRunBtn").disabled=running||!d.dryRunReady;
+    document.getElementById("aiRunBtn").textContent=d.dryRunReady?"실제 1회 연구 실행":"Dry Run 완료 필요";
     await refreshAILog();
   }catch(e){document.getElementById("aiGate").innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
 }
@@ -473,7 +476,9 @@ async function refreshAILog(){
 async function startAIResearch(mode){
   const isRun=mode==="run"; let provisional=false;
   if(isRun){
-    if(!confirm("완료된 Dry Run을 이어서 실제 연구 1회를 실행할까요? 실거래와 2026 OOS는 사용하지 않습니다."))return;
+    if(!aiAdminState.dryRunReady){alert("먼저 Dry Run을 정상 완료해야 실제 연구를 실행할 수 있습니다.");return;}
+    const reviewed=aiAdminState.reviewedDryRun||{};
+    if(!confirm("완료된 Dry Run Iteration "+(reviewed.iteration??"-")+"을 기준으로 실제 연구 1회를 실행할까요? Dry Run 기록은 보존되고 새 iteration에서 실행됩니다."))return;
     if(!aiAdminState.manifestAvailable){if(!confirm("Reviewed manifest가 없습니다. PROVISIONAL_UNREVIEWED_DATA로 1회 실행할까요?"))return;provisional=true;}
   }
   try{await req("/api/admin/ai/start",{method:"POST",body:JSON.stringify({mode,provisional})});await refreshAI();}catch(e){alert(e.message);await refreshAI();}
