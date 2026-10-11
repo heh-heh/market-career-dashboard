@@ -179,6 +179,20 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div class="bt-stat"><div class="label">Population Lock</div><div class="v" id="evolutionV0PopulationLock">-</div></div>
   </div>
 
+  <div class="label" style="margin-top:12px">Generalization Diagnostics</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">Verdict</div><div class="v" id="evolutionV0GenVerdict">-</div></div>
+    <div class="bt-stat"><div class="label">Positive Bots</div><div class="v" id="evolutionV0PositiveBots">-</div></div>
+    <div class="bt-stat"><div class="label">Median Validation</div><div class="v" id="evolutionV0MedianValidation">-</div></div>
+    <div class="bt-stat"><div class="label">Train↔Val Rank Corr</div><div class="v" id="evolutionV0TrainValCorr">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Avg Trades/Bot</div><div class="v" id="evolutionV0AvgTrades">-</div></div>
+    <div class="bt-stat"><div class="label">Trade↔Val Corr</div><div class="v" id="evolutionV0TradeCorr">-</div></div>
+    <div class="bt-stat"><div class="label">Avg Cost/Bot</div><div class="v" id="evolutionV0AvgCost">-</div></div>
+    <div class="bt-stat"><div class="label">Final OOS</div><div class="v" id="evolutionV0OosGate">-</div></div>
+  </div>
+
   <div class="label" style="margin-top:12px">Adaptive Resource Guard</div>
   <div class="bt-grid" style="margin-top:8px">
     <div class="bt-stat"><div class="label">CPU</div><div class="v" id="evolutionV0Cpu">-</div></div>
@@ -913,6 +927,14 @@ async function loadEvolutionMonitor(){
   set("evolutionV0SourcePopulation",d.sourcePopulation==null?"-":Number(d.sourcePopulation).toLocaleString());
   set("evolutionV0SourceGenerations",d.sourceTrainGenerations==null?"-":Number(d.sourceTrainGenerations).toLocaleString());
   set("evolutionV0PopulationLock",d.evaluationMode==="FROZEN_VALIDATION"?(d.sourcePopulationVerified===false?"검증 실패":"LOCKED"):"-");
+  set("evolutionV0GenVerdict",d.verdict||"-");
+  set("evolutionV0PositiveBots",d.positiveBots==null?"-":Number(d.positiveBots).toLocaleString()+" / "+Number((d.positiveBots||0)+(d.negativeBots||0)+(d.neutralBots||0)).toLocaleString());
+  set("evolutionV0MedianValidation",pct(d.medianValidationReturn));
+  set("evolutionV0TrainValCorr",d.trainValidationSpearman==null?"-":Number(d.trainValidationSpearman).toFixed(3));
+  set("evolutionV0AvgTrades",d.meanTradesPerBot==null?"-":Number(d.meanTradesPerBot).toFixed(1));
+  set("evolutionV0TradeCorr",d.tradesValidationPearson==null?"-":Number(d.tradesValidationPearson).toFixed(3));
+  set("evolutionV0AvgCost",d.meanTransactionCostPerBot==null?"-":"$"+Number(d.meanTransactionCostPerBot).toFixed(2));
+  set("evolutionV0OosGate",d.finalOosAllowed===true?"OPEN":(d.finalOosAllowed===false?"BLOCKED":"-"));
   set("evolutionV0Cpu",d.resourceCpuPct==null?"-":Number(d.resourceCpuPct).toFixed(1)+"%");
   set("evolutionV0Ram",d.resourceMemoryPct==null?"-":Number(d.resourceMemoryPct).toFixed(1)+"%");
   set("evolutionV0Swap",d.resourceSwapPct==null?"-":Number(d.resourceSwapPct).toFixed(1)+"%");
