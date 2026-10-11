@@ -143,7 +143,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div class="bt-grid" style="margin-top:12px">
     <div class="bt-stat"><div class="label">Generation</div><div class="v" id="evolutionV0Generation">-</div></div>
     <div class="bt-stat"><div class="label">완료 세션</div><div class="v" id="evolutionV0Sessions">-</div></div>
-    <div class="bt-stat"><div class="label">Population</div><div class="v" id="evolutionV0Population">-</div></div>
+    <div class="bt-stat"><div class="label">Evaluated Population</div><div class="v" id="evolutionV0Population">-</div></div>
     <div class="bt-stat"><div class="label">Alive / Dead</div><div class="v" id="evolutionV0Survival">-</div></div>
   </div>
   <div class="bt-grid" style="margin-top:10px">
@@ -877,7 +877,7 @@ async function loadEvolutionMonitor(){
   set("evolutionV0Range",(d.fromDate||"-")+" → "+(d.toDate||"-")+" · 현재 "+(d.currentHistoricalDate||"-"));
   set("evolutionV0Generation",d.generation==null?"-":d.generation);
   set("evolutionV0Sessions",Number(d.completedSessions||0).toLocaleString()+" / "+Number(d.requestedSessions||0).toLocaleString());
-  set("evolutionV0Population",Number(d.population||0).toLocaleString());
+  set("evolutionV0Population",Number((d.evaluatedPopulation ?? d.population) || 0).toLocaleString());
   set("evolutionV0Survival",Number(d.alive||0).toLocaleString()+" / "+Number(d.dead||0).toLocaleString());
   set("evolutionV0BestBot",d.bestBot||"-");
   set("evolutionV0BestDaily",pct(d.bestDailyReturn));
