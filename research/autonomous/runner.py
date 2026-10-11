@@ -9,7 +9,7 @@ import traceback
 
 from .config import ROOT, LoopConfig
 from .artifact_reader import discover_runs, sha256, verify_cache
-from .diagnostics import identify_baseline, failure_analysis, validation_metrics
+from .diagnostics import BaselineCandidateError, identify_baseline, failure_analysis, validation_metrics
 from .experiment_planner import make_plan
 from .experiment_registry import Registry, read_json, write_json, utc
 from .export_client import ExportClient
@@ -57,6 +57,33 @@ def active_stage(folder):
     return old if old.get("identity") and process_identity(old["identity"]["pid"]) == old["identity"] else None
 
 
+def choose_valid_v07_baseline(client, catalog, candidates):
+    rejected = []
+    ordered = sorted(candidates, key=lambda row: (row.get("updatedAt") or "", row.get("id") or ""), reverse=True)
+    for candidate in ordered:
+        bundle, bundle_hash, manifest = client.collect("V07_FULL_RESEARCH_BUNDLE", [candidate["id"]], catalog)
+        try:
+            baseline = identify_baseline(discover_runs(bundle))
+        except BaselineCandidateError as exc:
+            rejected.append({
+                "catalogId": candidate.get("id"),
+                "runId": candidate.get("runId"),
+                "updatedAt": candidate.get("updatedAt"),
+                **exc.as_dict(),
+            })
+            continue
+        return {
+            "candidate": candidate,
+            "bundle": bundle,
+            "bundleHash": bundle_hash,
+            "manifest": manifest,
+            "baseline": baseline,
+            "rejected": rejected,
+        }
+    return {"candidate": None, "bundle": None, "bundleHash": None, "manifest": None,
+            "baseline": None, "rejected": rejected}
+
+
 def prepare_iteration(registry, folder, config, client=None):
     from .hypothesis import hypothesis
     registry.update(folder, "downloading", **hypothesis(), parentVersion="v07", candidateVersion="v08")
@@ -79,10 +106,24 @@ def prepare_iteration(registry, folder, config, client=None):
            and r.get("selectionMode") == "V07_INTERNAL_HOLDOUT_SHORTLIST"]
     if not v07:
         raise ValueError("V07_FULL_RESEARCH_BUNDLE_REQUIRED")
-    latest = sorted(v07, key=lambda r: (r.get("updatedAt") or "", r["id"]))[-1]
-    bundle, bundle_hash, manifest = client.collect("V07_FULL_RESEARCH_BUNDLE", [latest["id"]], catalog)
-    baseline = identify_baseline(discover_runs(bundle))
-    registry.update(folder, "analyzing", parentVersion="v07", candidateVersion="v08")
+    choice = choose_valid_v07_baseline(client, catalog, v07)
+    write_json(folder / "baseline_selection.json", {
+        "policy": "NEWEST_STRICTLY_VALID_V07_LINEAGE",
+        "candidateCount": len(v07),
+        "selectedRunId": choice["candidate"].get("runId") if choice["candidate"] else None,
+        "selectedCatalogId": choice["candidate"].get("id") if choice["candidate"] else None,
+        "rejected": choice["rejected"],
+        "criteriaRelaxed": False,
+    })
+    if choice["baseline"] is None:
+        registry.update(folder, "analyzing", baselineCandidates=len(v07),
+                        baselineRejected=len(choice["rejected"]))
+        raise ValueError("NO_VALID_V07_BASELINE")
+    bundle, bundle_hash, manifest = choice["bundle"], choice["bundleHash"], choice["manifest"]
+    baseline = choice["baseline"]
+    registry.update(folder, "analyzing", parentVersion="v07", candidateVersion="v08",
+                    baselineRunId=choice["candidate"].get("runId"),
+                    baselineCandidates=len(v07), baselineRejected=len(choice["rejected"]))
     write_json(folder / "diagnostics.json", failure_analysis([r for r in summary.get("rows", []) if r.get("id") in ids]))
     write_json(folder / "source_manifest.json", {"manifestHash": bundle_hash, "summaryManifestHash": summary_hash,
                "cacheDirectory": str(bundle), "manifest": manifest})
