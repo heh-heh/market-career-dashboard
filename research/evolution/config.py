@@ -29,6 +29,8 @@ class Config:
     max_trades_per_session: int = 0  # 0 disables the structural cap
     entry_cooldown_minutes: int = 0
     min_profitable_sessions_for_parent: int = 0
+    stability_fold_sessions: int = 0  # 0 disables V0.6 fold stability gating
+    stability_min_positive_folds: int = 0
     cutoff_minutes: int = 5  # before actual XNYS close, including half days
     # V0.1 resource-aware scaling is opt-in so V0 replay remains reproducible by default.
     adaptive_resources: bool = False
@@ -62,7 +64,7 @@ class Config:
                 raise ValueError("Nonfinite config")
         if self.population_size < 1 or self.initial_capital <= 0:
             raise ValueError("Positive population and capital required")
-        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes, self.min_population, self.max_population, self.evaluation_window_sessions, self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent)):
+        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes, self.min_population, self.max_population, self.evaluation_window_sessions, self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent, self.stability_fold_sessions, self.stability_min_positive_folds)):
             raise ValueError("Counts and cutoff must be integer")
         if min(self.elite_count, self.parent_pool_size, self.free_trade_count) < 0 or self.parent_pool_size < 1:
             raise ValueError("Invalid selection/trading counts")
@@ -90,12 +92,21 @@ class Config:
             raise ValueError("Probabilities must be in [0,1]")
         if min(self.epsilon, self.return_scale, self.volume_scale, self.feature_clip) <= 0 or self.cutoff_minutes < 1:
             raise ValueError("Invalid numerical scale/cutoff")
-        if self.fitness_mode not in {"v0", "v04_generalization", "v05_structural"}:
+        if self.fitness_mode not in {"v0", "v04_generalization", "v05_structural", "v06_stability"}:
             raise ValueError("Unknown fitness_mode")
-        if min(self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent) < 0:
+        if min(self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent,
+               self.stability_fold_sessions, self.stability_min_positive_folds) < 0:
             raise ValueError("Structural trade controls must be nonnegative")
         if self.min_profitable_sessions_for_parent > self.evaluation_window_sessions:
             raise ValueError("Parent profitability requirement exceeds evaluation window")
+        if self.fitness_mode == "v06_stability":
+            if self.stability_fold_sessions < 1:
+                raise ValueError("V0.6 requires stability_fold_sessions")
+            if self.evaluation_window_sessions % self.stability_fold_sessions:
+                raise ValueError("Evaluation window must be divisible by stability fold size")
+            fold_count = self.evaluation_window_sessions // self.stability_fold_sessions
+            if not 1 <= self.stability_min_positive_folds <= fold_count:
+                raise ValueError("Invalid stability_min_positive_folds")
         if min(self.slippage_bps, self.half_spread_bps, self.mutation_strength,
                self.drawdown_penalty, self.transaction_cost_penalty, self.excessive_trading_penalty,
                self.losing_session_penalty, self.return_volatility_penalty) < 0:
