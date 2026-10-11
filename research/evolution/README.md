@@ -245,6 +245,38 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Frozen validation (V0.3)
+
+V0.3 adds a separate evaluator for a trained population. It loads the exact
+`final_population.json` from a completed training run, verifies every genome hash,
+and evaluates that fixed population on the configured validation split.
+
+There is no reproduction path in this runner:
+
+- no mutation
+- no crossover
+- no parent selection
+- no adaptive population resizing
+- no lifetime-state mutation
+- no live/paper broker calls
+
+The validator verifies the source population hash before, during, and after the run.
+It also re-hashes all market input files before finalizing.
+
+Use the newest completed training population:
+
+```bash
+python research/evolution/evaluate_population_v03.py \
+  --source-run latest \
+  --data-dir data/toss_1m --timestamp-kind end --provisional \
+  --from-date 2025-01-02 --to-date 2025-12-31 \
+  --results-dir /home/ubuntu/evolution-results
+```
+
+The source run's exact symbol universe and config are reused. A caller cannot silently
+change the validation symbol universe. Results are written to a new run directory as
+`validation.jsonl`, per-day validation artifacts, and `validation_summary.json`.
+
 ## Seven-trading-day generations (V0.2)
 
 The default selection window is now **7 processed trading sessions**.
