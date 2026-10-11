@@ -7,18 +7,28 @@ const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(ids.length,new Set(ids).size,'duplicate admin DOM IDs');
 for(const id of ['ai','aiGate','aiDryRunBtn','aiRunBtn','aiRefreshBtn','aiState','aiIteration',
  'aiCandidate','aiOos','aiHypothesis','aiEnvironment','aiTraining','aiHoldout','aiValidation',
- 'aiSelected','aiMetrics','aiDecision','aiRecent']) assert.ok(ids.includes(id),'missing '+id);
+ 'aiSelected','aiMetrics','aiDecision','aiRecent','aiProcessPid','aiProcessState','aiProcessRam',
+ 'aiProcessUptime','aiStartedAt','aiUpdatedAt','aiProcessMode','aiServerTime','aiPipeline',
+ 'aiCheckpoints','aiLog','aiLogMeta','aiStageLog','aiStageLogMeta','aiLogRefreshBtn']) assert.ok(ids.includes(id),'missing '+id);
 assert.match(html,/data-tab="ai">AI 연구</);
 assert.match(html,/req\("\/api\/admin\/ai\/status"\)/);
+assert.match(html,/req\("\/api\/admin\/ai\/log\?lines=180"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/start"/);
 assert.match(html,/mode==="run"/);
 assert.match(html,/PROVISIONAL_UNREVIEWED_DATA/);
 assert.match(html,/Final OOS/);
 assert.ok(!html.includes('RESEARCH_EXPORT_TOKEN'),'browser must never receive internal research token');
 assert.match(server,/if path=="\/api\/admin\/ai\/status":[\s\S]{0,220}if not authorized\(self\)/);
+assert.match(server,/if path=="\/api\/admin\/ai\/log":[\s\S]{0,220}if not authorized\(self\)/);
+assert.match(server,/def _safe_log_tail\(/);
+assert.match(server,/from research_export import sanitize/);
+assert.match(server,/def _autonomous_pipeline\(/);
+assert.match(server,/def _autonomous_checkpoints\(/);
+assert.match(server,/rssMb/);
+assert.match(server,/uptimeSeconds/);
 assert.match(server,/if path=="\/api\/admin\/ai\/start":[\s\S]{0,220}if not authorized\(self\)/);
 assert.match(server,/RESEARCH_EXPORT_BASE_URL":"http:\/\/127\.0\.0\.1:8080"/);
 assert.match(server,/RESEARCH_EXPORT_TOKEN":token/);
 assert.match(server,/finalOosGate":"CLOSED"/);
 assert.match(server,/--max-iterations","1"/);
-console.log('PASS: authenticated AI tab, hidden internal token, bounded one-click dry-run/research, Final OOS closed');
+console.log('PASS: authenticated AI tab, detailed process/pipeline/checkpoint status, sanitized logs, bounded research, Final OOS closed');
