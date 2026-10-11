@@ -1638,6 +1638,11 @@ def control_collector(key,action):
         raise ValueError("unknown collector")
     if action not in {"start","stop","restart","enable","disable"}:
         raise ValueError("unsupported collector action")
+    if action in {"start", "restart", "enable"}:
+        _, active = _systemctl_value("is-active", "research-collection-scheduler.service")
+        _, enabled = _systemctl_value("is-enabled", "research-collection-scheduler.service")
+        if active == "active" or enabled in {"enabled", "enabled-runtime"}:
+            raise ValueError("CENTRAL_COLLECTION_SCHEDULER_OWNS_WORKERS: use pause/resume")
     service=ADMIN_COLLECTORS[key]["service"]
     args=["systemctl"]
     if action=="restart":
@@ -2421,6 +2426,22 @@ def start_realtime():
     except Exception as e:
         print("realtime server stopped:",e,flush=True)
 
+
+def collection_scheduler_status():
+    """Public whitelist, local disk only; no market/calendar/token requests."""
+    from research_collection_scheduler import STATE_DIR
+    try:
+        state = json.loads((STATE_DIR/"status.json").read_text())
+        fields = ("mode", "reason", "isOpen", "etTime", "kstTime", "openAt", "closeAt",
+                  "collector", "automatic", "updatedAt", "calendarConfirmed", "workerFailures", "lastExitCode")
+        result = {k: state.get(k) for k in fields}
+        from datetime import datetime, timezone
+        from research_collection_scheduler import aware
+        result["stale"] = (datetime.now(timezone.utc)-aware(state["updatedAt"])).total_seconds() > 15
+        return result
+    except (OSError, ValueError, KeyError, TypeError):
+        return {"mode": "UNAVAILABLE", "automatic": False, "stale": True}
+
 class Handler(BaseHTTPRequestHandler):
     def send_export_file(self,path,filename,content_type="application/zip"):
         # Incremental transfer; no multi-GB BytesIO archive in the HTTP process.
@@ -2527,15 +2548,23 @@ class Handler(BaseHTTPRequestHandler):
                     progress = {}
             # Whitelist outward fields: never disclose auth, paths, API errors or request headers.
             fields = ("status", "stored", "page", "pages", "oldestTimestamp",
-                      "latestTimestamp", "updatedAt", "coveragePct")
+                      "latestTimestamp", "updatedAt", "coveragePct", "verifiedTradingDays",
+                      "missingTradingDays", "currentGap", "terminationReason", "http429Count", "http401Count", "errorCode", "knownGapOutcomes", "restRequests", "lastHttpCode")
             rows = []
             for symbol, record in sorted(progress.items()):
                 if not re.fullmatch(r"[A-Z0-9]{1,8}", symbol) or not isinstance(record, dict):
                     continue
-                rows.append({"symbol": symbol, **{k:record.get(k) for k in fields}})
-            self.send_json({"ok": True, "symbols": rows, "count": len(rows),
+                rows.append({"symbol": symbol, **{k:record.get(k) for k in fields},
+                    "downloadAvailable": any((base/(symbol+suffix)).is_file() and not (base/(symbol+suffix)).is_symlink() for suffix in (".sqlite3", ".csv.gz"))})
+            try:
+                worker = json.loads((base/"_worker_status.json").read_text())
+                active_symbol = worker.get("currentSymbol")
+                if active_symbol is not None and not re.fullmatch(r"[A-Z0-9]{1,8}", str(active_symbol)): active_symbol = None
+            except (OSError, ValueError, TypeError): active_symbol = None
+            self.send_json({"ok": True, "symbols": rows, "count": len(rows), "currentSymbol": active_symbol,
                 "scope": "research_pre_2026", "coverageVerified": False,
-                "finalOosGate": "CLOSED", "source": "isolated_50_symbol_collector"}); return
+                "finalOosGate": "CLOSED", "source": "isolated_50_symbol_collector",
+                "scheduler": collection_scheduler_status()}); return
         match = re.fullmatch(r"/api/research/collection50/download/([A-Z0-9]{1,8})", path)
         if not match:
             self.send_json({"ok": False, "error": "not_found"}, 404); return
@@ -2547,36 +2576,28 @@ class Handler(BaseHTTPRequestHandler):
         if not re.fullmatch(r"202[2-5]", year_text):
             self.send_json({"ok": False, "error": "year_required_2022_2025"}, 400); return
         year = int(year_text)
-        src = base / (symbol + ".csv.gz")
-        if not src.is_file() or src.is_symlink() or src.resolve().parent != base:
-            self.send_json({"ok": False, "error": "not_collected"}, 404); return
-        # UTC year filter uses parsed aware times; no 2026 Final OOS rows served.
-        from datetime import datetime as _datetime, timezone as _timezone
-        from zoneinfo import ZoneInfo as _ZoneInfo
-        et = _ZoneInfo("America/New_York")
-        self.send_response(200)
-        self.send_header("Content-Type", "application/gzip")
-        self.send_header("Content-Disposition", f'attachment; filename="{symbol}-{year}-research.csv.gz"')
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
+        from research.collection_download import year_download
+        export_dir = Path(os.getenv("COLLECTION_DOWNLOAD_DIR", "/home/ubuntu/research-exports/collection50"))
         try:
-            with _gzip.open(src, "rt", newline="", encoding="utf-8") as infile:
-                reader = _csv.DictReader(infile)
-                with _gzip.GzipFile(fileobj=self.wfile, mode="wb") as outfile:
-                    with io.TextIOWrapper(outfile, encoding="utf-8", newline="", write_through=True) as text_out:
-                        writer = _csv.DictWriter(text_out, fieldnames=reader.fieldnames or [])
-                        writer.writeheader()
-                        for row in reader:
-                            try:
-                                stamp = _datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
-                                if stamp.tzinfo is None:
-                                    continue
-                                if stamp.astimezone(et).year == year:
-                                    writer.writerow(row)
-                            except (ValueError, KeyError, TypeError):
-                                continue
-        except (OSError, BrokenPipeError):
+            with year_download(base, symbol, year, export_dir) as (file, metadata):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/gzip")
+                self.send_header("Content-Disposition", f'attachment; filename="{symbol}-{year}-research.csv.gz"')
+                self.send_header("Content-Length", str(metadata["bytes"]))
+                self.send_header("Access-Control-Allow-Origin", "https://heh-heh.github.io")
+                self.send_header("Access-Control-Expose-Headers", "Content-Disposition, X-Content-SHA256, X-Export-Rows, X-Data-Validation")
+                self.send_header("X-Content-SHA256", metadata["sha256"])
+                self.send_header("X-Export-Rows", str(metadata["rows"]))
+                self.send_header("X-Data-Validation", "PROVISIONAL_UNREVIEWED_DATA")
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                with file.open("rb") as stream:
+                    while chunk := stream.read(65536): self.wfile.write(chunk)
+        except (BrokenPipeError, ConnectionResetError):
             return
+        except (ValueError, RuntimeError, OSError) as exc:
+            code = 404 if isinstance(exc, FileNotFoundError) else 409
+            self.send_json({"ok": False, "error": "COLLECTION_EXPORT_BLOCKED", "reason": str(exc) if re.fullmatch(r"[A-Z_0-9]+", str(exc)) else type(exc).__name__}, code)
 
     def do_GET(self):
         path=self.path.split("?")[0]
@@ -3081,6 +3102,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path == "/api/research/collection50/control":
+            if not authorized(self):
+                self.send_json({"ok": False, "error": "unauthorized"}, 401); return
+            try:
+                body = self.read_json()
+                if not isinstance(body, dict) or not isinstance(body.get("paused"), bool): raise ValueError("paused_boolean_required")
+                from research_collection_scheduler import save, STATE_DIR
+                save(STATE_DIR/"control.json", {"paused": body["paused"]})
+                self.send_json({"ok": True, "paused": body["paused"]}); return
+            except (ValueError, OSError):
+                self.send_json({"ok": False, "error": "collection_control_rejected"}, 400); return
+
         if path=="/api/admin/api-features":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return

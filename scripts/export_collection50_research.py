@@ -13,6 +13,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from research.collection_download import source_rows
 
 ET = ZoneInfo("America/New_York")
 
@@ -31,8 +34,8 @@ def export(root, output, symbols, years):
     for symbol in symbols:
         if not re.fullmatch(r"[A-Z0-9]{1,8}", symbol):
             raise ValueError("INVALID_SYMBOL")
-        src = root / (symbol + ".csv.gz")
-        if not src.is_file() or src.is_symlink() or src.resolve().parent != root:
+        candidates = [root/(symbol+suffix) for suffix in (".sqlite3", ".csv.gz")]
+        if not any(p.is_file() and not p.is_symlink() for p in candidates):
             raise FileNotFoundError(symbol)
     output.mkdir(parents=True)
     report = {"researchOnly": True, "finalOosGate": "CLOSED",
@@ -48,18 +51,8 @@ def export(root, output, symbols, years):
                 temp[year] = handle
                 writers[year] = csv.writer(handle)
                 writers[year].writerow(["timestamp","open","high","low","close","volume","currency"])
-            with gzip.open(src, "rt", newline="", encoding="utf-8") as stream:
-                reader = csv.DictReader(stream)
-                for row in reader:
-                    try:
-                        dt = datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
-                        if dt.tzinfo is None:
-                            continue
-                        year = dt.astimezone(ET).year
-                    except (KeyError, TypeError, ValueError):
-                        continue
-                    if year not in writers:
-                        continue
+            for year in sorted(years):
+                for row in source_rows(root, symbol, year):
                     writers[year].writerow([row.get(k, "") for k in
                         ("timestamp","open","high","low","close","volume","currency")])
                     counts[year] += 1
@@ -68,7 +61,8 @@ def export(root, output, symbols, years):
                 stream.close()
         for year in sorted(years):
             path = output / f"{symbol}-{year}.csv.gz"
-            digest = hashlib.file_digest(path.open("rb"), "sha256").hexdigest()
+            with path.open("rb") as stream:
+                digest = hashlib.file_digest(stream, "sha256").hexdigest()
             report["files"].append({"name": path.name, "sha256": digest, "rows": counts[year]})
     (output / "manifest.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     return report

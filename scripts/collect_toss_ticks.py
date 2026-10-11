@@ -94,7 +94,7 @@ def load_symbols(raw: str | None) -> list[str]:
 
 
 def access_token(force: bool = False) -> str:
-    cfg = json.loads(SECRETS.read_text(encoding="utf-8"))
+    cfg = {} if os.getenv("TOSS_TOKEN_SOCKET") else json.loads(SECRETS.read_text(encoding="utf-8"))
     token = shared_toss_token(cfg, force=force)
     if not token:
         raise RuntimeError("Toss OAuth token issuance failed")
@@ -155,18 +155,20 @@ def _fetch_us_market_calendar(date_str: str) -> dict:
                     "User-Agent": "market-career-dashboard/tick-collector",
                 },
             )
+            from toss_rate_limit import wait_for_slot
+            wait_for_slot("MARKET_INFO")
             with urllib.request.urlopen(req, timeout=10) as r:
                 obj = json.loads(r.read())
             result = obj.get("result", obj) if isinstance(obj, dict) else {}
             return result if isinstance(result, dict) else {}
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", "ignore")
-            last_error = f"HTTP {exc.code}: {body[:300]}"
+            last_error = f"HTTP {exc.code}"
             if exc.code == 401 and attempt == 0:
                 continue
             raise RuntimeError(last_error) from exc
         except Exception as exc:
-            last_error = str(exc)
+            last_error = type(exc).__name__
             if attempt == 0:
                 continue
             raise RuntimeError(last_error) from exc
@@ -642,9 +644,20 @@ async def collect_market_session(args, window: dict, stop: asyncio.Event) -> Non
                 continue
 
             try:
-                await stream_once(
-                    symbols, writer, close_at, meta, force_token=force_token
-                )
+                stream = asyncio.create_task(stream_once(
+                    symbols, writer, close_at, meta, force_token=force_token))
+                shutdown = asyncio.create_task(stop.wait())
+                try:
+                    await asyncio.wait((stream, shutdown), return_when=asyncio.FIRST_COMPLETED)
+                    if stop.is_set():
+                        stream.cancel()
+                        await asyncio.gather(stream, return_exceptions=True)
+                        break
+                    await stream
+                finally:
+                    shutdown.cancel()
+                    if not stream.done(): stream.cancel()
+                    await asyncio.gather(stream, shutdown, return_exceptions=True)
                 force_token = False
                 now = as_utc_timestamp()
                 if now < close_at and not stop.is_set():
@@ -722,7 +735,7 @@ async def daemon(args) -> None:
             pass
 
     while not stop.is_set():
-        window = market_window()
+        window = _fallback_regular_window() if getattr(args, "regular_only", False) else market_window()
         if not window["isOpen"]:
             seconds = max(
                 1.0,
@@ -771,6 +784,7 @@ def parse_args() -> argparse.Namespace:
         "--symbols",
         help="Comma-separated US symbols. Default: research/universe_v3.json",
     )
+    ap.add_argument("--regular-only", action="store_true", help="Scheduler-controlled XNYS regular session only")
     ap.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     ap.add_argument("--queue-size", type=int, default=200_000)
     ap.add_argument("--flush-seconds", type=float, default=1.0)
@@ -797,7 +811,7 @@ def main() -> int:
         print(
             json.dumps(
                 {
-                    **market_window(),
+                    **(_fallback_regular_window() if args.regular_only else market_window()),
                     "supportedSessions": [x[0] for x in SESSION_FIELDS],
                     "symbols": args.symbols_list,
                     "symbolCount": len(args.symbols_list),
@@ -809,7 +823,9 @@ def main() -> int:
             )
         )
         return 0
-    asyncio.run(daemon(args))
+    from research_collection_scheduler import exclusive_lock
+    with exclusive_lock():
+        asyncio.run(daemon(args))
     return 0
 
 

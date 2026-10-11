@@ -5,6 +5,8 @@ Run as the credential-owning service account. Clients must set TOSS_TOKEN_SOCKET
 and never mint independently. Never expose this socket outside the machine.
 """
 import argparse
+import fcntl
+import signal
 import json
 import os
 import socket
@@ -55,11 +57,22 @@ def main():
     cfg = json.loads(secrets.read_text(encoding="utf-8"))
     sock_path = Path(args.socket)
     sock_path.parent.mkdir(parents=True, exist_ok=True)
+    # Lifetime lock prevents a second broker replacing a live socket.
+    lock = sock_path.with_suffix(".lock").open("a+")
+    try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError: raise SystemExit("BROKER_ALREADY_RUNNING") from None
     if sock_path.exists():
         if not sock_path.is_socket():
             raise SystemExit("SOCKET_PATH_NOT_SOCKET")
-        # systemd socket lifecycle cleanup is preferable to deleting live sockets.
-        raise SystemExit("SOCKET_ALREADY_EXISTS")
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as probe:
+            probe.settimeout(1)
+            try: probe.connect(str(sock_path))
+            except ConnectionRefusedError:
+                if sock_path.stat().st_uid != os.getuid(): raise SystemExit("FOREIGN_SOCKET_OWNER")
+                sock_path.unlink()  # proven stale, owned socket; no credential/cache deletion
+            else: raise SystemExit("SOCKET_ALREADY_ACTIVE")
+    def terminate(*_): raise SystemExit(0)
+    signal.signal(signal.SIGTERM, terminate)
     old_umask = os.umask(0o077)
     try:
         with Server(str(sock_path), Handler) as server:

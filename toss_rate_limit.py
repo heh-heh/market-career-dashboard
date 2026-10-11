@@ -6,9 +6,9 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-LOCK_PATH = ROOT / "data" / ".toss_api_rate.lock"
+LOCK_PATH = Path(os.getenv("TOSS_RATE_LIMIT_FILE", str(ROOT / "data" / ".toss_api_rate.lock")))
 
-# Conservative spacing below Toss' documented nominal TPS limits.
+# Conservative operational spacing; not a claim about current contractual TPS limits.
 # This is shared across the collector, live trader and dashboard process.
 MIN_INTERVAL = {
     "MARKET_DATA_CHART": 0.12,   # <= ~8.3 req/s
@@ -50,33 +50,55 @@ def group_for_path(path: str) -> str:
         return "DEFAULT"
     return "DEFAULT"
 
-def wait_for_slot(group: str) -> None:
+def _read_groups(stream):
+    stream.seek(0)
+    result = {}
+    for line in stream.read().splitlines():
+        try:
+            key, value = line.split("=", 1)
+            result[key] = float(value)
+        except ValueError:
+            continue
+    return result
+
+
+def _write_groups(stream, groups):
+    stream.seek(0); stream.truncate()
+    stream.write("".join(f"{key}={value:.9f}\n" for key, value in sorted(groups.items())))
+    stream.flush(); os.fsync(stream.fileno())
+
+
+def mark_rate_limited(group, retry_seconds):
+    """Shared per-group cooldown. Other API groups remain available."""
+    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with LOCK_PATH.open("a+") as stream:
+        fcntl.flock(stream, fcntl.LOCK_EX)
+        groups = _read_groups(stream)
+        key = "cooldown:"+group
+        groups[key] = max(groups.get(key, 0), time.monotonic()+retry_seconds)
+        _write_groups(stream, groups)
+
+
+def wait_for_slot(group: str, request_guard=None) -> None:
     interval = MIN_INTERVAL.get(group, MIN_INTERVAL["DEFAULT"])
     LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with LOCK_PATH.open("a+") as f:
-        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-        f.seek(0)
-        raw = f.read().strip()
-        now = time.monotonic()
-        last = 0.0
-        if raw:
-            try:
-                # Stored as monotonic time per group: group=value
-                for part in raw.splitlines():
-                    if "=" in part:
-                        k, v = part.split("=", 1)
-                        if k == group:
-                            last = float(v)
-                            break
-            except Exception:
-                last = 0.0
-        delay = interval - (now - last)
-        if delay > 0:
-            time.sleep(delay)
+    while True:
+        if request_guard is not None and not request_guard():
+            raise RuntimeError("BACKFILL_REQUEST_BLOCKED")
+        with LOCK_PATH.open("a+") as stream:
+            fcntl.flock(stream, fcntl.LOCK_EX)
+            groups = _read_groups(stream)
             now = time.monotonic()
-        f.seek(0)
-        f.truncate()
-        f.write(f"{group}={now:.9f}\n")
-        f.flush()
-        os.fsync(f.fileno())
-        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+            last = groups.get(group, 0)
+            if last > now:
+                # Host reboot invalidates old monotonic clock values, including cooldowns.
+                last = 0
+                groups.pop("cooldown:"+group, None)
+            due = max(last+interval, groups.get("cooldown:"+group, 0))
+            delay = due-now
+            if delay <= 0:
+                groups[group] = now
+                _write_groups(stream, groups)
+                return
+        # Never hold the shared lock during a wait: unrelated groups can proceed.
+        time.sleep(min(delay, 0.25) if request_guard is not None else delay)

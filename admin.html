@@ -323,6 +323,12 @@
     <div class="section-title">데이터 수집 관리</div>
     <div class="section-subtitle">원본 데이터는 삭제하지 않고 수집 프로세스의 실행 상태와 부팅 자동 실행만 제어합니다.</div>
 
+    <div class="card" style="margin-bottom:12px">
+      <div class="label">정규장 Tick / 장외 1분봉 · 자동 전환</div>
+      <div id="collectionAutoState" class="signal">상태 확인 중...</div>
+      <div class="actions"><button id="collectionResume">자동 수집 재개</button><button id="collectionPause">자동 수집 일시정지</button></div>
+      <div class="mini">중앙 scheduler 배포 후 사용 · 독립 worker 시작은 차단됩니다. 운영 데이터 삭제 없음.</div>
+    </div>
     <div class="grid">
       <div class="card">
         <div class="label">Toss Raw Tick · 상시 수집</div>
@@ -520,7 +526,22 @@ function collectorText(row){
   const boot=row.enabled?'<span class="ok">부팅 자동 ON</span>':'<span class="muted">부팅 자동 OFF</span>';
   return running+' · '+boot+'<br><span class="mini">service: '+esc(row.service||'-')+' · mode: '+esc(row.mode||'-')+'</span>';
 }
+async function refreshCollectionAuto(){
+  try{
+    const data=await req("/api/research/collection50/status"),s=data.scheduler||{};
+    setText("collectionAutoState",(s.stale?"⚠ 오래된 상태 · ":"")+(s.mode||"UNAVAILABLE")+" · "+(s.collector||"수집기 없음")+" · "+(s.reason||"")+" · ET "+(s.etTime||"-"));
+  }catch(e){setText("collectionAutoState","상태 오류: "+e.message);}
+}
+async function pauseCollection(paused){
+  try{
+    await req("/api/research/collection50/control",{method:"POST",body:JSON.stringify({paused})});
+    setText("collectionAutoState","전환 요청 저장됨 · worker 종료 확인 중");
+  }catch(e){setText("collectionAutoState","요청 실패: "+e.message);}
+}
+document.getElementById("collectionPause").onclick=()=>pauseCollection(true);
+document.getElementById("collectionResume").onclick=()=>pauseCollection(false);
 async function refreshCollectors(){
+  refreshCollectionAuto();
   try{
     const d=await req("/api/admin/collectors"); collectorState=d.collectors||{};
     document.getElementById("collectorRawTickState").innerHTML=collectorText(collectorState.rawTick);

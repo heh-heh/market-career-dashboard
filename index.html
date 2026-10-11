@@ -63,8 +63,11 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     </div>
     <div class="muted">연구 전용 · 2026 Final OOS 제외</div>
   </div>
+  <div id="collectionScheduler" class="mini" style="margin:10px 0">자동 전환 상태 확인 중...</div>
+  <details><summary>종목별 상세 상태 · 연구 다운로드</summary>
   <div style="margin-top:10px"><label class="mini">연구 데이터 연도 <select id="collection50Year"><option>2022</option><option>2023</option><option selected>2024</option><option>2025</option></select></label></div>
   <div id="collection50Symbols" class="bt-symbols" style="margin-top:12px"></div>
+  </details>
   <div class="mini" style="margin-top:10px">표시되는 저장량은 정규장 390봉 완전성 검증 결과가 아닙니다. 연도별 CSV 다운로드는 관리자 인증이 필요하며 연구·Codex 검증용입니다.</div>
 </div>
 <div class="card">
@@ -1122,7 +1125,13 @@ async function downloadCollection50(symbol){
    headers:{"Authorization":"Bearer "+token},cache:"no-store"
  });
  if(!res.ok){alert("다운로드 실패: "+res.status);return;}
- const blob=await res.blob(),url=URL.createObjectURL(blob);
+ const blob=await res.blob();
+ const hash=res.headers.get("X-Content-SHA256");
+ if(hash&&window.crypto?.subtle){
+  const actual=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",await blob.arrayBuffer()))).map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(actual!==hash)throw Error("다운로드 SHA256 불일치");
+ }
+ const url=URL.createObjectURL(blob);
  const a=document.createElement("a");
  a.href=url;a.download=symbol+"-"+year+"-research.csv.gz";
  document.body.appendChild(a);a.click();a.remove();
@@ -1140,15 +1149,18 @@ async function loadCollection50(){
   const response=await fetch(AWS_API_BASE+"/api/research/collection50/status?"+Date.now(),{cache:"no-store"});
   const data=await response.json();
   if(!response.ok||!data.ok)throw Error(data.error||"status unavailable");
+  const scheduler=document.getElementById("collectionScheduler"),c=data.scheduler||{};
+  if(scheduler)scheduler.textContent=(c.stale?"⚠ 상태 오래됨 · ":"")+"자동 전환 "+(c.automatic?"ON":"OFF")+" · "+(c.mode||"UNAVAILABLE")+" · 수집기 "+(c.collector||"없음")+" · ET "+(c.etTime||"-")+" · KST "+(c.kstTime||"-")+" · 다음 정규장 "+(c.openAt||"-")+" ~ "+(c.closeAt||"-")+" · "+(c.reason||"");
   const rows=Array.isArray(data.symbols)?data.symbols:[];
   const stored=rows.reduce((sum,r)=>sum+Number(r.stored||0),0);
-  summary.textContent="기록된 종목 "+rows.length+"/50 · 저장된 분봉 "+stored.toLocaleString()+"개 · 검증되지 않은 원시 수집 상태";
+  summary.textContent="기록된 종목 "+rows.length+"/50 · 현재 "+(data.currentSymbol||"-")+" · 저장된 분봉 "+stored.toLocaleString()+"개 · 검증되지 않은 원시 수집 상태";
   holder.innerHTML=rows.map(r=>{
    const label=r.status==="collection_pass_finished_unverified"?"수집 패스 종료 · 미검증":r.status==="error"?"오류":r.status==="collecting"?"수집 중":esc(r.status||"대기");
    return '<div class="bt-symbol"><b>'+esc(r.symbol)+'</b> <span class="mini">'+label+'</span>'+
     '<div class="mini">저장 '+Number(r.stored||0).toLocaleString()+'봉</div>'+
     '<div class="mini">'+esc(r.oldestTimestamp||"-")+' ~ '+esc(r.latestTimestamp||"-")+'</div>'+
-    '<button type="button" data-collection50-download="'+esc(r.symbol)+'" style="margin-top:6px">CSV 다운로드</button></div>';
+    '<div class="mini">RTH 분봉 커버리지 확인 '+Number(r.verifiedTradingDays||0)+'일 · 누락 '+Number(r.missingTradingDays||0)+'일 · REST '+Number(r.restRequests||0)+' · 429 '+Number(r.http429Count||0)+' · '+esc(r.errorCode||r.terminationReason||'')+'</div>'+
+    '<button type="button" data-collection50-download="'+esc(r.symbol)+'" '+(r.downloadAvailable?'':'disabled')+' style="margin-top:6px">CSV 다운로드 · 미검증</button></div>';
   }).join("")||'<div class="muted">수집 기록 없음 · 서버에 코드 배포 및 수집 실행 필요</div>';
  }catch(e){summary.textContent="수집 API 연결 실패: "+String(e.message||e);holder.textContent="";}
 }

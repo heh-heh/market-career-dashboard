@@ -20,7 +20,7 @@ from urllib.error import HTTPError
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from toss_rate_limit import wait_for_slot, group_for_path
+from toss_rate_limit import wait_for_slot, group_for_path, mark_rate_limited
 from toss_auth import get_token as shared_toss_token
 
 SECRETS = ROOT / "server_secrets.json"
@@ -33,10 +33,10 @@ ERROR_LOG = ROOT / "data" / "toss_errors.jsonl"
 FIELDS = ["timestamp", "open", "high", "low", "close", "volume", "currency"]
 
 
-def token(force=False):
+def token(force=False, rejected_token=""):
     # In broker mode clients need no copy/symlink of server_secrets.json.
     cfg = {} if os.environ.get("TOSS_TOKEN_SOCKET") else json.loads(SECRETS.read_text(encoding="utf-8"))
-    tok = shared_toss_token(cfg, force=force)
+    tok = shared_toss_token(cfg, force=force, rejected_token=rejected_token)
     if not tok:
         raise RuntimeError("Toss OAuth token을 발급받지 못했습니다.")
     return tok
@@ -50,14 +50,19 @@ def record_error(symbol, before, attempt, error, http_code=None, body=None):
         "before": before,
         "attempt": attempt,
         "httpCode": http_code,
-        "error": str(error),
-        "response": (body or "")[:1000],
+        "error": str(error) if str(error).replace("_", "").isalnum() and len(str(error)) <= 80 else "REQUEST_FAILED",
+        "response": "",  # Response/exception bodies may contain credentials; never persist them.
     }
     with ERROR_LOG.open("a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def fetch_page(tok, symbol, before=None, count=100, refresh_token=None, error_recorder=None):
+def fetch_page(tok, symbol, before=None, count=100, refresh_token=None, error_recorder=None, request_guard=None, request_observer=None, refresh_rejected_token=None):
+    # Once the operator deploys central ownership, older callers cannot bypass
+    # the regular-session/lease guard merely by omitting its optional argument.
+    from research_collection_scheduler import STATE_DIR, backfill_permitted
+    if request_guard is None and (STATE_DIR/"ownership.json").exists():
+        request_guard = lambda: backfill_permitted(STATE_DIR/"permit.json")
     log_error = error_recorder if error_recorder is not None else record_error
     q = {
         "symbol": symbol,
@@ -71,7 +76,14 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None, error_re
 
     for attempt in range(8):
         try:
-            wait_for_slot("MARKET_DATA_CHART")
+            if request_guard is not None and not request_guard():
+                raise RuntimeError("BACKFILL_REQUEST_BLOCKED")
+            if request_guard is None:
+                wait_for_slot("MARKET_DATA_CHART")
+            else:
+                wait_for_slot("MARKET_DATA_CHART", request_guard=request_guard)
+            if request_guard is not None and not request_guard():
+                raise RuntimeError("BACKFILL_REQUEST_BLOCKED")
             req = Request(
                 url,
                 headers={
@@ -79,6 +91,7 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None, error_re
                     "User-Agent": "market-career-dashboard/history-collector",
                 },
             )
+            if request_observer is not None: request_observer()
             with urlopen(req, timeout=20) as r:
                 return json.loads(r.read()).get("result", {})
         except HTTPError as e:
@@ -90,19 +103,36 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None, error_re
                     try:
                         retry_after = float(e.headers.get("Retry-After") or 0)
                     except Exception:
-                        pass
-                    delay = retry_after or min(30, 2 ** attempt)
-                    time.sleep(max(1.0, min(30.0, delay)))
+                        from email.utils import parsedate_to_datetime
+                        try:
+                            retry_after = max(0.0, parsedate_to_datetime(e.headers.get("Retry-After")).timestamp()-time.time())
+                        except (TypeError, ValueError): pass
+                    import math
+                    if not math.isfinite(retry_after): retry_after = 0.0
+                    delay = max(1.0, retry_after or min(30, 2 ** attempt))
+                    mark_rate_limited("MARKET_DATA_CHART", delay)
+                    if request_guard is not None and delay > 30:
+                        deferred = RuntimeError("RATE_LIMIT_RETRY_DEFERRED")
+                        deferred.retry_after = delay
+                        raise deferred
+                    # Never retry earlier than a server Retry-After value.
+                    if request_guard is not None:
+                        deadline = time.monotonic() + max(1.0, delay)
+                        while time.monotonic() < deadline:
+                            if not request_guard(): raise RuntimeError("BACKFILL_REQUEST_BLOCKED")
+                            time.sleep(min(0.25, deadline-time.monotonic()))
+                    else:
+                        time.sleep(max(1.0, delay))
                     continue
             if e.code == 401 and attempt < 2 and refresh_token is not None:
                 log_error(symbol, before, attempt, "HTTPError", e.code, body)
                 msg = body.lower()
                 if "token-revoked" in msg or "unauthorized" in msg or "invalid-token" in msg:
-                    tok = refresh_token()
+                    tok = refresh_rejected_token(tok) if refresh_rejected_token is not None else refresh_token()
                     time.sleep(0.5)
                     continue
             log_error(symbol, before, attempt, "HTTPError", e.code, body)
-            raise RuntimeError(f"Toss candles HTTP {e.code}: {body[:300]}")
+            raise RuntimeError(f"Toss candles HTTP {e.code}")
         except Exception as e:
             log_error(symbol, before, attempt, type(e).__name__, None, str(e))
             raise
@@ -440,8 +470,11 @@ def main():
     global PROGRESS, ERROR_LOG
     PROGRESS = out / "_collection_progress.json"
     ERROR_LOG = out / "_collection_errors.jsonl"
-    for s in selected:
-        collect(s, a.since, a.until, a.pages, a.sleep, a.batch_pages, a.batch_sleep, out_dir=out)
+    from research_collection_scheduler import exclusive_lock, STATE_DIR
+    if (STATE_DIR/"ownership.json").exists(): ap.error("CENTRAL_SCHEDULER_OWNS_BACKFILL")
+    with exclusive_lock():
+        for s in selected:
+            collect(s, a.since, a.until, a.pages, a.sleep, a.batch_pages, a.batch_sleep, out_dir=out)
 
 
 if __name__ == "__main__":

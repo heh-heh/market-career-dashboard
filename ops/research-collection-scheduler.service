@@ -1,0 +1,29 @@
+[Unit]
+Description=Exclusive Toss regular Tick / off-hours historical research scheduler
+After=network-online.target toss-token-broker.service
+Wants=network-online.target toss-token-broker.service
+Conflicts=collect-toss-ticks.service collect-expanded-universe.service
+RequiresMountsFor=/mnt/research/collection-50-v1
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/market-career-dashboard
+StateDirectory=market-career-dashboard/collection
+Environment=TOSS_RATE_LIMIT_FILE=/home/ubuntu/market-career-dashboard/data/.toss_api_rate.lock
+Environment=TOSS_TOKEN_SOCKET=/run/market-career-dashboard-toss/token.sock
+Environment=RESEARCH_COLLECTION_STATE_DIR=/var/lib/market-career-dashboard/collection
+Environment=RESEARCH_COLLECTION_WORKER_LOCK=/var/lib/market-career-dashboard/collection/worker.lock
+EnvironmentFile=/etc/market-career-dashboard/collection.env
+ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python research_collection_scheduler.py
+Restart=on-failure
+RestartSec=10
+KillMode=control-group
+TimeoutStopSec=180
+Nice=7
+UMask=0027
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
