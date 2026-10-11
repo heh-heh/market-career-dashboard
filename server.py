@@ -38,6 +38,22 @@ TRADING_LOCK=threading.Lock()
 LIVE_TRADER=LiveAutoTrader(ROOT)
 SIMPLE_PAPER=None
 SIMPLE_PAPER_LOCK=threading.Lock()
+RESEARCH_EXPORTER=None
+RESEARCH_EXPORT_LOCK=threading.Lock()
+
+def research_exporter():
+    global RESEARCH_EXPORTER
+    with RESEARCH_EXPORT_LOCK:
+        if RESEARCH_EXPORTER is None:
+            from research_export import ResearchExporter
+            RESEARCH_EXPORTER=ResearchExporter(ROOT, export_dir=os.getenv("RESEARCH_EXPORT_DIR","/home/ubuntu/research-exports"))
+        return RESEARCH_EXPORTER
+
+def shutil_copy_export(source,target):
+    while True:
+        chunk=source.read(1024*1024)
+        if not chunk: break
+        target.write(chunk)
 STORAGE_CACHE={"at":0.0,"value":{}}
 STORAGE_CACHE_LOCK=threading.Lock()
 
@@ -1574,6 +1590,70 @@ def start_realtime():
         print("realtime server stopped:",e,flush=True)
 
 class Handler(BaseHTTPRequestHandler):
+    def send_export_file(self,path,filename,content_type="application/zip"):
+        # Incremental transfer; no multi-GB BytesIO archive in the HTTP process.
+        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+        with os.fdopen(fd,"rb") as stream:
+            self.send_response(200)
+            self.send_header("Content-Type",content_type)
+            self.send_header("Content-Disposition",'attachment; filename="'+filename+'"')
+            self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
+            self.send_header("Access-Control-Expose-Headers","Content-Disposition")
+            self.send_header("Cache-Control","no-store")
+            self.send_header("X-Content-Type-Options","nosniff")
+            self.send_header("Content-Length",str(os.fstat(fd).st_size))
+            self.end_headers()
+            try: shutil_copy_export(stream,self.wfile)
+            except (BrokenPipeError,ConnectionResetError): pass
+
+    def research_export_get(self,path):
+        match=re.fullmatch(r"/api/research/export/jobs/([0-9a-f]{32})(/download)?",path)
+        qs=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        self.requestline=re.sub(r"([?&]ticket=)[^&\s]+",r"\1[REDACTED]",self.requestline)
+        if not authorized(self):
+            ticket=(qs.get("ticket") or [""])[0]
+            if not (match and match.group(2) and ticket and RESEARCH_EXPORTER is not None and RESEARCH_EXPORTER.consume_ticket(ticket,match.group(1))):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+        # A ticket is a 45-second single-archive capability, never an admin token.
+        try:
+            manager=research_exporter()
+            if path=="/api/research/export/catalog":
+                self.send_json({"ok":True,**manager.catalog()["public"]}); return
+            if path=="/api/research/export/summary":
+                fmt=(qs.get("format") or ["json"])[0]
+                if fmt not in ("json","csv"): raise ValueError("format must be json or csv")
+                raw=manager.summary(fmt)
+                self.send_response(200)
+                self.send_header("Content-Type","text/csv; charset=utf-8" if fmt=="csv" else "application/json; charset=utf-8")
+                self.send_header("Content-Disposition",'attachment; filename="evolution_research_summary.'+fmt+'"')
+                self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
+                self.send_header("Cache-Control","no-store")
+                self.send_header("Content-Length",str(len(raw))); self.end_headers(); self.wfile.write(raw); return
+            if match:
+                if match.group(2):
+                    source,name=manager.download(match.group(1)); self.send_export_file(source,name)
+                else: self.send_json({"ok":True,**manager.get(match.group(1))})
+                return
+            self.send_json({"ok":False,"error":"Unknown export endpoint"},404)
+        except FileNotFoundError as e: self.send_json({"ok":False,"error":str(e)},404)
+        except ValueError as e: self.send_json({"ok":False,"error":str(e)},409)
+        except Exception as e: self.send_json({"ok":False,"error":str(e)},503)
+
+    def research_export_post(self,path):
+        if not authorized(self):
+            self.send_json({"ok":False,"error":"unauthorized"},401); return
+        try:
+            manager=research_exporter()
+            if path=="/api/research/export/jobs":
+                self.send_json({"ok":True,**manager.create(self.read_json())},202); return
+            match=re.fullmatch(r"/api/research/export/jobs/([0-9a-f]{32})/ticket",path)
+            if match:
+                self.send_json({"ok":True,"downloadUrl":"/api/research/export/jobs/"+match.group(1)+"/download?ticket="+manager.ticket(match.group(1)),"expiresIn":45}); return
+            self.send_json({"ok":False,"error":"Unknown export endpoint"},404)
+        except FileNotFoundError as e: self.send_json({"ok":False,"error":str(e)},404)
+        except (ValueError,TypeError) as e: self.send_json({"ok":False,"error":str(e)},400)
+        except Exception as e: self.send_json({"ok":False,"error":str(e)},503)
+
     def send_json(self,obj,status=200):
         raw=json.dumps(obj,ensure_ascii=False).encode()
         self.send_response(status)
@@ -1596,6 +1676,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path.startswith("/api/research/export/"):
+            self.research_export_get(path); return
         if path=="/api/backtest/engines":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -2021,6 +2103,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path.startswith("/api/research/export/"):
+            self.research_export_post(path); return
         if path=="/api/backtest/start":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
