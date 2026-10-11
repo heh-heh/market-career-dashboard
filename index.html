@@ -188,6 +188,8 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div class="bt-grid" style="margin-top:10px">
     <div class="bt-stat"><div class="label">Validation Trades</div><div class="v" id="evolutionV0ValidationTrades">-</div></div>
     <div class="bt-stat"><div class="label">Source Population</div><div class="v" id="evolutionV0SourcePopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Selection Mode</div><div class="v" id="evolutionV0SelectionMode">-</div></div>
+    <div class="bt-stat"><div class="label">Shortlist</div><div class="v" id="evolutionV0Shortlist">-</div></div>
     <div class="bt-stat"><div class="label">Source Gen</div><div class="v" id="evolutionV0SourceGenerations">-</div></div>
     <div class="bt-stat"><div class="label">Population Lock</div><div class="v" id="evolutionV0PopulationLock">-</div></div>
   </div>
@@ -945,6 +947,8 @@ async function loadEvolutionMonitor(){
   set("evolutionV0ValidationMean",pct(d.meanValidationReturn));
   set("evolutionV0ValidationTrades",d.validationTotalTrades==null?"-":Number(d.validationTotalTrades).toLocaleString());
   set("evolutionV0SourcePopulation",d.sourcePopulation==null?"-":Number(d.sourcePopulation).toLocaleString());
+  set("evolutionV0SelectionMode",d.selectionMode||"-");
+  set("evolutionV0Shortlist",d.shortlistCount==null?"-":Number(d.shortlistCount).toLocaleString());
   set("evolutionV0SourceGenerations",d.sourceTrainGenerations==null?"-":Number(d.sourceTrainGenerations).toLocaleString());
   set("evolutionV0PopulationLock",d.evaluationMode==="FROZEN_VALIDATION"?(d.sourcePopulationVerified===false?"검증 실패":"LOCKED"):"-");
   set("evolutionV0GenVerdict",d.verdict||"-");
