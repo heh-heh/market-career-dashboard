@@ -227,6 +227,25 @@ def _safe_log_tail(path,lines=160,max_bytes=128*1024):
     except (OSError,ValueError):
         return {"text":"","updatedAt":None,"bytes":0}
 
+def _latest_completed_dry_run():
+    try:
+        folders=sorted(
+            (p for p in AUTONOMOUS_ROOT.glob("iteration-*") if p.is_dir() and not p.is_symlink()),
+            key=lambda p:p.name,
+            reverse=True,
+        )
+    except OSError:
+        return None
+    for folder in folders:
+        info=_safe_ai_json(folder/"experiment.json")
+        if info.get("state")=="completed" and info.get("dryRun") is True:
+            return {
+                "iteration":info.get("iteration"),
+                "candidateVersion":info.get("candidateVersion"),
+                "finishedAt":info.get("finishedAt"),
+            }
+    return None
+
 def autonomous_admin_status():
     from research.autonomous.monitor import status as autonomous_status
     AUTONOMOUS_ROOT.mkdir(parents=True,exist_ok=True)
@@ -249,6 +268,7 @@ def autonomous_admin_status():
                 "startedAt":stage.get("startedAt"),
                 "pid":(stage.get("identity") or {}).get("pid"),
             }
+    dry_run=_latest_completed_dry_run()
     return {
         **result,
         "current":{**current,**detail},
@@ -256,6 +276,8 @@ def autonomous_admin_status():
         "processes":processes,
         "pipeline":_autonomous_pipeline({**current,**detail}),
         "checkpoints":_autonomous_checkpoints(folder),
+        "dryRunReady":bool(dry_run),
+        "reviewedDryRun":dry_run,
         "manifestAvailable":AUTONOMOUS_MANIFEST.is_file(),
         "manifestPath":"research/v4_data_manifest.json" if AUTONOMOUS_MANIFEST.is_file() else None,
         "logAvailable":AUTONOMOUS_WEB_LOG.is_file(),
@@ -279,6 +301,8 @@ def start_autonomous_research(mode, provisional=False):
     with AUTONOMOUS_LAUNCH_LOCK:
         if _autonomous_processes():
             raise ValueError("AUTONOMOUS_ALREADY_RUNNING")
+        if mode=="run" and _latest_completed_dry_run() is None:
+            raise ValueError("DRY_RUN_REVIEW_REQUIRED")
         AUTONOMOUS_ROOT.mkdir(parents=True,exist_ok=True)
         try:
             os.chmod(AUTONOMOUS_ROOT,0o700)
