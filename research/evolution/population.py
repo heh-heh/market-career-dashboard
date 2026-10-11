@@ -34,7 +34,7 @@ def initial_population(config, rng, birth_date):
             for i in range(config.population_size)]
 
 
-def daily_evaluation(bot, account, day, config, *, update_lifetime=True):
+def daily_evaluation(bot, account, day, config, *, update_lifetime=True, mark_death=True):
     # A missed session exit cannot fabricate liquidation or become a profitable parent.
     valid = account.position is None
     pnl = account.cash-account.initial_capital if valid else None
@@ -49,7 +49,7 @@ def daily_evaluation(bot, account, day, config, *, update_lifetime=True):
         if valid:
             bot.lifetime_pnl += pnl
             bot.lifetime_equity = bot.lifetime_initial_capital+bot.lifetime_pnl
-        if survival == "DEAD":
+        if mark_death and survival == "DEAD":
             bot.death_date = day
     return dict(botId=bot.bot_id, date=day, survival=survival, reproductionEligible=survival == "SURVIVE",
                 evaluationValid=valid, dailyPnl=pnl, dailyReturn=ret, fitness=fitness,
@@ -60,6 +60,63 @@ def daily_evaluation(bot, account, day, config, *, update_lifetime=True):
                 averageHoldMinutes=sum(t["holdMinutes"] for t in account.trades)/len(account.trades) if account.trades else None,
                 lifetimeEquity=bot.lifetime_equity, cancellations=account.cancellations,
                 unresolvedPosition=account.position, failureReason=None if valid else "NO_OBSERVABLE_SESSION_EXIT")
+
+
+
+def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_death=False):
+    """Aggregate daily-reset accounts into one selection window.
+
+    Every daily account still starts from initial_capital. Selection uses the sum
+    of daily PnL and the mean of causal daily fitness values. Any INVALID day
+    makes the whole bot window INVALID so partial data cannot create a parent.
+    """
+    if not daily_batches:
+        return []
+    expected = len(daily_batches)
+    by_bot = {b.bot_id: [] for b in bots}
+    for batch in daily_batches:
+        for e in batch:
+            if e["botId"] in by_bot:
+                by_bot[e["botId"]].append(e)
+
+    result = []
+    for bot in bots:
+        rows = by_bot[bot.bot_id]
+        valid = len(rows) == expected and all(e["evaluationValid"] for e in rows)
+        pnl = sum(e["dailyPnl"] for e in rows) if valid else None
+        ret = pnl / config.initial_capital if valid else None
+        fitness = (sum(e["fitness"] for e in rows) / expected) if valid else None
+        survival = (
+            "SURVIVE" if pnl > config.epsilon
+            else "DEAD" if pnl < -config.epsilon
+            else "NEUTRAL"
+        ) if valid else "INVALID"
+        if complete and mark_death and survival == "DEAD":
+            bot.death_date = rows[-1]["date"]
+        trades = sum(e["trades"] for e in rows)
+        costs = sum(e["transactionCost"] for e in rows)
+        result.append(dict(
+            botId=bot.bot_id,
+            date=rows[-1]["date"] if rows else None,
+            survival=survival,
+            reproductionEligible=bool(complete and survival == "SURVIVE"),
+            evaluationValid=valid,
+            dailyPnl=pnl,          # compatibility alias used by reproduce()
+            dailyReturn=ret,       # compatibility alias; this is window cumulative return
+            fitness=fitness,
+            windowPnl=pnl,
+            windowReturn=ret,
+            windowSessions=expected,
+            windowComplete=bool(complete),
+            validDays=sum(bool(e["evaluationValid"]) for e in rows),
+            maxDrawdown=max((e["maxDrawdown"] for e in rows), default=0.0),
+            trades=trades,
+            transactionCost=costs,
+            turnover=sum(e["turnover"] for e in rows),
+            lifetimeEquity=bot.lifetime_equity,
+            failureReason=None if valid else "INVALID_SESSION_IN_EVALUATION_WINDOW",
+        ))
+    return result
 
 
 def reproduce(bots, evaluations, config, rng, generation, birth_date):
