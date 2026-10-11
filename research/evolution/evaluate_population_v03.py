@@ -57,10 +57,13 @@ def _latest_training_run(results_dir):
                 info = json.loads((d/"run.json").read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 continue
-            if info.get("phase") == "completed" and int(info.get("completedTrainGenerations") or 0) > 0:
+            if (info.get("phase") == "completed"
+                    and not info.get("smoke")
+                    and info.get("evaluationMode") != "FROZEN_VALIDATION"
+                    and int(info.get("completedTrainGenerations") or 0) > 0):
                 candidates.append(d)
     if not candidates:
-        raise ValueError("No completed training run with final_population.json found")
+        raise ValueError("No completed non-smoke training run with final_population.json found")
     return sorted(candidates, key=lambda p: p.name)[-1]
 
 
