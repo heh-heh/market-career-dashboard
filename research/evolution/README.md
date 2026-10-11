@@ -245,6 +245,31 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Structural anti-overtrading campaign (V0.5)
+
+V0.4 soft penalties did not reduce validation turnover, so V0.5 makes the next
+change structural instead of increasing penalty coefficients.
+
+V0.5 keeps the same causal features, execution costs and seven-session generation,
+but adds:
+
+- maximum 3 completed trades per bot per trading session
+- 30 minute cooldown after a completed exit before another entry
+- at least 4 profitable sessions out of 7 before a profitable bot can become a parent
+- a broader training horizon from 2022-01-03 through 2024-12-31
+- 2025 remains frozen validation
+- 2026 remains untouched final OOS
+
+The profile is `research/evolution/v05_structural_config.json`.
+
+```bash
+python research/evolution/run_v05_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --seed 42
+```
+
 ## Generalization fitness and campaign (V0.4)
 
 The V0.3 frozen validation showed strong negative association between validation
