@@ -136,6 +136,7 @@ def run(args):
         sourceTrainGenerations=source_info.get("completedTrainGenerations"),
         sourcePopulation=len(bots), population=len(bots), evaluatedPopulation=len(bots),
         nextPopulation=len(bots), adaptiveResources=False, resourceDecision="FROZEN_VALIDATION",
+        fitnessMode=source_info.get("fitnessMode") or config.fitness_mode,
         mutationCount=0, crossoverCount=0, parentPoolSize=0,
         dataMode=mode, dataOrigin=args.data_origin,
         performanceClaim="NOT_VALID_FOR_FINAL_PERFORMANCE_CLAIMS" if mode != "REVIEWED_DATA" or args.data_origin == "synthetic" else "RESEARCH_ONLY_NO_SIGNIFICANCE_CLAIM",
