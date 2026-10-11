@@ -394,7 +394,10 @@ def run(args):
                     "resourceMemoryPct", "resourceMemoryAvailableGb", "resourceSwapPct",
                     "resourceSwapUsedGb", "resourceSwapTotalGb", "resourceProcessRssMb",
                     "sessionRuntimeSeconds", "adaptiveResources", "nextPopulation",
-                    "safePopulation", "peakPopulation"):
+                    "safePopulation", "peakPopulation", "evaluationWindowSessions",
+                    "windowSessionsCompleted", "windowStartDate", "windowEndDate",
+                    "windowComplete", "bestWindowReturn", "meanWindowReturn",
+                    "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral"):
             if key in status:
                 final_status[key] = status[key]
         final_status["population"] = len(bots)
