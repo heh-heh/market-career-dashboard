@@ -58,6 +58,15 @@ def evaluate_day(bots, rows, opening, closing, symbols, config):
                     account.pending = dict(side="SELL", symbol=symbol, signalTimestamp=t.isoformat(), reason=reason)
                     decisions[reason] += 1
             elif not account.pending and not filled and t < cutoff-MINUTE:
+                # V0.5 structural anti-overtrading guard. These are execution
+                # constraints, not fitted signals: once the daily cap is reached,
+                # or the post-exit cooldown is active, no new BUY can be emitted.
+                if config.max_trades_per_session and len(account.trades) >= config.max_trades_per_session:
+                    continue
+                if config.entry_cooldown_minutes and account.trades:
+                    last_exit = datetime.fromisoformat(account.trades[-1]["exitTimestamp"])
+                    if (t-last_exit).total_seconds() < config.entry_cooldown_minutes*60:
+                        continue
                 valid = provider.valid[ti]
                 if not np.any(valid):
                     continue
