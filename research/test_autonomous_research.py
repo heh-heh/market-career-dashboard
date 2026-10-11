@@ -244,6 +244,40 @@ class AutonomousTests(unittest.TestCase):
             execute.return_value = {"state": "completed"}
             loop(self.config, resume=True, client=FakeClient())
             execute.assert_called_once()
+            iterations = registry.iterations()
+            self.assertEqual(len(iterations), 2)
+            dry = read_json(iterations[0] / "experiment.json")
+            actual = read_json(iterations[1] / "experiment.json")
+            self.assertEqual(dry["state"], "completed")
+            self.assertTrue(dry["dryRun"])
+            self.assertTrue(actual["dryRunReviewed"])
+            self.assertEqual(actual["reviewedDryRunIteration"], dry["iteration"])
+            self.assertTrue((iterations[1] / "plan.json").exists())
+
+    def test_resume_finds_completed_dry_run_behind_failed_attempt(self):
+        r = Registry(self.config.registry)
+        dry = r.create()
+        write_json(dry / "plan.json", {"candidateVersion":"v08","selectionDataYear":2024,
+                   "selectionRule":{"annualReturnAbove":0,"positiveQuarterCountAtLeast":3,"medianQuarterReturnAbove":0},
+                   "changedVariables":["shortlist_selection"],"periods":{"internal_holdout":["2024-01-02","2024-12-31"]},
+                   "researchOnly":True,"allowFinalOos":False,"expectedChangedFiles":["research/autonomous/candidates/v08.json"]})
+        for name,value in {
+            "source_manifest.json":{"cacheDirectory":str(self.config.registry/"cache"),"manifestHash":"x"},
+            "source_runs.json":{},"baseline_metrics.json":{},"quarterly_diagnostics.json":{"bots":[]},
+            "config.json":{},
+        }.items():
+            write_json(dry / name,value)
+        r.update(dry,"completed",dryRun=True,candidateVersion="v08",decision="DRY_RUN_ONLY")
+        failed = r.create()
+        r.update(failed,"failed",failureCode="RESEARCH_FAILURE")
+        with patch('research.autonomous.runner.execute_iteration', return_value={"state":"completed"}) as execute:
+            loop(self.config,resume=True)
+        execute.assert_called_once()
+        newest = r.iterations()[-1]
+        self.assertNotEqual(newest, failed)
+        info = read_json(newest/"experiment.json")
+        self.assertTrue(info["dryRunReviewed"])
+        self.assertEqual(info["reviewedDryRunIteration"], read_json(dry/"experiment.json")["iteration"])
 
     def test_failed_experiment_recovery(self):
         with patch('research.autonomous.runner.prepare_iteration', side_effect=ValueError('offline failure')):
