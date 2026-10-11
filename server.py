@@ -186,6 +186,7 @@ def _autonomous_checkpoints(folder):
         ("diagnostics","diagnostics.json"),
         ("comparison","comparison.json"),
         ("report","report.json"),
+        ("error traceback","error_traceback.log"),
     ]
     rows=[]
     for label,name in checks:
@@ -2539,7 +2540,14 @@ class Handler(BaseHTTPRequestHandler):
                     if logs:
                         stageName=logs[-1].name
                         stage=_safe_log_tail(logs[-1],lines=lines)
+                error_detail={"text":"","updatedAt":None,"bytes":0}
+                if folder is not None:
+                    error_detail=_safe_log_tail(folder/"error_traceback.log",lines=lines)
                 self.send_json({"ok":True,"launch":launch,"stage":stage,"stageName":stageName,
+                                "errorDetail":error_detail,
+                                "currentError":current.get("error"),
+                                "failureCode":current.get("failureCode"),
+                                "lastSuccessfulState":current.get("lastSuccessfulState"),
                                 "researchOnly":True,"finalOosGate":"CLOSED"})
             except (ValueError,OSError) as e:
                 self.send_json({"ok":False,"error":str(e)},400)
