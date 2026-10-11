@@ -6,11 +6,12 @@ from .experiment_registry import read_json
 
 
 class BaselineCandidateError(ValueError):
-    def __init__(self, code, *, stage=None, run_id=None, detail=None):
+    def __init__(self, code, *, stage=None, run_id=None, detail=None, facts=None):
         self.code = code
         self.stage = stage
         self.run_id = run_id
         self.detail = detail
+        self.facts = dict(facts or {})
         parts = [code]
         if stage: parts.append("stage=" + str(stage))
         if run_id: parts.append("runId=" + str(run_id))
@@ -18,7 +19,13 @@ class BaselineCandidateError(ValueError):
         super().__init__(": ".join(parts))
 
     def as_dict(self):
-        return {"code": self.code, "stage": self.stage, "runId": self.run_id, "detail": self.detail}
+        return {
+            "code": self.code,
+            "stage": self.stage,
+            "runId": self.run_id,
+            "detail": self.detail,
+            "facts": self.facts,
+        }
 
 
 def validation_metrics(summary, population, holdout):
@@ -93,9 +100,20 @@ def identify_baseline(runs):
                                          stage=purpose, run_id=run_id)
         missing = obj.get("missingSessions") or []
         if missing or obj.get("resultsValid") is False:
-            detail = "missingSessions=" + str(len(missing)) + ", resultsValid=" + str(obj.get("resultsValid"))
-            raise BaselineCandidateError("BASELINE_INCOMPLETE_OR_INVALID",
-                                         stage=purpose, run_id=run_id, detail=detail)
+            raise BaselineCandidateError(
+                "BASELINE_INCOMPLETE_OR_INVALID",
+                stage=purpose,
+                run_id=run_id,
+                detail="baseline completeness check failed",
+                facts={
+                    "missingCount":len(missing),
+                    "missingDates":[str(x) for x in missing[:40]],
+                    "missingDatesTruncated":len(missing)>40,
+                    "resultsValid":obj.get("resultsValid"),
+                    "completedCount":obj.get("completedSessions"),
+                    "requestedCount":obj.get("requestedSessions"),
+                },
+            )
     if train_info.get("config") != short_info.get("config"):
         raise BaselineCandidateError("BASELINE_SHORTLIST_CONFIG_MISMATCH",
                                      stage="shortlist", run_id=short_info.get("runId"))
