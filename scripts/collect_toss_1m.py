@@ -419,8 +419,8 @@ def collect(symbol, since, until, pages, sleep_s, batch_pages, batch_sleep, out_
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--symbols", default=",".join(DEFAULT_SYMBOLS))
-    ap.add_argument("--since", default="2021-01-01T00:00:00+00:00")
-    ap.add_argument("--until", default=DEFAULT_UNTIL)
+    ap.add_argument("--since", default="2000-01-01T00:00:00+00:00")
+    ap.add_argument("--until", default="2025-12-31T23:59:59+00:00")
     ap.add_argument("--pages", type=int, default=1000000)
     ap.add_argument("--out-dir", required=True, help="Independent research output directory")
     ap.add_argument("--sleep", type=float, default=0.5)
