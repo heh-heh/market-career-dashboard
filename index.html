@@ -168,6 +168,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div class="label" style="margin-top:12px">Frozen Validation</div>
   <div class="bt-grid" style="margin-top:8px">
     <div class="bt-stat"><div class="label">Run Mode</div><div class="v" id="evolutionV0EvalMode">-</div></div>
+    <div class="bt-stat"><div class="label">Fitness</div><div class="v" id="evolutionV0FitnessMode">-</div></div>
     <div class="bt-stat"><div class="label">Source Train</div><div class="v" id="evolutionV0SourceTrain">-</div></div>
     <div class="bt-stat"><div class="label">Validation Best</div><div class="v" id="evolutionV0ValidationBest">-</div></div>
     <div class="bt-stat"><div class="label">Validation Mean</div><div class="v" id="evolutionV0ValidationMean">-</div></div>
@@ -920,6 +921,7 @@ async function loadEvolutionMonitor(){
   set("evolutionV0MeanWindow",pct(d.meanWindowReturn));
   set("evolutionV0WindowState",d.evaluationMode==="FROZEN_VALIDATION"?"동결 검증":(d.windowComplete?"세대 교체 완료":(d.split==="train"?"평가 중":"동결")));
   set("evolutionV0EvalMode",d.evaluationMode==="FROZEN_VALIDATION"?"FROZEN VALIDATION":"TRAIN / RESEARCH");
+  set("evolutionV0FitnessMode",d.fitnessMode||(d.config&&d.config.fitness_mode)||"-");
   set("evolutionV0SourceTrain",d.sourceTrainFrom?((d.sourceTrainFrom||"-")+" → "+(d.sourceTrainTo||"-")):"-");
   set("evolutionV0ValidationBest",pct(d.bestValidationReturn));
   set("evolutionV0ValidationMean",pct(d.meanValidationReturn));
