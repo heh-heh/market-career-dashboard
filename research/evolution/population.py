@@ -85,7 +85,41 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
         valid = len(rows) == expected and all(e["evaluationValid"] for e in rows)
         pnl = sum(e["dailyPnl"] for e in rows) if valid else None
         ret = pnl / config.initial_capital if valid else None
-        fitness = (sum(e["fitness"] for e in rows) / expected) if valid else None
+        daily_returns = [e["dailyReturn"] for e in rows] if valid else []
+        trades = sum(e["trades"] for e in rows)
+        costs = sum(e["transactionCost"] for e in rows)
+        trades_per_session = trades / expected if expected else 0.0
+        losing_sessions = sum(r < 0 for r in daily_returns)
+        profitable_sessions = sum(r > 0 for r in daily_returns)
+        neutral_sessions = sum(abs(r) <= config.epsilon / config.initial_capital for r in daily_returns)
+        losing_ratio = losing_sessions / expected if expected else 0.0
+        return_volatility = (
+            math.sqrt(sum((r - sum(daily_returns)/len(daily_returns))**2 for r in daily_returns)/len(daily_returns))
+            if daily_returns else 0.0
+        )
+        max_daily_drawdown = max((e["maxDrawdown"] for e in rows), default=0.0)
+        if valid and config.fitness_mode == "v04_generalization":
+            cost_ratio = costs / config.initial_capital
+            excess_trades_per_session = max(0.0, trades_per_session - config.free_trade_count)
+            fitness_components = {
+                "windowReturn": ret,
+                "drawdownPenalty": config.drawdown_penalty * max_daily_drawdown,
+                "costPenalty": config.transaction_cost_penalty * cost_ratio,
+                "tradingPenalty": config.excessive_trading_penalty * excess_trades_per_session,
+                "losingSessionPenalty": config.losing_session_penalty * losing_ratio,
+                "volatilityPenalty": config.return_volatility_penalty * return_volatility,
+            }
+            fitness = (
+                fitness_components["windowReturn"]
+                - fitness_components["drawdownPenalty"]
+                - fitness_components["costPenalty"]
+                - fitness_components["tradingPenalty"]
+                - fitness_components["losingSessionPenalty"]
+                - fitness_components["volatilityPenalty"]
+            )
+        else:
+            fitness_components = None
+            fitness = (sum(e["fitness"] for e in rows) / expected) if valid else None
         survival = (
             "SURVIVE" if pnl > config.epsilon
             else "DEAD" if pnl < -config.epsilon
@@ -93,8 +127,6 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
         ) if valid else "INVALID"
         if complete and mark_death and survival == "DEAD":
             bot.death_date = rows[-1]["date"]
-        trades = sum(e["trades"] for e in rows)
-        costs = sum(e["transactionCost"] for e in rows)
         result.append(dict(
             botId=bot.bot_id,
             date=rows[-1]["date"] if rows else None,
@@ -109,9 +141,18 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             windowSessions=expected,
             windowComplete=bool(complete),
             validDays=sum(bool(e["evaluationValid"]) for e in rows),
-            maxDrawdown=max((e["maxDrawdown"] for e in rows), default=0.0),
+            maxDrawdown=max_daily_drawdown,
             trades=trades,
+            tradesPerSession=trades_per_session,
             transactionCost=costs,
+            costRatio=(costs/config.initial_capital) if valid else None,
+            profitableSessions=profitable_sessions,
+            losingSessions=losing_sessions,
+            neutralSessions=neutral_sessions,
+            losingSessionRatio=losing_ratio,
+            returnVolatility=return_volatility,
+            fitnessMode=config.fitness_mode,
+            fitnessComponents=fitness_components,
             turnover=sum(e["turnover"] for e in rows),
             lifetimeEquity=bot.lifetime_equity,
             failureReason=None if valid else "INVALID_SESSION_IN_EVALUATION_WINDOW",
