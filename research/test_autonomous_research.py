@@ -474,7 +474,7 @@ class AutonomousTests(unittest.TestCase):
 
         with self.assertRaisesRegex(
             ValueError,
-            r"BASELINE_INCOMPLETE_OR_INVALID: stage=development_validation: runId=dev: missingSessions=1, resultsValid=False",
+            r"BASELINE_INCOMPLETE_OR_INVALID: stage=development_validation: runId=dev: baseline completeness check failed",
         ):
             identify_baseline(discover_runs(bad))
 
