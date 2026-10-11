@@ -19,7 +19,8 @@ LOCK = Path(f"/tmp/market-career-dashboard-toss-token-{_UID}.lock")
 
 def broker_token(socket_path: str, force: bool = False, rejected_token: str = "") -> str:
     """Retrieve a shared token; never fall back to independent minting on failure."""
-    request = json.dumps({"force": force, "rejected_token": rejected_token}).encode("utf-8") + b"\n"
+    request = json.dumps({"force": force, "rejected_token": rejected_token}).encode("utf-8") + b"
+"
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
         sock.settimeout(15)
         sock.connect(socket_path)
@@ -54,7 +55,11 @@ def get_token(cfg: dict, force: bool = False, *, rejected_token: str = "") -> st
                 token = str(data.get("access_token") or "")
                 expires_at = float(data.get("expires_at") or 0)
                 issued_at = float(data.get("issued_at") or 0)
-                if token and now < expires_at - 60 and (\n                    (rejected_token and token != rejected_token) or\n                    (not force and not rejected_token) or\n                    (force and now - issued_at < 10)\n                ):
+                if token and now < expires_at - 60 and (
+                    (rejected_token and token != rejected_token) or
+                    (not force and not rejected_token) or
+                    (force and now - issued_at < 10)
+                ):
                     return token
             except Exception:
                 pass
