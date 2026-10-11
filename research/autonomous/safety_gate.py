@@ -5,6 +5,28 @@ import shutil
 import time
 import re
 from pathlib import Path
+import os
+
+
+def api_feature_gate():
+    """Local CLI obeys the same persistent operational switches as the backend."""
+    from .experiment_registry import read_json
+    path=Path(os.getenv("API_FEATURES_FILE","/home/ubuntu/.market-career-dashboard/api_features.json"))
+    if not path.exists() and not path.is_symlink():
+        return  # Same fresh-install default as server; no settings persisted yet.
+    try:
+        raw=read_json(path)
+        features=raw.get("features",raw)
+        if not isinstance(features,dict):
+            raise ValueError("Invalid feature settings")
+        for name in ("autonomous_ai","research_export"):
+            if name in features and not isinstance(features[name],bool):
+                raise ValueError("Invalid feature setting")
+    except (OSError,ValueError,AttributeError):
+        raise ValueError("API_FEATURE_SETTINGS_INVALID: research blocked fail-closed") from None
+    for name in ("autonomous_ai","research_export"):
+        if features.get(name) is False:
+            raise ValueError("API_DEPENDENCY_DISABLED: dependency="+name)
 
 
 def data_path_gate(path):
@@ -50,6 +72,7 @@ class ResourcePauseError(ValueError):
     def __init__(self, facts):
         self.facts=dict(facts or {})
         reason=self.facts.get("reason") or "RESOURCE_PRESSURE"
+        self.code=reason
         msg=(
             "PAUSE_NEW_EXPERIMENT: reason="+str(reason)+
             " pressure="+str(self.facts.get("resourcePressure"))+
@@ -63,14 +86,17 @@ class ResourcePauseError(ValueError):
 
 
 def resource_gate(config, snapshot=None, disk=None, expected_bytes=0, *, soft_wait_seconds=30.0,
-                  sample_interval_seconds=2.0):
+                  sample_interval_seconds=2.0, observer=None):
     from research.evolution.config import Config
     from research.evolution.resource import sample_resources, decide_population
 
     explicit_snapshot = snapshot is not None
     live_disk = disk is None
+    samples = 0
 
     def evaluate(current_snapshot, current_disk):
+        nonlocal samples
+        samples += 1
         decision = decide_population(20, current_snapshot, Config(), enabled=True)
         reserve = max(config.min_free_bytes, int(current_disk.total * config.disk_reserve_fraction))
         required = reserve + expected_bytes
@@ -89,6 +115,7 @@ def resource_gate(config, snapshot=None, disk=None, expected_bytes=0, *, soft_wa
             "expectedBytes": int(expected_bytes),
             "diskFreeGb": round(current_disk.free / (1024**3), 2),
             "requiredFreeGb": round(required / (1024**3), 2),
+            "samples":samples, "diskPath":str(config.registry),
         }
         if current_disk.free < required:
             facts["reason"] = "DISK_RESERVE"
@@ -98,6 +125,8 @@ def resource_gate(config, snapshot=None, disk=None, expected_bytes=0, *, soft_wa
             facts["reason"] = "SOFT_RESOURCE_PRESSURE"
         else:
             facts["reason"] = "NORMAL"
+        if observer:
+            observer(facts)
         return facts
 
     if snapshot is None:
@@ -119,20 +148,19 @@ def resource_gate(config, snapshot=None, disk=None, expected_bytes=0, *, soft_wa
         raise ResourcePauseError(facts)
 
     deadline = time.monotonic() + max(0.0, float(soft_wait_seconds))
-    samples = 1
     while time.monotonic() < deadline:
         time.sleep(max(0.1, min(float(sample_interval_seconds), 5.0)))
         snapshot = sample_resources()
         if live_disk:
             disk = shutil.disk_usage(config.registry)
         facts = evaluate(snapshot, disk)
-        samples += 1
-        facts["samples"] = samples
         if facts["reason"] == "NORMAL":
             return {"resources": snapshot, **facts}
         if facts["reason"] in {"DISK_RESERVE", "HARD_RESOURCE_PRESSURE"}:
             raise ResourcePauseError(facts)
     facts["reason"] = "SOFT_RESOURCE_PRESSURE_TIMEOUT"
+    if observer:
+        observer(facts)
     raise ResourcePauseError(facts)
 
 

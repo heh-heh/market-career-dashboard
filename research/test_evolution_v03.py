@@ -69,6 +69,8 @@ class FrozenPopulationTests(unittest.TestCase):
             self.assertEqual(info["evaluationMode"],"FROZEN_VALIDATION")
             self.assertEqual(info["sourceRunId"],"source-train")
             self.assertTrue(info["sourcePopulationVerified"])
+            self.assertTrue(info["resultsValid"])
+            self.assertEqual(info["sessionCoverage"]["incompleteSessions"],0)
             self.assertEqual(state["mutationCount"],0)
             self.assertEqual(state["crossoverCount"],0)
             self.assertEqual(state["parentPoolSize"],0)

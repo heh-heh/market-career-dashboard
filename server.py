@@ -105,12 +105,16 @@ def _load_api_feature_state():
         if API_FEATURES_FILE.is_file():
             raw=json.loads(API_FEATURES_FILE.read_text(encoding="utf-8"))
             values=raw.get("features",raw) if isinstance(raw,dict) else {}
+            if not isinstance(raw,dict) or not isinstance(values,dict) or any(k in state and not isinstance(v,bool) for k,v in values.items()):
+                raise ValueError("Invalid API feature settings schema")
             if isinstance(values,dict):
                 for name,value in values.items():
                     if name in state and isinstance(value,bool):
                         state[name]=value
     except Exception as e:
         print("WARNING: API feature settings load failed:",e,flush=True)
+        state["live_trading"]=False
+        state["paper_trading"]=False
     return state
 
 API_FEATURE_STATE=_load_api_feature_state()
@@ -175,7 +179,7 @@ def api_feature_requirements(path,method):
         return ["live_trading"]
     if path in {"/api/admin/ai/start","/api/admin/ai/rebuild-baseline"}:
         return ["autonomous_ai"] + (["research_export"] if path.endswith("/start") else [])
-    if path in {"/api/ticks/status","/api/research/v4/audit/status","/api/research/v4/status",
+    if path in {"/api/ticks/status","/api/ticks/view","/api/research/v4/audit/status","/api/research/v4/status",
                 "/api/research/evolution/status","/api/research/autonomous/status"}:
         return ["research_monitors"]
     if path in {"/api/quotes","/api/realtime"}:
@@ -190,6 +194,11 @@ def disabled_api_feature(path,method):
             return name
     return None
 
+def api_disabled_response(path, feature):
+    if path=="/api/admin/ai/start" and feature=="research_export":
+        return {"ok":False,"error":"DEPENDENCY_DISABLED","dependency":feature,"feature":feature}
+    return {"ok":False,"error":"API_DISABLED","feature":feature,"label":API_FEATURE_DEFS[feature]["label"]}
+
 def _api_feature_side_effects(name,enabled):
     actions=[]
     if enabled:
@@ -197,10 +206,14 @@ def _api_feature_side_effects(name,enabled):
     if name=="live_trading":
         try:
             LIVE_TRADER.disarm()
-            LIVE_TRADER.set_engine(False)
-            actions.append("live trader disarmed and engine disabled")
+            actions.append("live trader disarmed")
         except Exception as e:
             actions.append("live trader fail-closed warning: "+str(e))
+        try:
+            LIVE_TRADER.set_engine(False)
+            actions.append("live trader engine disabled")
+        except Exception as e:
+            actions.append("live trader engine disable warning: "+str(e))
         with TRADING_LOCK:
             TRADING_STATE["live_auto_enabled"]=False
             TRADING_STATE["live_armed"]=False
@@ -390,6 +403,8 @@ def v07_rebuild_status():
     }
 
 def start_v07_baseline_rebuild():
+    if not api_feature_enabled("autonomous_ai"):
+        raise ValueError("API_DEPENDENCY_DISABLED: dependency=autonomous_ai")
     with V07_REBUILD_LOCK:
         if _autonomous_processes():
             raise ValueError("AUTONOMOUS_RESEARCH_RUNNING")
@@ -598,9 +613,12 @@ def autonomous_admin_status():
         for key in ("error","failureCode","startedAt","updatedAt","finishedAt","decision","dryRun",
                     "dryRunReviewed","selectedCandidates","trainingProgress","holdoutProgress",
                     "validationProgress","positiveBots","validationMean","validationMedian","avgTrades",
-                    "baselineRunId","baselineCandidates","baselineRejected","resourceGuard"):
+                    "baselineRunId","baselineCandidates","baselineRejected","resourceGuard","failureFacts","lastSuccessfulState"):
             if key in experiment:
                 detail[key]=experiment.get(key)
+        guard=_safe_ai_json(folder/"resource_guard.json")
+        if guard:
+            detail["resourceGuard"]=guard
         stage=_safe_ai_json(folder/"stage_process.json")
         if stage:
             detail["validationStage"]={
@@ -619,6 +637,7 @@ def autonomous_admin_status():
                 "rejected":selection.get("rejected") or [],
             }
     dry_run=_latest_completed_dry_run()
+    from research.autonomous.storage import research_storage
     return {
         **result,
         "current":{**current,**detail},
@@ -633,6 +652,8 @@ def autonomous_admin_status():
         "logAvailable":AUTONOMOUS_WEB_LOG.is_file(),
         "finalOosGate":"CLOSED",
         "researchOnly":True,
+        "storage":research_storage(AUTONOMOUS_ROOT,ROOT),
+        "apiFeatures":api_feature_snapshot(),
         "baselineRebuild":v07_rebuild_status(),
         "serverTime":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
     }
@@ -644,6 +665,9 @@ def _issue_autonomous_session(ttl=43200):
     return value
 
 def start_autonomous_research(mode, provisional=False):
+    for feature in ("autonomous_ai","research_export"):
+        if not api_feature_enabled(feature):
+            raise ValueError("API_DEPENDENCY_DISABLED: dependency="+feature)
     mode=str(mode or "").strip().lower()
     if mode not in {"dry-run","run"}:
         raise ValueError("mode must be dry-run or run")
@@ -1033,11 +1057,12 @@ def storage_status():
         if STORAGE_CACHE["value"] and now-STORAGE_CACHE["at"]<15:
             return dict(STORAGE_CACHE["value"])
     try:
-        st=os.statvfs(str(ROOT))
+        # Historical data may be bind-mounted onto a different EBS filesystem.
+        data_dir=ROOT/"data"/"toss_1m"
+        st=os.statvfs(str(data_dir if data_dir.exists() else ROOT))
         total=int(st.f_blocks*st.f_frsize)
         free=int(st.f_bavail*st.f_frsize)
         used=max(0,total-free)
-        data_dir=ROOT/"data"/"toss_1m"
         data_bytes=0
         file_count=0
         if data_dir.exists():
@@ -2500,8 +2525,7 @@ class Handler(BaseHTTPRequestHandler):
             }); return
         disabled=disabled_api_feature(path,"GET")
         if disabled:
-            meta=API_FEATURE_DEFS[disabled]
-            self.send_json({"ok":False,"error":"API_DISABLED","feature":disabled,"label":meta["label"]},503); return
+            self.send_json(api_disabled_response(path,disabled),503); return
         if path.startswith("/api/research/export/"):
             self.research_export_get(path); return
         if path=="/api/backtest/engines":
@@ -3004,8 +3028,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":False,"error":"API feature settings write failed: "+str(e)},503); return
         disabled=disabled_api_feature(path,"POST")
         if disabled:
-            meta=API_FEATURE_DEFS[disabled]
-            self.send_json({"ok":False,"error":"API_DISABLED","feature":disabled,"label":meta["label"]},503); return
+            self.send_json(api_disabled_response(path,disabled),503); return
         if path.startswith("/api/research/export/"):
             self.research_export_post(path); return
         if path=="/api/admin/ai/rebuild-baseline":

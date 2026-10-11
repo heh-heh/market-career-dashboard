@@ -4,6 +4,7 @@ from pathlib import Path
 import statistics
 
 from research.backtest_v4_strategies import exchange_sessions
+from research.evolution.completeness import completeness_facts
 from .experiment_registry import read_json, write_json
 from .safety_gate import period_gate
 
@@ -21,6 +22,9 @@ def quarterly_metrics(training, holdout):
     if info.get("sourcePopulationVerified") is not True or info.get("inputHashesVerified") is not True:
         raise ValueError("UNVERIFIED_HOLDOUT")
     expected = set(exchange_sessions(info["fromDate"], info["toDate"]))
+    cause=completeness_facts(info,summary)["rootCause"]
+    if cause:
+        raise ValueError(cause+": quarterly selection requires complete internal holdout")
     if summary["missingSessions"] or summary["sessionsProcessed"] != len(expected) or summary["sessionsRequested"] != len(expected):
         raise ValueError("INCOMPLETE_INTERNAL_HOLDOUT")
     population = read_json(Path(training) / "final_population.json")

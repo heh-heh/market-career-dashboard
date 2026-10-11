@@ -40,18 +40,12 @@ jobs:
       - name: Test paper engines
         run: |
           python -m compileall -q research/autonomous
-          python -m unittest research.test_autonomous_research
-          python -m unittest research.test_simple_momentum_v1 research.test_simple_momentum_api research.test_backtest_simple_v1 research.test_backtest_engines_api research.test_backtest_multistrategy_streaming research.test_run_v4_sequence research.test_collect_toss_ticks research.test_intraday_v4 research.test_build_v4_data_manifest research.test_v4_clock_context research.test_v4_direction_context research.test_v4_revalidation research.test_v4_integration_ready research.test_evolution_v0 research.test_evolution_resource research.test_evolution_v03 research.test_evolution_validation_diagnostics research.test_evolution_campaigns research.test_evolution_v07 research.test_research_export
+          python -m unittest discover -s research -p 'test_*.py'
       - name: Smoke-test admin integration
         run: |
-          node research/test_admin_backtest_smoke.cjs
-          node research/test_admin_paper_smoke.cjs
-          node research/test_admin_ai_smoke.cjs
-          node research/test_admin_ops_smoke.cjs
-          node research/test_data_collection_smoke.cjs
-          node research/test_evolution_monitor_smoke.cjs
-          node research/test_research_export_smoke.cjs
-          node research/test_autonomous_monitor_smoke.cjs
+          for test in research/test_*_smoke.cjs; do
+            node "$test"
+          done
       - name: Smoke-test feature and scoring engine
         run: |
           python - <<'PY'

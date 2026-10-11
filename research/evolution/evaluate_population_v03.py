@@ -23,6 +23,7 @@ from research.backtest_intraday_v4 import atomic_json, day_stream
 from research.backtest_v4_strategies import exchange_sessions, file_sha256
 from research.evolution import RESEARCH_ONLY, VERSION
 from research.evolution.config import Config
+from research.evolution.completeness import SessionCoverage
 from research.evolution.engine import evaluate_day
 from research.evolution.features import BASE_FEATURES, POLICY_FEATURES
 from research.evolution.population import daily_evaluation, load_population_records
@@ -165,6 +166,7 @@ def run(args):
 
     ledger = {b.bot_id: dict(validDays=0, invalidDays=0, pnlUsd=0.0, trades=0, transactionCost=0.0) for b in bots}
     processed = []
+    coverage = SessionCoverage(paths)
     original_hash = source_hash
     try:
         for day, rows in day_stream(paths, manifest):
@@ -173,6 +175,7 @@ def run(args):
             if day not in calendar:
                 continue
             opening, closing = calendar[day]
+            coverage.observe(day, rows, opening, closing)
             accounts, diagnostics = evaluate_day(bots, rows, opening, closing, symbols, config)
             evaluations = [daily_evaluation(b,a,day,config,update_lifetime=False,mark_death=False) for b,a in zip(bots,accounts)]
             for e in evaluations:
@@ -248,14 +251,17 @@ def run(args):
                 pnlUsd=x["pnlUsd"], validationReturn=x["pnlUsd"]/config.initial_capital,
                 transactionCost=x["transactionCost"],
             ))
+        results_valid = not missing and coverage.incomplete == 0
         atomic_json(directory/"validation_summary.json", dict(
             sourceRunId=run_info["sourceRunId"], sourcePopulationHash=source_hash,
             sessionsProcessed=len(processed), sessionsRequested=len(calendar), missingSessions=missing,
             population=len(bots), bots=per_bot,
+            resultsValid=results_valid, sessionCoverage=coverage.snapshot(),
         ))
         run_info.update(
             phase="completed", completedSessions=len(processed), missingSessions=missing,
             inputHashesVerified=True, sourcePopulationVerified=True,
+            resultsValid=results_valid, sessionCoverage=coverage.snapshot(),
             runtimeSeconds=time.perf_counter()-started, finishedAt=datetime.now(timezone.utc).isoformat(),
         )
         final_status = dict(status)

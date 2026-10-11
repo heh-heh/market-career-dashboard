@@ -96,6 +96,8 @@ class Registry:
         if folder.parent != self.root or folder not in self.iterations():
             raise ValueError("Iteration outside registry")
         value = read_json(folder / "experiment.json")
+        if value.get("state") == "completed" and value.get("dryRun") is True:
+            raise ValueError("COMPLETED_DRY_RUN_IMMUTABLE: create a separate actual iteration")
         value.update(fields, state=state, updatedAt=utc(), researchOnly=True, finalOosGate="CLOSED")
         write_json(folder / "experiment.json", value)
         write_json(self.root / "status.json", value)

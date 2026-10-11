@@ -9,6 +9,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+import zipfile
 
 from .artifact_reader import extract_verified, verify_cache, sha256
 from .experiment_registry import read_json, write_json
@@ -62,7 +63,14 @@ class ExportClient:
         try:
             return self.opener.open(req, timeout=60)
         except urllib.error.HTTPError as exc:
-            # Never persist server response bodies/URLs: these may contain secrets.
+            # Allow only a known disabled-feature enum, never a raw response body.
+            if exc.code == 503:
+                try:
+                    body=json.loads(exc.read(4096))
+                    if body.get("error") in {"API_DISABLED","DEPENDENCY_DISABLED"} and body.get("feature",body.get("dependency")) == "research_export":
+                        raise ValueError("API_DEPENDENCY_DISABLED: dependency=research_export")
+                except (json.JSONDecodeError, UnicodeDecodeError, TypeError, AttributeError):
+                    pass
             raise ValueError(f"EXPORT_HTTP_{exc.code}") from None
         except urllib.error.URLError:
             raise ValueError("EXPORT_NETWORK_ERROR") from None
@@ -145,7 +153,7 @@ class ExportClient:
             raise ValueError("Invalid/oversized export")
         from .safety_gate import resource_gate
         working_set = extraction_disk_reserve(job, self.config)
-        resource_gate(self.config, expected_bytes=working_set)
+        resource_gate(self.config, expected_bytes=working_set, observer=getattr(self,"resource_observer",None))
         print(json.dumps({
             "event":"export_disk_guard",
             "jobId":job_id,
@@ -172,6 +180,14 @@ class ExportClient:
                     next_report+=16*1024*1024
         if size != expected:
             raise ValueError("Incomplete archive download")
+        # Server estimates are not a substitute for the ZIP's actual decoded size.
+        # Check space again on the cache filesystem before any extraction writes.
+        with zipfile.ZipFile(path) as archive:
+            decoded=sum(entry.file_size for entry in archive.infolist())
+        if decoded > self.config.max_extracted_bytes:
+            raise ValueError("Archive exceeds extraction limit")
+        actual_set=extraction_disk_reserve({"archiveBytes":size,"bytesProcessed":decoded},self.config)
+        resource_gate(self.config, expected_bytes=actual_set, observer=getattr(self,"resource_observer",None))
         folder, digest = extract_verified(path, cache, self.config.max_extracted_bytes)
         manifest = verify_cache(folder)
         if manifest.get("type") != export_type or manifest.get("selection", {}).get("researchOnly") is not True or sorted(manifest.get("selection", {}).get("runIds", [])) != sorted(ids):

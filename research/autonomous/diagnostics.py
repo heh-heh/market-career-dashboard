@@ -3,6 +3,7 @@ import statistics
 
 from research.evolution.analyze_validation_v04 import _spearman, _pearson
 from .experiment_registry import read_json
+from research.evolution.completeness import completeness_facts
 
 
 class BaselineCandidateError(ValueError):
@@ -25,10 +26,13 @@ class BaselineCandidateError(ValueError):
             "runId": self.run_id,
             "detail": self.detail,
             "facts": self.facts,
+            **self.facts,
         }
 
 
 def validation_metrics(summary, population, holdout):
+    if summary.get("resultsValid") is False or (summary.get("sessionCoverage") or {}).get("incompleteSessions",0):
+        raise ValueError("BASELINE_RESULTS_INVALID: incomplete validation coverage")
     train = {r["bot_id"]: r for r in population}
     hold = {r["botId"]: r for r in holdout["bots"]}
     if len(train) != len(population) or len(hold) != len(holdout["bots"]) or len({r["botId"] for r in summary["bots"]}) != len(summary["bots"]):
@@ -42,6 +46,8 @@ def validation_metrics(summary, population, holdout):
         if row["invalidDays"] == 0 and row["validDays"] == summary["sessionsRequested"] and not summary["missingSessions"]:
             valid.append(row)
     values = [r["validationReturn"] for r in valid]
+    if not values:
+        raise ValueError("No mechanically valid bots with complete evaluation days")
     trades = [r["trades"] for r in valid]
     costs = [r["transactionCost"] for r in valid]
     train_values = [train[r["botId"]]["lifetime_return"] for r in valid]
@@ -75,7 +81,7 @@ def identify_baseline(runs):
     by_id = {}
     for p, i in runs:
         if i["runId"] in by_id and by_id[i["runId"]][1] != i:
-            raise ValueError("Ambiguous run identity")
+            raise BaselineCandidateError("BASELINE_LINEAGE_INVALID",stage="lineage",run_id=i["runId"],detail="ambiguous run identity")
         by_id[i["runId"]] = (p, i)
     try:
         shortlist, short_info = by_id[info["sourceRunId"]]
@@ -98,26 +104,27 @@ def identify_baseline(runs):
         if obj.get("researchOnly") is not True or obj.get("timestampKind") != "end":
             raise BaselineCandidateError("BASELINE_RESEARCH_TIMESTAMP_SEMANTICS_INVALID",
                                          stage=purpose, run_id=run_id)
-        missing = obj.get("missingSessions") or []
-        if missing or obj.get("resultsValid") is False:
+        summary = read_json((holdout if purpose == "internal_holdout" else development) / "validation_summary.json") if purpose != "training" else None
+        facts = completeness_facts(obj, summary)
+        facts.update({k:obj.get(k) for k in ("sourceRunId","holdoutRunId","evaluationMode","selectionMode")})
+        if facts["rootCause"]:
             raise BaselineCandidateError(
                 "BASELINE_INCOMPLETE_OR_INVALID",
                 stage=purpose,
                 run_id=run_id,
                 detail="baseline completeness check failed",
-                facts={
-                    "missingCount":len(missing),
-                    "missingDates":[str(x) for x in missing[:40]],
-                    "missingDatesTruncated":len(missing)>40,
-                    "resultsValid":obj.get("resultsValid"),
-                    "completedCount":obj.get("completedSessions"),
-                    "requestedCount":obj.get("requestedSessions"),
-                },
+                facts=facts,
             )
     if train_info.get("config") != short_info.get("config"):
         raise BaselineCandidateError("BASELINE_SHORTLIST_CONFIG_MISMATCH",
                                      stage="shortlist", run_id=short_info.get("runId"))
+    if short_info.get("sourceTrainingRunId") != train_info.get("runId"):
+        raise BaselineCandidateError("BASELINE_LINEAGE_INVALID",stage="shortlist",run_id=short_info.get("runId"))
     try:
+        short_population=read_json(shortlist / "final_population.json")
+        dev_summary=read_json(development / "validation_summary.json")
+        if {r["bot_id"]:r["genome_hash"] for r in short_population} != {r["botId"]:r["genomeHash"] for r in dev_summary["bots"]}:
+            raise ValueError("Development population differs from locked shortlist")
         baseline_metrics = validation_metrics(read_json(development / "validation_summary.json"),
                                              read_json(training / "final_population.json"),
                                              read_json(holdout / "validation_summary.json"))

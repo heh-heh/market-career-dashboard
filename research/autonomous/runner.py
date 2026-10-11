@@ -15,7 +15,7 @@ from .experiment_registry import Registry, read_json, write_json, utc
 from .export_client import ExportClient
 from .quarterly import build_shortlist_v08
 from .report import create_report
-from .safety_gate import plan_gate, resource_gate, promotion_gate
+from .safety_gate import plan_gate, resource_gate, promotion_gate, ResourcePauseError, api_feature_gate
 from research_export import sanitize
 
 
@@ -72,6 +72,14 @@ def choose_valid_v07_baseline(client, catalog, candidates):
                 **exc.as_dict(),
             })
             continue
+        except (OSError,KeyError,TypeError,ValueError):
+            rejected.append({"catalogId":candidate.get("id"),"runId":candidate.get("runId"),
+                             "stage":"metadata","code":"BASELINE_ARTIFACT_INVALID",
+                             "missingCount":None,"missingDates":[],"missingDatesTruncated":False,
+                             "resultsValid":False,"requestedSessions":None,"completedSessions":None,
+                             "sourceRunId":None,"holdoutRunId":None,"evaluationMode":candidate.get("evaluationMode"),
+                             "selectionMode":candidate.get("selectionMode")})
+            continue
         return {
             "candidate": candidate,
             "bundle": bundle,
@@ -87,8 +95,10 @@ def choose_valid_v07_baseline(client, catalog, candidates):
 def prepare_iteration(registry, folder, config, client=None):
     from .hypothesis import hypothesis
     registry.update(folder, "downloading", **hypothesis(), parentVersion="v07", candidateVersion="v08")
-    resource_gate(config)
+    observe=lambda facts: write_json(folder / "resource_guard.json", facts)
+    resource_gate(config, observer=observe)
     client = client or ExportClient(config)
+    client.resource_observer=observe
     catalog = client.json("/api/research/export/catalog?researchOnly=true")
     summary = client.json("/api/research/export/summary?format=json&researchOnly=true")
     if any(v.get("researchBoundary") != "FINAL_OOS_EXCLUDED" for v in (catalog, summary)):
@@ -118,7 +128,9 @@ def prepare_iteration(registry, folder, config, client=None):
     if choice["baseline"] is None:
         registry.update(folder, "analyzing", baselineCandidates=len(v07),
                         baselineRejected=len(choice["rejected"]))
-        raise ValueError("NO_VALID_V07_BASELINE")
+        causes={r.get("rootCause") or r.get("code") for r in choice["rejected"]}
+        reason=next(iter(causes)) if len(causes)==1 else "NO_VALID_V07_BASELINE"
+        raise BaselineCandidateError(reason, facts={"candidateCount":len(v07),"rejected":choice["rejected"]})
     bundle, bundle_hash, manifest = choice["bundle"], choice["bundleHash"], choice["manifest"]
     baseline = choice["baseline"]
     registry.update(folder, "analyzing", parentVersion="v07", candidateVersion="v08",
@@ -201,7 +213,7 @@ def run_validation(registry, folder, config):
             raise ValueError("Recovered validation lineage/period mismatch")
         write_json(output, {"path": str(p), "run": i})
         return p
-    resource_gate(config)
+    resource_gate(config, observer=lambda facts:write_json(folder / "resource_guard.json", facts))
     if not config.data_manifest and not config.provisional:
         raise ValueError("REVIEWED_MANIFEST_REQUIRED")
     active = active_stage(folder)
@@ -307,7 +319,7 @@ def execute_iteration(registry, folder, config):
     if not code_record.exists(): write_json(code_record, fingerprints)
     if git("branch", "--show-current") != "strategy-engine-v3":
         raise ValueError("RESEARCH_BRANCH_REQUIRED")
-    resource_gate(config)
+    resource_gate(config, observer=lambda facts:write_json(folder / "resource_guard.json", facts))
     registry.update(folder, "implementing", dryRun=False, codeChanged=True)
     candidate_git(folder, plan)
     registry.update(folder, "testing")
@@ -391,6 +403,7 @@ def loop(config, *, dry_run=False, resume=False, client=None):
         else:
             raise ValueError("DRY_RUN_REVIEW_REQUIRED")
         try:
+            api_feature_gate()
             settings = {"dataDir": str(config.data_dir),
                        "dataManifest": str(config.data_manifest) if config.data_manifest else None,
                        "provisional": config.provisional, "naiveTimezone": config.naive_timezone,
@@ -420,12 +433,12 @@ def loop(config, *, dry_run=False, resume=False, client=None):
             token = os.environ.get("RESEARCH_EXPORT_TOKEN")
             reason = str(exc).replace(token, "[REDACTED]") if token else str(exc)
             prefix = reason.split(":", 1)[0]
-            failure_code = prefix if __import__("re").fullmatch(r"[A-Z][A-Z0-9_]+", prefix) else "RESEARCH_FAILURE"
+            failure_code = getattr(exc,"code",None) or (prefix if __import__("re").fullmatch(r"[A-Z][A-Z0-9_]+", prefix) else "RESEARCH_FAILURE")
             previous_state = read_json(folder / "experiment.json").get("state")
             trace = traceback.format_exc()
             if token:
                 trace = trace.replace(token, "[REDACTED]")
-            trace = sanitize(trace[-32000:])
+            trace = "\n".join(str(sanitize(line)) for line in trace[-32000:].splitlines())
             try:
                 (folder / "error_traceback.log").write_text(str(trace), encoding="utf-8")
             except OSError:
@@ -434,8 +447,10 @@ def loop(config, *, dry_run=False, resume=False, client=None):
             extra = {}
             if isinstance(resource_facts, dict):
                 safe_facts = sanitize(resource_facts)
-                extra["resourceGuard"] = safe_facts
-                write_json(folder / "resource_guard.json", safe_facts)
+                extra["failureFacts"] = safe_facts
+                if isinstance(exc,ResourcePauseError):
+                    extra["resourceGuard"] = safe_facts
+                    write_json(folder / "resource_guard.json", safe_facts)
             value = registry.update(folder, "failed", error=sanitize(reason), failureCode=failure_code,
                                     lastSuccessfulState=previous_state, finishedAt=utc(), **extra)
             print(json.dumps({

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from research.backtest_intraday_v4 import atomic_json
+from research.evolution.completeness import completeness_facts
 
 
 def build_shortlist(training_run, holdout_run, out_dir, max_count=40):
@@ -17,10 +18,18 @@ def build_shortlist(training_run, holdout_run, out_dir, max_count=40):
     holdout_info=json.loads((holdout_run/"run.json").read_text(encoding="utf-8"))
     holdout=json.loads((holdout_run/"validation_summary.json").read_text(encoding="utf-8"))
 
+    facts=completeness_facts(holdout_info,holdout)
+    if facts["rootCause"]:
+        raise ValueError(facts["rootCause"]+": internal holdout is incomplete/invalid; no shortlist created")
+    if holdout_info.get("phase") != "completed" or holdout_info.get("sourceRunId") != train_info.get("runId"):
+        raise ValueError("BASELINE_LINEAGE_INVALID: holdout source/phase mismatch")
+
     by_id={r["bot_id"]:r for r in population}
     candidates=[]
     for row in holdout["bots"]:
         if row.get("invalidDays"):
+            continue
+        if row.get("validDays") != facts["expectedSessions"]:
             continue
         ret=float(row.get("validationReturn") or 0.0)
         if ret <= 0:
@@ -53,7 +62,7 @@ def build_shortlist(training_run, holdout_run, out_dir, max_count=40):
     derived=dict(train_info)
     derived.update(
         phase="completed",
-        runId=out_dir.name,
+        runId=out_dir.parent.name+"-"+out_dir.name,
         evaluationMode="SHORTLIST_ARTIFACT",
         selectionMode="V07_INTERNAL_HOLDOUT_SHORTLIST",
         shortlistCount=len(records),
@@ -66,6 +75,7 @@ def build_shortlist(training_run, holdout_run, out_dir, max_count=40):
         sourceTrainTo=train_info.get("toDate"),
         completedSessions=holdout_info.get("completedSessions"),
         requestedSessions=holdout_info.get("requestedSessions"),
+        resultsValid=True,
     )
     atomic_json(out_dir/"run.json",derived)
     return out_dir

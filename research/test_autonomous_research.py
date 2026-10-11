@@ -78,8 +78,9 @@ def fixed_artifacts(base):
     write_json(hold / "validation_summary.json", {"bots": rows, "missingSessions": [], "sessionsProcessed": len(dates), "sessionsRequested": len(dates)})
     write_json(dev / "run.json", dict(info, runId="dev", sourceRunId="short", fromDate="2025-01-02", toDate="2025-12-31",
                                      selectionMode="V07_INTERNAL_HOLDOUT_SHORTLIST", evaluationMode="FROZEN_VALIDATION"))
-    dev_rows = [dict(r, validationReturn=.05 if r["botId"] == "a" else -.1) for r in rows]
-    write_json(dev / "validation_summary.json", {"bots": dev_rows, "missingSessions": [], "sessionsRequested": len(dates)})
+    dev_days = len(exchange_sessions("2025-01-02", "2025-12-31"))
+    dev_rows = [dict(r, validDays=dev_days, validationReturn=.05 if r["botId"] == "a" else -.1) for r in rows]
+    write_json(dev / "validation_summary.json", {"bots": dev_rows, "missingSessions": [], "sessionsProcessed": dev_days, "sessionsRequested": dev_days})
     return train, hold, short, dev
 
 
@@ -430,9 +431,11 @@ class AutonomousTests(unittest.TestCase):
             def collect(self, *args): return cache, digest, read_json(cache/'export_manifest.json')
         with patch('research.autonomous.runner.resource_gate'):
             loop(self.config, dry_run=True, client=Client())
-        r = Registry(self.config.registry); folder = r.iterations()[0]
+        r = Registry(self.config.registry)
+        from research.autonomous.runner import clone_reviewed_dry_run
+        folder, _ = clone_reviewed_dry_run(r, r.iterations()[0])
         evaluation = folder / 'validation-attempts/mock'; evaluation.mkdir(parents=True)
-        write_json(evaluation/'validation_summary.json', {'bots': [read_json(dev/'validation_summary.json')['bots'][0]], 'sessionsRequested': len(exchange_sessions('2024-01-02','2024-12-31')), 'missingSessions': []})
+        write_json(evaluation/'validation_summary.json', {'bots': [read_json(dev/'validation_summary.json')['bots'][0]], 'sessionsRequested': len(exchange_sessions('2025-01-02','2025-12-31')), 'missingSessions': []})
         def evaluation_stub(*args):
             write_json(evaluation/'run.json', {'sourcePopulationFileHash': sha256(folder/'shortlist-v08/final_population.json'),
                        'sourcePopulationVerified': True, 'inputHashesVerified': True, 'timestampKind': 'end', 'symbols': ['TQQQ']})
