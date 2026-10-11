@@ -306,10 +306,25 @@ def run(args):
         run_info.update(phase="completed", generation=summary["generation"], nextPopulationGeneration=generation,
                         completedTrainGenerations=split_days["train"], completedSessions=len(processed),
                         missingSessions=missing_days, splitDays=split_days, frozenPopulationHash=frozen,
+                        population=len(bots), nextPopulation=len(bots),
                         safePopulation=safe_population, peakPopulation=peak_population,
                         runtimeSeconds=time.perf_counter()-started, inputHashesVerified=True,
                         finishedAt=datetime.now(timezone.utc).isoformat())
-        status.update(run_info, latestLog="Completed offline evaluation; no live orders or deployment")
+        # Preserve the final per-session adaptive decision/resource measurements while
+        # merging immutable run metadata. In particular, do not restore the initial
+        # population as the displayed "next population" on completion.
+        final_status = dict(run_info)
+        for key in ("resourceDecision", "resourcePressure", "resourceCpuPct", "resourceProcessCpuPct",
+                    "resourceMemoryPct", "resourceMemoryAvailableGb", "resourceSwapPct",
+                    "resourceSwapUsedGb", "resourceSwapTotalGb", "resourceProcessRssMb",
+                    "sessionRuntimeSeconds", "adaptiveResources", "nextPopulation",
+                    "safePopulation", "peakPopulation"):
+            if key in status:
+                final_status[key] = status[key]
+        final_status["population"] = len(bots)
+        final_status["nextPopulation"] = len(bots) if frozen is not None else final_status.get("nextPopulation", len(bots))
+        final_status["latestLog"] = "Completed offline evaluation; no live orders or deployment"
+        status.update(final_status)
         atomic_json(directory/"run.json", run_info)
         atomic_json(directory/"status.json", status)
     except BaseException as exc:
