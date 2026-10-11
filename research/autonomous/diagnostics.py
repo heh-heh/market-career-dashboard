@@ -5,6 +5,22 @@ from research.evolution.analyze_validation_v04 import _spearman, _pearson
 from .experiment_registry import read_json
 
 
+class BaselineCandidateError(ValueError):
+    def __init__(self, code, *, stage=None, run_id=None, detail=None):
+        self.code = code
+        self.stage = stage
+        self.run_id = run_id
+        self.detail = detail
+        parts = [code]
+        if stage: parts.append("stage=" + str(stage))
+        if run_id: parts.append("runId=" + str(run_id))
+        if detail: parts.append(str(detail))
+        super().__init__(": ".join(parts))
+
+    def as_dict(self):
+        return {"code": self.code, "stage": self.stage, "runId": self.run_id, "detail": self.detail}
+
+
 def validation_metrics(summary, population, holdout):
     train = {r["bot_id"]: r for r in population}
     hold = {r["botId"]: r for r in holdout["bots"]}
@@ -47,7 +63,7 @@ def identify_baseline(runs):
                   and str(i.get("fromDate", "")).startswith("2025")
                   and str(i.get("toDate", "")).startswith("2025") and not i.get("smoke")]
     if not candidates:
-        raise ValueError("BASELINE_V07_DEVELOPMENT_ARTIFACT_REQUIRED")
+        raise BaselineCandidateError("BASELINE_V07_DEVELOPMENT_ARTIFACT_REQUIRED")
     development, info = sorted(candidates, key=lambda x: (x[1].get("finishedAt", ""), x[1]["runId"]))[-1]
     by_id = {}
     for p, i in runs:
@@ -58,21 +74,38 @@ def identify_baseline(runs):
         shortlist, short_info = by_id[info["sourceRunId"]]
         holdout, hold_info = by_id[short_info["holdoutRunId"]]
         training, train_info = by_id[hold_info["sourceRunId"]]
-    except KeyError:
-        raise ValueError("V07_LINEAGE_ARTIFACTS_REQUIRED") from None
+    except KeyError as exc:
+        missing = str(exc.args[0]) if exc.args else "unknown"
+        raise BaselineCandidateError("V07_LINEAGE_ARTIFACTS_REQUIRED",
+                                     stage="lineage", run_id=info.get("runId"),
+                                     detail="missing=" + missing) from None
     from .safety_gate import period_gate
     for purpose, obj in (("training", train_info), ("internal_holdout", hold_info),
                          ("development_validation", info)):
-        period_gate(obj["fromDate"], obj["toDate"], purpose)
+        run_id = obj.get("runId")
+        try:
+            period_gate(obj["fromDate"], obj["toDate"], purpose)
+        except (KeyError, ValueError) as exc:
+            raise BaselineCandidateError("BASELINE_PERIOD_INVALID", stage=purpose,
+                                         run_id=run_id, detail=str(exc)) from None
         if obj.get("researchOnly") is not True or obj.get("timestampKind") != "end":
-            raise ValueError("Baseline research/timestamp semantics mismatch")
-        if obj.get("missingSessions") or obj.get("resultsValid") is False:
-            raise ValueError("Incomplete/invalid baseline run")
+            raise BaselineCandidateError("BASELINE_RESEARCH_TIMESTAMP_SEMANTICS_INVALID",
+                                         stage=purpose, run_id=run_id)
+        missing = obj.get("missingSessions") or []
+        if missing or obj.get("resultsValid") is False:
+            detail = "missingSessions=" + str(len(missing)) + ", resultsValid=" + str(obj.get("resultsValid"))
+            raise BaselineCandidateError("BASELINE_INCOMPLETE_OR_INVALID",
+                                         stage=purpose, run_id=run_id, detail=detail)
     if train_info.get("config") != short_info.get("config"):
-        raise ValueError("Baseline shortlist config differs from training")
-    baseline_metrics = validation_metrics(read_json(development / "validation_summary.json"),
-                                         read_json(training / "final_population.json"),
-                                         read_json(holdout / "validation_summary.json"))
+        raise BaselineCandidateError("BASELINE_SHORTLIST_CONFIG_MISMATCH",
+                                     stage="shortlist", run_id=short_info.get("runId"))
+    try:
+        baseline_metrics = validation_metrics(read_json(development / "validation_summary.json"),
+                                             read_json(training / "final_population.json"),
+                                             read_json(holdout / "validation_summary.json"))
+    except (KeyError, TypeError, ValueError) as exc:
+        raise BaselineCandidateError("BASELINE_METRICS_INVALID",
+                                     stage="metrics", run_id=info.get("runId"), detail=str(exc)) from None
     return {"training": training, "holdout": holdout, "shortlist": shortlist, "development": development,
             "metrics": baseline_metrics, "info": info}
 
