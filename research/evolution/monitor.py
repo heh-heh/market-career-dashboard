@@ -18,7 +18,9 @@ _PUBLIC_FIELDS = {
     "resourceDecision", "resourcePressure", "resourceCpuPct", "resourceProcessCpuPct",
     "resourceMemoryPct", "resourceMemoryAvailableGb", "resourceSwapPct",
     "resourceSwapUsedGb", "resourceSwapTotalGb", "resourceProcessRssMb",
-    "sessionRuntimeSeconds",
+    "sessionRuntimeSeconds", "evaluationWindowSessions", "windowSessionsCompleted",
+    "windowStartDate", "windowEndDate", "windowComplete", "bestWindowReturn",
+    "meanWindowReturn", "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral",
 }
 
 
@@ -75,6 +77,13 @@ def _run_summary(run_dir):
         "meanDailyReturn": result.get("meanDailyReturn"),
         "bestLifetimeEquity": result.get("bestLifetimeEquity"),
         "tradesToday": result.get("tradesToday"),
+        "evaluationWindowSessions": result.get("evaluationWindowSessions"),
+        "windowSessionsCompleted": result.get("windowSessionsCompleted"),
+        "windowStartDate": result.get("windowStartDate"),
+        "windowEndDate": result.get("windowEndDate"),
+        "windowComplete": result.get("windowComplete"),
+        "bestWindowReturn": result.get("bestWindowReturn"),
+        "meanWindowReturn": result.get("meanWindowReturn"),
         "adaptiveResources": result.get("adaptiveResources"),
         "nextPopulation": result.get("nextPopulation"),
         "safePopulation": result.get("safePopulation"),
