@@ -3,6 +3,7 @@
 Append only; complete RTH coverage is counted, never inferred from min/max dates.
 """
 import argparse
+import hashlib
 from contextlib import closing
 import json
 import os
@@ -23,7 +24,33 @@ from research.toss_1m_repair import fingerprint
 from research.backtest_v4_strategies import exchange_sessions
 
 UTC = timezone.utc
+COLLECTION_SINCE = '2000-01-01T00:00:00-05:00'
+COLLECTION_UNTIL = '2026-10-31T23:59:59-04:00'
 PRIORITY_DAYS = ['2024-07-26','2024-07-29','2024-07-30','2024-07-31','2024-08-01','2024-08-02']
+
+
+def validate_collection_range(since, until):
+    # Collection is not training: storing October 2026 does NOT open Final OOS.
+    start, end = aware(since), aware(until)
+    if not aware(COLLECTION_SINCE) <= start < end <= aware(COLLECTION_UNTIL):
+        raise ValueError('COLLECTION_RANGE_OUTSIDE_2000_2026_OCTOBER')
+
+
+def collection_cursor(until, now=None):
+    now = now or datetime.now(UTC)
+    # END labels: the current uncompleted minute cannot be requested as complete.
+    return min(aware(until), now.replace(second=0, microsecond=0)).isoformat()
+
+
+def preserve_checkpoint(path):
+    """Immutable, content-addressed copy before a range migration (never delete)."""
+    data = path.read_bytes()
+    target = path.with_name(path.stem+'.range-backup-'+hashlib.sha256(data).hexdigest()+path.suffix)
+    try:
+        with target.open('xb') as out:
+            out.write(data); out.flush(); os.fsync(out.fileno())
+    except FileExistsError:
+        if target.read_bytes() != data: raise ValueError('CHECKPOINT_BACKUP_CONFLICT')
 
 
 def selected_symbols(path):
@@ -84,6 +111,7 @@ def open_research_db(root, symbol):
 
 
 def insert_page(db, candles, since, until, symbol="TEST"):
+    validate_collection_range(since, until)
     since, until = aware(since), aware(until)
     rows = []
     instants = []
@@ -91,10 +119,9 @@ def insert_page(db, candles, since, until, symbol="TEST"):
         raw = str(c.get('timestamp') or '')
         stamp = aware(raw)
         if stamp.second or stamp.microsecond: raise ValueError('NON_MINUTE_TIMESTAMP')
+        if stamp > datetime.now(UTC): raise ValueError('API_FUTURE_TIMESTAMP')
         instants.append(stamp)
         if not since <= stamp <= until: continue
-        if stamp.astimezone(__import__('zoneinfo').ZoneInfo('America/New_York')).year >= 2026:
-            raise ValueError('FINAL_OOS_ACCESS_BLOCKED')
         row = dict(zip(FIELDS, [raw, c.get('openPrice'), c.get('highPrice'), c.get('lowPrice'),
                                  c.get('closePrice'), c.get('volume'), c.get('currency')]))
         fingerprint(row, symbol)
@@ -112,7 +139,9 @@ def insert_page(db, candles, since, until, symbol="TEST"):
 
 
 def coverage(db, since, until):
-    sessions = exchange_sessions(aware(since).date().isoformat(), aware(until).date().isoformat())
+    # Future sessions in the declared October window are not missing data yet.
+    observed_until = min(aware(until), datetime.now(UTC))
+    sessions = exchange_sessions(aware(since).date().isoformat(), observed_until.date().isoformat())
     by_day = {str(day): {'expected': int((close-opened).total_seconds()/60), 'observed': 0}
               for day, (opened, close) in sessions.items()}
     windows = {str(day): (opened, close) for day, (opened, close) in sessions.items()}
@@ -148,11 +177,16 @@ class Backfill:
     def __init__(self, root, symbols, permit, since, until, fetch=fetch_page):
         self.root, self.symbols, self.permit = Path(root), symbols, Path(permit)
         self.since, self.until, self.fetch = since, until, fetch
+        validate_collection_range(since, until)
         self.stop = False
         path = self.root/'_scheduler_checkpoint.json'
         self.state = json.loads(path.read_text()) if path.exists() else {'symbols': {}, 'nextIndex': 0}
-        if self.state.get('range', [since, until]) != [since, until]:
-            raise ValueError('CHECKPOINT_RANGE_CHANGE_REQUIRES_NEW_RESEARCH_ROOT')
+        old = self.state.get('range', [since, until])
+        if old != [since, until]:
+            if aware(since) > aware(old[0]) or aware(until) < aware(old[1]):
+                raise ValueError('CHECKPOINT_RANGE_NARROWING_BLOCKED')
+            preserve_checkpoint(path)
+            self.state['previousRange'] = old
         self.state['range'] = [since, until]
         previous = self.state.get('requestedSymbols', symbols)
         if previous != symbols: raise ValueError('CHECKPOINT_SYMBOL_CHANGE_REQUIRES_REVIEW')
@@ -181,6 +215,9 @@ class Backfill:
                 path = self.root/f'_scheduler_{symbol}.json'
                 self.state['symbols'] = {symbol: json.loads(path.read_text()) if path.exists() else {}}
             state = self.state['symbols'][symbol]
+            if state and state.get('range', self.state.get('previousRange', [self.since, self.until])) != [self.since, self.until]:
+                preserve_checkpoint(self.root/f'_scheduler_{symbol}.json')
+                state = self.state['symbols'][symbol] = {}
             if not state.get('initialized'):
                 audit = coverage(db, self.since, self.until)
                 # Prioritize known gaps, then other incomplete dates. No date is
@@ -188,9 +225,22 @@ class Backfill:
                 days = audit['missingDates']
                 priority = [d for d in PRIORITY_DAYS if d in days] if symbol in ('AAPL','TQQQ') else []
                 state.update(initialized=True, gapQueue=priority+[d for d in days if d not in priority],
-                             coverage=audit, historyCursor=self.until, terminal=None)
-            gap = state['gapQueue'][0] if state['gapQueue'] else None
-            if gap:
+                             coverage=audit, historyCursor=collection_cursor(self.until),
+                             terminal=None, range=[self.since, self.until], lastHeadAt=time.time())
+            newest_first = aware(self.until).year >= 2026
+            # Periodically catch up the recent edge while the multi-year cursor
+            # continues backward. A separate cursor never destroys old progress.
+            if newest_first and time.time()-state.get('lastHeadAt', time.time()) >= 12*3600 and datetime.now(UTC) < aware(self.until):
+                if not state.get('headCursor'):
+                    state['headCursor'] = collection_cursor(self.until)
+                    state['headSince'] = max(aware(self.since), datetime.fromtimestamp(state['lastHeadAt'], UTC)-timedelta(days=1)).isoformat()
+                    state['headZeroPages'] = 0
+            head = state.get('headCursor')
+            gap = state['gapQueue'][0] if state['gapQueue'] and (not newest_first or state.get('terminal')) else None
+            if head:
+                gap = None
+                before = head
+            elif gap:
                 opened, closed = exchange_sessions(gap, gap)[gap]
                 before = state.get('gapCursor') or (closed+timedelta(minutes=1)).isoformat()
             else:
@@ -223,8 +273,17 @@ class Backfill:
                 page=record.get('page', 0)+1, firstResponseTimestamp=first.isoformat() if first else None,
                 lastResponseTimestamp=last.isoformat() if last else None, requestedBefore=before,
                 nextBefore=next_before, updatedAt=time.time(), coverageVerified=False)
-            state['zeroAddedPages'] = state.get('zeroAddedPages', 0)+1 if not added else 0
-            if gap:
+            previous_zero = state.get('zeroAddedPages', 0)
+            state['zeroAddedPages'] = previous_zero+1 if not added else 0
+            if head:
+                state['headZeroPages'] = state.get('headZeroPages', 0)+1 if not added else 0
+                if not candles or not next_before or first <= aware(state['headSince']) or state['headZeroPages'] >= 10:
+                    state.pop('headCursor', None)
+                    state['lastHeadAt'] = time.time()
+                else: state['headCursor'] = next_before
+                # zero-added counters for the old edge must not be contaminated.
+                state['zeroAddedPages'] = previous_zero
+            elif gap:
                 state['gapPages'] = state.get('gapPages', 0)+1
                 done = not candles or not next_before or (first is not None and first <= opened) or state['zeroAddedPages'] >= 10 or state['gapPages'] >= 20
                 if done:
@@ -243,6 +302,10 @@ class Backfill:
                     state['terminal'] = 'API_BOUNDARY_UNVERIFIED' if state['zeroAddedPages'] < 10 else 'NO_PROGRESS_LIMIT'
                     state['coverage'] = coverage(db, self.since, self.until)
                 else: state['historyCursor'] = next_before
+                if state.get('terminal') and newest_first:
+                    # The history pass also filled dates in the initial gap list.
+                    # Rebuild from actual coverage, latest incomplete date first.
+                    state['gapQueue'] = sorted(state['coverage']['missingDates'], reverse=True)
             counts = state['coverage']['sessionCounts']
             record.update(verifiedTradingDays=sum(x['expected'] == x['observed'] for x in counts.values()),
                           missingTradingDays=sum(x['observed'] < x['expected'] for x in counts.values()),
@@ -252,7 +315,10 @@ class Backfill:
             bounds = db.execute('SELECT timestamp FROM candles ORDER BY julianday(timestamp) LIMIT 1').fetchone()
             end = db.execute('SELECT timestamp FROM candles ORDER BY julianday(timestamp) DESC LIMIT 1').fetchone()
             record.update(stored=count, oldestTimestamp=bounds[0] if bounds else None, latestTimestamp=end[0] if end else None)
-            if state.get('terminal'): record['status'] = 'collection_pass_finished_unverified'
+            record.update(collectionFrom=self.since, collectionTo=self.until,
+                          direction='newest_to_oldest' if newest_first else 'gap_priority',
+                          historyCursor=state.get('historyCursor'), finalOosGate='CLOSED')
+            if state.get('terminal') and not state['gapQueue']: record['status'] = 'collection_pass_finished_unverified'
         finally: db.close()
 
     def run(self):
@@ -277,14 +343,15 @@ class Backfill:
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument('--out-dir', type=Path, required=True)
     p.add_argument('--symbols-file', type=Path, default=os.getenv('COLLECTION_SYMBOLS_FILE'))
     p.add_argument('--permit-file', type=Path, required=True)
-    p.add_argument('--since', default='2000-01-03T00:00:00+00:00')
-    p.add_argument('--until', default='2025-12-31T23:59:59+00:00')
+    p.add_argument('--since', default=COLLECTION_SINCE, help='Earliest collection date, explicit timezone required')
+    p.add_argument('--until', default=COLLECTION_UNTIL, help='Latest collection date; cursor is capped at the last completed minute')
     a = p.parse_args()
-    if aware(a.until).year >= 2026 or aware(a.since) >= aware(a.until): p.error('FINAL_OOS_CLOSED_OR_INVALID_RANGE')
+    try: validate_collection_range(a.since, a.until)
+    except ValueError as exc: p.error(str(exc))
     if not os.getenv('TOSS_TOKEN_SOCKET'): p.error('TOKEN_BROKER_REQUIRED')
     root = safe_research_root(a.out_dir)
     root.mkdir(parents=True, exist_ok=True)

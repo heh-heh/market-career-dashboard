@@ -176,11 +176,12 @@ class CollectionTests(unittest.TestCase):
         self.assertEqual(observed,symbols)
         self.assertEqual(worker.progress['S0']['errorCode'],'MOCK_ERROR')
 
-    def test_invalid_ohlcv_and_final_oos(self):
+    def test_invalid_ohlcv_collection_boundary_and_research_final_oos(self):
         db=backfill.open_research_db(self.root,'AAPL');self.addCleanup(db.close)
         with self.assertRaises(ValueError):backfill.insert_page(db,[{**tick(),'lowPrice':'200'}],'2024-01-01T00:00:00+00:00','2025-12-31T23:59:00+00:00')
-        with self.assertRaisesRegex(ValueError,'FINAL_OOS'):
+        with self.assertRaisesRegex(ValueError,'COLLECTION_RANGE'):
             backfill.insert_page(db,[tick('2026-01-05T15:00:00+00:00')],'2024-01-01T00:00:00+00:00','2026-12-31T23:59:00+00:00')
+        self.assertEqual(backfill.insert_page(db,[tick('2026-01-05T15:00:00+00:00')],backfill.COLLECTION_SINCE,backfill.COLLECTION_UNTIL)[0],1)
         with self.assertRaises(ValueError):list(source_rows(self.root,'AAPL',2026))
         with self.assertRaises(ValueError):list(source_rows(self.root,'../AAPL',2024))
 

@@ -9,6 +9,7 @@ import os
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -31,14 +32,22 @@ def aware(value):
     return dt.astimezone(UTC)
 
 
-def save(path, value):
+def save(path, value, share_group=False):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.name+f'.{os.getpid()}.tmp')
-    with tmp.open('w', encoding='utf8') as f:
-        json.dump(value, f, indent=2, allow_nan=False)
-        f.flush(); os.fsync(f.fileno())
-    os.replace(tmp, path)
+    # O_EXCL random temporary: a root API must not follow a predictable symlink
+    # in the ubuntu-owned state directory. Only this new temp is cleaned up.
+    fd, name = tempfile.mkstemp(prefix=path.name+'.', suffix='.tmp', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf8') as f:
+            if share_group:
+                os.fchown(f.fileno(), -1, path.parent.stat().st_gid)
+                os.fchmod(f.fileno(), 0o640)
+            json.dump(value, f, indent=2, allow_nan=False)
+            f.flush(); os.fsync(f.fileno())
+        os.replace(name, path)
+    finally:
+        if os.path.exists(name): os.unlink(name)
 
 
 @contextlib.contextmanager
@@ -206,7 +215,7 @@ class Scheduler:
                 control = json.loads((self.args.state_dir/'control.json').read_text())
                 paused = not isinstance(control, dict) or control.get('paused') is not False
             except FileNotFoundError:
-                paused = False
+                paused = True  # Deployment alone must not start collection.
             except (OSError, ValueError):
                 paused = True
             self.step(choose_mode(now, cache, lead_seconds=self.args.preopen_seconds, paused=paused), now)
@@ -220,7 +229,7 @@ class Scheduler:
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--state-dir', type=Path, default=STATE_DIR)
-    p.add_argument('--data-dir', type=Path, default=Path('/mnt/research/collection-50-v1'))
+    p.add_argument('--data-dir', type=Path, default=Path(os.getenv('COLLECTION_50_DIR', '/mnt/research/collection-50-v1')))
     p.add_argument('--tick-dir', type=Path, default=ROOT/'data/toss_ticks')
     p.add_argument('--symbols-file', type=Path, default=os.getenv('COLLECTION_SYMBOLS_FILE'),
                    help='Optional operator JSON override; default is existing collector 50 symbols')

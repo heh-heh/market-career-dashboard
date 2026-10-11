@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Toss 데이터 수집</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#091120;color:#edf3ff;font:15px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:20px 14px}h1{font-size:25px}h2{font-size:18px;margin:0 0 10px}.card{background:#121e32;border:1px solid #293b58;border-radius:14px;padding:16px;margin:12px 0}.muted{color:#a0b1ce;font-size:13px}.actions,.stats{display:flex;gap:10px;flex-wrap:wrap}button,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #394a68;background:#182944;color:inherit}button{cursor:pointer}button.primary{background:#596bde}button:disabled{opacity:.45;cursor:not-allowed}.stats>div{flex:1;min-width:130px}.value{font-size:21px;font-weight:700}.symbols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.symbol{padding:12px;border:1px solid #293b58;border-radius:10px;overflow-wrap:anywhere}.warn{color:#ffcc75}.error{color:#ff8e98}#message{white-space:pre-wrap}summary{cursor:pointer}a{color:#aebaff}input{max-width:100%}
+</style></head><body><main>
+<h1>Toss 데이터 수집</h1>
+<p class="muted">1분봉: 2026년 10월 → 2000년 · 기존 50종목 · Tick: 정규장 30종목<br>Tick과 1분봉은 중앙 scheduler가 번갈아 실행합니다. 원본 데이터는 삭제하지 않습니다.</p>
+<div class="card"><h2>수집 제어</h2>
+<div id="auth"><label>관리자 비밀번호 <input id="password" type="password" autocomplete="current-password"></label> <button id="login">로그인</button></div>
+<div class="actions" style="margin-top:12px"><button id="start" class="primary" disabled>수집 시작</button><button id="pause" disabled>수집 일시정지</button><button id="refresh">상태 갱신</button><button id="logout">로그아웃</button></div>
+<p id="message" class="muted" role="status" aria-live="polite">상태 확인 중...</p></div>
+<div class="card"><h2>자동 전환 상태</h2><div class="stats"><div><span class="muted">현재 모드</span><div id="mode" class="value">-</div></div><div><span class="muted">실행 수집기</span><div id="worker" class="value">-</div></div><div><span class="muted">1분봉 현재 종목</span><div id="current" class="value">-</div></div></div>
+<p id="clock" class="muted"></p><p id="reason" class="warn"></p>
+<p class="muted">정규장에는 Tick만, 장외에는 1분봉만 실행합니다. 장 시작 90초 전에 REST 요청을 중단하고 worker 종료를 확인한 뒤 전환합니다. 휴장·조기폐장·DST는 시장 캘린더를 따릅니다.</p></div>
+<div class="card"><h2>1분봉 수집 진행</h2><p id="summary" class="muted"></p><div id="symbols" class="symbols"></div></div>
+<details class="card"><summary>수집 한계 / 연구 데이터 보호</summary><p class="muted">2000~2026년 10월은 요청 범위입니다. 상장 이전 데이터나 Toss가 제공하지 않는 과거 데이터는 만들지 않습니다. 현재 이후의 10월 데이터도 미리 생성하지 않습니다. 누락일과 API 한계는 미검증으로 기록합니다.<br>2026 수집은 허용하지만 AI 연구·학습의 Final OOS gate는 CLOSED입니다. 연구 다운로드는 기존 2022~2025 범위를 유지합니다. Raw Tick은 LOSSY이며 완전한 거래소 tape가 아닙니다.</p></details>
+</main><script>
+'use strict';
+// API-served page uses its own origin; static Pages copy uses the existing API.
+const BASE=location.pathname.startsWith('/api/')?'':'https://35.79.235.14';
+let token=sessionStorage.getItem('collection_admin_token')||'';
+let ready=false,busy=false;
+const el=id=>document.getElementById(id),text=(id,v)=>{el(id).textContent=v};
+const esc=v=>String(v??'-').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function req(path,body){
+ const headers={};if(body!==undefined)headers['Content-Type']='application/json';if(token)headers.Authorization='Bearer '+token;
+ const r=await fetch(BASE+path,{cache:'no-store',method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:JSON.stringify(body)});
+ const d=await r.json();if(!r.ok||d.ok===false){if(r.status===401){token='';sessionStorage.removeItem('collection_admin_token');controls()}throw Error(d.reason||d.error||'HTTP '+r.status)}return d;
+}
+function controls(){el('start').disabled=busy||!ready||!token;el('pause').disabled=busy||!token;el('auth').hidden=!!token}
+async function refresh(){
+ if(busy)return;busy=true;controls();
+ try{const d=await req('/api/research/collection50/status'),s=d.scheduler||{},rows=d.symbols||[];
+  ready=!s.stale&&s.automatic===true&&s.mode!=='UNAVAILABLE';text('mode',(s.stale?'상태 오래됨 · ':'')+(s.mode||'미배포'));text('worker',({tick:'Tick',backfill:'1분봉'})[s.collector]||'대기');text('current',d.currentSymbol||'-');
+  text('clock','ET '+(s.etTime||'-')+' · KST '+(s.kstTime||'-')+' · 정규장 '+(s.openAt||'-')+' ~ '+(s.closeAt||'-'));
+  text('reason',s.reason||(!ready?'배포 명령을 실행하고 중앙 서비스를 확인하세요.':''));
+  text('summary',rows.length+'종목 상태 · 총 '+rows.reduce((n,r)=>n+(Number(r.stored)||0),0).toLocaleString()+'봉 · '+(d.collectionFrom||'2000-01-01')+' ~ '+(d.collectionTo||'2026-10-31')+' · 최신→과거');
+  el('symbols').innerHTML=rows.map(r=>'<div class="symbol"><b>'+esc(r.symbol)+'</b> · '+esc(r.status)+'<br>'+Number(r.stored||0).toLocaleString()+'봉 · 요청 '+Number(r.restRequests||0)+'회<br><span class="muted">최신 '+esc(r.latestTimestamp)+'<br>최초 '+esc(r.oldestTimestamp)+'<br>다음 과거 cursor '+esc(r.historyCursor)+'<br>검증된 거래일 '+Number(r.verifiedTradingDays||0)+' · 누락 '+Number(r.missingTradingDays||0)+'<br>'+esc(r.errorCode||r.terminationReason||'')+'</span></div>').join('')||'<p class="muted">수집 시작 후 종목별 상태가 표시됩니다.</p>';
+  if(!token)text('message','조회 가능 · 시작/일시정지는 관리자 로그인 필요');
+ }catch(e){ready=false;text('message',e.message)}finally{busy=false;controls()}
+}
+async function control(paused){busy=true;controls();try{await req('/api/research/collection50/control',{paused});text('message',paused?'일시정지 요청 저장됨 · 안전하게 worker 종료 중':'수집 시작 요청 저장됨 · 정규장 Tick / 장외 1분봉으로 자동 선택');}catch(e){text('message',e.message)}finally{busy=false;controls();await refresh()}}
+el('start').onclick=()=>control(false);el('pause').onclick=()=>control(true);el('refresh').onclick=refresh;
+el('login').onclick=async()=>{try{const d=await req('/api/login',{password:el('password').value});el('password').value='';token=d.token;sessionStorage.setItem('collection_admin_token',token);text('message','관리자 인증 완료');controls();await refresh()}catch(e){el('password').value='';text('message',e.message)}};
+el('logout').onclick=async()=>{try{await req('/api/logout',{})}finally{token='';sessionStorage.removeItem('collection_admin_token');controls()}};
+controls();refresh();setInterval(refresh,5000);
+</script></body></html>

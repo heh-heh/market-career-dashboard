@@ -1,9 +1,17 @@
 name: Deploy GitHub Pages
 on:
   push:
-    branches: ["main"]
-    paths-ignore:
-      - "data/toss_errors.jsonl"
+    branches: ["main", "strategy-engine-v3"]
+    paths:
+      - "index.html"
+      - "admin.html"
+      - "collection.html"
+      - "backtest-v2.html"
+      - "research-export.js"
+      - "research-export.css"
+      - "autonomous-research.js"
+      - "data/dashboard.json"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 concurrency:
   group: deploy-github-pages
@@ -24,10 +32,16 @@ jobs:
         uses: actions/checkout@v6
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Assemble public UI only
+        run: |
+          mkdir -p _site/data
+          cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js _site/
+          cp data/dashboard.json _site/data/
+          touch _site/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: '.'
+          path: '_site'
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

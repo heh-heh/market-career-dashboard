@@ -1751,6 +1751,11 @@ def deploy_apply():
         outputs.append("[check]\n"+(out or "OK"))
         if code!=0:
             return code,"\n".join(outputs)
+    # Refresh the already-installed scheduler too; preserve its pause control.
+    if _systemctl_value("is-active", "research-collection-scheduler.service")[1] == "active":
+        code,out=_console_run(["systemctl", "--no-block", "restart", "research-collection-scheduler.service"],timeout=5)
+        outputs.append("[collection scheduler]\n"+(out or "restart scheduled"))
+        if code != 0: return code,"\n".join(outputs)
     code,out=_console_run(["systemctl","--no-block","restart","market-career-dashboard.service"],timeout=5)
     outputs.append("[restart]\n"+(out or "API restart scheduled"))
     return code,"\n".join(outputs)
@@ -2534,6 +2539,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json({"ok":True})
 
     def collection50_get(self, path):
+        if path == "/api/research/collection50/page":
+            # One fixed file, never a user-supplied filesystem path. Fresh UI is
+            # deployed with the API, independently of the static Pages cache.
+            body = (ROOT/"collection.html").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.end_headers(); self.wfile.write(body); return
         # Read-only metadata is public; CSV downloads require admin session.
         import csv as _csv
         import gzip as _gzip
@@ -2549,7 +2564,7 @@ class Handler(BaseHTTPRequestHandler):
             # Whitelist outward fields: never disclose auth, paths, API errors or request headers.
             fields = ("status", "stored", "page", "pages", "oldestTimestamp",
                       "latestTimestamp", "updatedAt", "coveragePct", "verifiedTradingDays",
-                      "missingTradingDays", "currentGap", "terminationReason", "http429Count", "http401Count", "errorCode", "knownGapOutcomes", "restRequests", "lastHttpCode")
+                      "missingTradingDays", "currentGap", "terminationReason", "http429Count", "http401Count", "errorCode", "knownGapOutcomes", "restRequests", "lastHttpCode", "collectionFrom", "collectionTo", "direction", "historyCursor")
             rows = []
             for symbol, record in sorted(progress.items()):
                 if not re.fullmatch(r"[A-Z0-9]{1,8}", symbol) or not isinstance(record, dict):
@@ -2562,7 +2577,8 @@ class Handler(BaseHTTPRequestHandler):
                 if active_symbol is not None and not re.fullmatch(r"[A-Z0-9]{1,8}", str(active_symbol)): active_symbol = None
             except (OSError, ValueError, TypeError): active_symbol = None
             self.send_json({"ok": True, "symbols": rows, "count": len(rows), "currentSymbol": active_symbol,
-                "scope": "research_pre_2026", "coverageVerified": False,
+                "scope": "collection_2000_2026_october", "researchDownloadScope": "pre_2026", "coverageVerified": False,
+                "collectionFrom": "2000-01-01", "collectionTo": "2026-10-31", "direction": "newest_to_oldest",
                 "finalOosGate": "CLOSED", "source": "isolated_50_symbol_collector",
                 "scheduler": collection_scheduler_status()}); return
         match = re.fullmatch(r"/api/research/collection50/download/([A-Z0-9]{1,8})", path)
@@ -3108,8 +3124,11 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 body = self.read_json()
                 if not isinstance(body, dict) or not isinstance(body.get("paused"), bool): raise ValueError("paused_boolean_required")
+                scheduler_state = collection_scheduler_status()
+                if not body['paused'] and (scheduler_state.get('stale', True) or not scheduler_state.get('automatic')):
+                    self.send_json({"ok": False, "error": "COLLECTION_SCHEDULER_NOT_READY", "reason": "중앙 수집 서비스를 먼저 배포·적용하세요. 상태가 최신일 때만 시작할 수 있습니다."}, 409); return
                 from research_collection_scheduler import save, STATE_DIR
-                save(STATE_DIR/"control.json", {"paused": body["paused"]})
+                save(STATE_DIR/"control.json", {"paused": body["paused"]}, share_group=True)
                 self.send_json({"ok": True, "paused": body["paused"]}); return
             except (ValueError, OSError):
                 self.send_json({"ok": False, "error": "collection_control_rejected"}, 400); return

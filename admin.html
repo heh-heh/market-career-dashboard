@@ -324,14 +324,14 @@
     <div class="section-subtitle">원본 데이터는 삭제하지 않고 수집 프로세스의 실행 상태와 부팅 자동 실행만 제어합니다.</div>
 
     <div class="card" style="margin-bottom:12px">
-      <div class="label">정규장 Tick / 장외 1분봉 · 자동 전환</div>
+      <div class="label">정규장 Tick / 장외 1분봉 · 2026년 10월 → 2000년</div>
       <div id="collectionAutoState" class="signal">상태 확인 중...</div>
-      <div class="actions"><button id="collectionResume">자동 수집 재개</button><button id="collectionPause">자동 수집 일시정지</button></div>
+      <div class="actions"><button id="collectionResume" class="primary" disabled>수집 시작</button><button id="collectionPause">수집 일시정지</button><button id="collectionPage">전용 수집 페이지</button></div>
       <div class="mini">중앙 scheduler 배포 후 사용 · 독립 worker 시작은 차단됩니다. 운영 데이터 삭제 없음.</div>
     </div>
-    <div class="grid">
+    <details><summary>고급 · 기존 서비스 점검 (자동 관리 중 개별 시작 차단)</summary><div class="grid">
       <div class="card">
-        <div class="label">Toss Raw Tick · 상시 수집</div>
+        <div class="label">Toss Raw Tick · 중앙 관리 시 정규장 전용</div>
         <div id="collectorRawTickState" class="signal">상태 확인 중...</div>
         <div class="actions">
           <button data-collector="rawTick" data-action="start" class="primary">시작</button>
@@ -357,7 +357,7 @@
         </div>
         <div class="mini" style="margin-top:8px">1분봉 수집 서비스는 oneshot입니다. 완료 후 inactive가 되어도 오류가 아닙니다.</div>
       </div>
-    </div>
+    </div></details>
 
     <div class="card">
       <div class="label">수집 빠른 점검</div>
@@ -529,8 +529,9 @@ function collectorText(row){
 async function refreshCollectionAuto(){
   try{
     const data=await req("/api/research/collection50/status"),s=data.scheduler||{};
+    document.getElementById('collectionResume').disabled=!!s.stale||s.automatic!==true||s.mode==='UNAVAILABLE';
     setText("collectionAutoState",(s.stale?"⚠ 오래된 상태 · ":"")+(s.mode||"UNAVAILABLE")+" · "+(s.collector||"수집기 없음")+" · "+(s.reason||"")+" · ET "+(s.etTime||"-"));
-  }catch(e){setText("collectionAutoState","상태 오류: "+e.message);}
+  }catch(e){document.getElementById('collectionResume').disabled=true;setText("collectionAutoState","상태 오류: "+e.message);}
 }
 async function pauseCollection(paused){
   try{
@@ -540,6 +541,7 @@ async function pauseCollection(paused){
 }
 document.getElementById("collectionPause").onclick=()=>pauseCollection(true);
 document.getElementById("collectionResume").onclick=()=>pauseCollection(false);
+document.getElementById("collectionPage").onclick=()=>window.open(API+"/api/research/collection50/page",'_blank','noopener');
 async function refreshCollectors(){
   refreshCollectionAuto();
   try{

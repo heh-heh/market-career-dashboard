@@ -58,12 +58,13 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div class="backtest-head">
     <div>
       <div class="label">Toss 1m · Research Collection · 최대 50종목</div>
-      <h2 style="margin:5px 0">장기 분봉 수집 현황</h2>
+      <h2 style="margin:5px 0">장기 분봉 수집 · 2026년 10월 → 2000년</h2>
       <div id="collection50Summary" class="muted">EC2 수집 상태 확인 중...</div>
     </div>
-    <div class="muted">연구 전용 · 2026 Final OOS 제외</div>
+    <div class="muted">2026 수집 허용 · Final OOS 연구 차단 유지</div>
   </div>
   <div id="collectionScheduler" class="mini" style="margin:10px 0">자동 전환 상태 확인 중...</div>
+  <button id="collectionPageLink" type="button">수집 전용 화면 · 시작/일시정지</button>
   <details><summary>종목별 상세 상태 · 연구 다운로드</summary>
   <div style="margin-top:10px"><label class="mini">연구 데이터 연도 <select id="collection50Year"><option>2022</option><option>2023</option><option selected>2024</option><option>2025</option></select></label></div>
   <div id="collection50Symbols" class="bt-symbols" style="margin-top:12px"></div>
@@ -1141,6 +1142,7 @@ document.getElementById("collection50Symbols")?.addEventListener("click",e=>{
  const button=e.target.closest("[data-collection50-download]");
  if(button)downloadCollection50(button.dataset.collection50Download).catch(err=>alert(String(err)));
 });
+document.getElementById('collectionPageLink')?.addEventListener('click',()=>window.open(AWS_API_BASE+'/api/research/collection50/page','_blank','noopener'));
 async function loadCollection50(){
  const summary=document.getElementById("collection50Summary");
  const holder=document.getElementById("collection50Symbols");

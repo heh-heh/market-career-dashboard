@@ -1,5 +1,75 @@
 # Regular-session collection switching — deployment and evidence
 
+## One-command update / collection start (October 2026 revision)
+
+Run on EC2, from the production checkout (mounted `/mnt/research`, existing
+`.venv`, configured/active token broker and sudo access are prerequisites):
+
+```bash
+cd /home/ubuntu/market-career-dashboard && test "$(git branch --show-current)" = strategy-engine-v3 && git diff --quiet && git diff --cached --quiet && git fetch origin refs/heads/strategy-engine-v3:refs/remotes/origin/strategy-engine-v3 && git merge --ff-only origin/strategy-engine-v3 && bash scripts/deploy_collection.sh
+```
+
+This installs dependencies, runs focused tests BEFORE stopping workers, updates
+the broker/scheduler, preserves untracked data and existing env/control settings,
+disables the two independent collector units, checks for manual collectors, and
+restarts the API. It refuses a divergent/dirty tracked checkout or missing EBS
+mount. It does not reset/clean, migrate/delete production data, train AI, or change
+live/paper configuration. Restarting the API should be scheduled outside active
+research/trading jobs. A newly installed scheduler starts **paused**. Existing
+operator pause/resume choice is preserved on updates.
+Deployment tests use temporary paper/state/output paths, disabled live flags
+and a nonexistent broker socket, so importing the API for smoke tests cannot
+touch production paper history or acquire real Toss credentials.
+
+Open your API origin + `/api/research/collection50/page`. This fixed, mobile-first
+page is served with `Cache-Control: no-store`, so API deployment immediately
+updates it without waiting for Pages. Log in with the existing admin password,
+then click **수집 시작**. Authentication/expired-session errors are explicit.
+An absent/stale/stopped scheduler refuses Start (HTTP 409). No live ARM is used.
+If regular hours are open, Start runs Tick; outside regular hours it runs 1m.
+Control writes explicitly inherit the state-directory group with mode 0640 so
+root API → ubuntu scheduler works even with API umask 0077. Atomic writes use
+exclusive random temporary files rather than following predictable symlinks.
+Legacy worker stop timeout is 180 seconds without automatic SIGKILL; a stuck
+old worker stops deployment rather than allowing a second collector to start.
+
+Declared range is **2000-01-01 ET through 2026-10-31 ET inclusive**. Newest data
+first, one page per symbol turn, walking **2026 → 2000**. Future minutes are not
+created; the initial cursor is capped at the last completed UTC minute. A
+separate recent-edge cursor catches up every 12 hours without resetting the
+multi-year cursor. After the history pass, unresolved dates are retried latest
+first and still reported missing if the API cannot supply them. Data before
+listing or outside Toss retention remains unavailable, never fabricated.
+
+Widening a saved collection range creates immutable SHA-addressed copies of
+global/per-symbol checkpoints and re-audits coverage before resetting only
+collection cursors. Existing DB rows remain. Shrinking the range is refused.
+Research/evaluation/download Final OOS guards remain CLOSED for 2026.
+
+GitHub Pages workflow now accepts UI changes on `strategy-engine-v3` too and
+uploads only explicitly listed public HTML/CSS/JS plus `data/dashboard.json`.
+Backend code, tokens, collector databases and research artifacts are excluded.
+No merge into `main` is required. Pages deployment takes its normal CI time;
+the API-served page provides the immediate fallback. Existing trading/research
+views remain available; legacy service controls are folded under advanced
+inspection instead of deleting features.
+
+GitHub runtime check: environment `github-pages` currently permits only `main`.
+Adding the exact `strategy-engine-v3` branch policy returned HTTP 403 with the
+available GitHub integration. An owner must add that branch in Settings →
+Environments → github-pages → Deployment branches before its Pages job can
+publish. No protection is bypassed and no backend is merged into main. The
+EC2 API-served collection page does not depend on this GitHub permission.
+
+Local evidence for this revision: all 507 Python tests passed (44.94 s), all
+11 JavaScript smoke checks passed, Python compilation/CLI help and `bash -n`
+passed. The actual isolated deployment-test block passed 69 tests (3.30 s).
+New tests cover ET October boundary, allowed 2026 collection with CLOSED OOS,
+backward pagination/restart, immutable checkpoint copies, recent-edge catchup,
+pause-by-default, both switch directions, shared control permissions, temporary
+symlink protection, authenticated ready-only Start and public-only Pages output.
+No EC2 service deployment, live market request or historical backtest was run.
+
 ## Scope and findings
 
 Research branch only. No live/paper policy, order endpoints, Evolution fitness,
@@ -83,9 +153,10 @@ SQLite WAL + synchronous FULL commits, then atomic resumable checkpoint files.
 One day's minute set at a time during coverage auditing; one symbol's full
 checkpoint in memory. Page-sized API buffers, not entire histories.
 
-Initial coverage audit uses END labels [T-1m,T), XNYS RTH expectations. The six
-known AAPL/TQQQ days (2024-07-26/29/30/31, 08-01/02) are prioritized. Other missing
-sessions follow, then backward history. One API page per symbol turn; failures
+Initial coverage audit uses END labels [T-1m,T), XNYS RTH expectations. For the
+new 2026 range, backward history comes first, then latest incomplete dates.
+Legacy explicitly pre-2026 ranges retain the known AAPL/TQQQ gap priority.
+One API page per symbol turn; failures
 have a 60-second per-symbol cooldown. Each gap task ends at its date boundary,
 empty API response, 10 zero-add pages or 20 pages. Failed/partial gap outcomes
 remain in metadata; no fabricated fill or false completion. History termination
@@ -97,11 +168,11 @@ response after the requested cursor is rejected BEFORE insert. Invalid OHLCV or
 conflicting duplicate leaves existing candles intact. Missing sessions from
 before listing remain missing; no point-in-time listing evidence is fabricated.
 
-2026 OHLCV is not requested/inserted/evaluated/exported by this worker. It may
-already exist in an input research DB; read-only backup preserves those original
-bytes and metadata COUNT includes stored rows. Coverage queries and download
-OHLCV SELECT are bounded before 2026; no 2026 price feature or research evaluation.
-Live Tick collection dates may be 2026 — collection is not Final OOS training.
+Collection now explicitly accepts 2026 candles up to October 31, following the
+operator's updated collection scope. Metadata coverage includes those dates;
+download OHLCV SELECT and all existing research Final OOS guards remain bounded
+before 2026. No feature/training/evaluation changes are made. Collection is not
+Final OOS training.
 
 ### Monitoring / download
 
@@ -228,10 +299,8 @@ Toss/XNYS window and early close. Test admin pause/resume through existing login
 Inspect Tick ACK/subscribed/reconnect/outage and SQLite row increments. An ERROR
 calendar mode is a valid safety block; do not bypass lease to force collection.
 
-Pages: UI files are committed to research branch; `main` is NOT merged/pushed
-by this task. Apply ONLY `index.html` / `admin.html` UI diff to main via a reviewed
-UI-only commit and inspect Pages deployment separately, without backend merge.
-Until then Pages live UI remains old. In Research & Data expand symbol details,
+Pages: explicit public UI assets deploy from research branch changes via the
+Pages workflow above; `main` is not merged/pushed. In Research & Data expand symbol details,
 login as admin, choose 2022–2025 and download a single CSV.gz. Header SHA and
 provisional label are available; it is not automatically a valid V07 baseline.
 
