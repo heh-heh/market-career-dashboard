@@ -63,6 +63,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     </div>
     <div class="muted">연구 전용 · 2026 Final OOS 제외</div>
   </div>
+  <div style="margin-top:10px"><label class="mini">연구 데이터 연도 <select id="collection50Year"><option>2022</option><option>2023</option><option selected>2024</option><option>2025</option></select></label></div>
   <div id="collection50Symbols" class="bt-symbols" style="margin-top:12px"></div>
   <div class="mini" style="margin-top:10px">표시되는 저장량은 정규장 390봉 완전성 검증 결과가 아닙니다. 연도별 CSV 다운로드는 관리자 인증이 필요하며 연구·Codex 검증용입니다.</div>
 </div>
@@ -1111,6 +1112,26 @@ async function loadV4ResearchMonitor(){
 }
 
 let btTimer=null;
+async function downloadCollection50(symbol){
+ if(!/^[A-Z0-9]{1,8}$/.test(symbol))return;
+ const token=localStorage.getItem("market_dashboard_admin_token")||"";
+ if(!token){alert("관리자 로그인 후 이용하세요.");return;}
+ const year=document.getElementById("collection50Year")?.value||"2024";
+ if(!/^202[2-5]$/.test(year))return;
+ const res=await fetch(AWS_API_BASE+"/api/research/collection50/download/"+symbol+"?year="+year,{
+   headers:{"Authorization":"Bearer "+token},cache:"no-store"
+ });
+ if(!res.ok){alert("다운로드 실패: "+res.status);return;}
+ const blob=await res.blob(),url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download=symbol+"-"+year+"-research.csv.gz";
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+document.getElementById("collection50Symbols")?.addEventListener("click",e=>{
+ const button=e.target.closest("[data-collection50-download]");
+ if(button)downloadCollection50(button.dataset.collection50Download).catch(err=>alert(String(err)));
+});
 async function loadCollection50(){
  const summary=document.getElementById("collection50Summary");
  const holder=document.getElementById("collection50Symbols");
@@ -1127,7 +1148,7 @@ async function loadCollection50(){
    return '<div class="bt-symbol"><b>'+esc(r.symbol)+'</b> <span class="mini">'+label+'</span>'+
     '<div class="mini">저장 '+Number(r.stored||0).toLocaleString()+'봉</div>'+
     '<div class="mini">'+esc(r.oldestTimestamp||"-")+' ~ '+esc(r.latestTimestamp||"-")+'</div>'+
-    '<div class="mini">연도별 자료는 관리자 세션으로 API에서 다운로드</div></div>';
+    '<button type="button" data-collection50-download="'+esc(r.symbol)+'" style="margin-top:6px">CSV 다운로드</button></div>';
   }).join("")||'<div class="muted">수집 기록 없음 · 서버에 코드 배포 및 수집 실행 필요</div>';
  }catch(e){summary.textContent="수집 API 연결 실패: "+String(e.message||e);holder.textContent="";}
 }
