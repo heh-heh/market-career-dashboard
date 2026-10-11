@@ -185,6 +185,13 @@ class ExecutionTests(unittest.TestCase):
         accounts, diag = evaluate_day(bots, data, o, c, ["TQQQ"], cfg)
         return bots, accounts[0], diag
 
+    def test_v05_daily_trade_cap(self):
+        data, o, c = fixture()
+        cfg = Config(population_size=1, max_trades_per_session=3, entry_cooldown_minutes=0)
+        bots = [Bot("test", buy_genome(cfg), 0, [], "2024-06-03")]
+        accounts, _ = evaluate_day(bots, data, o, c, ["TQQQ"], cfg)
+        self.assertLessEqual(len(accounts[0].trades), 3)
+
     def test_entry_is_subsequent_observable_close_not_signal_or_open(self):
         def change(rows, o):
             t = o+31*MINUTE  # first signal at 10:01; next completed close at 10:02
@@ -312,6 +319,25 @@ class EvolutionTests(unittest.TestCase):
         self.assertEqual(by[bots[0].bot_id]["fitnessMode"],"v04_generalization")
         self.assertGreater(by[bots[1].bot_id]["tradesPerSession"],2)
         self.assertIsNotNone(by[bots[1].bot_id]["fitnessComponents"])
+
+    def test_v05_parent_requires_four_profitable_sessions(self):
+        c = Config(
+            population_size=1, fitness_mode="v05_structural",
+            evaluation_window_sessions=7, min_profitable_sessions_for_parent=4,
+        )
+        bot = initial_population(c, random.Random(5), "2024-06-03")[0]
+        batches=[]
+        returns=[.02,.02,.02,-.005,-.005,-.005,-.005]  # positive total, only 3 winning sessions
+        for r in returns:
+            batches.append([dict(
+                botId=bot.bot_id,date="2024-06-03",survival="SURVIVE" if r>0 else "DEAD",
+                reproductionEligible=r>0,evaluationValid=True,dailyPnl=r*100,dailyReturn=r,
+                fitness=r,maxDrawdown=.001,trades=1,transactionCost=.01,turnover=10,
+            )])
+        out=aggregate_window_evaluations([bot],batches,c,complete=True,mark_death=False)[0]
+        self.assertGreater(out["windowPnl"],0)
+        self.assertEqual(out["profitableSessions"],3)
+        self.assertFalse(out["reproductionEligible"])
 
     def test_elite_preservation_and_dead_parent_exclusion(self):
         c = Config(population_size=20, elite_count=2, parent_fraction=1)
