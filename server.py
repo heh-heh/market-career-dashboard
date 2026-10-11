@@ -305,7 +305,27 @@ def start_autonomous_research(mode, provisional=False):
             "RESEARCH_EXPORT_TOKEN":token,
             "EVOLUTION_AUTONOMOUS_DIR":str(AUTONOMOUS_ROOT),
         })
-        log=AUTONOMOUS_WEB_LOG.open("ab",buffering=0)
+        logs_dir=AUTONOMOUS_ROOT/"logs"
+        logs_dir.mkdir(parents=True,exist_ok=True)
+        try:
+            os.chmod(logs_dir,0o700)
+        except OSError:
+            pass
+        if AUTONOMOUS_WEB_LOG.exists() and AUTONOMOUS_WEB_LOG.stat().st_size:
+            stamp=time.strftime("%Y%m%dT%H%M%SZ",time.gmtime())
+            archived=logs_dir/f"web-launch-{stamp}-{uuid.uuid4().hex[:8]}.log"
+            AUTONOMOUS_WEB_LOG.replace(archived)
+            try:
+                os.chmod(archived,0o600)
+            except OSError:
+                pass
+        log=AUTONOMOUS_WEB_LOG.open("wb",buffering=0)
+        header=(
+            f"[{time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())}] "
+            f"Autonomous Research launch mode={mode} provisional={bool(provisional)} "
+            f"maxIterations=1 finalOos=CLOSED\n"
+        ).encode("utf-8")
+        log.write(header)
         try:
             child=subprocess.Popen(
                 cmd,cwd=str(ROOT),env=env,stdin=subprocess.DEVNULL,
