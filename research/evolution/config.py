@@ -21,6 +21,11 @@ class Config:
     transaction_cost_penalty: float = 0.25
     excessive_trading_penalty: float = 0.001
     free_trade_count: int = 10
+    # V0.4 optional generalization-oriented window fitness. The legacy V0 path
+    # remains the default so prior experiments are reproducible.
+    fitness_mode: str = "v0"
+    losing_session_penalty: float = 0.0
+    return_volatility_penalty: float = 0.0
     cutoff_minutes: int = 5  # before actual XNYS close, including half days
     # V0.1 resource-aware scaling is opt-in so V0 replay remains reproducible by default.
     adaptive_resources: bool = False
@@ -82,8 +87,11 @@ class Config:
             raise ValueError("Probabilities must be in [0,1]")
         if min(self.epsilon, self.return_scale, self.volume_scale, self.feature_clip) <= 0 or self.cutoff_minutes < 1:
             raise ValueError("Invalid numerical scale/cutoff")
+        if self.fitness_mode not in {"v0", "v04_generalization"}:
+            raise ValueError("Unknown fitness_mode")
         if min(self.slippage_bps, self.half_spread_bps, self.mutation_strength,
-               self.drawdown_penalty, self.transaction_cost_penalty, self.excessive_trading_penalty) < 0:
+               self.drawdown_penalty, self.transaction_cost_penalty, self.excessive_trading_penalty,
+               self.losing_session_penalty, self.return_volatility_penalty) < 0:
             raise ValueError("Costs/penalties must be nonnegative")
         if self.slippage_bps + self.half_spread_bps >= 10000:
             raise ValueError("Invalid execution cost")
