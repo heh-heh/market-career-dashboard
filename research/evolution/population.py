@@ -158,3 +158,37 @@ def reproduce(bots, evaluations, config, rng, generation, birth_date):
     return children, dict(parentPoolSize=len(parents), eliteCount=len(elites), mutationCount=mutations,
                           crossoverCount=sum(c.origin == "CROSSOVER_MUTATION" for c in children),
                           randomRecovery=not parents, parentIds=[p.bot_id for p in parents])
+
+
+def load_population_records(records, config):
+    """Rebuild an immutable genome population from a saved research artifact."""
+    from .genome import Genome
+    bots = []
+    seen = set()
+    for row in records:
+        bot_id = str(row["bot_id"])
+        if bot_id in seen:
+            raise ValueError(f"Duplicate bot_id in population artifact: {bot_id}")
+        seen.add(bot_id)
+        genome = Genome.from_dict(row["genome"]).validate(config)
+        bot = Bot(
+            bot_id=bot_id,
+            genome=genome,
+            generation=int(row.get("generation", 0)),
+            parent_ids=list(row.get("parent_ids") or []),
+            birth_date=str(row.get("birth_date") or ""),
+            mutation_count=int(row.get("mutation_count", 0)),
+            death_date=row.get("death_date"),
+            lifetime_days=int(row.get("lifetime_days", 0)),
+            lifetime_trades=int(row.get("lifetime_trades", 0)),
+            lifetime_equity=float(row.get("lifetime_equity", config.initial_capital)),
+            lifetime_initial_capital=float(row.get("lifetime_initial_capital", config.initial_capital)),
+            origin=str(row.get("origin") or "LOADED"),
+            lifetime_pnl=float(row.get("lifetime_pnl", 0.0)),
+        )
+        if row.get("genome_hash") and row["genome_hash"] != genome.digest:
+            raise ValueError(f"Genome hash mismatch for {bot_id}")
+        bots.append(bot)
+    if not bots:
+        raise ValueError("Population artifact is empty")
+    return bots
