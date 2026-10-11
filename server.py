@@ -1014,6 +1014,56 @@ ADMIN_CONSOLE_SERVICES={
     "backtest-multistrategy.service",
     "backtest-hybrid-watchdog.service",
 }
+ADMIN_COLLECTORS={
+    "oneMinute":{
+        "service":"collect-expanded-universe.service",
+        "label":"Toss 1분봉 확장 수집",
+        "mode":"oneshot",
+    },
+    "rawTick":{
+        "service":"collect-toss-ticks.service",
+        "label":"Toss Raw Tick 수집",
+        "mode":"continuous",
+    },
+}
+
+def _systemctl_value(*args,timeout=15):
+    code,out=_console_run(["systemctl",*args],timeout=timeout)
+    return code,(out or "").strip()
+
+def collector_admin_status():
+    rows={}
+    for key,item in ADMIN_COLLECTORS.items():
+        service=item["service"]
+        acode,active=_systemctl_value("is-active",service)
+        ecode,enabled=_systemctl_value("is-enabled",service)
+        rows[key]={
+            **item,
+            "active":active=="active",
+            "activeState":active or ("unknown" if acode else "inactive"),
+            "enabled":enabled in {"enabled","enabled-runtime"},
+            "enabledState":enabled or ("unknown" if ecode else "disabled"),
+        }
+    return {"collectors":rows}
+
+def control_collector(key,action):
+    key=str(key or "")
+    action=str(action or "").lower()
+    if key not in ADMIN_COLLECTORS:
+        raise ValueError("unknown collector")
+    if action not in {"start","stop","restart","enable","disable"}:
+        raise ValueError("unsupported collector action")
+    service=ADMIN_COLLECTORS[key]["service"]
+    args=["systemctl"]
+    if action=="restart":
+        args+=["restart",service]
+    elif action in {"start","stop","enable","disable"}:
+        args+=[action,service]
+    code,out=_console_run(args,timeout=30)
+    if code!=0:
+        raise RuntimeError(out or f"{action} failed")
+    return collector_admin_status()
+
 ADMIN_CONSOLE_LOGS={
     "collector": Path("/var/lib/market-career-dashboard/expanded_universe.log"),
     "v2": Path("/var/lib/market-career-dashboard/backtest_v2_tqqq_mr.log"),
@@ -1063,6 +1113,55 @@ def _git_branch():
     if not branch or branch=="HEAD":
         raise RuntimeError("detached HEAD에서는 pull/push를 실행하지 않습니다.")
     return branch
+
+def _validated_git_commit(ref):
+    ref=str(ref or "").strip()
+    if not ref or len(ref)>180 or ref.startswith("-") or any(x in ref for x in ("..","@{","\\","\n","\r"," ","\t")):
+        raise ValueError("invalid git ref")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/\-]*|[0-9a-fA-F]{7,40}",ref):
+        raise ValueError("invalid git ref")
+    code,out=_git_run(["rev-parse","--verify",ref+"^{commit}"])
+    if code!=0 or not re.fullmatch(r"[0-9a-f]{40}",out.strip()):
+        raise ValueError("git ref not found")
+    return out.strip()
+
+def merge_git_ref(ref):
+    sha=_validated_git_commit(ref)
+    code,out=_git_run(["merge","--no-ff","--no-edit",sha],timeout=180)
+    return code,(f"merge {ref} -> {sha[:12]}\n"+out).strip()
+
+def deploy_status():
+    parts=[]
+    for args in (["status","--short","--branch"],["rev-list","--left-right","--count","HEAD...origin/strategy-engine-v3"]):
+        code,out=_git_run(args)
+        parts.append(out if code==0 else f"[git error] {out}")
+    code,out=_console_run(["systemctl","is-active","market-career-dashboard.service"],timeout=10)
+    parts.append("API service: "+(out or f"exit {code}"))
+    return 0,"\n".join(parts)
+
+def deploy_apply():
+    branch=_git_branch()
+    if branch!="strategy-engine-v3":
+        return 2,"배포는 strategy-engine-v3 브랜치에서만 허용합니다."
+    code,conflicts=_git_run(["diff","--name-only","--diff-filter=U"])
+    if code!=0 or conflicts.strip():
+        return 2,"병합 충돌을 먼저 해결하거나 'git merge --abort'를 실행하세요.\n"+conflicts
+    checks=[
+        [str(ROOT/".venv"/"bin"/"python"),"-m","py_compile",
+         "server.py","research_export.py","research_export_metadata.py"],
+    ]
+    dep_code,dep_out=_install_runtime_requirements()
+    if dep_code!=0:
+        return dep_code,"[dependencies]\n"+dep_out
+    outputs=["[dependencies]\n"+dep_out]
+    for cmd in checks:
+        code,out=_console_run(cmd,timeout=60)
+        outputs.append("[check]\n"+(out or "OK"))
+        if code!=0:
+            return code,"\n".join(outputs)
+    code,out=_console_run(["systemctl","--no-block","restart","market-career-dashboard.service"],timeout=5)
+    outputs.append("[restart]\n"+(out or "API restart scheduled"))
+    return code,"\n".join(outputs)
 
 def github_auth_status():
     code,remote=_git_run(["remote","get-url","origin"])
@@ -1155,14 +1254,16 @@ def run_git_action(action):
         code,out=_git_run(["fetch","--prune","origin"],timeout=120)
         if code!=0:
             return code,out
-        code2,out2=_git_run(["switch","-C","strategy-engine-v3","origin/strategy-engine-v3"],timeout=120)
-        if code2!=0:
-            return code2,(out+"\n"+out2).strip()
-        code3,out3=_git_run(["branch","--set-upstream-to=origin/strategy-engine-v3","strategy-engine-v3"])
-        if code3!=0:
-            return code3,(out+"\n"+out2+"\n"+out3).strip()
-        code4,out4=_install_runtime_requirements()
-        return code4,(out+"\n"+out2+"\n"+out3+"\n[dependencies]\n"+out4).strip()
+        branch=_git_branch()
+        parts=[out]
+        if branch!="strategy-engine-v3":
+            code2,out2=_git_run(["switch","strategy-engine-v3"],timeout=120)
+            parts.append(out2)
+            if code2!=0:
+                return code2,"\n".join(x for x in parts if x).strip()
+        code3,out3=_git_run(["merge","--no-ff","--no-edit","origin/strategy-engine-v3"],timeout=120)
+        parts.append(out3)
+        return code3,"\n".join(x for x in parts if x).strip()
     if action=="push":
         branch=_git_branch()
         return _git_run(["push","origin",f"HEAD:{branch}"],timeout=120)
@@ -1201,9 +1302,10 @@ def run_admin_console(command):
             "  df -h /\n"
             "  du -sh data/toss_1m\n"
             "  git status|branch|diff|fetch|pull|push\n"
-            "  (배포 브랜치 정리는 관리자 Git 탭의 전용 버튼 사용)\n"
+            "  git merge-v3 | git merge <ref> | git merge --abort\n"
             "  git log [N]\n"
-            "  systemctl status|is-active|restart <service>\n"
+            "  deploy status|patch|apply\n"
+            "  systemctl status|is-active|start|stop|restart|enable|disable <service>\n"
             "  api status|restart\n"
             "  deps status|install\n"
             "  journalctl <service> [N]\n"
@@ -1249,6 +1351,32 @@ def run_admin_console(command):
             raise ValueError("usage: git log [N]")
         return _git_run(["log","--oneline","-n",str(n)])
 
+    if parts==["git","merge-v3"]:
+        code,out=_git_run(["fetch","--prune","origin"],timeout=120)
+        if code!=0:
+            return code,out
+        code2,out2=merge_git_ref("origin/strategy-engine-v3")
+        return code2,(out+"\n"+out2).strip()
+
+    if parts==["git","merge","--abort"]:
+        return _git_run(["merge","--abort"],timeout=60)
+
+    if len(parts)==3 and parts[:2]==["git","merge"]:
+        return merge_git_ref(parts[2])
+
+    if parts and parts[0]=="deploy":
+        if parts==["deploy","status"]:
+            return deploy_status()
+        if parts==["deploy","patch"]:
+            code,out=_git_run(["fetch","--prune","origin"],timeout=120)
+            if code!=0:
+                return code,out
+            code2,out2=merge_git_ref("origin/strategy-engine-v3")
+            return code2,(out+"\n"+out2).strip()
+        if parts==["deploy","apply"]:
+            return deploy_apply()
+        raise ValueError("usage: deploy status|patch|apply")
+
     if parts and parts[0]=="api":
         if parts==["api","status"]:
             return _console_run(
@@ -1279,8 +1407,8 @@ def run_admin_console(command):
         raise ValueError("usage: deps status|install")
 
     if parts and parts[0]=="systemctl":
-        if len(parts)!=3 or parts[1] not in {"status","is-active","restart"}:
-            raise ValueError("usage: systemctl status|is-active|restart <service>")
+        if len(parts)!=3 or parts[1] not in {"status","is-active","start","stop","restart","enable","disable"}:
+            raise ValueError("usage: systemctl status|is-active|start|stop|restart|enable|disable <service>")
         service=parts[2]
         if service not in ADMIN_CONSOLE_SERVICES:
             raise ValueError("service not allowed")
@@ -2220,6 +2348,14 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},500)
             return
+        if path=="/api/admin/collectors":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**collector_admin_status()})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
+            return
         if path=="/api/settings":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -2374,14 +2510,39 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":True,**info}); return
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},400); return
+        if path=="/api/admin/collectors/control":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                if not isinstance(body,dict) or set(body)-{"collector","action"}:
+                    raise ValueError("invalid collector request")
+                with ADMIN_CONSOLE_LOCK:
+                    result=control_collector(body.get("collector"),body.get("action"))
+                self.send_json({"ok":True,**result}); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/admin/git":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
             try:
                 body=self.read_json()
+                if not isinstance(body,dict) or set(body)-{"action","ref"}:
+                    raise ValueError("invalid git request")
                 action=str(body.get("action") or "")
                 with GIT_LOCK:
-                    code,output=run_git_action(action)
+                    if action=="merge-ref":
+                        code,output=merge_git_ref(body.get("ref"))
+                    elif action=="merge-abort":
+                        code,output=_git_run(["merge","--abort"],timeout=60)
+                    elif action=="deploy-status":
+                        code,output=deploy_status()
+                    elif action=="deploy-apply":
+                        code,output=deploy_apply()
+                    else:
+                        code,output=run_git_action(action)
                 self.send_json({"ok":True,"action":action,"exitCode":code,"output":output})
             except subprocess.TimeoutExpired:
                 self.send_json({"ok":False,"error":"git command timed out"},408)
