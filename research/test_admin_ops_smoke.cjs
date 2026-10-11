@@ -32,6 +32,7 @@ assert.match(server,/collect-toss-ticks\.service/);
 assert.match(server,/def merge_git_ref\(ref\):/);
 assert.match(server,/\["merge","--no-ff","--no-edit",sha\]/);
 assert.match(server,/def deploy_apply\(\):/);
+assert.match(server,/AUTONOMOUS_RESEARCH_RUNNING/);
 assert.match(server,/strategy-engine-v3/);
 assert.ok(!server.includes('["reset","--hard"]'),'hard reset must not be exposed');
 assert.ok(!server.includes('["clean","-fd"]'),'git clean must not be exposed');
