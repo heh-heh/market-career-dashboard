@@ -21,7 +21,7 @@ from research.backtest_v4_strategies import exchange_sessions
 from research.autonomous.artifact_reader import verify_archive, extract_verified, verify_cache, sha256
 from research.autonomous.config import LoopConfig
 from research.autonomous.experiment_registry import Registry, write_json, read_json, exclusive_lock
-from research.autonomous.export_client import ExportClient, NoRedirect
+from research.autonomous.export_client import ExportClient, NoRedirect, extraction_disk_reserve
 from research.autonomous.quarterly import quarterly_metrics, select_candidates, build_shortlist_v08
 from research.autonomous.safety_gate import period_gate, plan_gate, resource_gate, promotion_gate, ResourcePauseError
 from research.autonomous.runner import loop, process_identity, active_stage, execute_iteration, run_validation
@@ -317,6 +317,26 @@ class AutonomousTests(unittest.TestCase):
                 NoRedirect().redirect_request(None, None, None, None, None, None)
         with patch.dict(os.environ, {"RESEARCH_EXPORT_TOKEN": "offline", "RESEARCH_EXPORT_BASE_URL": "http://remote.invalid"}):
             with self.assertRaisesRegex(ValueError, 'HTTPS'): ExportClient(self.config)
+
+    def test_export_disk_reserve_uses_completed_payload(self):
+        mib = 1024**2
+        gib = 1024**3
+        cfg = replace(self.config, max_extracted_bytes=4*gib)
+        small = extraction_disk_reserve(
+            {"archiveBytes": 8*mib, "bytesProcessed": 6*mib, "estimatedBytes": 7*mib}, cfg
+        )
+        # Working reserve is based on the completed payload plus bounded headroom,
+        # not the unrelated 4 GiB security extraction ceiling.
+        self.assertLess(small, 128*mib)
+        self.assertGreaterEqual(small, 8*mib + 64*mib)
+
+        capped = extraction_disk_reserve(
+            {"archiveBytes": 100*mib, "bytesProcessed": 8*gib}, cfg
+        )
+        self.assertEqual(capped, 100*mib + 4*gib)
+
+        fallback = extraction_disk_reserve({"archiveBytes": 8*mib}, cfg)
+        self.assertEqual(fallback, 8*mib + 4*gib)
 
     def test_export_client_download_and_cache(self):
         ids = ['a' * 24]
