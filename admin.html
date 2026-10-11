@@ -241,6 +241,11 @@
       <div id="aiCheckpoints" class="signal">상태 확인 중...</div>
     </div>
     <div class="card">
+      <div class="label">V0.7 Baseline 선택 진단</div>
+      <div id="aiBaselineSelectionSummary" class="signal">선택 기록 없음</div>
+      <div id="aiBaselineSelectionDetail" class="terminal" style="min-height:100px;max-height:260px;margin-top:8px;white-space:pre-wrap">-</div>
+    </div>
+    <div class="card">
       <div class="label">현재 실패 상세</div>
       <div id="aiErrorSummary" class="signal">실패 없음</div>
       <div id="aiErrorDetail" class="terminal" style="min-height:100px;max-height:280px;margin-top:8px;white-space:pre-wrap">-</div>
@@ -470,8 +475,10 @@ async function refreshAI(){
     setText("aiBaselineCampaign",campaign.campaignId||campaign.campaignDir||"-");
     setText("aiState",c.state||"waiting"); setText("aiIteration",c.iteration??"-"); setText("aiCandidate",c.candidateVersion||"-"); setText("aiOos",d.finalOosGate||"CLOSED");
     setText("aiHypothesis",c.hypothesis||"V0.8 계획 대기");
-    const reviewedDry=d.reviewedDryRun||{};
-    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>Baseline: <b>'+esc(c.baselineRunId||"-")+'</b> · 후보 '+esc(c.baselineCandidates??"-")+' · 탈락 '+esc(c.baselineRejected??"-")+'<br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
+    const reviewedDry=d.reviewedDryRun||{},bs=c.baselineSelection||{},rejected=Array.isArray(bs.rejected)?bs.rejected:[];
+    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>Baseline: <b>'+esc(c.baselineRunId||bs.selectedRunId||"-")+'</b> · 후보 '+esc(c.baselineCandidates??bs.candidateCount??"-")+' · 탈락 '+esc(c.baselineRejected??rejected.length??"-")+'<br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
+    document.getElementById("aiBaselineSelectionSummary").innerHTML=bs.policy?('정책: <b>'+esc(bs.policy)+'</b> · 후보 '+esc(bs.candidateCount??"-")+' · 선택 '+esc(bs.selectedRunId||"없음")+' · 기준 완화 <b>'+esc(String(bs.criteriaRelaxed))+'</b>'):'선택 기록 없음';
+    document.getElementById("aiBaselineSelectionDetail").textContent=rejected.length?rejected.map((x,i)=>'#'+(i+1)+' catalog='+String(x.catalogId||'-')+' run='+String(x.runId||'-')+'\n  '+String(x.code||'-')+' · stage='+String(x.stage||'-')+(x.detail?' · '+String(x.detail):'')).join('\n'):'탈락 후보 없음';
     const p=(d.processes||[])[0]||{};
     setText("aiProcessPid",p.pid??"-");
     setText("aiProcessState",p.processState||"-");
