@@ -1,6 +1,7 @@
 """Daily survival, lineage and selection; validation/OOS never call reproduction."""
 from dataclasses import dataclass, field
 import math
+import statistics
 
 from .genome import random_genome, crossover, mutate
 
