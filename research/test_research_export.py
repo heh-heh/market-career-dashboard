@@ -83,12 +83,13 @@ class ExportTests(ExportFixtures):
             self.assertFalse(any(p.endswith(('server.log','.env','.key','.pem','token_cache.json','session.json')) for p in z.namelist()))
             self.assertNotIn(b'DO_NOT_EXPORT',b''.join(z.read(p) for p in z.namelist()))
     def test_secret_contents_removed(self):
-        self.write('evolution','run-a/diagnostic.json',{'access_token':'hidden','nested':{'cookie':'hidden','value':3},'note':'Authorization: Bearer hidden'})
+        self.write('evolution','run-a/diagnostic.json',{'access_token':'hidden','aws_access_key_id':'hidden','nested':{'cookie':'hidden','value':3},'note':'Authorization: Bearer hidden'})
         self.write('evolution','run-a/decisions.csv','symbol,authorization,note\nSPY,hidden,Bearer hidden\n')
         job=self.run_job({'type':'evolution_full'})
         with self.archive(job) as z:
             doc=json.loads(z.read('evolution/run-a/diagnostic.json'))
             self.assertNotIn('access_token',doc);self.assertEqual(doc['nested'],{'value':3})
+            self.assertNotIn('aws_access_key_id',doc)
             self.assertNotIn(b'hidden',z.read('evolution/run-a/decisions.csv'))
     def test_summary_archive_mobile_scope(self):
         job=self.run_job({'type':'evolution_summary'})

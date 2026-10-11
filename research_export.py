@@ -35,8 +35,8 @@ SUMMARY_NAMES = {"run.json", "status.json", "final_population.json", "validation
                  "generalization_diagnostics.json", "shortlist.json", "campaign.json", "config.json",
                  "default_config.json", "evaluation_summary.json"}
 EXTENSIONS = {".json", ".jsonl", ".csv", ".md", ".txt", ".toml", ".yaml", ".yml", ".ini"}
-SECRET_KEY = re.compile(r"token|secret|password|credential|authorization|cookie|private.?key|api.?key|app.?key|session(?:id|token|key|cookie)|^sessions?$", re.I)
-SECRET_TEXT = re.compile(r"Bearer\s+\S+|(?:[\w-]*(?:token|secret|password|authorization|cookie|credential|session)[\w-]*|api[_-]?key)\s*[:=]\s*\S+|-----BEGIN[^\n]*PRIVATE KEY", re.I)
+SECRET_KEY = re.compile(r"token|secret|password|credential|authorization|cookie|private.?key|access.?key|api.?key|app.?key|session(?:id|token|key|cookie)|^sessions?$", re.I)
+SECRET_TEXT = re.compile(r"Bearer\s+\S+|(?:AKIA|ASIA)[A-Z0-9]{16}|[\w-]*(?:token|secret|password|authorization|cookie|credential|session|access[_-]?key|api[_-]?key|app[_-]?key)[\w-]*\s*[:=]\s*\S+|-----BEGIN[^\n]*PRIVATE KEY", re.I)
 NY = ZoneInfo("America/New_York")
 MiB = 1024**2
 GiB = 1024**3
@@ -59,7 +59,7 @@ def allowed_name(relative):
     parts = safe_relative(relative)
     for p in parts:
         low = p.lower()
-        if low.startswith(".") or re.search(r"oauth|token|secret|password|credential|authorization|cookie|private[-_]?key|api[-_]?key|app[-_]?key|^sessions?(?:\.|_)|^id_rsa|(?:server|access|error)[._-]?log|^logs?$", low):
+        if low.startswith(".") or re.search(r"oauth|token|secret|password|credential|authorization|cookie|private[-_]?key|access[-_]?key|api[-_]?key|app[-_]?key|^sessions?(?:\.|_)|^id_rsa|(?:server|access|error)[._-]?log|^logs?$", low):
             return False
         if low.endswith((".key", ".pem", ".log", ".sqlite", ".db", ".zip", ".tmp")):
             return False
