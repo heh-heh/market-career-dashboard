@@ -54,6 +54,18 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div><button type="button" onclick="location.href='./admin.html'">관리자 페이지</button></div>
   </div>
 </div>
+<div class="card" style="margin-bottom:12px">
+  <div class="backtest-head">
+    <div>
+      <div class="label">Toss 1m · Research Collection · 최대 50종목</div>
+      <h2 style="margin:5px 0">장기 분봉 수집 현황</h2>
+      <div id="collection50Summary" class="muted">EC2 수집 상태 확인 중...</div>
+    </div>
+    <div class="muted">연구 전용 · 2026 Final OOS 제외</div>
+  </div>
+  <div id="collection50Symbols" class="bt-symbols" style="margin-top:12px"></div>
+  <div class="mini" style="margin-top:10px">표시되는 저장량은 정규장 390봉 완전성 검증 결과가 아닙니다. 연도별 CSV 다운로드는 관리자 인증이 필요하며 연구·Codex 검증용입니다.</div>
+</div>
 <div class="card">
   <div class="backtest-head">
     <div>
@@ -1099,6 +1111,26 @@ async function loadV4ResearchMonitor(){
 }
 
 let btTimer=null;
+async function loadCollection50(){
+ const summary=document.getElementById("collection50Summary");
+ const holder=document.getElementById("collection50Symbols");
+ if(!summary||!holder)return;
+ try{
+  const response=await fetch(AWS_API_BASE+"/api/research/collection50/status?"+Date.now(),{cache:"no-store"});
+  const data=await response.json();
+  if(!response.ok||!data.ok)throw Error(data.error||"status unavailable");
+  const rows=Array.isArray(data.symbols)?data.symbols:[];
+  const stored=rows.reduce((sum,r)=>sum+Number(r.stored||0),0);
+  summary.textContent="기록된 종목 "+rows.length+"/50 · 저장된 분봉 "+stored.toLocaleString()+"개 · 검증되지 않은 원시 수집 상태";
+  holder.innerHTML=rows.map(r=>{
+   const label=r.status==="collection_pass_finished_unverified"?"수집 패스 종료 · 미검증":r.status==="error"?"오류":r.status==="collecting"?"수집 중":esc(r.status||"대기");
+   return '<div class="bt-symbol"><b>'+esc(r.symbol)+'</b> <span class="mini">'+label+'</span>'+
+    '<div class="mini">저장 '+Number(r.stored||0).toLocaleString()+'봉</div>'+
+    '<div class="mini">'+esc(r.oldestTimestamp||"-")+' ~ '+esc(r.latestTimestamp||"-")+'</div>'+
+    '<div class="mini">연도별 자료는 관리자 세션으로 API에서 다운로드</div></div>';
+  }).join("")||'<div class="muted">수집 기록 없음 · 서버에 코드 배포 및 수집 실행 필요</div>';
+ }catch(e){summary.textContent="수집 API 연결 실패: "+String(e.message||e);holder.textContent="";}
+}
 const btPhaseNames={starting:"시작 준비",syncing:"GitHub 동기화",building:"C++ 엔진 빌드",collecting:"Toss 1분봉 수집",backtest:"C++ 백테스트 계산",completed:"백테스트 완료",waiting:"대기"};
 async function loadBacktestMonitor(){
  const base=AWS_API_BASE||"";if(!base)return;
@@ -1205,7 +1237,8 @@ function startBacktestMonitor(){
  loadV4ResearchMonitor();
  loadEvolutionMonitor();
  loadBacktestMonitor();
- btTimer=setInterval(()=>{loadTickCollectorMonitor();loadV4ResearchMonitor();loadEvolutionMonitor();loadBacktestMonitor()},3000);
+ loadCollection50();
+ btTimer=setInterval(()=>{loadTickCollectorMonitor();loadV4ResearchMonitor();loadEvolutionMonitor();loadBacktestMonitor();loadCollection50()},3000);
 }
 document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
 
