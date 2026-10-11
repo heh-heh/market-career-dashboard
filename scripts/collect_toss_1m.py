@@ -56,7 +56,8 @@ def record_error(symbol, before, attempt, error, http_code=None, body=None):
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def fetch_page(tok, symbol, before=None, count=100, refresh_token=None):
+def fetch_page(tok, symbol, before=None, count=100, refresh_token=None, error_recorder=None):
+    log_error = error_recorder if error_recorder is not None else record_error
     q = {
         "symbol": symbol,
         "interval": "1m",
@@ -82,7 +83,7 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None):
         except HTTPError as e:
             body = e.read().decode("utf-8", "ignore")
             if e.code == 429:
-                record_error(symbol, before, attempt, "HTTPError", e.code, body)
+                log_error(symbol, before, attempt, "HTTPError", e.code, body)
                 if attempt < 7:
                     retry_after = 0.0
                     try:
@@ -93,16 +94,16 @@ def fetch_page(tok, symbol, before=None, count=100, refresh_token=None):
                     time.sleep(max(1.0, min(30.0, delay)))
                     continue
             if e.code == 401 and attempt < 2 and refresh_token is not None:
-                record_error(symbol, before, attempt, "HTTPError", e.code, body)
+                log_error(symbol, before, attempt, "HTTPError", e.code, body)
                 msg = body.lower()
                 if "token-revoked" in msg or "unauthorized" in msg or "invalid-token" in msg:
                     tok = refresh_token()
                     time.sleep(0.5)
                     continue
-            record_error(symbol, before, attempt, "HTTPError", e.code, body)
+            log_error(symbol, before, attempt, "HTTPError", e.code, body)
             raise RuntimeError(f"Toss candles HTTP {e.code}: {body[:300]}")
         except Exception as e:
-            record_error(symbol, before, attempt, type(e).__name__, None, str(e))
+            log_error(symbol, before, attempt, type(e).__name__, None, str(e))
             raise
 
 

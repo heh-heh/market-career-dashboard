@@ -26,7 +26,13 @@ def main(argv=None):
     p.add_argument("--max-population",type=int,default=300)
     p.add_argument("--shortlist-max",type=int,default=40)
     p.add_argument("--seed",type=int,default=42)
+    p.add_argument("--dataset-snapshot",type=Path,help="Optional verified repaired CSV snapshot; copied into NEW campaign provenance")
     args=p.parse_args(argv)
+
+    snapshot_info=None
+    if args.dataset_snapshot:
+        from research.toss_1m_repair import verify_snapshot, symbols_checked
+        snapshot_info=verify_snapshot(args.dataset_snapshot,args.data_dir,symbols_checked(args.symbols))
 
     campaign_id=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-v07"
     cdir=args.results_dir.resolve()/("campaign-"+campaign_id)
@@ -42,6 +48,12 @@ def main(argv=None):
         population=args.population,maxPopulation=args.max_population,shortlistMax=args.shortlist_max,
         seed=args.seed,createdAt=datetime.now(timezone.utc).isoformat(),
     )
+    if snapshot_info is not None:
+        from research.backtest_v4_strategies import file_sha256
+        atomic_json(cdir/"dataset_snapshot.json",snapshot_info)
+        state["datasetSnapshot"]=dict(snapshotId=snapshot_info["snapshotId"],path="dataset_snapshot.json",
+                                      sourceManifestSha256=file_sha256(args.dataset_snapshot),
+                                      repairedDates=snapshot_info["repairedDates"],timestampKind="end",finalOosGate="CLOSED")
     atomic_json(cdir/"campaign.json",state)
     cfg=ROOT/"research/evolution/v07_holdout_config.json"
     try:
