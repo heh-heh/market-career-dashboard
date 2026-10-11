@@ -324,6 +324,7 @@ def _autonomous_checkpoints(folder):
         ("comparison","comparison.json"),
         ("report","report.json"),
         ("error traceback","error_traceback.log"),
+        ("resource guard","resource_guard.json"),
     ]
     rows=[]
     for label,name in checks:
@@ -397,7 +398,7 @@ def autonomous_admin_status():
         for key in ("error","failureCode","startedAt","updatedAt","finishedAt","decision","dryRun",
                     "dryRunReviewed","selectedCandidates","trainingProgress","holdoutProgress",
                     "validationProgress","positiveBots","validationMean","validationMedian","avgTrades",
-                    "baselineRunId","baselineCandidates","baselineRejected"):
+                    "baselineRunId","baselineCandidates","baselineRejected","resourceGuard"):
             if key in experiment:
                 detail[key]=experiment.get(key)
         stage=_safe_ai_json(folder/"stage_process.json")
