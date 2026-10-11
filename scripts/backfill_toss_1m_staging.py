@@ -155,7 +155,7 @@ def main():
     parser.add_argument("--execute", action="store_true", help="Perform API requests; default is preview only")
     args = parser.parse_args()
     symbols = [s.strip().upper() for s in args.symbols.split(",") if s.strip()]
-    if not symbols or any(not re.fullmatch(r"[A-Z0-9.\\-]{1,16}", s) for s in symbols):
+    if not symbols or any(not re.fullmatch(r"[A-Z0-9.-]{1,16}", s) for s in symbols):
         parser.error("Invalid symbols")
     if len(symbols) != len(set(symbols)):
         parser.error("Duplicate symbols")
