@@ -163,6 +163,14 @@ def stable_signature(path):
 def db_signature(path):
     return {p.name: stable_signature(p) for p in (path, Path(str(path)+"-wal"), Path(str(path)+"-shm")) if p.exists()}
 
+def audit_db_content_signature(signature, path):
+    """Only for read-only audits: protect DB and WAL, excluding ephemeral SHM mtime.
+
+    Keep full db_signature for prepare/apply safety checks.
+    """
+    return {name: value for name, value in signature.items()
+            if name in {path.name, path.name + "-wal"}}
+
 
 def collector_export_order(path):
     """Existing export sorts TEXT labels; validate that order before publication.
@@ -270,14 +278,20 @@ def audit(data_dir, symbols, dates):
                 count, first, last = conn.execute("SELECT COUNT(*),MIN(timestamp),MAX(timestamp) FROM candles").fetchone()
             db_report, db_seen = inspect_rows(db_rows(db, sessions), symbol, sessions)
             db_order = collector_export_order(db)
-            if before_db != db_signature(db): raise ValueError("SQLITE_CHANGED_DURING_AUDIT")
+            after_db = db_signature(db)
+            if audit_db_content_signature(before_db, db) != audit_db_content_signature(after_db, db):
+                raise ValueError("SQLITE_CHANGED_DURING_AUDIT")
+            shm_name = db.name + "-shm"
+            shm_changed = before_db.get(shm_name) != after_db.get(shm_name)
             comparisons = []
             for day in sessions:
                 a, b = csv_seen[day], db_seen[day]; common = a.keys() & b.keys()
                 conflicts = [k for k in sorted(common) if a[k][0] != b[k][0]]
                 comparisons.append(dict(date=day, csvOnly=len(a.keys()-b.keys()), sqliteOnly=len(b.keys()-a.keys()),
                                         same=len(common)-len(conflicts), conflicting=len(conflicts), conflictSamples=conflicts[:10]))
-            out["sqlite"] = dict(path=str(db), signature=before_db, rows=count, firstTimestamp=first, lastTimestamp=last,
+            out["sqlite"] = dict(path=str(db), signature=before_db, signatureAfter=after_db,
+                                 shmMetadataChangedDuringAudit=shm_changed,
+                                 rows=count, firstTimestamp=first, lastTimestamp=last,
                                  collectorExportOrder=db_order,
                                  ordering="SQL timestamp order; physical insertion order is not chronological evidence", **db_report)
             out["comparison"] = comparisons
