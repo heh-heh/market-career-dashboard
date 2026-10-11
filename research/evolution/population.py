@@ -98,7 +98,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             if daily_returns else 0.0
         )
         max_daily_drawdown = max((e["maxDrawdown"] for e in rows), default=0.0)
-        if valid and config.fitness_mode == "v04_generalization":
+        if valid and config.fitness_mode in {"v04_generalization", "v05_structural"}:
             cost_ratio = costs / config.initial_capital
             excess_trades_per_session = max(0.0, trades_per_session - config.free_trade_count)
             fitness_components = {
@@ -131,7 +131,13 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             botId=bot.bot_id,
             date=rows[-1]["date"] if rows else None,
             survival=survival,
-            reproductionEligible=bool(complete and survival == "SURVIVE"),
+            reproductionEligible=bool(
+                complete and survival == "SURVIVE"
+                and (
+                    config.fitness_mode != "v05_structural"
+                    or profitable_sessions >= config.min_profitable_sessions_for_parent
+                )
+            ),
             evaluationValid=valid,
             dailyPnl=pnl,          # compatibility alias used by reproduce()
             dailyReturn=ret,       # compatibility alias; this is window cumulative return
