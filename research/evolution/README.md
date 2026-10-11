@@ -245,6 +245,30 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Internal-holdout shortlist campaign (V0.7)
+
+V0.6 reduced turnover further but hurt generalization. V0.7 therefore returns to the
+V0.5 structural execution/fitness rules and changes only the development protocol:
+
+1. train on 2022-01-03 through 2023-12-29
+2. freeze the full population and evaluate 2024 as an internal holdout
+3. shortlist only mechanically valid genomes with positive 2024 holdout return,
+   capped at the existing parent-pool maximum of 40
+4. freeze that shortlist and evaluate 2025 as development validation
+5. keep 2026 completely untouched
+
+The shortlist is based only on 2024. No 2025 result participates in shortlist
+construction. The derived shortlist artifact records the source training run,
+holdout run and exact selected genome hashes.
+
+```bash
+python research/evolution/run_v07_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --shortlist-max 40 --seed 42
+```
+
 ## Multi-fold stability selection (V0.6)
 
 V0.6 keeps V0.5 execution controls but changes parent selection inside the training
