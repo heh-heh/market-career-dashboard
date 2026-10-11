@@ -178,7 +178,7 @@ class AutonomousTests(unittest.TestCase):
                 "swapUsedGb": 0, "swapTotalGb": 1, "processRssMb": 10}
         okay = dict(busy, cpuPct=10)
         disk = shutil._ntuple_diskusage(100, 20, 80)
-        with patch("research.evolution.resource.sample_resources", side_effect=[busy, okay]), \
+        with patch("research.evolution.resource.sample_resources", side_effect=[busy, busy, okay]), \
              patch("research.autonomous.safety_gate.time.sleep"):
             result = resource_gate(self.config, snapshot=None, disk=disk,
                                    soft_wait_seconds=5, sample_interval_seconds=.1)
