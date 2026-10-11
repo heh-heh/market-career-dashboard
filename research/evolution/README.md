@@ -245,6 +245,41 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Seven-trading-day generations (V0.2)
+
+The default selection window is now **7 processed trading sessions**.
+
+- every daily simulation account still starts from `$100`
+- the same genome remains active for up to 7 processed train sessions
+- one losing day does **not** kill the bot immediately
+- daily PnL is accumulated across the window
+- window PnL < 0 -> DEAD
+- window PnL ~= 0 -> NEUTRAL
+- window PnL > 0 -> reproduction eligible
+- mutation/crossover and adaptive population scaling happen only when the 7-session window completes
+- an INVALID day makes the whole selection window INVALID for that bot
+- validation/final OOS remain frozen and never trigger reproduction
+
+The runner exposes `--evaluation-window-sessions` for controlled comparisons. The
+repository default is 7. A one-session baseline can still be reproduced explicitly
+with `--evaluation-window-sessions 1`.
+
+Example:
+
+```bash
+python research/evolution/run_evolution_v0.py \
+  --data-dir data/toss_1m --timestamp-kind end --provisional \
+  --symbols TQQQ,AAPL --population 20 \
+  --evaluation-window-sessions 7 \
+  --adaptive-resources --min-population 20 --max-population 300 \
+  --initial-capital 100 --seed 42 \
+  --from-date 2024-06-03 --to-date 2024-08-30 \
+  --results-dir /home/ubuntu/evolution-results
+```
+
+The dashboard reports the current window as `N / 7`, its best/mean cumulative
+window return, and whether selection is still waiting or a generation has completed.
+
 ## Adaptive resource runner (V0.1)
 
 Longer research runs can opt into host-aware population scaling with
@@ -323,7 +358,7 @@ hash mutation rejection, malformed timestamps/duplicates, read-only API/UI and n
 live imports. See `research/test_evolution_v0.py` and monitor smoke test.
 
 Actual Toss data and EC2 connectivity are absent in this workspace. The local CLI
-smoke uses **explicit synthetic data**, five XNYS dates, 20 bots, two candidate
+smoke uses **explicit synthetic data**, seven XNYS dates, 20 bots, two candidate
 instruments plus three references (9,750 fixture rows). It tests wiring only;
 repeated rising fixture days are not an economic experiment. No historical
 profitability, full-universe runtime or EC2 capacity claim can follow from it.
