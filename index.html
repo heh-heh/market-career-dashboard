@@ -158,6 +158,18 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div class="bt-stat"><div class="label">Mean Window</div><div class="v" id="evolutionV0MeanWindow">-</div></div>
     <div class="bt-stat"><div class="label">Selection</div><div class="v" id="evolutionV0WindowState">-</div></div>
   </div>
+  <div class="label" style="margin-top:12px">Stability Selection</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">Fold Structure</div><div class="v" id="evolutionV0FoldStructure">-</div></div>
+    <div class="bt-stat"><div class="label">Stable Parents</div><div class="v" id="evolutionV0StableParents">-</div></div>
+    <div class="bt-stat"><div class="label">Best Positive Folds</div><div class="v" id="evolutionV0BestFolds">-</div></div>
+    <div class="bt-stat"><div class="label">Best Median Fold</div><div class="v" id="evolutionV0BestMedianFold">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Best Worst Fold</div><div class="v" id="evolutionV0BestWorstFold">-</div></div>
+    <div class="bt-stat"><div class="label">Mean Positive Folds</div><div class="v" id="evolutionV0MeanFolds">-</div></div>
+  </div>
+
   <div class="bt-grid" style="margin-top:10px">
     <div class="bt-stat"><div class="label">Trades Today</div><div class="v" id="evolutionV0Trades">-</div></div>
     <div class="bt-stat"><div class="label">Parent Pool</div><div class="v" id="evolutionV0Parents">-</div></div>
@@ -920,6 +932,12 @@ async function loadEvolutionMonitor(){
   set("evolutionV0BestWindow",pct(d.bestWindowReturn));
   set("evolutionV0MeanWindow",pct(d.meanWindowReturn));
   set("evolutionV0WindowState",d.evaluationMode==="FROZEN_VALIDATION"?"동결 검증":(d.windowComplete?"세대 교체 완료":(d.split==="train"?"평가 중":"동결")));
+  set("evolutionV0FoldStructure",(d.stabilityFoldCount&&d.stabilityFoldSessions)?(Number(d.stabilityFoldCount)+" × "+Number(d.stabilityFoldSessions)+"일"):"-");
+  set("evolutionV0StableParents",d.stabilityEligibleBots==null?"-":Number(d.stabilityEligibleBots).toLocaleString());
+  set("evolutionV0BestFolds",d.bestPositiveFolds==null?"-":Number(d.bestPositiveFolds)+" / "+Number(d.stabilityFoldCount||0));
+  set("evolutionV0BestMedianFold",pct(d.bestMedianFoldReturn));
+  set("evolutionV0BestWorstFold",pct(d.bestWorstFoldReturn));
+  set("evolutionV0MeanFolds",d.meanPositiveFolds==null?"-":Number(d.meanPositiveFolds).toFixed(2));
   set("evolutionV0EvalMode",d.evaluationMode==="FROZEN_VALIDATION"?"FROZEN VALIDATION":"TRAIN / RESEARCH");
   set("evolutionV0FitnessMode",d.fitnessMode||(d.config&&d.config.fitness_mode)||"-");
   set("evolutionV0SourceTrain",d.sourceTrainFrom?((d.sourceTrainFrom||"-")+" → "+(d.sourceTrainTo||"-")):"-");
