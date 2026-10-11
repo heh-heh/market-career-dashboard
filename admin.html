@@ -473,7 +473,14 @@ async function refreshAI(){
     const reviewedDry=d.reviewedDryRun||{},bs=c.baselineSelection||{},rejected=Array.isArray(bs.rejected)?bs.rejected:[];
     document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>Baseline: <b>'+esc(c.baselineRunId||bs.selectedRunId||"-")+'</b> · 후보 '+esc(c.baselineCandidates??bs.candidateCount??"-")+' · 탈락 '+esc(c.baselineRejected??rejected.length??"-")+'<br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
     document.getElementById("aiBaselineSelectionSummary").innerHTML=bs.policy?('정책: <b>'+esc(bs.policy)+'</b> · 후보 '+esc(bs.candidateCount??"-")+' · 선택 '+esc(bs.selectedRunId||"없음")+' · 기준 완화 <b>'+esc(String(bs.criteriaRelaxed))+'</b>'):'선택 기록 없음';
-    document.getElementById("aiBaselineSelectionDetail").textContent=rejected.length?rejected.map((x,i)=>'#'+(i+1)+' catalog='+String(x.catalogId||'-')+' run='+String(x.runId||'-')+'\n  '+String(x.code||'-')+' · stage='+String(x.stage||'-')+(x.detail?' · '+String(x.detail):'')).join('\n'):'탈락 후보 없음';
+    document.getElementById("aiBaselineSelectionDetail").textContent=rejected.length?rejected.map((x,i)=>{
+      const f=x.facts||{},parts=[];
+      if(f.missingCount!=null)parts.push('missing='+String(f.missingCount));
+      if(f.completedCount!=null||f.requestedCount!=null)parts.push('sessions='+String(f.completedCount??'-')+'/'+String(f.requestedCount??'-'));
+      if(f.resultsValid!==undefined)parts.push('resultsValid='+String(f.resultsValid));
+      if(Array.isArray(f.missingDates)&&f.missingDates.length)parts.push('dates='+f.missingDates.join(', ')+(f.missingDatesTruncated?' ...':''));
+      return '#'+(i+1)+' catalog='+String(x.catalogId||'-')+' run='+String(x.runId||'-')+'\n  '+String(x.code||'-')+' · stage='+String(x.stage||'-')+(x.detail?' · '+String(x.detail):'')+(parts.length?'\n  '+parts.join(' · '):'');
+    }).join('\n'):'탈락 후보 없음';
     const p=(d.processes||[])[0]||{};
     setText("aiProcessPid",p.pid??"-");
     setText("aiProcessState",p.processState||"-");
