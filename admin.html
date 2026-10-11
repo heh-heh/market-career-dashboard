@@ -28,6 +28,7 @@
     <button class="active" data-tab="trade">실거래</button>
     <button data-tab="paper">모의매매</button>
     <button data-tab="backtest">백테스트</button>
+    <button data-tab="ai">AI 연구</button>
     <button data-tab="server">서버 콘솔</button>
     <button data-tab="git">GitHub · Git</button>
   </div>
@@ -173,6 +174,42 @@
     <div class="card"><div class="label">백테스트 로그</div><div id="simpleBtLog" class="terminal" style="min-height:120px;max-height:260px">-</div></div>
   </section>
 
+  <section id="ai" class="panel">
+    <div class="section-title">Autonomous AI Research</div>
+    <div class="section-subtitle">RESEARCH ONLY · 2026 Final OOS 자동 접근 차단 · 실거래 주문 없음</div>
+    <div class="card">
+      <div class="label">연구 제어</div>
+      <div id="aiGate" class="signal">상태 확인 중...</div>
+      <div class="actions">
+        <button id="aiDryRunBtn" class="primary">Dry Run 실행</button>
+        <button id="aiRunBtn">실제 1회 연구 실행</button>
+        <button id="aiRefreshBtn">상태 새로고침</button>
+      </div>
+      <div class="mini" style="margin-top:8px">Dry Run은 다운로드·검증·V0.8 계획까지만 수행합니다. 실제 실행은 완료된 Dry Run을 이어서 최대 1 iteration만 수행합니다. Reviewed manifest가 없으면 확인 후 PROVISIONAL 모드로만 실행합니다.</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">State</div><div id="aiState" class="value">-</div></div>
+      <div class="stat"><div class="label">Iteration</div><div id="aiIteration" class="value">-</div></div>
+      <div class="stat"><div class="label">Candidate</div><div id="aiCandidate" class="value">-</div></div>
+      <div class="stat"><div class="label">Final OOS</div><div id="aiOos" class="value">CLOSED</div></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">현재 가설</div><div id="aiHypothesis" class="signal">-</div></div>
+      <div class="card"><div class="label">실행 환경</div><div id="aiEnvironment" class="signal">-</div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">Training</div><div id="aiTraining" class="value">-</div></div>
+      <div class="stat"><div class="label">Holdout</div><div id="aiHoldout" class="value">-</div></div>
+      <div class="stat"><div class="label">Validation</div><div id="aiValidation" class="value">-</div></div>
+      <div class="stat"><div class="label">Selected</div><div id="aiSelected" class="value">-</div></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">성과</div><div id="aiMetrics" class="signal">-</div></div>
+      <div class="card"><div class="label">Decision / Failure</div><div id="aiDecision" class="signal">-</div></div>
+    </div>
+    <div class="card"><div class="label">최근 Iteration</div><div id="aiRecent" class="signal">기록 없음</div></div>
+  </section>
+
   <section id="server" class="panel">
     <div class="card">
       <div class="label">제한형 서버 관리 콘솔</div>
@@ -249,8 +286,37 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
   if(b.dataset.tab==="trade")refreshTrade();
   if(b.dataset.tab==="paper")refreshPaper();
   if(b.dataset.tab==="backtest")refreshSimpleBacktest();
+  if(b.dataset.tab==="ai")refreshAI();
   if(b.dataset.tab==="git")refreshGit();
 });
+
+let aiAdminState={};
+function pctText(v){return v==null?"-":Number(v).toFixed(1)+"%"}
+async function refreshAI(){
+  try{
+    const d=await req("/api/admin/ai/status"); aiAdminState=d; const c=d.current||{},running=!!d.running;
+    document.getElementById("aiGate").innerHTML='<b>'+(running?'<span class="ok">연구 프로세스 실행 중</span>':'<span class="warn">대기</span>')+'</b> · Research Only · Final OOS <b>CLOSED</b>';
+    setText("aiState",c.state||"waiting"); setText("aiIteration",c.iteration??"-"); setText("aiCandidate",c.candidateVersion||"-"); setText("aiOos",d.finalOosGate||"CLOSED");
+    setText("aiHypothesis",c.hypothesis||"V0.8 계획 대기");
+    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b>';
+    setText("aiTraining",pctText(c.trainingProgress)); setText("aiHoldout",pctText(c.holdoutProgress)); setText("aiValidation",pctText(c.validationProgress)); setText("aiSelected",c.selectedCandidates??"-");
+    document.getElementById("aiMetrics").innerHTML='Positive bots: <b>'+esc(c.positiveBots??"-")+'</b><br>Validation mean: <b>'+esc(c.validationMean??"-")+'</b><br>Validation median: <b>'+esc(c.validationMedian??"-")+'</b><br>Avg trades: <b>'+esc(c.avgTrades??"-")+'</b>';
+    document.getElementById("aiDecision").innerHTML='Decision: <b>'+esc(c.decision||"-")+'</b>'+(c.failureCode?'<br><span class="bad">Failure: '+esc(c.failureCode)+'</span>':'');
+    document.getElementById("aiRecent").innerHTML=(d.recent||[]).map(x=>'<div class="row"><b>Iteration '+esc(x.iteration??"-")+' · '+esc(x.candidateVersion||"-")+'</b> · '+esc(x.state||"-")+(x.decision?' · '+esc(x.decision):'')+(x.failureCode?' · <span class="bad">'+esc(x.failureCode)+'</span>':'')+'</div>').join("")||'<span class="muted">아직 기록이 없습니다.</span>';
+    document.getElementById("aiDryRunBtn").disabled=running; document.getElementById("aiRunBtn").disabled=running;
+  }catch(e){document.getElementById("aiGate").innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
+}
+async function startAIResearch(mode){
+  const isRun=mode==="run"; let provisional=false;
+  if(isRun){
+    if(!confirm("완료된 Dry Run을 이어서 실제 연구 1회를 실행할까요? 실거래와 2026 OOS는 사용하지 않습니다."))return;
+    if(!aiAdminState.manifestAvailable){if(!confirm("Reviewed manifest가 없습니다. PROVISIONAL_UNREVIEWED_DATA로 1회 실행할까요?"))return;provisional=true;}
+  }
+  try{await req("/api/admin/ai/start",{method:"POST",body:JSON.stringify({mode,provisional})});await refreshAI();}catch(e){alert(e.message);await refreshAI();}
+}
+document.getElementById("aiDryRunBtn")?.addEventListener("click",()=>startAIResearch("dry-run"));
+document.getElementById("aiRunBtn")?.addEventListener("click",()=>startAIResearch("run"));
+document.getElementById("aiRefreshBtn")?.addEventListener("click",refreshAI);
 
 let live={};
 async function refreshTrade(){
@@ -566,7 +632,8 @@ setInterval(()=>{
   if(document.getElementById("trade").classList.contains("active"))refreshTrade();
   if(document.getElementById("paper").classList.contains("active"))refreshPaper();
   if(document.getElementById("backtest").classList.contains("active"))refreshSimpleBacktest();
-},15000);
+  if(document.getElementById("ai").classList.contains("active"))refreshAI();
+},5000);
 </script>
 </body>
 </html>
