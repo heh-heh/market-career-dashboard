@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -218,6 +219,41 @@ def candidate_git(folder, plan, *, commit=False):
     git("push", "origin", "HEAD:refs/heads/strategy-engine-v3")
 
 
+def latest_completed_dry_run(registry):
+    for folder in reversed(registry.iterations()):
+        info=read_json(folder / "experiment.json")
+        if info.get("state")=="completed" and info.get("dryRun") is True:
+            return folder,info
+    return None,None
+
+
+def clone_reviewed_dry_run(registry, source):
+    src_info=read_json(source / "experiment.json")
+    if src_info.get("state")!="completed" or src_info.get("dryRun") is not True:
+        raise ValueError("DRY_RUN_REVIEW_REQUIRED")
+    folder=registry.create()
+    for name in (
+        "config.json","source_manifest.json","source_runs.json","baseline_metrics.json",
+        "plan.json","quarterly_diagnostics.json","hypothesis.md",
+    ):
+        src=source/name
+        if src.is_file() and not src.is_symlink():
+            shutil.copy2(src,folder/name)
+    fields={
+        "dryRun":False,
+        "dryRunReviewed":True,
+        "reviewedDryRunIteration":src_info.get("iteration"),
+        "parentVersion":src_info.get("parentVersion"),
+        "candidateVersion":src_info.get("candidateVersion"),
+        "hypothesis":src_info.get("hypothesis"),
+        "decision":None,
+        "error":None,
+        "failureCode":None,
+        "finishedAt":None,
+    }
+    return folder,registry.update(folder,"queued",**fields)
+
+
 def execute_iteration(registry, folder, config):
     plan = read_json(folder / "plan.json")
     plan_gate(plan)
@@ -282,26 +318,36 @@ def execute_iteration(registry, folder, config):
 
 def loop(config, *, dry_run=False, resume=False, client=None):
     registry = Registry(config.registry)
-    if not dry_run and (not resume or not registry.iterations()):
+    if not dry_run and not resume:
         raise ValueError("DRY_RUN_REVIEW_REQUIRED: complete --dry-run, then explicitly --resume")
     completed = []
     for _ in range(config.max_iterations):
         old = registry.iterations()
-        if resume and old:
-            folder = old[-1]
-            prior = read_json(folder / "experiment.json")
-            if prior["state"] == "completed" and not prior.get("dryRun"):
-                return [read_json(folder / "experiment.json")]
-            if not dry_run and not prior.get("dryRunReviewed") and not (prior.get("dryRun") is True and prior["state"] == "completed"):
-                raise ValueError("DRY_RUN_REVIEW_REQUIRED")
-        else:
-            if any(read_json(p / "experiment.json").get("candidateVersion") == "v08"
-                   and read_json(p / "experiment.json")["state"] == "completed"
-                   and not read_json(p / "experiment.json").get("dryRun") for p in old):
-                break  # No repeated mining of the same 2025 interval.
+        if not dry_run and any(
+            read_json(p / "experiment.json").get("candidateVersion") == "v08"
+            and read_json(p / "experiment.json").get("state") == "completed"
+            and not read_json(p / "experiment.json").get("dryRun")
+            for p in old
+        ):
+            break  # No repeated mining of the same 2025 interval.
+        if dry_run:
             folder = registry.create()
-        if not dry_run:
-            registry.update(folder, "queued", dryRunReviewed=True)
+        elif resume:
+            latest = old[-1] if old else None
+            prior = read_json(latest / "experiment.json") if latest else {}
+            if latest and prior.get("dryRunReviewed") and prior.get("dryRun") is not True and prior.get("state") in {
+                "queued","implementing","testing","training","internal_holdout","shortlisting",
+                "development_validation","diagnostics","comparing","failed"
+            }:
+                folder=latest
+                registry.update(folder,"queued",dryRunReviewed=True)
+            else:
+                dry_folder,dry_info=latest_completed_dry_run(registry)
+                if dry_folder is None:
+                    raise ValueError("DRY_RUN_REVIEW_REQUIRED")
+                folder,_=clone_reviewed_dry_run(registry,dry_folder)
+        else:
+            raise ValueError("DRY_RUN_REVIEW_REQUIRED")
         try:
             settings = {"dataDir": str(config.data_dir),
                        "dataManifest": str(config.data_manifest) if config.data_manifest else None,
