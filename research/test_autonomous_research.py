@@ -258,6 +258,7 @@ class AutonomousTests(unittest.TestCase):
         r = Registry(self.config.registry)
         dry = r.create()
         write_json(dry / "plan.json", {"candidateVersion":"v08","selectionDataYear":2024,
+                   "hypothesis":"quarterly stability shortlist",
                    "selectionRule":{"annualReturnAbove":0,"positiveQuarterCountAtLeast":3,"medianQuarterReturnAbove":0},
                    "changedVariables":["shortlist_selection"],"periods":{"internal_holdout":["2024-01-02","2024-12-31"]},
                    "researchOnly":True,"allowFinalOos":False,"expectedChangedFiles":["research/autonomous/candidates/v08.json"]})
