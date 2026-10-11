@@ -5,6 +5,7 @@ import base64
 import fcntl
 import json
 import os
+import socket
 import time
 import urllib.parse
 import urllib.request
@@ -16,7 +17,27 @@ _UID = os.getuid()
 CACHE = Path(f"/tmp/market-career-dashboard-toss-token-{_UID}.json")
 LOCK = Path(f"/tmp/market-career-dashboard-toss-token-{_UID}.lock")
 
-def get_token(cfg: dict, force: bool = False) -> str:
+def broker_token(socket_path: str, force: bool = False, rejected_token: str = "") -> str:
+    """Retrieve a shared token; never fall back to independent minting on failure."""
+    request = json.dumps({"force": force, "rejected_token": rejected_token}).encode("utf-8") + b"\n"
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+        sock.settimeout(15)
+        sock.connect(socket_path)
+        sock.sendall(request)
+        with sock.makefile("rb") as stream:
+            response = stream.readline(16384)
+    if not response:
+        raise RuntimeError("TOKEN_BROKER_EMPTY_RESPONSE")
+    data = json.loads(response)
+    if not data.get("ok") or not data.get("token"):
+        raise RuntimeError("TOKEN_BROKER_UNAVAILABLE")
+    return str(data["token"])
+
+
+def get_token(cfg: dict, force: bool = False, *, rejected_token: str = "") -> str:
+    socket_path = os.environ.get("TOSS_TOKEN_SOCKET", "").strip()
+    if socket_path:
+        return broker_token(socket_path, force=force, rejected_token=rejected_token)
     toss = cfg.get("toss", {}) if isinstance(cfg, dict) else {}
     cid = str(toss.get("app_key") or "").strip()
     sec = str(toss.get("app_secret") or "").strip()
@@ -27,13 +48,13 @@ def get_token(cfg: dict, force: bool = False) -> str:
     with LOCK.open("a+") as lf:
         fcntl.flock(lf.fileno(), fcntl.LOCK_EX)
         now = time.time()
-        if not force and CACHE.exists():
+        if CACHE.exists():
             try:
                 data = json.loads(CACHE.read_text(encoding="utf-8"))
                 token = str(data.get("access_token") or "")
                 expires_at = float(data.get("expires_at") or 0)
                 issued_at = float(data.get("issued_at") or 0)
-                if token and now < expires_at - 60 and (not force or now - issued_at < 10):
+                if token and now < expires_at - 60 and (\n                    (rejected_token and token != rejected_token) or\n                    (not force and not rejected_token) or\n                    (force and now - issued_at < 10)\n                ):
                     return token
             except Exception:
                 pass
