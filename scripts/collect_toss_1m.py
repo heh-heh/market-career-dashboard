@@ -34,7 +34,8 @@ FIELDS = ["timestamp", "open", "high", "low", "close", "volume", "currency"]
 
 
 def token(force=False):
-    cfg = json.loads(SECRETS.read_text(encoding="utf-8"))
+    # In broker mode clients need no copy/symlink of server_secrets.json.
+    cfg = {} if os.environ.get("TOSS_TOKEN_SOCKET") else json.loads(SECRETS.read_text(encoding="utf-8"))
     tok = shared_toss_token(cfg, force=force)
     if not tok:
         raise RuntimeError("Toss OAuth token을 발급받지 못했습니다.")
