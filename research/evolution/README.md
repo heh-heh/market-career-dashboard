@@ -245,6 +245,37 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Generalization fitness and campaign (V0.4)
+
+The V0.3 frozen validation showed strong negative association between validation
+performance and trade count, while train/validation rank correlation remained positive.
+V0.4 therefore adds a separate, opt-in `v04_generalization` fitness profile rather
+than changing the legacy V0 defaults.
+
+The V0.4 seven-session window fitness is:
+
+`window return - drawdown penalty - cost penalty - excess-trading penalty - losing-session penalty - return-volatility penalty`
+
+The repository profile is stored at
+`research/evolution/v04_generalization_config.json`. It does not alter execution
+costs, feature definitions, timestamp semantics, or the untouched 2026 final OOS split.
+
+A campaign runner executes only:
+
+1. 2024 training
+2. 2025 frozen validation
+3. generalization diagnostics
+
+It never evaluates 2026.
+
+```bash
+python research/evolution/run_v04_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --seed 42
+```
+
 ## Frozen validation (V0.3)
 
 V0.3 adds a separate evaluator for a trained population. It loads the exact
