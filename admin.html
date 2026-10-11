@@ -229,6 +229,11 @@
       <div id="aiCheckpoints" class="signal">상태 확인 중...</div>
     </div>
     <div class="card">
+      <div class="label">현재 실패 상세</div>
+      <div id="aiErrorSummary" class="signal">실패 없음</div>
+      <div id="aiErrorDetail" class="terminal" style="min-height:100px;max-height:280px;margin-top:8px;white-space:pre-wrap">-</div>
+    </div>
+    <div class="card">
       <div class="label">실시간 연구 로그</div>
       <div class="actions">
         <button id="aiLogRefreshBtn">로그 새로고침</button>
@@ -473,6 +478,9 @@ async function refreshAILog(){
     stage.textContent=(d.stage&&d.stage.text)||"별도 Validation worker 로그가 없습니다.";
     setText("aiLogMeta","web-launch.log · "+Number(d.launch?.bytes||0).toLocaleString()+" B · "+aiTime(d.launch?.updatedAt));
     setText("aiStageLogMeta",(d.stageName||"Validation worker 로그 없음")+" · "+Number(d.stage?.bytes||0).toLocaleString()+" B · "+aiTime(d.stage?.updatedAt));
+    const err=d.errorDetail||{};
+    document.getElementById("aiErrorSummary").innerHTML=d.failureCode?'<span class="bad"><b>'+esc(d.failureCode)+'</b></span> · last stage: <b>'+esc(d.lastSuccessfulState||"-")+'</b><br>'+esc(d.currentError||""):'<span class="ok">현재 실패 없음</span>';
+    document.getElementById("aiErrorDetail").textContent=err.text||d.currentError||"상세 오류 없음";
     if(document.getElementById("aiLogAutoScroll").checked){box.scrollTop=box.scrollHeight;stage.scrollTop=stage.scrollHeight;}
   }catch(e){
     setText("aiLogMeta","로그 조회 실패: "+e.message);
