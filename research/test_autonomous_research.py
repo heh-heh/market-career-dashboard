@@ -497,6 +497,9 @@ class AutonomousTests(unittest.TestCase):
         self.assertEqual(choice["rejected"][0]["runId"], "dev")
         self.assertEqual(choice["rejected"][0]["code"], "BASELINE_INCOMPLETE_OR_INVALID")
         self.assertEqual(choice["rejected"][0]["stage"], "development_validation")
+        self.assertEqual(choice["rejected"][0]["facts"]["missingCount"], 1)
+        self.assertEqual(choice["rejected"][0]["facts"]["missingDates"], ["2025-07-04"])
+        self.assertFalse(choice["rejected"][0]["facts"]["resultsValid"])
 
     def test_secret_redacted_even_under_other_key(self):
         p = self.base/'artifact.json'
