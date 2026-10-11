@@ -284,6 +284,35 @@ class EvolutionTests(unittest.TestCase):
         self.assertFalse(final[1]["reproductionEligible"])
         self.assertIsNotNone(bots[1].death_date)
 
+    def test_v04_window_fitness_penalizes_overtrading_and_instability(self):
+        c = Config(
+            population_size=2, fitness_mode="v04_generalization",
+            transaction_cost_penalty=1.0, excessive_trading_penalty=.0015,
+            free_trade_count=2, losing_session_penalty=.01,
+            return_volatility_penalty=.25, evaluation_window_sessions=7,
+        )
+        bots = initial_population(c, random.Random(4), "2024-06-03")
+        def row(bot_id, ret, trades, cost):
+            return dict(
+                botId=bot_id, date="2024-06-03", survival="SURVIVE" if ret>0 else "DEAD",
+                reproductionEligible=ret>0, evaluationValid=True,
+                dailyPnl=ret*100, dailyReturn=ret, fitness=ret,
+                maxDrawdown=.005, trades=trades, transactionCost=cost, turnover=10,
+            )
+        low=[]; high=[]
+        low_returns=[.004,.003,-.001,.003,.002,-.001,.003]
+        high_returns=[.014,-.010,.013,-.009,.012,-.008,.010]
+        for lr,hr in zip(low_returns,high_returns):
+            low.append(row(bots[0].bot_id,lr,1,.03))
+            high.append(row(bots[1].bot_id,hr,8,.20))
+        batches=[[low[i],high[i]] for i in range(7)]
+        out=aggregate_window_evaluations(bots,batches,c,complete=True,mark_death=False)
+        by={x["botId"]:x for x in out}
+        self.assertGreater(by[bots[0].bot_id]["fitness"],by[bots[1].bot_id]["fitness"])
+        self.assertEqual(by[bots[0].bot_id]["fitnessMode"],"v04_generalization")
+        self.assertGreater(by[bots[1].bot_id]["tradesPerSession"],2)
+        self.assertIsNotNone(by[bots[1].bot_id]["fitnessComponents"])
+
     def test_elite_preservation_and_dead_parent_exclusion(self):
         c = Config(population_size=20, elite_count=2, parent_fraction=1)
         bots = initial_population(c, random.Random(1), "2024-06-03")
