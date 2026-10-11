@@ -2512,8 +2512,76 @@ class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_json({"ok":True})
 
+    def collection50_get(self, path):
+        # Read-only metadata is public; CSV downloads require admin session.
+        import csv as _csv
+        import gzip as _gzip
+        base = Path(os.getenv("COLLECTION_50_DIR", "/mnt/research/collection-50-v1")).resolve()
+        progress_file = base / "_collection_progress.json"
+        if path == "/api/research/collection50/status":
+            progress = {}
+            if progress_file.is_file():
+                try:
+                    progress = json.loads(progress_file.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    progress = {}
+            # Whitelist outward fields: never disclose auth, paths, API errors or request headers.
+            fields = ("status", "stored", "page", "pages", "oldestTimestamp",
+                      "latestTimestamp", "updatedAt", "coveragePct")
+            rows = []
+            for symbol, record in sorted(progress.items()):
+                if not re.fullmatch(r"[A-Z0-9]{1,8}", symbol) or not isinstance(record, dict):
+                    continue
+                rows.append({"symbol": symbol, **{k:record.get(k) for k in fields}})
+            self.send_json({"ok": True, "symbols": rows, "count": len(rows),
+                "scope": "research_pre_2026", "coverageVerified": False,
+                "finalOosGate": "CLOSED", "source": "isolated_50_symbol_collector"}); return
+        match = re.fullmatch(r"/api/research/collection50/download/([A-Z0-9]{1,8})", path)
+        if not match:
+            self.send_json({"ok": False, "error": "not_found"}, 404); return
+        if not authorized(self):
+            self.send_json({"ok": False, "error": "unauthorized"}, 401); return
+        symbol = match.group(1)
+        qs = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query)
+        year_text = (qs.get("year") or [""])[0]
+        if not re.fullmatch(r"202[2-5]", year_text):
+            self.send_json({"ok": False, "error": "year_required_2022_2025"}, 400); return
+        year = int(year_text)
+        src = base / (symbol + ".csv.gz")
+        if not src.is_file() or src.is_symlink() or src.resolve().parent != base:
+            self.send_json({"ok": False, "error": "not_collected"}, 404); return
+        # UTC year filter uses parsed aware times; no 2026 Final OOS rows served.
+        from datetime import datetime as _datetime, timezone as _timezone
+        from zoneinfo import ZoneInfo as _ZoneInfo
+        et = _ZoneInfo("America/New_York")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/gzip")
+        self.send_header("Content-Disposition", f'attachment; filename="{symbol}-{year}-research.csv.gz"')
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        try:
+            with _gzip.open(src, "rt", newline="", encoding="utf-8") as infile:
+                reader = _csv.DictReader(infile)
+                with _gzip.GzipFile(fileobj=self.wfile, mode="wb") as outfile:
+                    with io.TextIOWrapper(outfile, encoding="utf-8", newline="", write_through=True) as text_out:
+                        writer = _csv.DictWriter(text_out, fieldnames=reader.fieldnames or [])
+                        writer.writeheader()
+                        for row in reader:
+                            try:
+                                stamp = _datetime.fromisoformat(row["timestamp"].replace("Z", "+00:00"))
+                                if stamp.tzinfo is None:
+                                    continue
+                                if stamp.astimezone(et).year == year:
+                                    writer.writerow(row)
+                            except (ValueError, KeyError, TypeError):
+                                continue
+        except (OSError, BrokenPipeError):
+            return
+
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path.startswith("/api/research/collection50/"):
+            self.collection50_get(path); return
         if path=="/api/admin/api-features":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
