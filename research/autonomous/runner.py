@@ -333,7 +333,9 @@ def loop(config, *, dry_run=False, resume=False, client=None):
             reason = str(exc).replace(token, "[REDACTED]") if token else str(exc)
             prefix = reason.split(":", 1)[0]
             failure_code = prefix if __import__("re").fullmatch(r"[A-Z][A-Z0-9_]+", prefix) else "RESEARCH_FAILURE"
-            value = registry.update(folder, "failed", error=sanitize(reason), failureCode=failure_code, finishedAt=utc())
+            previous_state = read_json(folder / "experiment.json").get("state")
+            value = registry.update(folder, "failed", error=sanitize(reason), failureCode=failure_code,
+                                    lastSuccessfulState=previous_state, finishedAt=utc())
             create_report(folder, value, failure=reason)
             raise
     return completed
