@@ -23,7 +23,7 @@ from research.autonomous.config import LoopConfig
 from research.autonomous.experiment_registry import Registry, write_json, read_json, exclusive_lock
 from research.autonomous.export_client import ExportClient, NoRedirect
 from research.autonomous.quarterly import quarterly_metrics, select_candidates, build_shortlist_v08
-from research.autonomous.safety_gate import period_gate, plan_gate, resource_gate, promotion_gate
+from research.autonomous.safety_gate import period_gate, plan_gate, resource_gate, promotion_gate, ResourcePauseError
 from research.autonomous.runner import loop, process_identity, active_stage, execute_iteration, run_validation
 from research.autonomous.monitor import status, iteration_id
 from research.autonomous.stage_worker import bounded_day_stream, prepare_bounded_inputs
@@ -160,13 +160,30 @@ class AutonomousTests(unittest.TestCase):
 
     def test_resource_guard(self):
         self.config.registry.mkdir()
-        okay = {"cpuPct": 0, "memoryPct": 20, "swapPct": 0}
+        okay = {"cpuPct": 0, "memoryPct": 20, "swapPct": 0, "memoryAvailableGb": 1,
+                "swapUsedGb": 0, "swapTotalGb": 1, "processRssMb": 10}
         disk = shutil._ntuple_diskusage(100, 20, 80)
         resource_gate(self.config, okay, disk)
-        with self.assertRaisesRegex(ValueError, "PAUSE"):
+        with self.assertRaises(ResourcePauseError) as caught:
             resource_gate(self.config, dict(okay, cpuPct=99), disk)
-        with self.assertRaisesRegex(ValueError, "PAUSE"):
+        self.assertEqual(caught.exception.facts["reason"], "SOFT_RESOURCE_PRESSURE")
+        self.assertEqual(caught.exception.facts["cpuPct"], 99.0)
+        with self.assertRaises(ResourcePauseError) as caught:
             resource_gate(replace(self.config, min_free_bytes=90), okay, disk)
+        self.assertEqual(caught.exception.facts["reason"], "DISK_RESERVE")
+
+    def test_resource_guard_retries_transient_soft_pressure(self):
+        self.config.registry.mkdir()
+        busy = {"cpuPct": 99, "memoryPct": 20, "swapPct": 0, "memoryAvailableGb": 1,
+                "swapUsedGb": 0, "swapTotalGb": 1, "processRssMb": 10}
+        okay = dict(busy, cpuPct=10)
+        disk = shutil._ntuple_diskusage(100, 20, 80)
+        with patch("research.evolution.resource.sample_resources", side_effect=[busy, okay]), \
+             patch("research.autonomous.safety_gate.time.sleep"):
+            result = resource_gate(self.config, snapshot=None, disk=disk,
+                                   soft_wait_seconds=5, sample_interval_seconds=.1)
+        self.assertEqual(result["reason"], "NORMAL")
+        self.assertEqual(result["samples"], 2)
 
     def test_quarterly_selection_and_immutable_source(self):
         train, hold, _, _ = fixed_artifacts(self.base / "fixed")
