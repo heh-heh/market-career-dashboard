@@ -12,7 +12,8 @@ for(const id of ['ai','aiGate','aiDryRunBtn','aiRunBtn','aiRefreshBtn','aiState'
  'aiCheckpoints','aiLog','aiLogMeta','aiStageLog','aiStageLogMeta','aiLogRefreshBtn',
  'aiBaselineRebuildBtn','aiBaselineRebuildState','aiBaselinePhase','aiBaselineProgress',
  'aiBaselinePid','aiBaselineCampaign','aiBaselineLog','aiBaselineLogMeta',
- 'aiResourceGuard','aiGuardCpu','aiGuardRam','aiGuardSwap','aiGuardDisk']) assert.ok(ids.includes(id),'missing '+id);
+ 'aiResourceGuard','aiGuardCpu','aiGuardRam','aiGuardSwap','aiGuardDisk',
+ 'apiFeatureSummary','apiFeatureRefresh','apiFeatureCards']) assert.ok(ids.includes(id),'missing '+id);
 assert.match(html,/data-tab="ai">AI 연구</);
 assert.match(html,/req\("\/api\/admin\/ai\/status"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/log\?lines=180"\)/);
@@ -47,6 +48,15 @@ assert.match(exportClient,/export_job/);
 assert.match(exportClient,/export_download/);
 assert.match(server,/if path=="\/api\/admin\/ai\/start":[\s\S]{0,220}if not authorized\(self\)/);
 assert.match(server,/if path=="\/api\/admin\/ai\/rebuild-baseline":[\s\S]{0,220}if not authorized\(self\)/);
+assert.match(server,/if path=="\/api\/admin\/api-features":[\s\S]{0,220}if not authorized\(self\)/);
+assert.match(server,/API_FEATURE_DEFS/);
+assert.match(server,/disabled_api_feature\(path,"GET"\)/);
+assert.match(server,/disabled_api_feature\(path,"POST"\)/);
+assert.match(server,/LIVE_TRADER\.disarm\(\)/);
+assert.match(server,/API_DISABLED/);
+assert.match(html,/data-tab="api"/);
+assert.match(html,/\/api\/admin\/api-features/);
+assert.match(html,/API 설정/);
 assert.match(server,/run_v07_campaign\.py/);
 assert.match(server,/--symbols","TQQQ,AAPL"/);
 assert.match(server,/--population","20"/);
