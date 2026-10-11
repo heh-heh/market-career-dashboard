@@ -13,7 +13,8 @@ class Config:
     mutation_probability: float = 0.2  # per gene
     mutation_strength: float = 0.05  # fraction of gene range, Gaussian sigma
     crossover_probability: float = 0.7
-    epsilon: float = 1e-6  # USD, daily survival
+    epsilon: float = 1e-6  # USD, selection-window survival
+    evaluation_window_sessions: int = 7  # one generation spans this many processed trading sessions
     slippage_bps: float = 2.0
     half_spread_bps: float = 1.0
     drawdown_penalty: float = 0.5
@@ -53,10 +54,12 @@ class Config:
                 raise ValueError("Nonfinite config")
         if self.population_size < 1 or self.initial_capital <= 0:
             raise ValueError("Positive population and capital required")
-        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes, self.min_population, self.max_population)):
+        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes, self.min_population, self.max_population, self.evaluation_window_sessions)):
             raise ValueError("Counts and cutoff must be integer")
         if min(self.elite_count, self.parent_pool_size, self.free_trade_count) < 0 or self.parent_pool_size < 1:
             raise ValueError("Invalid selection/trading counts")
+        if self.evaluation_window_sessions < 1:
+            raise ValueError("evaluation_window_sessions must be >= 1")
         if self.min_population < 1 or self.max_population < self.min_population:
             raise ValueError("Invalid adaptive population bounds")
         if self.adaptive_resources and not self.min_population <= self.population_size <= self.max_population:
