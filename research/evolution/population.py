@@ -98,7 +98,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             if daily_returns else 0.0
         )
         max_daily_drawdown = max((e["maxDrawdown"] for e in rows), default=0.0)
-        if valid and config.fitness_mode in {"v04_generalization", "v05_structural"}:
+        if valid and config.fitness_mode in {"v04_generalization", "v05_structural", "v06_stability"}:
             cost_ratio = costs / config.initial_capital
             excess_trades_per_session = max(0.0, trades_per_session - config.free_trade_count)
             fitness_components = {
@@ -125,6 +125,39 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             else "DEAD" if pnl < -config.epsilon
             else "NEUTRAL"
         ) if valid else "INVALID"
+
+        fold_returns = []
+        positive_folds = negative_folds = neutral_folds = 0
+        median_fold_return = worst_fold_return = None
+        stability_eligible = None
+        if valid and config.fitness_mode == "v06_stability":
+            size = config.stability_fold_sessions
+            for start in range(0, len(daily_returns), size):
+                block = daily_returns[start:start+size]
+                if len(block) == size:
+                    fold_returns.append(sum(block))
+            positive_folds = sum(r > config.epsilon/config.initial_capital for r in fold_returns)
+            negative_folds = sum(r < -config.epsilon/config.initial_capital for r in fold_returns)
+            neutral_folds = len(fold_returns)-positive_folds-negative_folds
+            if fold_returns:
+                median_fold_return = statistics.median(fold_returns)
+                worst_fold_return = min(fold_returns)
+            required_folds = config.evaluation_window_sessions // config.stability_fold_sessions
+            stability_eligible = bool(
+                complete
+                and len(fold_returns) == required_folds
+                and positive_folds >= config.stability_min_positive_folds
+                and median_fold_return is not None
+                and median_fold_return > config.epsilon/config.initial_capital
+            )
+
+        parent_consistency_ok = (
+            config.fitness_mode not in {"v05_structural", "v06_stability"}
+            or profitable_sessions >= config.min_profitable_sessions_for_parent
+        )
+        if config.fitness_mode == "v06_stability":
+            parent_consistency_ok = parent_consistency_ok and bool(stability_eligible)
+
         if complete and mark_death and survival == "DEAD":
             bot.death_date = rows[-1]["date"]
         result.append(dict(
@@ -132,11 +165,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             date=rows[-1]["date"] if rows else None,
             survival=survival,
             reproductionEligible=bool(
-                complete and survival == "SURVIVE"
-                and (
-                    config.fitness_mode != "v05_structural"
-                    or profitable_sessions >= config.min_profitable_sessions_for_parent
-                )
+                complete and survival == "SURVIVE" and parent_consistency_ok
             ),
             evaluationValid=valid,
             dailyPnl=pnl,          # compatibility alias used by reproduce()
@@ -157,6 +186,14 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             neutralSessions=neutral_sessions,
             losingSessionRatio=losing_ratio,
             returnVolatility=return_volatility,
+            stabilityFoldSessions=config.stability_fold_sessions,
+            foldReturns=fold_returns,
+            positiveFolds=positive_folds,
+            negativeFolds=negative_folds,
+            neutralFolds=neutral_folds,
+            medianFoldReturn=median_fold_return,
+            worstFoldReturn=worst_fold_return,
+            stabilityEligible=stability_eligible,
             fitnessMode=config.fitness_mode,
             fitnessComponents=fitness_components,
             turnover=sum(e["turnover"] for e in rows),
