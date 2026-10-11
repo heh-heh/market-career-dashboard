@@ -11,7 +11,8 @@ for(const id of ['ai','aiGate','aiDryRunBtn','aiRunBtn','aiRefreshBtn','aiState'
  'aiProcessUptime','aiStartedAt','aiUpdatedAt','aiProcessMode','aiServerTime','aiPipeline',
  'aiCheckpoints','aiLog','aiLogMeta','aiStageLog','aiStageLogMeta','aiLogRefreshBtn',
  'aiBaselineRebuildBtn','aiBaselineRebuildState','aiBaselinePhase','aiBaselineProgress',
- 'aiBaselinePid','aiBaselineCampaign','aiBaselineLog','aiBaselineLogMeta']) assert.ok(ids.includes(id),'missing '+id);
+ 'aiBaselinePid','aiBaselineCampaign','aiBaselineLog','aiBaselineLogMeta',
+ 'aiResourceGuard','aiGuardCpu','aiGuardRam','aiGuardSwap','aiGuardDisk']) assert.ok(ids.includes(id),'missing '+id);
 assert.match(html,/data-tab="ai">AI 연구</);
 assert.match(html,/req\("\/api\/admin\/ai\/status"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/log\?lines=180"\)/);
@@ -37,6 +38,8 @@ assert.match(server,/def _autonomous_pipeline\(/);
 assert.match(server,/def _autonomous_checkpoints\(/);
 assert.match(server,/rssMb/);
 assert.match(server,/uptimeSeconds/);
+assert.match(server,/resourceGuard/);
+assert.match(html,/Resource Guard/);
 const registry=fs.readFileSync(path.join(root,'research','autonomous','experiment_registry.py'),'utf8');
 const exportClient=fs.readFileSync(path.join(root,'research','autonomous','export_client.py'),'utf8');
 assert.match(registry,/autonomous_state/);
