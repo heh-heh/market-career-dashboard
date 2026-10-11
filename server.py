@@ -54,6 +54,109 @@ def shutil_copy_export(source,target):
         chunk=source.read(1024*1024)
         if not chunk: break
         target.write(chunk)
+
+AUTONOMOUS_ROOT=Path(os.getenv("EVOLUTION_AUTONOMOUS_DIR","/home/ubuntu/evolution-autonomous"))
+AUTONOMOUS_SCRIPT=ROOT/"research"/"autonomous"/"run_research_loop.py"
+AUTONOMOUS_MANIFEST=ROOT/"research"/"v4_data_manifest.json"
+AUTONOMOUS_WEB_LOG=AUTONOMOUS_ROOT/"web-launch.log"
+AUTONOMOUS_LAUNCH_LOCK=threading.Lock()
+
+def _autonomous_processes():
+    rows=[]
+    proc=Path("/proc")
+    try:
+        entries=list(proc.iterdir())
+    except OSError:
+        return rows
+    for item in entries:
+        if not item.name.isdigit():
+            continue
+        try:
+            raw=(item/"cmdline").read_bytes().replace(b"\x00",b" ").decode("utf-8","ignore")
+        except OSError:
+            continue
+        if "research/autonomous/run_research_loop.py" not in raw:
+            continue
+        rows.append({
+            "pid":int(item.name),
+            "worker":"--worker" in raw,
+            "dryRun":"--dry-run" in raw,
+        })
+    return sorted(rows,key=lambda x:x["pid"])
+
+def autonomous_admin_status():
+    from research.autonomous.monitor import status as autonomous_status
+    AUTONOMOUS_ROOT.mkdir(parents=True,exist_ok=True)
+    result=autonomous_status(AUTONOMOUS_ROOT)
+    processes=_autonomous_processes()
+    return {
+        **result,
+        "running":bool(processes),
+        "processes":processes,
+        "manifestAvailable":AUTONOMOUS_MANIFEST.is_file(),
+        "manifestPath":"research/v4_data_manifest.json" if AUTONOMOUS_MANIFEST.is_file() else None,
+        "finalOosGate":"CLOSED",
+        "researchOnly":True,
+    }
+
+def _issue_autonomous_session(ttl=43200):
+    value=secrets.token_urlsafe(32)
+    with SESSION_LOCK:
+        SESSIONS[value]=time.time()+ttl
+    return value
+
+def start_autonomous_research(mode, provisional=False):
+    mode=str(mode or "").strip().lower()
+    if mode not in {"dry-run","run"}:
+        raise ValueError("mode must be dry-run or run")
+    if not AUTONOMOUS_SCRIPT.is_file():
+        raise ValueError("Autonomous research runner is not deployed")
+    with AUTONOMOUS_LAUNCH_LOCK:
+        if _autonomous_processes():
+            raise ValueError("AUTONOMOUS_ALREADY_RUNNING")
+        AUTONOMOUS_ROOT.mkdir(parents=True,exist_ok=True)
+        try:
+            os.chmod(AUTONOMOUS_ROOT,0o700)
+        except OSError:
+            pass
+        python=ROOT/".venv"/"bin"/"python"
+        if not python.is_file():
+            raise ValueError("virtualenv python is missing")
+        cmd=[str(python),str(AUTONOMOUS_SCRIPT),"--max-iterations","1"]
+        if mode=="dry-run":
+            cmd.insert(2,"--dry-run")
+        else:
+            cmd.insert(2,"--resume")
+            if AUTONOMOUS_MANIFEST.is_file() and not provisional:
+                cmd.extend(["--data-manifest",str(AUTONOMOUS_MANIFEST)])
+            elif provisional:
+                cmd.append("--provisional")
+            else:
+                raise ValueError("REVIEWED_MANIFEST_REQUIRED_OR_EXPLICIT_PROVISIONAL")
+        token=_issue_autonomous_session()
+        env=dict(os.environ)
+        env.update({
+            "RESEARCH_EXPORT_BASE_URL":"http://127.0.0.1:8080",
+            "RESEARCH_EXPORT_TOKEN":token,
+            "EVOLUTION_AUTONOMOUS_DIR":str(AUTONOMOUS_ROOT),
+        })
+        log=AUTONOMOUS_WEB_LOG.open("ab",buffering=0)
+        try:
+            child=subprocess.Popen(
+                cmd,cwd=str(ROOT),env=env,stdin=subprocess.DEVNULL,
+                stdout=log,stderr=subprocess.STDOUT,start_new_session=True,
+            )
+        finally:
+            log.close()
+        return {
+            "started":True,
+            "mode":mode,
+            "pid":child.pid,
+            "provisional":bool(provisional),
+            "manifestAvailable":AUTONOMOUS_MANIFEST.is_file(),
+            "researchOnly":True,
+            "finalOosGate":"CLOSED",
+        }
 STORAGE_CACHE={"at":0.0,"value":{}}
 STORAGE_CACHE_LOCK=threading.Lock()
 
@@ -2072,6 +2175,14 @@ class Handler(BaseHTTPRequestHandler):
             except (ValueError,OSError):
                 self.send_json({"ok":False,"error":"Autonomous research status unavailable"},503)
             return
+        if path=="/api/admin/ai/status":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**autonomous_admin_status()})
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503)
+            return
         if path=="/api/research/evolution/status":
             try:
                 from research.evolution.monitor import status as evolution_status
@@ -2124,6 +2235,20 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/export/"):
             self.research_export_post(path); return
+        if path=="/api/admin/ai/start":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                if not isinstance(body,dict) or set(body)-{"mode","provisional"}:
+                    raise ValueError("Invalid AI research request")
+                mode=str(body.get("mode") or "")
+                provisional=bool(body.get("provisional",False))
+                self.send_json({"ok":True,**start_autonomous_research(mode,provisional)},202); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},409); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/backtest/start":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
