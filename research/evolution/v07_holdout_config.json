@@ -1,0 +1,80 @@
+{
+  "population_size": 200,
+  "initial_capital": 100,
+  "elite_count": 10,
+  "parent_pool_size": 40,
+  "parent_fraction": 0.5,
+  "mutation_probability": 0.2,
+  "mutation_strength": 0.05,
+  "crossover_probability": 0.7,
+  "epsilon": 0.000001,
+  "slippage_bps": 2,
+  "half_spread_bps": 1,
+  "drawdown_penalty": 0.5,
+  "transaction_cost_penalty": 1,
+  "excessive_trading_penalty": 0.0015,
+  "free_trade_count": 2,
+  "cutoff_minutes": 5,
+  "train": [
+    "2022-01-01",
+    "2023-12-31"
+  ],
+  "validation": [
+    "2024-01-01",
+    "2024-12-31"
+  ],
+  "final_oos": [
+    "2026-01-01",
+    "2026-12-31"
+  ],
+  "return_scale": 0.01,
+  "volume_scale": 100000,
+  "feature_clip": 5,
+  "gene_bounds": {
+    "weight": [
+      -2,
+      2
+    ],
+    "buy_threshold": [
+      0.25,
+      3
+    ],
+    "sell_threshold": [
+      -3,
+      -0.25
+    ],
+    "stop_loss_pct": [
+      0.005,
+      0.03
+    ],
+    "take_profit_pct": [
+      0.008,
+      0.06
+    ],
+    "max_hold_minutes": [
+      5,
+      120
+    ],
+    "position_fraction": [
+      0.1,
+      1
+    ]
+  },
+  "adaptive_resources": false,
+  "min_population": 20,
+  "max_population": 1000,
+  "scale_up_factor": 1.25,
+  "scale_down_factor": 0.75,
+  "memory_soft_limit_pct": 70,
+  "memory_hard_limit_pct": 85,
+  "swap_soft_limit_pct": 5,
+  "swap_hard_limit_pct": 20,
+  "cpu_soft_limit_pct": 85,
+  "evaluation_window_sessions": 7,
+  "fitness_mode": "v05_structural",
+  "losing_session_penalty": 0.01,
+  "return_volatility_penalty": 0.25,
+  "max_trades_per_session": 3,
+  "entry_cooldown_minutes": 30,
+  "min_profitable_sessions_for_parent": 4
+}
