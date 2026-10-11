@@ -41,6 +41,206 @@ SIMPLE_PAPER_LOCK=threading.Lock()
 RESEARCH_EXPORTER=None
 RESEARCH_EXPORT_LOCK=threading.Lock()
 
+API_FEATURES_FILE=Path(os.getenv("API_FEATURES_FILE","/home/ubuntu/.market-career-dashboard/api_features.json"))
+API_FEATURE_LOCK=threading.RLock()
+API_FEATURE_DEFS={
+    "live_trading":{
+        "label":"실거래 API",
+        "description":"실주문·ARM·자동매매·실거래 스캔 엔드포인트. OFF 시 즉시 DISARM 및 엔진 OFF.",
+        "default":True,
+        "risk":"high",
+    },
+    "paper_trading":{
+        "label":"모의매매 API",
+        "description":"V3/Simple 모의매매 상태·주문·자동 실행 API. OFF 시 신규 자동 실행을 중지.",
+        "default":True,
+        "risk":"medium",
+    },
+    "backtest":{
+        "label":"백테스트 API",
+        "description":"백테스트 실행·상태·결과 다운로드 API.",
+        "default":True,
+        "risk":"medium",
+    },
+    "autonomous_ai":{
+        "label":"AI 연구 실행 API",
+        "description":"Dry Run·실제 연구·V0.7 기준선 재생성 시작 기능. 상태/로그 조회는 항상 유지.",
+        "default":True,
+        "risk":"medium",
+    },
+    "research_export":{
+        "label":"연구 Export API",
+        "description":"연구 결과·Population·Trades·데이터 Export 생성/다운로드. AI Dry Run이 사용.",
+        "default":True,
+        "risk":"medium",
+    },
+    "research_monitors":{
+        "label":"연구 모니터 API",
+        "description":"V4/Evolution/Tick/Autonomous 읽기 전용 상태 API.",
+        "default":True,
+        "risk":"low",
+    },
+    "market_data":{
+        "label":"시세·실시간 API",
+        "description":"Quotes/Realtime HTTP API와 Toss 실시간 WebSocket 공급. OFF 시 실시간 공급을 휴면.",
+        "default":True,
+        "risk":"medium",
+    },
+    "dashboard_data":{
+        "label":"메인 대시보드 데이터 API",
+        "description":"메인 페이지의 dashboard.json API. OFF 시 메인 화면 일부 데이터가 표시되지 않음.",
+        "default":True,
+        "risk":"low",
+    },
+}
+
+def _api_feature_defaults():
+    return {name:bool(meta.get("default",True)) for name,meta in API_FEATURE_DEFS.items()}
+
+def _load_api_feature_state():
+    state=_api_feature_defaults()
+    try:
+        if API_FEATURES_FILE.is_symlink():
+            raise ValueError("API feature file must not be a symlink")
+        if API_FEATURES_FILE.is_file():
+            raw=json.loads(API_FEATURES_FILE.read_text(encoding="utf-8"))
+            values=raw.get("features",raw) if isinstance(raw,dict) else {}
+            if isinstance(values,dict):
+                for name,value in values.items():
+                    if name in state and isinstance(value,bool):
+                        state[name]=value
+    except Exception as e:
+        print("WARNING: API feature settings load failed:",e,flush=True)
+    return state
+
+API_FEATURE_STATE=_load_api_feature_state()
+
+def api_feature_snapshot():
+    with API_FEATURE_LOCK:
+        return {
+            name:{
+                "key":name,
+                "label":meta["label"],
+                "description":meta["description"],
+                "risk":meta["risk"],
+                "enabled":bool(API_FEATURE_STATE.get(name,meta.get("default",True))),
+            }
+            for name,meta in API_FEATURE_DEFS.items()
+        }
+
+def _save_api_feature_state():
+    API_FEATURES_FILE.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
+    try:
+        os.chmod(API_FEATURES_FILE.parent,0o700)
+    except OSError:
+        pass
+    payload={
+        "version":1,
+        "updatedAt":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
+        "features":{name:bool(API_FEATURE_STATE.get(name,meta.get("default",True)))
+                    for name,meta in API_FEATURE_DEFS.items()},
+    }
+    tmp=API_FEATURES_FILE.parent/("." + API_FEATURES_FILE.name + "." + uuid.uuid4().hex + ".tmp")
+    try:
+        fd=os.open(tmp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        with os.fdopen(fd,"w",encoding="utf-8") as f:
+            json.dump(payload,f,ensure_ascii=False,indent=2,sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp,API_FEATURES_FILE)
+        os.chmod(API_FEATURES_FILE,0o600)
+    finally:
+        try:
+            if tmp.exists():
+                tmp.unlink()
+        except OSError:
+            pass
+
+def api_feature_enabled(name):
+    with API_FEATURE_LOCK:
+        meta=API_FEATURE_DEFS.get(name)
+        return True if meta is None else bool(API_FEATURE_STATE.get(name,meta.get("default",True)))
+
+def api_feature_requirements(path,method):
+    method=str(method or "GET").upper()
+    if path.startswith("/api/research/export/"):
+        return ["research_export"]
+    if path.startswith("/api/backtest/"):
+        return ["backtest"]
+    if path.startswith("/api/trading/live/"):
+        return ["live_trading"]
+    if path.startswith("/api/trading/paper/"):
+        return ["paper_trading"]
+    if path=="/api/trading/engine":
+        return ["live_trading"]
+    if path in {"/api/admin/ai/start","/api/admin/ai/rebuild-baseline"}:
+        return ["autonomous_ai"] + (["research_export"] if path.endswith("/start") else [])
+    if path in {"/api/ticks/status","/api/research/v4/audit/status","/api/research/v4/status",
+                "/api/research/evolution/status","/api/research/autonomous/status"}:
+        return ["research_monitors"]
+    if path in {"/api/quotes","/api/realtime"}:
+        return ["market_data"]
+    if path=="/api/dashboard":
+        return ["dashboard_data"]
+    return []
+
+def disabled_api_feature(path,method):
+    for name in api_feature_requirements(path,method):
+        if not api_feature_enabled(name):
+            return name
+    return None
+
+def _api_feature_side_effects(name,enabled):
+    actions=[]
+    if enabled:
+        return actions
+    if name=="live_trading":
+        try:
+            LIVE_TRADER.disarm()
+            LIVE_TRADER.set_engine(False)
+            actions.append("live trader disarmed and engine disabled")
+        except Exception as e:
+            actions.append("live trader fail-closed warning: "+str(e))
+        with TRADING_LOCK:
+            TRADING_STATE["live_auto_enabled"]=False
+            TRADING_STATE["live_armed"]=False
+            TRADING_STATE["engine_enabled"]=False
+    elif name=="paper_trading":
+        try:
+            PAPER_V3.set_enabled(False)
+            actions.append("paper V3 auto disabled")
+        except Exception as e:
+            actions.append("paper V3 disable warning: "+str(e))
+        try:
+            if SIMPLE_PAPER is not None:
+                SIMPLE_PAPER.set_enabled(False)
+                actions.append("Simple paper auto disabled")
+        except Exception as e:
+            actions.append("Simple paper disable warning: "+str(e))
+    return actions
+
+def set_api_feature(name,enabled):
+    if name not in API_FEATURE_DEFS:
+        raise ValueError("Unknown API feature")
+    if not isinstance(enabled,bool):
+        raise ValueError("enabled must be a JSON boolean")
+    with API_FEATURE_LOCK:
+        previous=bool(API_FEATURE_STATE.get(name,API_FEATURE_DEFS[name].get("default",True)))
+        API_FEATURE_STATE[name]=enabled
+        try:
+            _save_api_feature_state()
+        except Exception:
+            API_FEATURE_STATE[name]=previous
+            raise
+    actions=_api_feature_side_effects(name,enabled) if previous!=enabled else []
+    return {
+        "feature":name,
+        "enabled":enabled,
+        "changed":previous!=enabled,
+        "actions":actions,
+        "features":api_feature_snapshot(),
+    }
+
 def research_exporter():
     global RESEARCH_EXPORTER
     with RESEARCH_EXPORT_LOCK:
@@ -1830,6 +2030,9 @@ def backtest_ready():
 
 def update_data():
     while True:
+        if not api_feature_enabled("dashboard_data"):
+            time.sleep(min(30,INTERVAL))
+            continue
         if not backtest_ready():
             time.sleep(30)
             continue
@@ -2103,6 +2306,10 @@ async def toss_realtime_once():
         keepalive_task=asyncio.create_task(keepalive())
         try:
             async for raw in ws:
+                if not api_feature_enabled("market_data"):
+                    with REALTIME_STATE_LOCK:
+                        REALTIME_STATUS["lastError"]="market_data API feature disabled"
+                    break
                 try:
                     payload=json.loads(raw)
                 except Exception:
@@ -2147,6 +2354,13 @@ async def realtime_loop():
     while not backtest_ready():
         await asyncio.sleep(30)
     while True:
+        if not api_feature_enabled("market_data"):
+            with REALTIME_STATE_LOCK:
+                REALTIME_STATUS["connected"]=False
+                REALTIME_STATUS["lastError"]="market_data API feature disabled"
+                REALTIME_STATUS["subscribed"]=[]
+            await asyncio.sleep(5)
+            continue
         try:
             await toss_realtime_once()
         except Exception as e:
@@ -2275,6 +2489,19 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path=="/api/admin/api-features":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            self.send_json({
+                "ok":True,
+                "features":api_feature_snapshot(),
+                "settingsFile":str(API_FEATURES_FILE),
+                "controlPlaneAlwaysOn":True,
+            }); return
+        disabled=disabled_api_feature(path,"GET")
+        if disabled:
+            meta=API_FEATURE_DEFS[disabled]
+            self.send_json({"ok":False,"error":"API_DISABLED","feature":disabled,"label":meta["label"]},503); return
         if path.startswith("/api/research/export/"):
             self.research_export_get(path); return
         if path=="/api/backtest/engines":
@@ -2762,6 +2989,23 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path=="/api/admin/api-features":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                body=self.read_json()
+                if not isinstance(body,dict) or set(body)!={"feature","enabled"}:
+                    raise ValueError("Expected exactly feature and enabled")
+                result=set_api_feature(str(body["feature"]),body["enabled"])
+                self.send_json({"ok":True,**result}); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},400); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":"API feature settings write failed: "+str(e)},503); return
+        disabled=disabled_api_feature(path,"POST")
+        if disabled:
+            meta=API_FEATURE_DEFS[disabled]
+            self.send_json({"ok":False,"error":"API_DISABLED","feature":disabled,"label":meta["label"]},503); return
         if path.startswith("/api/research/export/"):
             self.research_export_post(path); return
         if path=="/api/admin/ai/rebuild-baseline":
@@ -3032,8 +3276,13 @@ if __name__=="__main__":
     DATA.parent.mkdir(parents=True,exist_ok=True)
     threading.Thread(target=update_data,daemon=True).start()
     threading.Thread(target=start_realtime,daemon=True).start()
+    if not api_feature_enabled("live_trading"):
+        _api_feature_side_effects("live_trading",False)
     LIVE_TRADER.start()
-    threading.Thread(target=restore_simple_paper,daemon=True,name="simple-paper-restore").start()
+    if api_feature_enabled("paper_trading"):
+        threading.Thread(target=restore_simple_paper,daemon=True,name="simple-paper-restore").start()
+    else:
+        _api_feature_side_effects("paper_trading",False)
     PAPER_V3.start()
     print(f"API listening on {HOST}:{PORT}; update interval={INTERVAL}s",flush=True)
     if not ADMIN_PASSWORD:
