@@ -2,6 +2,13 @@
 
 ## One-command update / collection start (October 2026 revision)
 
+**Superseded for dirty production / detached worktrees:** use
+[COLLECTION_WORKTREE_DEPLOY.md](COLLECTION_WORKTREE_DEPLOY.md) and
+`scripts/deploy_collection_worktree.py`. The launcher now delegates to analysis
+by default; the old clean-checkout command below is historical documentation,
+not a supported deployment recipe. The new path never merges production Git,
+never replaces/restarts Broker code, and always leaves collection paused.
+
 Run on EC2, from the production checkout (mounted `/mnt/research`, existing
 `.venv`, configured/active token broker and sudo access are prerequisites):
 

@@ -147,14 +147,10 @@ class DeploymentTests(unittest.TestCase):
         self.assertNotIn('reset --hard',source)
         self.assertNotIn('clean -',source)
         self.assertNotIn('rm ',source)
-        self.assertIn('merge --ff-only',source)
-        self.assertIn('git diff --cached --quiet',source)
-        self.assertIn("if not p.exists(): save(p, {'paused': True})",source)
-        self.assertLess(source.index('research.test_research_collection_scheduler'),source.index('sudo systemctl stop'))
-        self.assertIn("'PAPER_V3_DIR':str(root/'paper')",source)
-        self.assertIn("'LIVE_TRADING_ENABLED':'false'",source)
-        self.assertIn("str(root/'no-real-broker.sock')",source)
-        self.assertLess(source.index('MANUAL_COLLECTOR_RUNNING'),source.index('enable --now'))
+        self.assertNotIn('git merge',source.replace('Git-merge',''))
+        self.assertIn('deploy_collection_worktree.py',source)
+        self.assertIn('--source',source)
+        self.assertIn('--target',source)
 
     def test_pages_build_contains_only_public_assets(self):
         workflow=(scheduler.ROOT/'.github/workflows/pages.yml').read_text()
