@@ -19,8 +19,7 @@ LOCK = Path(f"/tmp/market-career-dashboard-toss-token-{_UID}.lock")
 
 def broker_token(socket_path: str, force: bool = False, rejected_token: str = "") -> str:
     """Retrieve a shared token; never fall back to independent minting on failure."""
-    request = json.dumps({"force": force, "rejected_token": rejected_token}).encode("utf-8") + b"
-"
+    request = json.dumps({"force": force, "rejected_token": rejected_token}).encode("utf-8") + b"\n"
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
         sock.settimeout(15)
         sock.connect(socket_path)
