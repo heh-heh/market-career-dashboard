@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ko"><head><meta charset="utf-8"><link rel="stylesheet" href="research-export.css"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Market & Career Dashboard</title>
 <style>
 :root{--bg:#080d18;--panel:#111a2c;--line:#263553;--text:#eef3ff;--muted:#91a0bb;--accent:#7c8cff;--up:#43d17d;--down:#ff647c}
@@ -230,6 +230,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div class="muted" style="margin-top:8px">3초 자동 갱신 · Historical simulation · $100 일별 초기화 · 실거래 연결 없음</div>
 </div>
 
+<section id="researchExportCenter" class="card" style="margin-bottom:14px"></section>
 <div class="card" style="margin-top:12px">
   <div class="backtest-head">
     <div>
@@ -1227,4 +1228,4 @@ document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.clo
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 loadData();
 startRealtime();
-</script><script>document.querySelectorAll("nav button[data-view]").forEach(b=>{if(b.textContent.trim()==="증권")b.remove()});</script></body></html>
+</script><script>document.querySelectorAll("nav button[data-view]").forEach(b=>{if(b.textContent.trim()==="증권")b.remove()});</script><script src="research-export.js"></script></body></html>
