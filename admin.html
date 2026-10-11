@@ -184,9 +184,21 @@
       <div class="actions">
         <button id="aiDryRunBtn" class="primary">Dry Run 실행</button>
         <button id="aiRunBtn">실제 1회 연구 실행</button>
+        <button id="aiBaselineRebuildBtn">V0.7 기준선 재생성</button>
         <button id="aiRefreshBtn">상태 새로고침</button>
       </div>
       <div class="mini" style="margin-top:8px">Dry Run은 다운로드·검증·V0.8 계획까지만 수행합니다. 실제 실행은 완료된 Dry Run을 이어서 최대 1 iteration만 수행합니다. Reviewed manifest가 없으면 확인 후 PROVISIONAL 모드로만 실행합니다.</div>
+    </div>
+    <div class="card">
+      <div class="label">V0.7 기준선 상태</div>
+      <div id="aiBaselineRebuildState" class="signal">상태 확인 중...</div>
+      <div class="stats" style="margin-top:10px">
+        <div class="stat"><div class="label">Phase</div><div id="aiBaselinePhase" class="value">-</div></div>
+        <div class="stat"><div class="label">Progress</div><div id="aiBaselineProgress" class="value">-</div></div>
+        <div class="stat"><div class="label">PID</div><div id="aiBaselinePid" class="value">-</div></div>
+        <div class="stat"><div class="label">Campaign</div><div id="aiBaselineCampaign" class="value" style="font-size:13px">-</div></div>
+      </div>
+      <div class="mini" style="margin-top:8px">2022–2023 학습 → 2024 내부 Holdout → shortlist → 2025 개발 검증. 2026 Final OOS는 접근하지 않습니다.</div>
     </div>
     <div class="stats">
       <div class="stat"><div class="label">State</div><div id="aiState" class="value">-</div></div>
@@ -242,6 +254,11 @@
       </div>
       <div id="aiLogMeta" class="mini" style="margin-top:8px">로그 확인 중...</div>
       <div id="aiLog" class="terminal" style="min-height:220px;max-height:420px;margin-top:8px;white-space:pre-wrap">-</div>
+    </div>
+    <div class="card">
+      <div class="label">V0.7 기준선 재생성 로그</div>
+      <div id="aiBaselineLogMeta" class="mini">기준선 로그 없음</div>
+      <div id="aiBaselineLog" class="terminal" style="min-height:140px;max-height:320px;margin-top:8px;white-space:pre-wrap">-</div>
     </div>
     <div class="card">
       <div class="label">Validation Worker 로그</div>
@@ -438,8 +455,14 @@ function aiCheckpointHtml(rows){
 }
 async function refreshAI(){
   try{
-    const d=await req("/api/admin/ai/status"); aiAdminState=d; const c=d.current||{},running=!!d.running;
-    document.getElementById("aiGate").innerHTML='<b>'+(running?'<span class="ok">연구 프로세스 실행 중</span>':'<span class="warn">대기</span>')+'</b> · Research Only · Final OOS <b>CLOSED</b>';
+    const d=await req("/api/admin/ai/status"); aiAdminState=d; const c=d.current||{},running=!!d.running,rb=d.baselineRebuild||{},rebuilding=!!rb.running;
+    document.getElementById("aiGate").innerHTML='<b>'+(rebuilding?'<span class="warn">V0.7 기준선 재생성 중</span>':(running?'<span class="ok">연구 프로세스 실행 중</span>':'<span class="warn">대기</span>'))+'</b> · Research Only · Final OOS <b>CLOSED</b>';
+    const campaign=rb.campaign||{},rp=(rb.processes||[])[0]||{};
+    document.getElementById("aiBaselineRebuildState").innerHTML=rebuilding?'<span class="warn"><b>재생성 실행 중</b></span>':(campaign.phase==="completed"?'<span class="ok"><b>최근 기준선 완료</b></span>':(campaign.phase==="error"?'<span class="bad"><b>최근 기준선 실패</b></span>':'<span class="muted">대기</span>'));
+    setText("aiBaselinePhase",campaign.phase||"-");
+    setText("aiBaselineProgress",campaign.progressPct==null?"-":Number(campaign.progressPct).toFixed(0)+"%");
+    setText("aiBaselinePid",rp.pid??"-");
+    setText("aiBaselineCampaign",campaign.campaignId||campaign.campaignDir||"-");
     setText("aiState",c.state||"waiting"); setText("aiIteration",c.iteration??"-"); setText("aiCandidate",c.candidateVersion||"-"); setText("aiOos",d.finalOosGate||"CLOSED");
     setText("aiHypothesis",c.hypothesis||"V0.8 계획 대기");
     const reviewedDry=d.reviewedDryRun||{};
@@ -459,9 +482,10 @@ async function refreshAI(){
     document.getElementById("aiMetrics").innerHTML='Positive bots: <b>'+esc(c.positiveBots??"-")+'</b><br>Validation mean: <b>'+esc(c.validationMean??"-")+'</b><br>Validation median: <b>'+esc(c.validationMedian??"-")+'</b><br>Avg trades: <b>'+esc(c.avgTrades??"-")+'</b>';
     document.getElementById("aiDecision").innerHTML='Decision: <b>'+esc(c.decision||"-")+'</b>'+(c.failureCode?'<br><span class="bad">Failure: '+esc(c.failureCode)+'</span>':'')+(c.error?'<br><span class="bad">'+esc(c.error)+'</span>':'')+(c.validationStage?'<br>Validation attempt: <b>'+esc(c.validationStage.attempt??"-")+'</b> · PID '+esc(c.validationStage.pid??"-"):'');
     document.getElementById("aiRecent").innerHTML=(d.recent||[]).map(x=>'<div class="row"><b>Iteration '+esc(x.iteration??"-")+' · '+esc(x.candidateVersion||"-")+'</b> · '+esc(x.state||"-")+(x.decision?' · '+esc(x.decision):'')+(x.failureCode?' · <span class="bad">'+esc(x.failureCode)+'</span>':'')+'</div>').join("")||'<span class="muted">아직 기록이 없습니다.</span>';
-    document.getElementById("aiDryRunBtn").disabled=running;
-    document.getElementById("aiRunBtn").disabled=running||!d.dryRunReady;
+    document.getElementById("aiDryRunBtn").disabled=running||rebuilding;
+    document.getElementById("aiRunBtn").disabled=running||rebuilding||!d.dryRunReady;
     document.getElementById("aiRunBtn").textContent=d.dryRunReady?"실제 1회 연구 실행":"Dry Run 완료 필요";
+    document.getElementById("aiBaselineRebuildBtn").disabled=running||rebuilding;
     await refreshAILog();
   }catch(e){document.getElementById("aiGate").innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
 }
@@ -473,6 +497,9 @@ async function refreshAILog(){
     stage.textContent=(d.stage&&d.stage.text)||"별도 Validation worker 로그가 없습니다.";
     setText("aiLogMeta","web-launch.log · "+Number(d.launch?.bytes||0).toLocaleString()+" B · "+aiTime(d.launch?.updatedAt));
     setText("aiStageLogMeta",(d.stageName||"Validation worker 로그 없음")+" · "+Number(d.stage?.bytes||0).toLocaleString()+" B · "+aiTime(d.stage?.updatedAt));
+    const rb=d.baselineRebuildLog||{};
+    document.getElementById("aiBaselineLog").textContent=rb.text||"아직 기준선 재생성 로그가 없습니다.";
+    setText("aiBaselineLogMeta","v07-rebuild.log · "+Number(rb.bytes||0).toLocaleString()+" B · "+aiTime(rb.updatedAt));
     const err=d.errorDetail||{};
     document.getElementById("aiErrorSummary").innerHTML=d.failureCode?'<span class="bad"><b>'+esc(d.failureCode)+'</b></span> · last stage: <b>'+esc(d.lastSuccessfulState||"-")+'</b><br>'+esc(d.currentError||""):'<span class="ok">현재 실패 없음</span>';
     document.getElementById("aiErrorDetail").textContent=err.text||d.currentError||"상세 오류 없음";
@@ -480,6 +507,13 @@ async function refreshAILog(){
   }catch(e){
     setText("aiLogMeta","로그 조회 실패: "+e.message);
   }
+}
+async function startBaselineRebuild(){
+  if(!confirm("새 V0.7 기준선을 백그라운드에서 재생성할까요? 기존 결과는 보존되며 2026 Final OOS는 사용하지 않습니다."))return;
+  try{
+    await req("/api/admin/ai/rebuild-baseline",{method:"POST",body:"{}"});
+    await refreshAI();
+  }catch(e){alert(e.message);await refreshAI();}
 }
 async function startAIResearch(mode){
   const isRun=mode==="run"; let provisional=false;
@@ -493,6 +527,7 @@ async function startAIResearch(mode){
 }
 document.getElementById("aiDryRunBtn").onclick=()=>startAIResearch("dry-run");
 document.getElementById("aiRunBtn").onclick=()=>startAIResearch("run");
+document.getElementById("aiBaselineRebuildBtn").onclick=startBaselineRebuild;
 document.getElementById("aiRefreshBtn").onclick=refreshAI;
 document.getElementById("aiLogRefreshBtn").onclick=refreshAILog;
 document.getElementById("aiLogClearViewBtn").onclick=()=>{document.getElementById("aiLog").textContent="";document.getElementById("aiStageLog").textContent="";};
