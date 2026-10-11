@@ -21,11 +21,18 @@ assert.ok(!html.includes('RESEARCH_EXPORT_TOKEN'),'browser must never receive in
 assert.match(server,/if path=="\/api\/admin\/ai\/status":[\s\S]{0,220}if not authorized\(self\)/);
 assert.match(server,/if path=="\/api\/admin\/ai\/log":[\s\S]{0,220}if not authorized\(self\)/);
 assert.match(server,/def _safe_log_tail\(/);
+assert.match(server,/AUTONOMOUS_WEB_LOG\.open\("wb"/);
+assert.match(server,/web-launch-/);
 assert.match(server,/from research_export import sanitize/);
 assert.match(server,/def _autonomous_pipeline\(/);
 assert.match(server,/def _autonomous_checkpoints\(/);
 assert.match(server,/rssMb/);
 assert.match(server,/uptimeSeconds/);
+const registry=fs.readFileSync(path.join(root,'research','autonomous','experiment_registry.py'),'utf8');
+const exportClient=fs.readFileSync(path.join(root,'research','autonomous','export_client.py'),'utf8');
+assert.match(registry,/autonomous_state/);
+assert.match(exportClient,/export_job/);
+assert.match(exportClient,/export_download/);
 assert.match(server,/if path=="\/api\/admin\/ai\/start":[\s\S]{0,220}if not authorized\(self\)/);
 assert.match(server,/RESEARCH_EXPORT_BASE_URL":"http:\/\/127\.0\.0\.1:8080"/);
 assert.match(server,/RESEARCH_EXPORT_TOKEN":token/);
