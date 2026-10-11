@@ -39,8 +39,15 @@ def main(argv=None):
         if not args.resume:
             p.error("DRY_RUN_REVIEW_REQUIRED: complete --dry-run, then explicitly --resume")
         old = Registry(config.registry).iterations()
-        prior = read_json(old[-1] / "experiment.json") if old else {}
-        if not prior.get("dryRunReviewed") and not (prior.get("dryRun") is True and prior.get("state") == "completed"):
+        latest = read_json(old[-1] / "experiment.json") if old else {}
+        resumable = bool(latest.get("dryRunReviewed") and latest.get("dryRun") is not True)
+        reviewed = any(
+            (lambda x: x.get("dryRun") is True and x.get("state") == "completed")(
+                read_json(folder / "experiment.json")
+            )
+            for folder in old
+        )
+        if not resumable and not reviewed:
             p.error("DRY_RUN_REVIEW_REQUIRED")
         # CLI returns immediately. Worker owns flock throughout the iteration.
         argv = list(sys.argv[1:] if argv is None else argv)
