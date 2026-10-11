@@ -16,6 +16,7 @@ import fcntl
 import gzip
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -113,9 +114,9 @@ def fingerprint(row, symbol):
     try:
         values = tuple(Decimal(str(row[k])) for k in FIELDS[1:6])
         o, h, l, c, v = values
-        if not all(x.is_finite() for x in values) or min(o,h,l,c) <= 0 or v < 0 or h < max(o,c) or l > min(o,c) or h < l:
+        if not all(x.is_finite() and math.isfinite(float(x)) for x in values) or min(o,h,l,c) <= 0 or v < 0 or h < max(o,c) or l > min(o,c) or h < l:
             raise ValueError("INVALID_OHLCV")
-    except (KeyError, TypeError, InvalidOperation) as exc:
+    except (KeyError, TypeError, InvalidOperation, OverflowError) as exc:
         raise ValueError("INVALID_OHLCV") from exc
     # Extra quote/metadata columns must not be discarded during a repair.
     extra = tuple(sorted((k, v) for k, v in row.items() if k not in FIELDS and k not in ("symbol", "ticker")))
@@ -161,6 +162,29 @@ def stable_signature(path):
 
 def db_signature(path):
     return {p.name: stable_signature(p) for p in (path, Path(str(path)+"-wal"), Path(str(path)+"-shm")) if p.exists()}
+
+
+def collector_export_order(path):
+    """Existing export sorts TEXT labels; validate that order before publication.
+
+    Timestamp metadata only, no OHLCV/2026 feature access. Mixed explicit UTC/ET
+    labels can each be valid yet sort incorrectly in the original collector.
+    Never canonicalize/overwrite existing labels automatically to hide this.
+    """
+    previous = None; disorders = 0; errors = 0; samples = []
+    with closing(readonly_db(path)) as conn:
+        for (label,) in conn.execute("SELECT timestamp FROM candles ORDER BY timestamp"):
+            try: stamp = normalize_minute_timestamp(label, "end", None)
+            except (ValueError, TypeError, AttributeError):
+                errors += 1
+                continue
+            if stamp.date().isoformat() >= "2026-01-01": break
+            if previous is not None and stamp < previous:
+                disorders += 1
+                if len(samples) < 5: samples.append(dict(previousStart=previous.isoformat(), currentSourceTimestamp=label))
+            previous = stamp
+    return dict(passed=not disorders and not errors, outOfOrderTransitions=disorders, timestampErrors=errors, samples=samples,
+                scope="Pre-2026 timestamp metadata in existing collector TEXT export order")
 
 
 def inspect_rows(rows, symbol, sessions, *, strict_scope=False):
@@ -245,6 +269,7 @@ def audit(data_dir, symbols, dates):
             with closing(readonly_db(db)) as conn:
                 count, first, last = conn.execute("SELECT COUNT(*),MIN(timestamp),MAX(timestamp) FROM candles").fetchone()
             db_report, db_seen = inspect_rows(db_rows(db, sessions), symbol, sessions)
+            db_order = collector_export_order(db)
             if before_db != db_signature(db): raise ValueError("SQLITE_CHANGED_DURING_AUDIT")
             comparisons = []
             for day in sessions:
@@ -253,6 +278,7 @@ def audit(data_dir, symbols, dates):
                 comparisons.append(dict(date=day, csvOnly=len(a.keys()-b.keys()), sqliteOnly=len(b.keys()-a.keys()),
                                         same=len(common)-len(conflicts), conflicting=len(conflicts), conflictSamples=conflicts[:10]))
             out["sqlite"] = dict(path=str(db), signature=before_db, rows=count, firstTimestamp=first, lastTimestamp=last,
+                                 collectorExportOrder=db_order,
                                  ordering="SQL timestamp order; physical insertion order is not chronological evidence", **db_report)
             out["comparison"] = comparisons
         outputs[symbol] = out
@@ -537,6 +563,7 @@ def _prepare_merge(production, staging, out_dir, symbol):
             conn.commit()
         with db_merged.open("rb") as durable: os.fsync(durable.fileno())
         db_facts, _ = inspect_rows(db_rows(db_merged, sessions), symbol, sessions)
+        if not collector_export_order(db_merged)["passed"]: raise ValueError("SQLITE_TEXT_EXPORT_ORDER_INVALID")
         if not db_facts["passed"] or signature != db_signature(db) or file_sha256(db) != file_sha256(db_backup): raise ValueError("SQLITE_INVALID_OR_CHANGED")
         # Production WAL must be quiescent before publication, even if preparation
         # can read it. Never delete/checkpoint a production WAL automatically.

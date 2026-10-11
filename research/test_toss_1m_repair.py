@@ -75,7 +75,7 @@ class RepairTests(unittest.TestCase):
         self.assertFalse(report["passed"]); self.assertEqual(report["sessions"][0]["conflictingDuplicates"],1)
 
     def test_invalid_ohlcv_currency_timezone_and_order(self):
-        for change in (dict(high="98"),dict(currency="KRW"),dict(timestamp="2024-07-26T09:31:00")):
+        for change in (dict(high="98"),dict(high="1e501",close="1e500"),dict(currency="KRW"),dict(timestamp="2024-07-26T09:31:00")):
             report,_=inspect_rows(iter([dict(self.rows[0],**change)]+self.rows[1:]),"TQQQ",self.calendar)
             self.assertFalse(report["passed"])
         report,_=inspect_rows(iter([self.rows[1],self.rows[0]]+self.rows[2:]),"TQQQ",self.calendar)
@@ -324,6 +324,16 @@ class RepairTests(unittest.TestCase):
         before=file_sha256(path)
         with self.assertRaisesRegex(ValueError,"EXISTING_STAGING_INVALID_OR_CONFLICTING"):
             adopt_staging(existing,self.stage,self.prod,["TQQQ"],[self.day])
+        self.assertEqual(file_sha256(path),before)
+
+    def test_mixed_offset_sqlite_future_export_disorder_blocks_publish(self):
+        # Existing ET row is later in real time than a new UTC early row, but
+        # TEXT ORDER BY would put the ET 10:11 label before UTC 13:31.
+        from datetime import timezone, datetime
+        self.stage_rows([dict(r,timestamp=datetime.fromisoformat(r["timestamp"]).astimezone(timezone.utc).isoformat()) for r in self.rows])
+        path=self.db([self.rows[40]]); before=file_sha256(path)
+        with self.assertRaisesRegex(ValueError,"SQLITE_TEXT_EXPORT_ORDER_INVALID"):
+            prepare_merge(self.prod,self.stage,self.operation,"TQQQ")
         self.assertEqual(file_sha256(path),before)
 
 

@@ -50,6 +50,9 @@ Answers to the eight source questions:
    never overwrite conflicting rows. Publish both only during an offline
    window. Do not create an absent AAPL DB. Pre-existing extended-hours or
    out-of-scope differences remain documented, not silently reconciled.
+   The prepared DB's original `ORDER BY timestamp` export must also be
+   chronological after END normalization; mixed UTC/ET text ordering fails
+   with `SQLITE_TEXT_EXPORT_ORDER_INVALID`, never silent timestamp rewriting.
 8. **Six days imply 252 complete sessions:** no. `snapshot` requires the entire
    2024 calendar to pass for symbols AND references; the newly run frozen
    evaluator must then independently report 252/252, no incomplete sessions.
