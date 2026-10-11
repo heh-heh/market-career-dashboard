@@ -66,8 +66,11 @@ def _autonomous_processes():
     proc=Path("/proc")
     try:
         entries=list(proc.iterdir())
-    except OSError:
-        return rows
+        host_uptime=float((proc/"uptime").read_text().split()[0])
+        hz=os.sysconf(os.sysconf_names["SC_CLK_TCK"])
+        boot_epoch=time.time()-host_uptime
+    except (OSError,ValueError,KeyError):
+        entries=[]; hz=100; boot_epoch=time.time()
     for item in entries:
         if not item.name.isdigit():
             continue
@@ -77,26 +80,188 @@ def _autonomous_processes():
             continue
         if "research/autonomous/run_research_loop.py" not in raw:
             continue
-        rows.append({
+        row={
             "pid":int(item.name),
             "worker":"--worker" in raw,
             "dryRun":"--dry-run" in raw,
-        })
+            "resume":"--resume" in raw,
+        }
+        try:
+            stat_fields=(item/"stat").read_text().rsplit(") ",1)[1].split()
+            start_ticks=int(stat_fields[19])
+            started=boot_epoch+(start_ticks/hz)
+            row["startedAt"]=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime(started))
+            row["uptimeSeconds"]=max(0,int(time.time()-started))
+            row["processState"]=stat_fields[0]
+        except (OSError,ValueError,IndexError):
+            pass
+        try:
+            status_text=(item/"status").read_text()
+            match=re.search(r"^VmRSS:\s+(\d+)\s+kB$",status_text,re.MULTILINE)
+            if match:
+                row["rssMb"]=round(int(match.group(1))/1024,1)
+        except OSError:
+            pass
+        rows.append(row)
     return sorted(rows,key=lambda x:x["pid"])
+
+_AUTONOMOUS_PIPELINE=[
+    ("downloading","데이터 다운로드"),
+    ("analyzing","Baseline 분석"),
+    ("planning","가설·실험 계획"),
+    ("safety","안전 검사"),
+    ("implementing","후보 구현"),
+    ("testing","테스트"),
+    ("training","학습"),
+    ("internal_holdout","2024 Holdout"),
+    ("shortlisting","후보 선별"),
+    ("development_validation","2025 Validation"),
+    ("diagnostics","일반화 진단"),
+    ("comparing","Baseline 비교"),
+    ("completed","완료"),
+]
+
+def _autonomous_iteration_folder(current):
+    try:
+        number=int(current.get("iteration"))
+    except (TypeError,ValueError):
+        return None
+    folder=AUTONOMOUS_ROOT/f"iteration-{number:04d}"
+    try:
+        if not folder.is_dir() or folder.is_symlink() or folder.resolve().parent!=AUTONOMOUS_ROOT.resolve():
+            return None
+    except OSError:
+        return None
+    return folder
+
+def _safe_ai_json(path):
+    try:
+        if not path.is_file() or path.is_symlink() or path.stat().st_size>2*1024*1024:
+            return {}
+        value=json.loads(path.read_text(encoding="utf-8"))
+        from research_export import sanitize
+        return sanitize(value) if isinstance(value,dict) else {}
+    except (OSError,ValueError,TypeError,json.JSONDecodeError):
+        return {}
+
+def _autonomous_pipeline(current):
+    state=str(current.get("state") or "waiting")
+    dry=bool(current.get("dryRun"))
+    states=[x[0] for x in _AUTONOMOUS_PIPELINE]
+    normalized=state if state in states else ("completed" if state=="completed" else None)
+    current_index=states.index(normalized) if normalized in states else -1
+    rows=[]
+    for i,(key,label) in enumerate(_AUTONOMOUS_PIPELINE):
+        if state=="failed":
+            status="failed" if key==str(current.get("lastSuccessfulState") or "") else "pending"
+        elif dry and state=="completed" and key in {"implementing","testing","training","internal_holdout","shortlisting","development_validation","diagnostics","comparing"}:
+            status="skipped"
+        elif state=="completed":
+            status="complete"
+        elif key=="safety":
+            plan_done=current_index>=states.index("implementing") if current_index>=0 else False
+            status="complete" if plan_done else ("active" if state=="planning" else "pending")
+        elif current_index>=0:
+            status="complete" if i<current_index else ("active" if i==current_index else "pending")
+        else:
+            status="active" if state=="queued" and i==0 else "pending"
+        rows.append({"key":key,"label":label,"status":status})
+    return rows
+
+def _autonomous_checkpoints(folder):
+    if folder is None:
+        return []
+    checks=[
+        ("experiment","experiment.json"),
+        ("source manifest","source_manifest.json"),
+        ("baseline metrics","baseline_metrics.json"),
+        ("plan","plan.json"),
+        ("quarterly diagnostics","quarterly_diagnostics.json"),
+        ("code diff","code_diff.patch"),
+        ("tests","test_results.json"),
+        ("training checkpoint","training_run.json"),
+        ("holdout checkpoint","holdout_run.json"),
+        ("stage process","stage_process.json"),
+        ("validation checkpoint","validation_run.json"),
+        ("diagnostics","diagnostics.json"),
+        ("comparison","comparison.json"),
+        ("report","report.json"),
+    ]
+    rows=[]
+    for label,name in checks:
+        p=folder/name
+        try:
+            rows.append({"label":label,"present":p.is_file() and not p.is_symlink(),
+                         "bytes":p.stat().st_size if p.is_file() and not p.is_symlink() else 0})
+        except OSError:
+            rows.append({"label":label,"present":False,"bytes":0})
+    shortlist=folder/"shortlist-v08"/"run.json"
+    try:
+        rows.append({"label":"shortlist","present":shortlist.is_file() and not shortlist.is_symlink(),
+                     "bytes":shortlist.stat().st_size if shortlist.is_file() and not shortlist.is_symlink() else 0})
+    except OSError:
+        rows.append({"label":"shortlist","present":False,"bytes":0})
+    return rows
+
+def _safe_log_tail(path,lines=160,max_bytes=128*1024):
+    from research_export import sanitize
+    try:
+        if not path.is_file() or path.is_symlink():
+            return {"text":"","updatedAt":None,"bytes":0}
+        size=path.stat().st_size
+        with path.open("rb") as f:
+            f.seek(max(0,size-max_bytes))
+            raw=f.read(max_bytes)
+        text_value=raw.decode("utf-8","replace")
+        if size>max_bytes:
+            text_value=text_value.split("\n",1)[-1]
+        safe=[]
+        for line in text_value.splitlines()[-max(1,min(int(lines),300)):]:
+            clean=sanitize(line)
+            safe.append(clean if isinstance(clean,str) else "[REDACTED]")
+        return {
+            "text":"\n".join(safe),
+            "updatedAt":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime(path.stat().st_mtime)),
+            "bytes":size,
+        }
+    except (OSError,ValueError):
+        return {"text":"","updatedAt":None,"bytes":0}
 
 def autonomous_admin_status():
     from research.autonomous.monitor import status as autonomous_status
     AUTONOMOUS_ROOT.mkdir(parents=True,exist_ok=True)
     result=autonomous_status(AUTONOMOUS_ROOT)
     processes=_autonomous_processes()
+    current=dict(result.get("current") or {})
+    folder=_autonomous_iteration_folder(current)
+    detail={}
+    if folder is not None:
+        experiment=_safe_ai_json(folder/"experiment.json")
+        for key in ("error","failureCode","startedAt","updatedAt","finishedAt","decision","dryRun",
+                    "dryRunReviewed","selectedCandidates","trainingProgress","holdoutProgress",
+                    "validationProgress","positiveBots","validationMean","validationMedian","avgTrades"):
+            if key in experiment:
+                detail[key]=experiment.get(key)
+        stage=_safe_ai_json(folder/"stage_process.json")
+        if stage:
+            detail["validationStage"]={
+                "attempt":stage.get("attempt"),
+                "startedAt":stage.get("startedAt"),
+                "pid":(stage.get("identity") or {}).get("pid"),
+            }
     return {
         **result,
+        "current":{**current,**detail},
         "running":bool(processes),
         "processes":processes,
+        "pipeline":_autonomous_pipeline({**current,**detail}),
+        "checkpoints":_autonomous_checkpoints(folder),
         "manifestAvailable":AUTONOMOUS_MANIFEST.is_file(),
         "manifestPath":"research/v4_data_manifest.json" if AUTONOMOUS_MANIFEST.is_file() else None,
+        "logAvailable":AUTONOMOUS_WEB_LOG.is_file(),
         "finalOosGate":"CLOSED",
         "researchOnly":True,
+        "serverTime":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
     }
 
 def _issue_autonomous_session(ttl=43200):
@@ -2310,6 +2475,28 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":True,**autonomous_admin_status()})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)
+            return
+        if path=="/api/admin/ai/log":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                query=urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+                lines=max(20,min(300,int((query.get("lines") or ["160"])[0])))
+                current=(autonomous_admin_status().get("current") or {})
+                folder=_autonomous_iteration_folder(current)
+                launch=_safe_log_tail(AUTONOMOUS_WEB_LOG,lines=lines)
+                stage={"text":"","updatedAt":None,"bytes":0}
+                stageName=None
+                if folder is not None:
+                    logs=sorted((p for p in folder.glob("stage-*.log") if p.is_file() and not p.is_symlink()),
+                                key=lambda p:p.name)
+                    if logs:
+                        stageName=logs[-1].name
+                        stage=_safe_log_tail(logs[-1],lines=lines)
+                self.send_json({"ok":True,"launch":launch,"stage":stage,"stageName":stageName,
+                                "researchOnly":True,"finalOosGate":"CLOSED"})
+            except (ValueError,OSError) as e:
+                self.send_json({"ok":False,"error":str(e)},400)
             return
         if path=="/api/research/evolution/status":
             try:
