@@ -60,6 +60,11 @@ AUTONOMOUS_SCRIPT=ROOT/"research"/"autonomous"/"run_research_loop.py"
 AUTONOMOUS_MANIFEST=ROOT/"research"/"v4_data_manifest.json"
 AUTONOMOUS_WEB_LOG=AUTONOMOUS_ROOT/"web-launch.log"
 AUTONOMOUS_LAUNCH_LOCK=threading.Lock()
+V07_REBUILD_SCRIPT=ROOT/"research"/"evolution"/"run_v07_campaign.py"
+V07_RESULTS_ROOT=Path(os.getenv("EVOLUTION_RESULTS_DIR","/home/ubuntu/evolution-results"))
+V07_REBUILD_LOG=AUTONOMOUS_ROOT/"v07-rebuild.log"
+V07_REBUILD_LOCK=threading.Lock()
+
 
 def _autonomous_processes():
     rows=[]
@@ -104,6 +109,137 @@ def _autonomous_processes():
             pass
         rows.append(row)
     return sorted(rows,key=lambda x:x["pid"])
+
+def _v07_rebuild_processes():
+    rows=[]
+    try:
+        entries=list(Path("/proc").iterdir())
+        host_uptime=float(Path("/proc/uptime").read_text().split()[0])
+        hz=os.sysconf(os.sysconf_names["SC_CLK_TCK"])
+        boot_epoch=time.time()-host_uptime
+    except (OSError,ValueError,KeyError):
+        entries=[]; hz=100; boot_epoch=time.time()
+    for item in entries:
+        if not item.name.isdigit():
+            continue
+        try:
+            raw=(item/"cmdline").read_bytes().replace(b"\x00",b" ").decode("utf-8","ignore")
+        except OSError:
+            continue
+        if "research/evolution/run_v07_campaign.py" not in raw:
+            continue
+        row={"pid":int(item.name)}
+        try:
+            stat_fields=(item/"stat").read_text().rsplit(") ",1)[1].split()
+            start_ticks=int(stat_fields[19])
+            started=boot_epoch+(start_ticks/hz)
+            row["startedAt"]=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime(started))
+            row["uptimeSeconds"]=max(0,int(time.time()-started))
+            row["processState"]=stat_fields[0]
+        except (OSError,ValueError,IndexError):
+            pass
+        try:
+            status_text=(item/"status").read_text()
+            match=re.search(r"^VmRSS:\s+(\d+)\s+kB$",status_text,re.MULTILINE)
+            if match:
+                row["rssMb"]=round(int(match.group(1))/1024,1)
+        except OSError:
+            pass
+        rows.append(row)
+    return sorted(rows,key=lambda x:x["pid"])
+
+def _latest_v07_campaign():
+    try:
+        folders=sorted(
+            (p for p in V07_RESULTS_ROOT.glob("campaign-*-v07") if p.is_dir() and not p.is_symlink()),
+            key=lambda p:p.name,
+            reverse=True,
+        )
+    except OSError:
+        return {}
+    for folder in folders:
+        info=_safe_ai_json(folder/"campaign.json")
+        if info:
+            phase=str(info.get("phase") or "waiting")
+            progress={
+                "training":10,
+                "internal_holdout":45,
+                "shortlist":65,
+                "development_validation":75,
+                "diagnostics":90,
+                "completed":100,
+                "error":100,
+            }.get(phase,0)
+            return {
+                **info,
+                "progressPct":progress,
+                "campaignDir":folder.name,
+            }
+    return {}
+
+def v07_rebuild_status():
+    processes=_v07_rebuild_processes()
+    campaign=_latest_v07_campaign()
+    return {
+        "running":bool(processes),
+        "processes":processes,
+        "campaign":campaign,
+        "logAvailable":V07_REBUILD_LOG.is_file(),
+        "researchOnly":True,
+        "finalOosGate":"CLOSED",
+    }
+
+def start_v07_baseline_rebuild():
+    with V07_REBUILD_LOCK:
+        if _autonomous_processes():
+            raise ValueError("AUTONOMOUS_RESEARCH_RUNNING")
+        if _v07_rebuild_processes():
+            raise ValueError("V07_BASELINE_REBUILD_ALREADY_RUNNING")
+        if not V07_REBUILD_SCRIPT.is_file():
+            raise ValueError("V07_REBUILD_SCRIPT_MISSING")
+        V07_RESULTS_ROOT.mkdir(parents=True,exist_ok=True)
+        AUTONOMOUS_ROOT.mkdir(parents=True,exist_ok=True)
+        python=ROOT/".venv"/"bin"/"python"
+        if not python.is_file():
+            raise ValueError("virtualenv python is missing")
+        logs_dir=AUTONOMOUS_ROOT/"logs"
+        logs_dir.mkdir(parents=True,exist_ok=True)
+        if V07_REBUILD_LOG.exists() and V07_REBUILD_LOG.stat().st_size:
+            stamp=time.strftime("%Y%m%dT%H%M%SZ",time.gmtime())
+            V07_REBUILD_LOG.replace(logs_dir/f"v07-rebuild-{stamp}-{uuid.uuid4().hex[:8]}.log")
+        cmd=[
+            str(python),str(V07_REBUILD_SCRIPT),
+            "--data-dir",str(ROOT/"data"/"toss_1m"),
+            "--results-dir",str(V07_RESULTS_ROOT),
+            "--symbols","TQQQ,AAPL",
+            "--population","20",
+            "--max-population","300",
+            "--shortlist-max","40",
+            "--seed","42",
+        ]
+        log=V07_REBUILD_LOG.open("wb",buffering=0)
+        log.write((
+            f"[{time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())}] "
+            "V0.7 baseline rebuild started; train=2022-2023 holdout=2024 dev=2025 finalOos=CLOSED\n"
+        ).encode("utf-8"))
+        try:
+            child=subprocess.Popen(
+                cmd,cwd=str(ROOT),stdin=subprocess.DEVNULL,
+                stdout=log,stderr=subprocess.STDOUT,start_new_session=True,
+                env=dict(os.environ,EVOLUTION_RESULTS_DIR=str(V07_RESULTS_ROOT)),
+            )
+        finally:
+            log.close()
+        return {
+            "started":True,
+            "pid":child.pid,
+            "researchOnly":True,
+            "finalOosGate":"CLOSED",
+            "train":"2022-01-03..2023-12-29",
+            "internalHoldout":"2024-01-02..2024-12-31",
+            "developmentValidation":"2025-01-02..2025-12-31",
+        }
+
 
 _AUTONOMOUS_PIPELINE=[
     ("downloading","데이터 다운로드"),
@@ -286,6 +422,7 @@ def autonomous_admin_status():
         "logAvailable":AUTONOMOUS_WEB_LOG.is_file(),
         "finalOosGate":"CLOSED",
         "researchOnly":True,
+        "baselineRebuild":v07_rebuild_status(),
         "serverTime":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
     }
 
@@ -1352,8 +1489,8 @@ def deploy_status():
     return 0,"\n".join(parts)
 
 def deploy_apply():
-    if _autonomous_processes():
-        return 2,"AUTONOMOUS_RESEARCH_RUNNING: AI 연구 완료 후 배포 적용/API 재시작을 실행하세요."
+    if _autonomous_processes() or _v07_rebuild_processes():
+        return 2,"AI_RESEARCH_RUNNING: AI 연구/기준선 재생성 완료 후 배포 적용/API 재시작을 실행하세요."
     branch=_git_branch()
     if branch!="strategy-engine-v3":
         return 2,"배포는 strategy-engine-v3 브랜치에서만 허용합니다."
@@ -2545,11 +2682,13 @@ class Handler(BaseHTTPRequestHandler):
                 error_detail={"text":"","updatedAt":None,"bytes":0}
                 if folder is not None:
                     error_detail=_safe_log_tail(folder/"error_traceback.log",lines=lines)
+                rebuild_log=_safe_log_tail(V07_REBUILD_LOG,lines=lines)
                 self.send_json({"ok":True,"launch":launch,"stage":stage,"stageName":stageName,
                                 "errorDetail":error_detail,
                                 "currentError":current.get("error"),
                                 "failureCode":current.get("failureCode"),
                                 "lastSuccessfulState":current.get("lastSuccessfulState"),
+                                "baselineRebuildLog":rebuild_log,
                                 "researchOnly":True,"finalOosGate":"CLOSED"})
             except (ValueError,OSError) as e:
                 self.send_json({"ok":False,"error":str(e)},400)
@@ -2614,6 +2753,15 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/export/"):
             self.research_export_post(path); return
+        if path=="/api/admin/ai/rebuild-baseline":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                self.send_json({"ok":True,**start_v07_baseline_rebuild()},202); return
+            except ValueError as e:
+                self.send_json({"ok":False,"error":str(e)},409); return
+            except Exception as e:
+                self.send_json({"ok":False,"error":str(e)},503); return
         if path=="/api/admin/ai/start":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
