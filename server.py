@@ -1618,11 +1618,17 @@ class Handler(BaseHTTPRequestHandler):
         try:
             manager=research_exporter()
             if path=="/api/research/export/catalog":
-                self.send_json({"ok":True,**manager.catalog()["public"]}); return
+                public=dict(manager.catalog()["public"])
+                if (qs.get("researchOnly") or [""])[0]=="true":
+                    from research_export import pre_final_oos_rows
+                    public["runs"]=pre_final_oos_rows(public["runs"])
+                    public["jobs"]=[]
+                    public["researchBoundary"]="FINAL_OOS_EXCLUDED"
+                self.send_json({"ok":True,**public}); return
             if path=="/api/research/export/summary":
                 fmt=(qs.get("format") or ["json"])[0]
                 if fmt not in ("json","csv"): raise ValueError("format must be json or csv")
-                raw=manager.summary(fmt)
+                raw=manager.summary(fmt,research_only=(qs.get("researchOnly") or [""])[0]=="true")
                 self.send_response(200)
                 self.send_header("Content-Type","text/csv; charset=utf-8" if fmt=="csv" else "application/json; charset=utf-8")
                 self.send_header("Content-Disposition",'attachment; filename="evolution_research_summary.'+fmt+'"')
@@ -2057,6 +2063,14 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok":True,**v4_research_status()})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)
+            return
+        if path=="/api/research/autonomous/status":
+            try:
+                from research.autonomous.monitor import status as autonomous_status
+                root=Path(os.getenv("EVOLUTION_AUTONOMOUS_DIR","/home/ubuntu/evolution-autonomous"))
+                self.send_json({"ok":True,**autonomous_status(root)})
+            except (ValueError,OSError):
+                self.send_json({"ok":False,"error":"Autonomous research status unavailable"},503)
             return
         if path=="/api/research/evolution/status":
             try:

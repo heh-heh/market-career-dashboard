@@ -30,11 +30,11 @@ from research_export_metadata import summarize_run, summary_csv, layers
 
 VERSION = "research-export-v1"
 TYPES = {"evolution_full", "evolution_summary", "evolution_population", "evolution_trades",
-         "V07_FULL_RESEARCH_BUNDLE", "v4_full", "research_metadata", "toss_1m", "toss_ticks"}
+         "V07_FULL_RESEARCH_BUNDLE", "autonomous_iteration", "v4_full", "research_metadata", "toss_1m", "toss_ticks"}
 SUMMARY_NAMES = {"run.json", "status.json", "final_population.json", "validation_summary.json",
                  "generalization_diagnostics.json", "shortlist.json", "campaign.json", "config.json",
                  "default_config.json", "evaluation_summary.json"}
-EXTENSIONS = {".json", ".jsonl", ".csv", ".md", ".txt", ".toml", ".yaml", ".yml", ".ini"}
+EXTENSIONS = {".json", ".jsonl", ".csv", ".md", ".txt", ".toml", ".yaml", ".yml", ".ini", ".patch"}
 SECRET_KEY = re.compile(r"token|secret|password|credential|authorization|cookie|private.?key|access.?key|api.?key|app.?key|session(?:id|token|key|cookie)|^sessions?$", re.I)
 SECRET_TEXT = re.compile(r"Bearer\s+\S+|(?:AKIA|ASIA)[A-Z0-9]{16}|[\w-]*(?:token|secret|password|authorization|cookie|credential|session|access[_-]?key|api[_-]?key|app[_-]?key)[\w-]*\s*[:=]\s*\S+|-----BEGIN[^\n]*PRIVATE KEY", re.I)
 NY = ZoneInfo("America/New_York")
@@ -44,6 +44,22 @@ GiB = 1024**3
 
 def utc():
     return datetime.now(timezone.utc).isoformat()
+
+
+def pre_final_oos_rows(rows):
+    """Autonomous metadata view only; ordinary admin exports stay unchanged."""
+    result = []
+    for row in rows:
+        periods = [p for p in (row.get("evaluationPeriod"), row.get("validationPeriod")) if p]
+        stage = str(row.get("stage") or "").lower()
+        if "final_oos" in stage or any(str(p[1])[:4] >= "2026" for p in periods):
+            continue
+        if not periods:
+            fallback = [row.get(k) for k in ("trainPeriod", "internalHoldoutPeriod", "developmentValidationPeriod") if row.get(k)]
+            if not fallback or any(str(p[1])[:4] >= "2026" for p in fallback):
+                continue  # Unknown/future executed period is not safe for the loop.
+        result.append(row)
+    return result
 
 
 def safe_relative(value):
@@ -282,7 +298,8 @@ class ResearchExporter:
         self.repo = Path(repo).resolve()
         defaults = dict(evolution=Path("/home/ubuntu/evolution-results"), v4=Path("/home/ubuntu/v4-research"),
                         results=self.repo/"research/results", minutes=self.repo/"data/toss_1m",
-                        ticks=self.repo/"data/toss_ticks", metadata=self.repo/"research/evolution")
+                        ticks=self.repo/"data/toss_ticks", metadata=self.repo/"research/evolution",
+                        autonomous=Path(os.getenv("EVOLUTION_AUTONOMOUS_DIR", "/home/ubuntu/evolution-autonomous")))
         self.roots = {k: SafeRoot(p) for k, p in (roots or defaults).items()}
         self.output = Path(export_dir or "/home/ubuntu/research-exports").absolute()
         if self.output.resolve() != self.output:
@@ -361,7 +378,24 @@ class ResearchExporter:
         sources = {}; runs = {}; warnings = []
         for kind, root in self.roots.items():
             try:
-                files = list(root.walk()) if root.path.exists() else []
+                if kind == "autonomous":
+                    # Never walk the archive cache, stage logs, or historical input copies.
+                    files = []
+                    if root.path.exists():
+                        with root.directory() as fd:
+                            names = sorted(os.listdir(fd))
+                        allowed = {"experiment.json", "plan.json", "config.json", "hypothesis.md", "source_manifest.json",
+                                   "test_results.json", "training_run.json", "holdout_run.json", "validation_run.json",
+                                   "diagnostics.json", "comparison.json", "decision.json", "report.json", "report.md",
+                                   "quarterly_diagnostics.json", "baseline_metrics.json", "git_result.json", "code_diff.patch",
+                                   "code_fingerprints.json"}
+                        for directory in names:
+                            if not re.fullmatch(r"iteration-\d{4,}", directory): continue
+                            files.extend(f for f in root.walk(directory) if
+                                         str(PurePosixPath(f["relative"]).parent) == directory and
+                                         PurePosixPath(f["relative"]).name in allowed)
+                else:
+                    files = list(root.walk()) if root.path.exists() else []
             except (ValueError, OSError) as exc:
                 files = []; warnings.append(f"{kind}: {exc}")
             sources[kind] = dict(id=kind, available=bool(files), files=len(files), estimatedBytes=sum(f["size"] for f in files),
@@ -392,8 +426,22 @@ class ResearchExporter:
                             references.extend((field, ref) for ref in (value if isinstance(value, list) else [value]) if isinstance(ref, str))
                 runs[key] = dict(root=kind, directory=directory, files=subset, references=references[:1000], summary=summary)
         rows = sorted((r["summary"] for r in runs.values()), key=lambda r: r["updatedAt"] or "", reverse=True)
+        from research.autonomous.monitor import iteration_id
+        iterations = []
+        if "autonomous" in self.roots:
+            root = self.roots["autonomous"]
+            for f in sources["autonomous"]["entries"]:
+                if PurePosixPath(f["relative"]).name != "experiment.json": continue
+                directory = str(PurePosixPath(f["relative"]).parent)
+                try:
+                    doc = root.json(f["relative"], max_bytes=MiB)
+                    iterations.append(dict(id=iteration_id(directory), directory=directory,
+                                           iteration=doc.get("iteration"), candidateVersion=doc.get("candidateVersion"),
+                                           state=doc.get("state"), updatedAt=doc.get("updatedAt")))
+                except (ValueError, OSError): continue
         public = dict(sources=[{k: v for k, v in s.items() if k != "entries"} for s in sources.values()],
                       runs=rows, symbols=sorted(self.symbols), warnings=warnings[:30],
+                      iterations=iterations,
                       limits=dict(maxArchiveBytes=self.max_archive, summaryBytes=self.summary_limit,
                                   minFreeBytes=self.min_free, diskReserveFraction=self.reserve_fraction, maxTickDays=31),
                       jobs=[dict(j) for j in sorted(self.jobs.values(), key=lambda j: j["createdAt"], reverse=True)[:20]],
@@ -402,15 +450,19 @@ class ResearchExporter:
         with self.lock: self.cached = (time.monotonic(), value)
         return value
 
-    def summary(self, fmt="json"):
+    def summary(self, fmt="json", *, research_only=False):
         rows = self.catalog()["public"]["runs"]
+        if research_only: rows = pre_final_oos_rows(rows)
         if fmt == "csv": return summary_csv(rows)
-        return json.dumps(dict(exportedAt=utc(), rows=rows, missingValues="null; no inferred performance"), ensure_ascii=False, indent=2, allow_nan=False).encode()
+        return json.dumps(dict(exportedAt=utc(), rows=rows, missingValues="null; no inferred performance",
+                               researchBoundary="FINAL_OOS_EXCLUDED" if research_only else None), ensure_ascii=False, indent=2, allow_nan=False).encode()
 
     def validate_request(self, body):
-        if not isinstance(body, dict) or set(body)-{"type", "runIds", "symbols", "from", "to"}:
+        if not isinstance(body, dict) or set(body)-{"type", "runIds", "symbols", "from", "to", "researchOnly"}:
             raise ValueError("Only type/runIds/symbols/from/to are allowed; filesystem paths are forbidden")
         if body.get("type") not in TYPES: raise ValueError("Unknown export type")
+        if "researchOnly" in body and (type(body["researchOnly"]) is not bool or body["type"] in ("toss_1m", "toss_ticks")):
+            raise ValueError("researchOnly is a boolean artifact-only boundary")
         if body["type"] in ("toss_1m", "toss_ticks"):
             if "runIds" in body: raise ValueError("runIds not allowed for raw data")
             syms = body.get("symbols")
@@ -425,7 +477,7 @@ class ResearchExporter:
         else:
             if set(body) & {"symbols", "from", "to"}: raise ValueError("Raw-data selectors not allowed for artifacts")
             if "runIds" in body:
-                if not (body["type"].startswith("evolution") or body["type"] == "V07_FULL_RESEARCH_BUNDLE"):
+                if not (body["type"].startswith("evolution") or body["type"] in ("V07_FULL_RESEARCH_BUNDLE", "autonomous_iteration")):
                     raise ValueError("runIds supported only for Evolution exports")
                 if not isinstance(body["runIds"], list) or not body["runIds"] or len(body["runIds"]) > 100 or any(not isinstance(x, str) or not re.fullmatch(r"[0-9a-f]{24}", x) for x in body["runIds"]):
                     raise ValueError("runIds must be opaque catalog IDs, never paths")
@@ -513,6 +565,14 @@ class ResearchExporter:
                            kind == "evolution_population" and ("population" in name or name in ("shortlist.json", "run.json", "config.json")) or
                            kind == "evolution_trades" and name.endswith((".csv", ".csv.gz")) and "trade" in name.lower())
                     if use: selected.append(dict(f, root=r["root"]))
+        elif kind == "autonomous_iteration":
+            requested = body.get("runIds")
+            known = {r["id"]: r["directory"] for r in catalog["public"]["iterations"]}
+            if not requested or any(key not in known for key in requested):
+                raise ValueError("Explicit autonomous catalog iteration IDs required")
+            directories = {known[key] for key in requested}
+            selected = [dict(f, root="autonomous") for f in sources.get("autonomous", {}).get("entries", [])
+                        if str(PurePosixPath(f["relative"]).parent) in directories]
         elif kind == "v4_full": selected = [dict(f, root="v4") for f in sources.get("v4", {}).get("entries", [])]
         elif kind == "research_metadata":
             for root, s in sources.items():
@@ -536,6 +596,19 @@ class ResearchExporter:
                 if len(set(plain_paths)) != len(plain_paths): raise ValueError(f"{symbol}: both CSV and CSV.GZ present; wait for finalized rotation")
         if "metadata" in sources:
             selected.extend(dict(f, root="metadata") for f in sources["metadata"]["entries"] if f["relative"].lower().endswith((".md", "_config.json")) or PurePosixPath(f["relative"]).name == "config.json")
+        if body.get("researchOnly"):
+            safe_ids = {r["id"] for r in pre_final_oos_rows(catalog["public"]["runs"])}
+            if any(r["id"] not in safe_ids for r in chosen):
+                raise ValueError("FINAL_OOS_ACCESS_BLOCKED")
+            bounded = []
+            for f in selected:
+                owners = [(len(r["directory"]), key) for key, r in runs.items() if
+                          r["root"] == f["root"] and (r["directory"] == "." or f["relative"].startswith(r["directory"]+"/"))]
+                if owners and max(owners)[1] not in safe_ids:
+                    continue
+                bounded.append(f)
+            selected = bounded
+            warnings.append("FINAL_OOS_EXCLUDED: autonomous artifact boundary")
         selected = sorted({(f["root"], f["relative"]): f for f in selected}.values(), key=lambda f: (f["root"], f["relative"]))
         names = [(f["root"], f["relative"].removesuffix(".gz")) for f in selected]
         if len(set(names)) != len(names): raise ValueError("Ambiguous compressed/plain artifact names; wait for finalized files")
@@ -575,7 +648,8 @@ class ResearchExporter:
                           "1m timestamps: exclusive END; raw tick timestamps preserved, no invented timezone or history.\n"
                           "Tick streams are LOSSY; duplicate-looking trades remain separate deliveries.\n"
                           "No live orders, data adjustments, model training or Final OOS evaluation were performed.\n").encode()
-                for name, content in (("README.md", readme), ("evolution_research_summary.json", self.summary()), ("evolution_research_summary.csv", self.summary("csv"))):
+                restricted = body.get("researchOnly", False) or body["type"] == "autonomous_iteration"
+                for name, content in (("README.md", readme), ("evolution_research_summary.json", self.summary(research_only=restricted)), ("evolution_research_summary.csv", self.summary("csv", research_only=restricted))):
                     archive.writestr(name, content)
                     entries.append(dict(path=name, exportedBytes=len(content), sha256=hashlib.sha256(content).hexdigest(), generated=True))
                 names = [x["path"] for x in entries]
