@@ -9,11 +9,15 @@ for(const id of ['ai','aiGate','aiDryRunBtn','aiRunBtn','aiRefreshBtn','aiState'
  'aiCandidate','aiOos','aiHypothesis','aiEnvironment','aiTraining','aiHoldout','aiValidation',
  'aiSelected','aiMetrics','aiDecision','aiRecent','aiProcessPid','aiProcessState','aiProcessRam',
  'aiProcessUptime','aiStartedAt','aiUpdatedAt','aiProcessMode','aiServerTime','aiPipeline',
- 'aiCheckpoints','aiLog','aiLogMeta','aiStageLog','aiStageLogMeta','aiLogRefreshBtn']) assert.ok(ids.includes(id),'missing '+id);
+ 'aiCheckpoints','aiLog','aiLogMeta','aiStageLog','aiStageLogMeta','aiLogRefreshBtn',
+ 'aiBaselineRebuildBtn','aiBaselineRebuildState','aiBaselinePhase','aiBaselineProgress',
+ 'aiBaselinePid','aiBaselineCampaign','aiBaselineLog','aiBaselineLogMeta']) assert.ok(ids.includes(id),'missing '+id);
 assert.match(html,/data-tab="ai">AI 연구</);
 assert.match(html,/req\("\/api\/admin\/ai\/status"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/log\?lines=180"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/start"/);
+assert.match(html,/req\("\/api\/admin\/ai\/rebuild-baseline"/);
+assert.match(html,/V0\.7 기준선 재생성/);
 assert.match(html,/mode==="run"/);
 assert.match(html,/dryRunReady/);
 assert.match(html,/Dry Run 완료 필요/);
@@ -39,6 +43,13 @@ assert.match(registry,/autonomous_state/);
 assert.match(exportClient,/export_job/);
 assert.match(exportClient,/export_download/);
 assert.match(server,/if path=="\/api\/admin\/ai\/start":[\s\S]{0,220}if not authorized\(self\)/);
+assert.match(server,/if path=="\/api\/admin\/ai\/rebuild-baseline":[\s\S]{0,220}if not authorized\(self\)/);
+assert.match(server,/run_v07_campaign\.py/);
+assert.match(server,/--symbols","TQQQ,AAPL"/);
+assert.match(server,/--population","20"/);
+assert.match(server,/--max-population","300"/);
+assert.match(server,/finalOosGate":"CLOSED"/);
+assert.match(server,/V07_BASELINE_REBUILD_ALREADY_RUNNING/);
 assert.match(server,/RESEARCH_EXPORT_BASE_URL":"http:\/\/127\.0\.0\.1:8080"/);
 assert.match(server,/RESEARCH_EXPORT_TOKEN":token/);
 assert.match(server,/finalOosGate":"CLOSED"/);
