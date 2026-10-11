@@ -41,6 +41,10 @@ def parser():
     p.add_argument("--symbols", help="Optional exact subset; defaults to source run symbols")
     p.add_argument("--from-date", default="2025-01-02")
     p.add_argument("--to-date", default="2025-12-31")
+    p.add_argument("--expected-split", choices=["validation","none","final_oos"], default="validation",
+                   help="Guard the requested dates against the source config split")
+    p.add_argument("--evaluation-label", default="validation",
+                   help="Artifact/UI label for this frozen evaluation")
     p.add_argument("--results-dir", type=Path, default=Path(os.getenv("EVOLUTION_RESULTS_DIR", str(ROOT/"research/results/evolution"))))
     p.add_argument("--data-origin", choices=["toss","synthetic"], default="toss")
     return p
@@ -104,8 +108,12 @@ def run(args):
     if not calendar:
         raise ValueError("No XNYS sessions in validation range")
     for day in calendar:
-        if config.split(day) != "validation":
-            raise ValueError(f"{day}: frozen validator accepts validation split only")
+        actual = config.split(day)
+        if args.expected_split == "none":
+            if actual is not None:
+                raise ValueError(f"{day}: expected an unassigned development holdout, got {actual}")
+        elif actual != args.expected_split:
+            raise ValueError(f"{day}: expected {args.expected_split} split, got {actual}")
 
     source_symbols = list(source_info.get("symbols") or [])
     symbols = sorted(set(args.symbols.split(","))) if args.symbols else sorted(source_symbols)
@@ -128,12 +136,16 @@ def run(args):
     started = time.perf_counter()
     run_info = dict(
         version=VERSION, runId=run_id, researchOnly=RESEARCH_ONLY, phase="running",
-        evaluationMode="FROZEN_VALIDATION", split="validation",
+        evaluationMode="FROZEN_VALIDATION", split=args.evaluation_label,
+        expectedSplit=args.expected_split, evaluationLabel=args.evaluation_label,
         sourceRunId=source_info.get("runId") or source.name,
         sourceRunDir=str(source), sourcePopulationHash=source_hash,
         sourcePopulationFileHash=source_file_hash,
         sourceTrainFrom=source_info.get("fromDate"), sourceTrainTo=source_info.get("toDate"),
         sourceTrainGenerations=source_info.get("completedTrainGenerations"),
+        selectionMode=source_info.get("selectionMode"),
+        shortlistCount=source_info.get("shortlistCount"),
+        holdoutRunId=source_info.get("holdoutRunId"),
         sourcePopulation=len(bots), population=len(bots), evaluatedPopulation=len(bots),
         nextPopulation=len(bots), adaptiveResources=False, resourceDecision="FROZEN_VALIDATION",
         fitnessMode=source_info.get("fitnessMode") or config.fitness_mode,
@@ -188,7 +200,7 @@ def run(args):
                 best_id = max(ledger, key=lambda k: (-10**99 if ledger[k]["invalidDays"] else ledger[k]["pnlUsd"], k))
                 best_ret = ledger[best_id]["pnlUsd"]/config.initial_capital
             summary = dict(
-                date=day, split="validation", evaluationMode="FROZEN_VALIDATION",
+                date=day, split=args.evaluation_label, evaluationMode="FROZEN_VALIDATION",
                 generation=run_info["generation"], population=len(bots), evaluatedPopulation=len(bots),
                 mutationCount=0, crossoverCount=0, parentPoolSize=0,
                 alive=sum(x["invalidDays"] == 0 and x["pnlUsd"] > config.epsilon for x in ledger.values()),
@@ -209,7 +221,7 @@ def run(args):
             with (directory/"validation.jsonl").open("a",encoding="utf-8") as f:
                 f.write(json.dumps(summary, ensure_ascii=False, allow_nan=False, sort_keys=True)+"\n")
             status.update(summary, completedSessions=len(processed), updatedAt=datetime.now(timezone.utc).isoformat(),
-                          latestLog=f"validation: {day}; frozen genomes; {summary['tradesToday']} closed simulated trades")
+                          latestLog=f"{args.evaluation_label}: {day}; frozen genomes; {summary['tradesToday']} closed simulated trades")
             atomic_json(directory/"status.json", status)
             print(json.dumps(summary, sort_keys=True, allow_nan=False))
 
@@ -248,7 +260,7 @@ def run(args):
         )
         final_status = dict(status)
         final_status.update(run_info)
-        final_status["latestLog"] = "Frozen validation completed; no evolution or live orders"
+        final_status["latestLog"] = f"Frozen {args.evaluation_label} completed; no evolution or live orders"
         atomic_json(directory/"run.json", run_info)
         atomic_json(directory/"status.json", final_status)
     except BaseException as exc:
