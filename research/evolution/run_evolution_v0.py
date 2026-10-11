@@ -382,7 +382,12 @@ def run(args):
         run_info.update(phase="completed", generation=summary["generation"], nextPopulationGeneration=generation,
                         completedTrainGenerations=generation, completedSessions=len(processed),
                         missingSessions=missing_days, splitDays=split_days, frozenPopulationHash=frozen,
-                        population=len(bots), nextPopulation=len(bots),
+                        # Keep the final evaluated population distinct from offspring
+                        # created after selection. Alive/dead/neutral counts refer to
+                        # this evaluated population.
+                        population=summary.get("population", len(bots)),
+                        evaluatedPopulation=summary.get("population", len(bots)),
+                        nextPopulation=len(bots),
                         safePopulation=safe_population, peakPopulation=peak_population,
                         runtimeSeconds=time.perf_counter()-started, inputHashesVerified=True,
                         finishedAt=datetime.now(timezone.utc).isoformat())
@@ -400,7 +405,8 @@ def run(args):
                     "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral"):
             if key in status:
                 final_status[key] = status[key]
-        final_status["population"] = len(bots)
+        final_status["population"] = summary.get("population", len(bots))
+        final_status["evaluatedPopulation"] = summary.get("population", len(bots))
         final_status["nextPopulation"] = len(bots) if frozen is not None else final_status.get("nextPopulation", len(bots))
         final_status["latestLog"] = "Completed offline evaluation; no live orders or deployment"
         status.update(final_status)
