@@ -26,7 +26,7 @@ from toss_auth import get_token as shared_toss_token
 SECRETS = ROOT / "server_secrets.json"
 
 BASE = "https://openapi.tossinvest.com"
-DEFAULT_SYMBOLS = ["NVDA", "AMD", "INTC", "SOXL", "SOXS", "TQQQ"]
+DEFAULT_SYMBOLS = ["AAPL","MSFT","NVDA","AMD","INTC","AVGO","TSM","MU","QCOM","AMAT","LRCX","KLAC","ASML","MRVL","ARM","GOOGL","GOOG","AMZN","META","TSLA","NFLX","PLTR","ORCL","ADBE","CRM","NOW","SNOW","UBER","COIN","HOOD","JPM","BAC","GS","V","MA","WMT","COST","UNH","LLY","XOM","SPY","QQQ","IWM","DIA","SOXX","SMH","SOXL","SOXS","TQQQ","SQQQ"]
 DEFAULT_UNTIL = "2026-10-01T23:59:59+00:00"
 PROGRESS = ROOT / "data" / "toss_1m_progress.json"
 ERROR_LOG = ROOT / "data" / "toss_errors.jsonl"
@@ -232,9 +232,9 @@ def coverage_pct(latest_ts, oldest_ts, since):
         return 0.0
 
 
-def collect(symbol, since, until, pages, sleep_s, batch_pages, batch_sleep):
+def collect(symbol, since, until, pages, sleep_s, batch_pages, batch_sleep, out_dir=None):
     tok = token()
-    out = ROOT / "data" / "toss_1m"
+    out = Path(out_dir).resolve() if out_dir else ROOT / "data" / "toss_1m"
     out.mkdir(parents=True, exist_ok=True)
 
     path = out / (symbol + ".csv.gz")
@@ -419,14 +419,24 @@ def main():
     ap.add_argument("--symbols", default=",".join(DEFAULT_SYMBOLS))
     ap.add_argument("--since", default="2021-01-01T00:00:00+00:00")
     ap.add_argument("--until", default=DEFAULT_UNTIL)
-    ap.add_argument("--pages", type=int, default=10000)
+    ap.add_argument("--pages", type=int, default=1000000)
+    ap.add_argument("--out-dir", required=True, help="Independent research output directory")
     ap.add_argument("--sleep", type=float, default=0.5)
     ap.add_argument("--batch-pages", type=int, default=150)
     ap.add_argument("--batch-sleep", type=float, default=10.0)
     a = ap.parse_args()
 
-    for s in [x.strip().upper() for x in a.symbols.split(",") if x.strip()]:
-        collect(s, a.since, a.until, a.pages, a.sleep, a.batch_pages, a.batch_sleep)
+    if not os.environ.get("TOSS_TOKEN_SOCKET"):
+        ap.error("TOSS_TOKEN_SOCKET required: use single-issuer broker before bulk collection")
+    out = Path(a.out_dir).resolve()
+    production = (ROOT / "data" / "toss_1m").resolve()
+    if out == production or production in out.parents or out in production.parents:
+        ap.error("research output must be independent of production candles")
+    selected = [x.strip().upper() for x in a.symbols.split(",") if x.strip()]
+    if not 1 <= len(selected) <= 50 or len(selected) != len(set(selected)) or not all(x.isalnum() for x in selected):
+        ap.error("requires 1-50 unique alphanumeric symbols")
+    for s in selected:
+        collect(s, a.since, a.until, a.pages, a.sleep, a.batch_pages, a.batch_sleep, out_dir=out)
 
 
 if __name__ == "__main__":
