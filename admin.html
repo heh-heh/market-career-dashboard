@@ -29,6 +29,7 @@
     <button data-tab="paper">모의매매</button>
     <button data-tab="backtest">백테스트</button>
     <button data-tab="ai">AI 연구</button>
+    <button data-tab="collectors">수집 관리</button>
     <button data-tab="server">서버 콘솔</button>
     <button data-tab="git">GitHub · Git</button>
   </div>
@@ -210,6 +211,53 @@
     <div class="card"><div class="label">최근 Iteration</div><div id="aiRecent" class="signal">기록 없음</div></div>
   </section>
 
+  <section id="collectors" class="panel">
+    <div class="section-title">데이터 수집 관리</div>
+    <div class="section-subtitle">원본 데이터는 삭제하지 않고 수집 프로세스의 실행 상태와 부팅 자동 실행만 제어합니다.</div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="label">Toss Raw Tick · 상시 수집</div>
+        <div id="collectorRawTickState" class="signal">상태 확인 중...</div>
+        <div class="actions">
+          <button data-collector="rawTick" data-action="start" class="primary">시작</button>
+          <button data-collector="rawTick" data-action="stop">중지</button>
+          <button data-collector="rawTick" data-action="restart">재시작</button>
+        </div>
+        <div class="actions">
+          <button data-collector="rawTick" data-action="enable">부팅 자동 ON</button>
+          <button data-collector="rawTick" data-action="disable">부팅 자동 OFF</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label">Toss 1분봉 · 확장 Universe</div>
+        <div id="collectorOneMinuteState" class="signal">상태 확인 중...</div>
+        <div class="actions">
+          <button data-collector="oneMinute" data-action="start" class="primary">1회 수집 실행</button>
+          <button data-collector="oneMinute" data-action="stop">실행 중지</button>
+          <button data-collector="oneMinute" data-action="restart">다시 실행</button>
+        </div>
+        <div class="actions">
+          <button data-collector="oneMinute" data-action="enable">부팅 자동 ON</button>
+          <button data-collector="oneMinute" data-action="disable">부팅 자동 OFF</button>
+        </div>
+        <div class="mini" style="margin-top:8px">1분봉 수집 서비스는 oneshot입니다. 완료 후 inactive가 되어도 오류가 아닙니다.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">수집 빠른 점검</div>
+      <div class="actions">
+        <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상세 상태</button>
+        <button data-cmd="journalctl collect-toss-ticks.service 80">Tick 로그</button>
+        <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 상세 상태</button>
+        <button data-cmd="tail collector 120">1분봉 로그</button>
+        <button id="collectorRefreshBtn">상태 새로고침</button>
+      </div>
+      <div id="collectorMessage" class="mini" style="margin-top:8px">-</div>
+    </div>
+  </section>
+
   <section id="server" class="panel">
     <div class="card">
       <div class="label">제한형 서버 관리 콘솔</div>
@@ -225,6 +273,10 @@
         <button data-cmd="deps install" class="primary">V4 의존성 설치</button>
         <button data-cmd="api status">API 서비스</button>
         <button data-cmd="api restart" class="primary">API 재시작</button>
+        <button data-cmd="deploy status">배포 상태</button>
+        <button data-cmd="deploy patch" class="primary">최신 패치 병합</button>
+        <button data-cmd="deploy apply" class="primary">배포 적용</button>
+        <button data-cmd="git merge --abort">병합 취소</button>
       </div>
     </div>
     <div id="consoleOut" class="terminal">관리자 콘솔 준비됨. help 를 입력하세요.</div>
@@ -240,11 +292,19 @@
       <div class="mini" style="margin-top:8px">토큰은 GitHub Pages나 브라우저 저장소에 저장하지 않고 EC2의 권한 제한 credential 파일에만 저장합니다. 저장소 Contents 권한은 필요한 범위만 부여하세요.</div>
     </div>
     <div class="card">
-      <div class="label">Git 작업</div>
+      <div class="label">Git · 배포 작업</div>
       <div class="actions">
         <button data-git="status">status</button><button data-git="log">log</button><button data-git="branches">branch</button><button data-git="diff">diff</button>
-        <button data-git="fetch">fetch</button><button data-git="sync-v3">배포 브랜치 맞추기</button><button data-git="pull">pull --ff-only</button><button data-git="push">push</button>
+        <button data-git="fetch">fetch</button><button data-git="sync-v3" class="primary">최신 패치 병합</button><button data-git="pull">pull --ff-only</button><button data-git="push">push</button>
       </div>
+      <div class="field" style="margin-top:10px"><input id="gitMergeRef" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="병합할 ref 예: origin/feature-branch 또는 commit SHA"></div>
+      <div class="actions">
+        <button id="gitMergeRefBtn">지정 Ref 병합</button>
+        <button data-git="merge-abort" class="danger">병합 취소</button>
+        <button data-git="deploy-status">배포 검사</button>
+        <button data-git="deploy-apply" class="primary">의존성 검사 + API 배포</button>
+      </div>
+      <div class="mini" style="margin-top:8px">강제 reset/clean은 제공하지 않습니다. 최신 패치 병합은 fetch 후 현재 로컬 커밋을 보존하는 merge 방식입니다.</div>
     </div>
     <div id="gitOut" class="terminal">Git 상태를 불러오는 중...</div>
   </section>
@@ -287,8 +347,34 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
   if(b.dataset.tab==="paper")refreshPaper();
   if(b.dataset.tab==="backtest")refreshSimpleBacktest();
   if(b.dataset.tab==="ai")refreshAI();
+  if(b.dataset.tab==="collectors")refreshCollectors();
   if(b.dataset.tab==="git")refreshGit();
 });
+
+let collectorState={};
+function collectorText(row){
+  if(!row)return '<span class="bad">상태 없음</span>';
+  const running=row.active?'<span class="ok">RUNNING</span>':'<span class="warn">'+esc(row.activeState||'inactive')+'</span>';
+  const boot=row.enabled?'<span class="ok">부팅 자동 ON</span>':'<span class="muted">부팅 자동 OFF</span>';
+  return running+' · '+boot+'<br><span class="mini">service: '+esc(row.service||'-')+' · mode: '+esc(row.mode||'-')+'</span>';
+}
+async function refreshCollectors(){
+  try{
+    const d=await req("/api/admin/collectors"); collectorState=d.collectors||{};
+    document.getElementById("collectorRawTickState").innerHTML=collectorText(collectorState.rawTick);
+    document.getElementById("collectorOneMinuteState").innerHTML=collectorText(collectorState.oneMinute);
+    setText("collectorMessage","원본 데이터 보존 · 마지막 갱신 "+new Date().toLocaleTimeString());
+  }catch(e){setText("collectorMessage","상태 조회 실패: "+e.message);}
+}
+async function controlCollector(key,action){
+  if(action==="stop"&&!confirm("수집 프로세스를 중지할까요? 기존 저장 데이터는 삭제되지 않습니다."))return;
+  try{
+    await req("/api/admin/collectors/control",{method:"POST",body:JSON.stringify({collector:key,action})});
+    await refreshCollectors();
+  }catch(e){alert(e.message);await refreshCollectors();}
+}
+document.querySelectorAll("[data-collector]").forEach(b=>b.onclick=()=>controlCollector(b.dataset.collector,b.dataset.action));
+document.getElementById("collectorRefreshBtn").onclick=refreshCollectors;
 
 let aiAdminState={};
 function pctText(v){return v==null?"-":Number(v).toFixed(1)+"%"}
@@ -619,12 +705,23 @@ document.getElementById("saveGitToken").onclick=async()=>{
   try{const d=await req("/api/admin/github",{method:"POST",body:JSON.stringify({token:t})});input.value="";alert("GitHub 연결 저장 완료: "+(d.login||""));await refreshGit()}catch(e){alert(e.message)}
 };
 document.getElementById("disconnectGit").onclick=async()=>{if(!confirm("서버의 GitHub 인증을 제거할까요?"))return;try{await req("/api/admin/github",{method:"POST",body:JSON.stringify({disconnect:true})});await refreshGit()}catch(e){alert(e.message)}};
-async function gitAction(action){
-  const out=document.getElementById("gitOut");out.textContent="$ git "+action+"\n실행 중...";
-  try{const d=await req("/api/admin/git",{method:"POST",body:JSON.stringify({action})});out.textContent="$ git "+action+"\n"+(d.output||"(출력 없음)")+(d.exitCode?"\n[exit "+d.exitCode+"]":"");await refreshGitStatusOnly()}catch(e){out.textContent="ERROR: "+e.message}
+async function gitAction(action,ref=null){
+  const out=document.getElementById("gitOut"),label=ref?(action+" "+ref):action;out.textContent="$ "+label+"\n실행 중...";
+  try{
+    const body={action};if(ref)body.ref=ref;
+    const d=await req("/api/admin/git",{method:"POST",body:JSON.stringify(body)});
+    out.textContent="$ "+label+"\n"+(d.output||"(출력 없음)")+(d.exitCode?"\n[exit "+d.exitCode+"]":"");
+    await refreshGitStatusOnly();
+  }catch(e){out.textContent="ERROR: "+e.message}
 }
 async function refreshGitStatusOnly(){try{const d=await req("/api/admin/github");document.getElementById("gitStatus").innerHTML=(d.configured?'<span class="ok">GitHub 인증 저장됨</span>':'<span class="warn">GitHub 인증 없음</span>')+'<br>branch: <b>'+esc(d.branch||"-")+'</b><br>origin: '+esc(d.remote||"-")}catch(e){}}
 document.querySelectorAll("[data-git]").forEach(b=>b.onclick=()=>gitAction(b.dataset.git));
+document.getElementById("gitMergeRefBtn").onclick=()=>{
+  const ref=document.getElementById("gitMergeRef").value.trim();
+  if(!ref)return alert("병합할 ref 또는 commit SHA를 입력하세요.");
+  if(!confirm(ref+" 를 현재 브랜치에 merge할까요?"))return;
+  gitAction("merge-ref",ref);
+};
 
 authGate();
 setInterval(()=>{
@@ -633,6 +730,7 @@ setInterval(()=>{
   if(document.getElementById("paper").classList.contains("active"))refreshPaper();
   if(document.getElementById("backtest").classList.contains("active"))refreshSimpleBacktest();
   if(document.getElementById("ai").classList.contains("active"))refreshAI();
+  if(document.getElementById("collectors").classList.contains("active"))refreshCollectors();
 },5000);
 </script>
 </body>
