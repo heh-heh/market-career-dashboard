@@ -36,7 +36,7 @@ def main(argv=None):
     args=parser().parse_args(argv)
     profile=json.loads(args.config.read_text(encoding="utf-8"))
     fitness_mode=str(profile.get("fitness_mode") or "unknown")
-    suffix="v05" if fitness_mode=="v05_structural" else "v04"
+    suffix={"v04_generalization":"v04","v05_structural":"v05","v06_stability":"v06"}.get(fitness_mode,"custom")
     campaign_id=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-"+suffix
     campaign_dir=args.results_dir.resolve()/("campaign-"+campaign_id)
     campaign_dir.mkdir(parents=True,exist_ok=False)
