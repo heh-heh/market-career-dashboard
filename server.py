@@ -1305,6 +1305,8 @@ def deploy_status():
     return 0,"\n".join(parts)
 
 def deploy_apply():
+    if _autonomous_processes():
+        return 2,"AUTONOMOUS_RESEARCH_RUNNING: AI 연구 완료 후 배포 적용/API 재시작을 실행하세요."
     branch=_git_branch()
     if branch!="strategy-engine-v3":
         return 2,"배포는 strategy-engine-v3 브랜치에서만 허용합니다."
