@@ -261,6 +261,11 @@
       <div id="aiErrorSummary" class="signal">실패 없음</div>
       <div id="aiErrorDetail" class="terminal" style="min-height:100px;max-height:280px;margin-top:8px;white-space:pre-wrap">-</div>
     </div>
+    <details class="card" open>
+      <summary>Research Storage / API 상태</summary>
+      <div id="aiResearchStorage" class="terminal" style="min-height:80px;max-height:260px;white-space:pre-wrap;margin-top:8px">-</div>
+      <div id="aiApiDependencies" class="mini" style="margin-top:8px">-</div>
+    </details>
     <div class="card">
       <div class="label">실시간 연구 로그</div>
       <div class="actions">
@@ -368,8 +373,13 @@
       <div class="actions">
         <button data-cmd="df -h /">디스크</button>
         <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
-        <button data-cmd="systemctl status collect-expanded-universe.service">수집 서비스</button>
-        <button data-cmd="systemctl restart collect-expanded-universe.service" class="primary">수집 재시작</button>
+        <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 상태</button>
+        <button data-cmd="systemctl start collect-expanded-universe.service" class="primary">1분봉 1회 실행</button>
+        <button data-cmd="systemctl stop collect-expanded-universe.service">1분봉 중지</button>
+        <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상태</button>
+        <button data-cmd="systemctl start collect-toss-ticks.service" class="primary">Tick 시작</button>
+        <button data-cmd="systemctl stop collect-toss-ticks.service">Tick 중지</button>
+        <button data-cmd="systemctl restart collect-toss-ticks.service">Tick 재시작</button>
         <button data-cmd="tail collector 80">수집 로그</button>
         <button data-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
         <button data-cmd="deps status">V4 의존성 확인</button>
@@ -566,7 +576,9 @@ async function refreshAI(){
     document.getElementById("aiBaselineSelectionDetail").textContent=rejected.length?rejected.map((x,i)=>{
       const f=x.facts||{},parts=[];
       if(f.missingCount!=null)parts.push('missing='+String(f.missingCount));
-      if(f.completedCount!=null||f.requestedCount!=null)parts.push('sessions='+String(f.completedCount??'-')+'/'+String(f.requestedCount??'-'));
+      if(f.completedCount!=null||f.requestedCount!=null)parts.push('sessions='+String(f.completedCount??'-')+'/'+String(f.requestedCount??'-')+' expected='+String(f.expectedSessions??'-'));
+      if(f.rootCause)parts.push('rootCause='+String(f.rootCause));
+      if(f.sessionCoverage?.incompleteSessions)parts.push('incomplete='+String(f.sessionCoverage.incompleteSessions)+' '+JSON.stringify(f.sessionCoverage.samples||[]));
       if(f.resultsValid!==undefined)parts.push('resultsValid='+String(f.resultsValid));
       if(Array.isArray(f.missingDates)&&f.missingDates.length)parts.push('dates='+f.missingDates.join(', ')+(f.missingDatesTruncated?' ...':''));
       return '#'+(i+1)+' catalog='+String(x.catalogId||'-')+' run='+String(x.runId||'-')+'\n  '+String(x.code||'-')+' · stage='+String(x.stage||'-')+(x.detail?' · '+String(x.detail):'')+(parts.length?'\n  '+parts.join(' · '):'');
@@ -588,7 +600,9 @@ async function refreshAI(){
     document.getElementById("aiResourceGuard").innerHTML=rg.reason?('<b>'+esc(rg.reason)+'</b> · pressure '+esc(rg.resourcePressure||"-")+' · decision '+esc(rg.resourceDecision||"-")+(rg.samples?' · samples '+esc(rg.samples):'')):'리소스 차단 기록 없음';
     setText("aiGuardCpu",rg.cpuPct==null?"-":Number(rg.cpuPct).toFixed(1)+"%");
     setText("aiGuardRam",rg.memoryPct==null?"-":Number(rg.memoryPct).toFixed(1)+"%"+(rg.memoryAvailableGb==null?"":(" · "+Number(rg.memoryAvailableGb).toFixed(2)+" GB avail")));
-    setText("aiGuardSwap",rg.swapPct==null?"-":Number(rg.swapPct).toFixed(1)+"%"+(rg.swapUsedGb==null?"":(" · "+Number(rg.swapUsedGb).toFixed(2)+" GB")));
+    setText("aiGuardSwap",rg.swapPct==null?"-":Number(rg.swapPct).toFixed(1)+"%"+(rg.swapUsedGb==null?"":(" · "+Number(rg.swapUsedGb).toFixed(2)+" / "+Number(rg.swapTotalGb||0).toFixed(2)+" GB")));
+    document.getElementById("aiResearchStorage").textContent=Object.entries(d.storage||{}).map(([name,s])=>name+' · '+String(s.device||s.code||'-')+' · '+String(s.mount||'-')+'\n  total '+Number((s.totalBytes||0)/1024**3).toFixed(2)+' GB · used '+Number((s.usedBytes||0)/1024**3).toFixed(2)+' GB · free '+Number((s.freeBytes||0)/1024**3).toFixed(2)+' GB ('+String(s.usedPct??'-')+'% used)'+(s.exists===false?' · PATH MISSING':'' )).join('\n');
+    document.getElementById("aiApiDependencies").textContent=Object.entries(d.apiFeatures||{}).map(([k,v])=>k+': '+(v.enabled?'ON':'OFF')).join(' · ');
     setText("aiGuardDisk",rg.diskFreeGb==null?"-":Number(rg.diskFreeGb).toFixed(2)+" / "+Number(rg.requiredFreeGb||0).toFixed(2)+" GB");
     document.getElementById("aiDecision").innerHTML='Decision: <b>'+esc(c.decision||"-")+'</b>'+(c.failureCode?'<br><span class="bad">Failure: '+esc(c.failureCode)+'</span>':'')+(c.error?'<br><span class="bad">'+esc(c.error)+'</span>':'')+(c.validationStage?'<br>Validation attempt: <b>'+esc(c.validationStage.attempt??"-")+'</b> · PID '+esc(c.validationStage.pid??"-"):'');
     document.getElementById("aiRecent").innerHTML=(d.recent||[]).map(x=>'<div class="row"><b>Iteration '+esc(x.iteration??"-")+' · '+esc(x.candidateVersion||"-")+'</b> · '+esc(x.state||"-")+(x.decision?' · '+esc(x.decision):'')+(x.failureCode?' · <span class="bad">'+esc(x.failureCode)+'</span>':'')+'</div>').join("")||'<span class="muted">아직 기록이 없습니다.</span>';
@@ -812,7 +826,11 @@ async function loadBacktestEngines(){
       }).join('');
       if(ids.includes(current)&&backtestEngines[current])sel.value=current;
     }
-  }catch(e){}
+  }catch(e){
+    backtestServerEngines.clear();
+    setText("simpleBtState","백엔드 엔진 목록 확인 실패: "+e.message);
+    document.getElementById("simpleBtStart").disabled=true;
+  }
 }
 function updateBacktestEngineText(){
   const id=selectedBacktestEngine(),info=backtestEngines[id]||{};
@@ -830,7 +848,7 @@ async function refreshSimpleBacktest(){
     if(engine!==selectedBacktestEngine())return;
     const phase=String(s.phase||"waiting").toUpperCase(),running=!!s.running,progress=Math.max(0,Math.min(100,Number(s.progress||0)));
     document.getElementById("simpleBtProgress").style.width=progress+"%";
-    document.getElementById("simpleBtStart").disabled=running||s.runnable===false;
+    document.getElementById("simpleBtStart").disabled=running||phase==="STARTING"||s.runnable===false||!backtestServerEngines.has(engine);
     document.getElementById("simpleBtDownload").disabled=!s.downloadAvailable;
     const activity=s.processedRows==null
       ?(' · 거래일/시점 '+esc(s.currentTimestamp||'-'))
@@ -840,7 +858,7 @@ async function refreshSimpleBacktest(){
       ' · '+progress.toFixed(1)+'%'+activity+
       ' · 신호 '+Number(s.signals||0).toLocaleString()+' · 진입 '+Number(s.entries||0).toLocaleString()+
       (s.dataMode?'<br><span class="'+(s.provisional?'warn':'ok')+'">데이터 모드: '+esc(s.dataMode)+(s.provisional?' · 최종 성과 판정 금지':'')+'</span>':'')+
-      (s.blockedReason?'<br><span class="warn">실행 대기: '+esc(s.blockedReason)+'</span>':'')+
+      (s.blockedReason?'<br><span class="warn">백테스트 미시작 · 사전 검증 차단: '+esc(s.blockedReason)+'</span>':'')+
       (s.error?'<br><span class="bad">'+esc(s.error)+'</span>':'');
     setText("simpleBtTrades",String(m.trades??s.trades??0));
     setText("simpleBtWinRate",pct(m.winRatePct,1));
@@ -868,13 +886,13 @@ async function refreshSimpleBacktest(){
       document.getElementById("simpleBtState").innerHTML=syncNeeded
         ?'<span class="warn">EC2 백엔드가 아직 이 V4 엔진을 모릅니다. GitHub · Git → 배포 브랜치 맞추기 후 API를 재시작하세요.</span>'
         :'<span class="bad">'+esc(e.message)+'</span>';
-      document.getElementById("simpleBtStart").disabled=syncNeeded;
+      document.getElementById("simpleBtStart").disabled=true;
     }
   }
 }
 async function startSimpleBacktest(){
   const engine=selectedBacktestEngine(),b=document.getElementById("simpleBtStart");
-  if(engine.startsWith("v4-")&&!backtestServerEngines.has(engine)){
+  if(!backtestServerEngines.has(engine)){
     alert("EC2 백엔드 동기화가 필요합니다. GitHub · Git → 배포 브랜치 맞추기 후 API를 재시작하세요.");
     return;
   }
