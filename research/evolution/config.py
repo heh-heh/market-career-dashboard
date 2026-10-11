@@ -13,14 +13,36 @@ class Config:
     mutation_probability: float = 0.2  # per gene
     mutation_strength: float = 0.05  # fraction of gene range, Gaussian sigma
     crossover_probability: float = 0.7
-    epsilon: float = 1e-6  # USD, daily survival
+    epsilon: float = 1e-6  # USD, selection-window survival
+    evaluation_window_sessions: int = 7  # one generation spans this many processed trading sessions
     slippage_bps: float = 2.0
     half_spread_bps: float = 1.0
     drawdown_penalty: float = 0.5
     transaction_cost_penalty: float = 0.25
     excessive_trading_penalty: float = 0.001
     free_trade_count: int = 10
+    # V0.4 optional generalization-oriented window fitness. The legacy V0 path
+    # remains the default so prior experiments are reproducible.
+    fitness_mode: str = "v0"
+    losing_session_penalty: float = 0.0
+    return_volatility_penalty: float = 0.0
+    max_trades_per_session: int = 0  # 0 disables the structural cap
+    entry_cooldown_minutes: int = 0
+    min_profitable_sessions_for_parent: int = 0
+    stability_fold_sessions: int = 0  # 0 disables V0.6 fold stability gating
+    stability_min_positive_folds: int = 0
     cutoff_minutes: int = 5  # before actual XNYS close, including half days
+    # V0.1 resource-aware scaling is opt-in so V0 replay remains reproducible by default.
+    adaptive_resources: bool = False
+    min_population: int = 20
+    max_population: int = 1000
+    scale_up_factor: float = 1.25
+    scale_down_factor: float = 0.75
+    memory_soft_limit_pct: float = 70.0
+    memory_hard_limit_pct: float = 85.0
+    swap_soft_limit_pct: float = 5.0
+    swap_hard_limit_pct: float = 20.0
+    cpu_soft_limit_pct: float = 85.0
     train: tuple = ("2022-01-01", "2024-12-31")
     validation: tuple = ("2025-01-01", "2025-12-31")
     final_oos: tuple = ("2026-01-01", "2026-12-31")
@@ -42,18 +64,52 @@ class Config:
                 raise ValueError("Nonfinite config")
         if self.population_size < 1 or self.initial_capital <= 0:
             raise ValueError("Positive population and capital required")
-        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes)):
+        if any(type(x) is not int for x in (self.population_size, self.elite_count, self.parent_pool_size, self.free_trade_count, self.cutoff_minutes, self.min_population, self.max_population, self.evaluation_window_sessions, self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent, self.stability_fold_sessions, self.stability_min_positive_folds)):
             raise ValueError("Counts and cutoff must be integer")
         if min(self.elite_count, self.parent_pool_size, self.free_trade_count) < 0 or self.parent_pool_size < 1:
             raise ValueError("Invalid selection/trading counts")
+        if self.evaluation_window_sessions < 1:
+            raise ValueError("evaluation_window_sessions must be >= 1")
+        if self.min_population < 1 or self.max_population < self.min_population:
+            raise ValueError("Invalid adaptive population bounds")
+        if self.adaptive_resources and not self.min_population <= self.population_size <= self.max_population:
+            raise ValueError("Adaptive initial population must be within min/max bounds")
+        if not 1 < self.scale_up_factor <= 2:
+            raise ValueError("scale_up_factor must be in (1,2]")
+        if not 0.1 <= self.scale_down_factor < 1:
+            raise ValueError("scale_down_factor must be in [0.1,1)")
+        limits = (self.memory_soft_limit_pct, self.memory_hard_limit_pct, self.swap_soft_limit_pct,
+                  self.swap_hard_limit_pct, self.cpu_soft_limit_pct)
+        if any(not 0 <= x <= 100 for x in limits):
+            raise ValueError("Resource limits must be percentages")
+        if self.memory_soft_limit_pct >= self.memory_hard_limit_pct:
+            raise ValueError("memory soft limit must be below hard limit")
+        if self.swap_soft_limit_pct >= self.swap_hard_limit_pct:
+            raise ValueError("swap soft limit must be below hard limit")
         if not 0 < self.parent_fraction <= 1:
             raise ValueError("parent_fraction must be in (0,1]")
         if any(not 0 <= v <= 1 for v in (self.mutation_probability, self.crossover_probability)):
             raise ValueError("Probabilities must be in [0,1]")
         if min(self.epsilon, self.return_scale, self.volume_scale, self.feature_clip) <= 0 or self.cutoff_minutes < 1:
             raise ValueError("Invalid numerical scale/cutoff")
+        if self.fitness_mode not in {"v0", "v04_generalization", "v05_structural", "v06_stability"}:
+            raise ValueError("Unknown fitness_mode")
+        if min(self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent,
+               self.stability_fold_sessions, self.stability_min_positive_folds) < 0:
+            raise ValueError("Structural trade controls must be nonnegative")
+        if self.min_profitable_sessions_for_parent > self.evaluation_window_sessions:
+            raise ValueError("Parent profitability requirement exceeds evaluation window")
+        if self.fitness_mode == "v06_stability":
+            if self.stability_fold_sessions < 1:
+                raise ValueError("V0.6 requires stability_fold_sessions")
+            if self.evaluation_window_sessions % self.stability_fold_sessions:
+                raise ValueError("Evaluation window must be divisible by stability fold size")
+            fold_count = self.evaluation_window_sessions // self.stability_fold_sessions
+            if not 1 <= self.stability_min_positive_folds <= fold_count:
+                raise ValueError("Invalid stability_min_positive_folds")
         if min(self.slippage_bps, self.half_spread_bps, self.mutation_strength,
-               self.drawdown_penalty, self.transaction_cost_penalty, self.excessive_trading_penalty) < 0:
+               self.drawdown_penalty, self.transaction_cost_penalty, self.excessive_trading_penalty,
+               self.losing_session_penalty, self.return_volatility_penalty) < 0:
             raise ValueError("Costs/penalties must be nonnegative")
         if self.slippage_bps + self.half_spread_bps >= 10000:
             raise ValueError("Invalid execution cost")

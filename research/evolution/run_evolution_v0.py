@@ -25,11 +25,12 @@ from research.evolution import RESEARCH_ONLY, VERSION
 from research.evolution.config import Config
 from research.evolution.engine import evaluate_day
 from research.evolution.features import BASE_FEATURES, POLICY_FEATURES, benchmark_for_symbol
-from research.evolution.population import daily_evaluation, initial_population, reproduce
+from research.evolution.population import aggregate_window_evaluations, daily_evaluation, initial_population, reproduce
+from research.evolution.resource import decide_population, sample_resources
 
 
 def parser():
-    p = argparse.ArgumentParser(description="Evolution Trading AI V0: offline $100 daily accounts; no live execution")
+    p = argparse.ArgumentParser(description="Evolution Trading AI research runner: offline $100 daily accounts with multi-session selection; no live execution")
     p.add_argument("--data-dir", type=Path, default=ROOT/"data/toss_1m")
     p.add_argument("--data-manifest", type=Path)
     p.add_argument("--provisional", action="store_true", help="Explicit mechanical audit only; never final performance evidence")
@@ -40,11 +41,15 @@ def parser():
     p.add_argument("--config", type=Path, help="JSON Config fields, including chronological split boundaries and fitness coefficients")
     p.add_argument("--population", type=int)
     p.add_argument("--initial-capital", type=float)
+    p.add_argument("--adaptive-resources", action="store_true", help="Scale training population using CPU/RAM/swap pressure; validation/OOS stay frozen")
+    p.add_argument("--min-population", type=int, help="Lower bound for adaptive training population")
+    p.add_argument("--max-population", type=int, help="Upper bound for adaptive training population")
+    p.add_argument("--evaluation-window-sessions", type=int, help="Trading sessions per generation; default config is 7")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--from-date")
     p.add_argument("--to-date")
     p.add_argument("--results-dir", type=Path, default=Path(os.getenv("EVOLUTION_RESULTS_DIR", str(ROOT/"research/results/evolution"))))
-    p.add_argument("--smoke", action="store_true", help="At most 32 bots / first 5 XNYS sessions; does not generate market data")
+    p.add_argument("--smoke", action="store_true", help="At most 32 bots / first 7 XNYS sessions; does not generate market data")
     p.add_argument("--data-origin", choices=["toss", "synthetic"], default="toss", help="Explicitly label small synthetic test fixtures")
     return p
 
@@ -80,13 +85,15 @@ def prepare_inputs(args, symbols):
                    "priceAdjustment": "unknown", "calendar": "XNYS"}, "PROVISIONAL_UNREVIEWED_DATA"
 
 
-def save_day(path, bots, accounts, evaluations, next_population, selection, diagnostics):
+def save_day(path, bots, accounts, evaluations, next_population, selection, diagnostics, window_evaluations=None):
     path.mkdir(exist_ok=False)
     atomic_json(path/"population.json", [b.record() for b in bots])
     atomic_json(path/"next_population.json", [b.record() for b in next_population])
     for state, filename in (("SURVIVE", "survivors"), ("DEAD", "dead"), ("NEUTRAL", "neutral"), ("INVALID", "invalid")):
         atomic_json(path/(filename+".json"), [e for e in evaluations if e["survival"] == state])
     atomic_json(path/"metrics.json", dict(bots=evaluations, selection=selection, diagnostics=diagnostics))
+    if window_evaluations is not None:
+        atomic_json(path/"window_evaluations.json", window_evaluations)
     atomic_json(path/"lineage.json", [b.record() for b in next_population])
     trades = [dict(t, botId=b.bot_id, genomeHash=b.genome.digest) for b, a in zip(bots, accounts) for t in a.trades]
     fields = sorted({k for t in trades for k in t}) or ["botId", "symbol", "entryTimestamp", "exitTimestamp", "pnlUsd"]
@@ -104,8 +111,21 @@ def run(args):
         changes["population_size"] = args.population
     if args.initial_capital is not None:
         changes["initial_capital"] = args.initial_capital
+    if args.adaptive_resources:
+        changes["adaptive_resources"] = True
+    if args.min_population is not None:
+        changes["min_population"] = args.min_population
+    if args.max_population is not None:
+        changes["max_population"] = args.max_population
+    if args.evaluation_window_sessions is not None:
+        changes["evaluation_window_sessions"] = args.evaluation_window_sessions
     if args.smoke:
-        changes["population_size"] = min(changes.get("population_size", config.population_size), 32)
+        smoke_population = min(changes.get("population_size", config.population_size), 32)
+        changes["population_size"] = smoke_population
+        adaptive = changes.get("adaptive_resources", config.adaptive_resources)
+        if adaptive:
+            changes["max_population"] = min(changes.get("max_population", config.max_population), 32)
+            changes["min_population"] = min(changes.get("min_population", config.min_population), smoke_population)
     config = replace(config, **changes)
     if args.timestamp_kind != "end":
         raise ValueError("V0 requires exclusive minute-end timestamps")
@@ -118,7 +138,8 @@ def run(args):
         raise ValueError("Reversed date bounds")
     calendar = exchange_sessions(first, last)
     if args.smoke:
-        calendar = dict(list(calendar.items())[:5])
+        smoke_sessions = max(7, config.evaluation_window_sessions)
+        calendar = dict(list(calendar.items())[:smoke_sessions])
     if not calendar:
         raise ValueError("No XNYS sessions in requested range")
     allowed = set(json.loads(args.universe.read_text())["symbols"])
@@ -156,6 +177,13 @@ def run(args):
                     runtimeVersions={"python": sys.version.split()[0], "numpy": version("numpy"), "exchange_calendars": version("exchange_calendars")},
                     fromDate=first, toDate=last, smoke=args.smoke, requestedSessions=len(calendar),
                     executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY", generation=0, completedSessions=0,
+                    adaptiveResources=config.adaptive_resources, minPopulation=config.min_population,
+                    maxPopulation=config.max_population, evaluationWindowSessions=config.evaluation_window_sessions,
+                    fitnessMode=config.fitness_mode,
+                    stabilityFoldSessions=config.stability_fold_sessions,
+                    stabilityMinPositiveFolds=config.stability_min_positive_folds,
+                    windowSessionsCompleted=0, nextPopulation=config.population_size,
+                    safePopulation=config.population_size, peakPopulation=config.population_size,
                     createdAt=datetime.now(timezone.utc).isoformat())
     atomic_json(directory/"run.json", run_info)
     status = dict(run_info, population=config.population_size, latestLog="Mechanical audit passed; streaming historical sessions")
@@ -165,6 +193,13 @@ def run(args):
     frozen = None
     split_days = {n: 0 for n in ("train", "validation", "final_oos")}
     evaluation_ledger = {n: {} for n in ("validation", "final_oos")}
+    train_window_batches = []
+    train_window_dates = []
+    safe_population = len(bots)
+    peak_population = len(bots)
+    if config.adaptive_resources:
+        # Prime psutil interval counters before the first measured training session.
+        sample_resources()
     try:
         for day, rows in day_stream(paths, manifest):
             if day > max(calendar):
@@ -179,9 +214,15 @@ def run(args):
             if frozen is not None and population_hash(bots) != frozen:
                 raise AssertionError("Validation/OOS genome mutation detected")
             opening, closing = calendar[day]
+            session_started = time.perf_counter()
             accounts, diagnostics = evaluate_day(bots, rows, opening, closing, symbols, config)
-            # OOS never changes training lineage, accumulated lifetime or selection.
-            evaluations = [daily_evaluation(b, a, day, config, update_lifetime=split == "train") for b, a in zip(bots, accounts)]
+            session_runtime = time.perf_counter() - session_started
+            resources = sample_resources(session_runtime) if config.adaptive_resources else None
+            # Daily accounts still reset to $100. Death/selection happens only at
+            # the end of a complete train evaluation window.
+            evaluations = [daily_evaluation(
+                b, a, day, config, update_lifetime=split == "train", mark_death=False
+            ) for b, a in zip(bots, accounts)]
             if split != "train":
                 for e in evaluations:
                     ledger = evaluation_ledger[split].setdefault(e["botId"], dict(validDays=0, invalidDays=0, pnlUsd=0.0, trades=0))
@@ -192,40 +233,159 @@ def run(args):
                     else:
                         ledger["invalidDays"] += 1
                     e["splitLifetimeEquity"] = config.initial_capital+ledger["pnlUsd"]
+
             returns = [e["dailyReturn"] for e in evaluations if e["evaluationValid"]]
-            best = max((e for e in evaluations if e["evaluationValid"]), key=lambda e: (e["dailyReturn"], e["botId"]), default=None)
-            selection = dict(parentPoolSize=0, mutationCount=0, frozen=True)
+            best_daily = max((e for e in evaluations if e["evaluationValid"]),
+                             key=lambda e: (e["dailyReturn"], e["botId"]), default=None)
+            selection = dict(parentPoolSize=0, mutationCount=0, frozen=split != "train")
             following = bots
+            window_evaluations = None
+            window_complete = False
+            best_window = None
+            window_returns = []
+
             if split == "train":
-                following, selection = reproduce(bots, evaluations, config, rng, generation+1, day)
+                train_window_batches.append(evaluations)
+                train_window_dates.append(day)
+                window_complete = len(train_window_batches) >= config.evaluation_window_sessions
+                window_evaluations = aggregate_window_evaluations(
+                    bots, train_window_batches, config,
+                    complete=window_complete, mark_death=window_complete,
+                )
+                window_returns = [e["windowReturn"] for e in window_evaluations if e["evaluationValid"]]
+                best_window = max(
+                    (e for e in window_evaluations if e["evaluationValid"]),
+                    key=lambda e: (e["windowReturn"], e["botId"]), default=None,
+                )
+                selection.update(
+                    evaluationWindowSessions=config.evaluation_window_sessions,
+                    windowSessionsCompleted=len(train_window_batches),
+                    windowStartDate=train_window_dates[0],
+                    windowEndDate=day,
+                    windowComplete=window_complete,
+                    nextPopulation=len(bots),
+                    resourceDecision="WAIT_WINDOW",
+                    resourcePressure="NORMAL",
+                )
+                if config.adaptive_resources:
+                    selection.update(
+                        adaptiveResources=True,
+                        safePopulation=safe_population,
+                        peakPopulation=peak_population,
+                        resourceCpuPct=resources["cpuPct"],
+                        resourceProcessCpuPct=resources["processCpuPct"],
+                        resourceMemoryPct=resources["memoryPct"],
+                        resourceMemoryAvailableGb=resources["memoryAvailableGb"],
+                        resourceSwapPct=resources["swapPct"],
+                        resourceSwapUsedGb=resources["swapUsedGb"],
+                        resourceSwapTotalGb=resources["swapTotalGb"],
+                        resourceProcessRssMb=resources["processRssMb"],
+                        sessionRuntimeSeconds=resources["sessionRuntimeSeconds"],
+                    )
+                if window_complete:
+                    decision = decide_population(len(bots), resources or {}, config, enabled=config.adaptive_resources)
+                    target_population = decision["nextPopulation"]
+                    next_config = replace(config, population_size=target_population)
+                    following, reproduction = reproduce(
+                        bots, window_evaluations, next_config, rng, generation+1, day
+                    )
+                    selection.update(reproduction, **decision)
+                    peak_population = max(peak_population, target_population, len(bots))
+                    if decision["resourcePressure"] != "HARD":
+                        safe_population = max(safe_population, len(bots))
+                    selection.update(safePopulation=safe_population, peakPopulation=peak_population)
+            elif config.adaptive_resources:
+                selection.update(
+                    resourceDecision="FROZEN_OOS",
+                    resourcePressure="FROZEN",
+                    nextPopulation=len(bots),
+                    adaptiveResources=True,
+                    evaluationWindowSessions=config.evaluation_window_sessions,
+                    windowSessionsCompleted=0,
+                    windowComplete=False,
+                    safePopulation=safe_population,
+                    peakPopulation=peak_population,
+                    resourceCpuPct=resources["cpuPct"],
+                    resourceProcessCpuPct=resources["processCpuPct"],
+                    resourceMemoryPct=resources["memoryPct"],
+                    resourceMemoryAvailableGb=resources["memoryAvailableGb"],
+                    resourceSwapPct=resources["swapPct"],
+                    resourceSwapUsedGb=resources["swapUsedGb"],
+                    resourceSwapTotalGb=resources["swapTotalGb"],
+                    resourceProcessRssMb=resources["processRssMb"],
+                    sessionRuntimeSeconds=resources["sessionRuntimeSeconds"],
+                )
+
             split_days[split] += 1
-            day_dir = directory/(f"generation_{generation:04d}" if split == "train" else f"{split}_{split_days[split]:04d}")
-            save_day(day_dir, bots, accounts, evaluations, following, selection, diagnostics)
+            if split == "train":
+                session_in_window = len(train_window_batches)
+                day_dir = directory/f"generation_{generation:04d}_session_{session_in_window:02d}"
+            else:
+                day_dir = directory/f"{split}_{split_days[split]:04d}"
+            save_day(day_dir, bots, accounts, evaluations, following, selection, diagnostics, window_evaluations)
             for b in bots:
                 append_json(directory/"lineage.jsonl", dict(date=day, split=split, **b.record()))
-            summary = dict(date=day, split=split, generation=generation, population=len(bots),
-                           alive=sum(e["survival"] == "SURVIVE" for e in evaluations),
-                           dead=sum(e["survival"] == "DEAD" for e in evaluations),
-                           neutral=sum(e["survival"] == "NEUTRAL" for e in evaluations),
-                           invalid=sum(not e["evaluationValid"] for e in evaluations),
-                           bestBot=best["botId"] if best else None,
-                           bestDailyReturn=best["dailyReturn"] if best else None,
-                           meanDailyReturn=statistics.mean(returns) if returns else None,
-                           medianDailyReturn=statistics.median(returns) if returns else None,
-                           bestLifetimeEquity=max(b.lifetime_equity for b in bots),
-                           tradesToday=sum(e["trades"] for e in evaluations),
-                           currentHistoricalDate=day, **selection)
+
+            display_evaluations = window_evaluations if split == "train" else evaluations
+            best_display = best_window if split == "train" else best_daily
+            summary = dict(
+                date=day, split=split, generation=generation, population=len(bots),
+                alive=sum(e["survival"] == "SURVIVE" for e in display_evaluations),
+                dead=sum(e["survival"] == "DEAD" for e in display_evaluations),
+                neutral=sum(e["survival"] == "NEUTRAL" for e in display_evaluations),
+                invalid=sum(not e["evaluationValid"] for e in display_evaluations),
+                dailyAlive=sum(e["survival"] == "SURVIVE" for e in evaluations),
+                dailyDead=sum(e["survival"] == "DEAD" for e in evaluations),
+                dailyNeutral=sum(e["survival"] == "NEUTRAL" for e in evaluations),
+                bestBot=best_display["botId"] if best_display else None,
+                bestDailyReturn=best_daily["dailyReturn"] if best_daily else None,
+                meanDailyReturn=statistics.mean(returns) if returns else None,
+                medianDailyReturn=statistics.median(returns) if returns else None,
+                bestWindowReturn=best_window["windowReturn"] if best_window else None,
+                meanWindowReturn=statistics.mean(window_returns) if window_returns else None,
+                medianWindowReturn=statistics.median(window_returns) if window_returns else None,
+                stabilityFoldSessions=config.stability_fold_sessions,
+                stabilityFoldCount=(
+                    config.evaluation_window_sessions // config.stability_fold_sessions
+                    if config.stability_fold_sessions else 0
+                ),
+                stabilityMinPositiveFolds=config.stability_min_positive_folds,
+                stabilityEligibleBots=sum(e.get("stabilityEligible") is True for e in (window_evaluations or [])),
+                bestPositiveFolds=best_window.get("positiveFolds") if best_window else None,
+                bestMedianFoldReturn=best_window.get("medianFoldReturn") if best_window else None,
+                bestWorstFoldReturn=best_window.get("worstFoldReturn") if best_window else None,
+                meanPositiveFolds=(
+                    statistics.mean([e.get("positiveFolds",0) for e in window_evaluations])
+                    if window_evaluations else None
+                ),
+                bestLifetimeEquity=max(b.lifetime_equity for b in bots),
+                tradesToday=sum(e["trades"] for e in evaluations),
+                currentHistoricalDate=day,
+                **selection,
+            )
             append_json(directory/"generations.jsonl", summary)
-            # Bounded daily winners, not validation/OOS-selected genomes.
-            if split == "train":
-                atomic_json(directory/"best_genomes.json", [b.record() for b in bots if best and b.bot_id == best["botId"]])
+            if split == "train" and window_complete and best_window:
+                atomic_json(directory/"best_genomes.json", [
+                    b.record() for b in bots if b.bot_id == best_window["botId"]
+                ])
             processed.append(day)
-            status.update(summary, completedSessions=len(processed), updatedAt=datetime.now(timezone.utc).isoformat(), latestLog=f"{split}: {day} evaluated; {summary['tradesToday']} closed simulated trades")
+            status.update(
+                summary,
+                completedSessions=len(processed),
+                updatedAt=datetime.now(timezone.utc).isoformat(),
+                latestLog=(
+                    f"{split}: {day} evaluated; {summary['tradesToday']} closed simulated trades; "
+                    f"window {summary.get('windowSessionsCompleted', 0)}/{config.evaluation_window_sessions}"
+                    + ("; generation selected" if window_complete and split == "train" else "")
+                ),
+            )
             atomic_json(directory/"status.json", status)
             print(json.dumps(summary, sort_keys=True, allow_nan=False))
             bots = following
-            if split == "train":
+            if split == "train" and window_complete:
                 generation += 1
+                train_window_batches = []
+                train_window_dates = []
         if not processed:
             raise ValueError("No actual data sessions in requested range")
         missing_days = sorted(set(calendar)-set(processed))
@@ -238,11 +398,39 @@ def run(args):
         atomic_json(directory/"final_population.json", [b.record() for b in bots])
         atomic_json(directory/"evaluation_summary.json", evaluation_ledger)
         run_info.update(phase="completed", generation=summary["generation"], nextPopulationGeneration=generation,
-                        completedTrainGenerations=split_days["train"], completedSessions=len(processed),
+                        completedTrainGenerations=generation, completedSessions=len(processed),
                         missingSessions=missing_days, splitDays=split_days, frozenPopulationHash=frozen,
+                        # Keep the final evaluated population distinct from offspring
+                        # created after selection. Alive/dead/neutral counts refer to
+                        # this evaluated population.
+                        population=summary.get("population", len(bots)),
+                        evaluatedPopulation=summary.get("population", len(bots)),
+                        nextPopulation=len(bots),
+                        safePopulation=safe_population, peakPopulation=peak_population,
                         runtimeSeconds=time.perf_counter()-started, inputHashesVerified=True,
                         finishedAt=datetime.now(timezone.utc).isoformat())
-        status.update(run_info, latestLog="Completed offline evaluation; no live orders or deployment")
+        # Preserve the final per-session adaptive decision/resource measurements while
+        # merging immutable run metadata. In particular, do not restore the initial
+        # population as the displayed "next population" on completion.
+        final_status = dict(run_info)
+        for key in ("resourceDecision", "resourcePressure", "resourceCpuPct", "resourceProcessCpuPct",
+                    "resourceMemoryPct", "resourceMemoryAvailableGb", "resourceSwapPct",
+                    "resourceSwapUsedGb", "resourceSwapTotalGb", "resourceProcessRssMb",
+                    "sessionRuntimeSeconds", "adaptiveResources", "nextPopulation",
+                    "safePopulation", "peakPopulation", "evaluationWindowSessions",
+                    "windowSessionsCompleted", "windowStartDate", "windowEndDate",
+                    "windowComplete", "bestWindowReturn", "meanWindowReturn",
+                    "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral",
+                    "stabilityFoldSessions", "stabilityFoldCount", "stabilityMinPositiveFolds",
+                    "stabilityEligibleBots", "bestPositiveFolds", "bestMedianFoldReturn",
+                    "bestWorstFoldReturn", "meanPositiveFolds"):
+            if key in status:
+                final_status[key] = status[key]
+        final_status["population"] = summary.get("population", len(bots))
+        final_status["evaluatedPopulation"] = summary.get("population", len(bots))
+        final_status["nextPopulation"] = len(bots) if frozen is not None else final_status.get("nextPopulation", len(bots))
+        final_status["latestLog"] = "Completed offline evaluation; no live orders or deployment"
+        status.update(final_status)
         atomic_json(directory/"run.json", run_info)
         atomic_json(directory/"status.json", status)
     except BaseException as exc:

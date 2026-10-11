@@ -20,7 +20,7 @@ from research.evolution.config import Config
 from research.evolution.features import MinuteFeatureProvider, POLICY_FEATURES, POLICY_BASE, benchmark_for_symbol
 from research.evolution.genome import Genome, random_genome, mutate, crossover
 from research.evolution.engine import evaluate_day
-from research.evolution.population import Bot, daily_evaluation, initial_population, reproduce
+from research.evolution.population import Bot, aggregate_window_evaluations, daily_evaluation, initial_population, reproduce
 from research.evolution.run_evolution_v0 import main, population_hash, parser, prepare_inputs
 from research.evolution.monitor import status
 
@@ -185,6 +185,13 @@ class ExecutionTests(unittest.TestCase):
         accounts, diag = evaluate_day(bots, data, o, c, ["TQQQ"], cfg)
         return bots, accounts[0], diag
 
+    def test_v05_daily_trade_cap(self):
+        data, o, c = fixture()
+        cfg = Config(population_size=1, max_trades_per_session=3, entry_cooldown_minutes=0)
+        bots = [Bot("test", buy_genome(cfg), 0, [], "2024-06-03")]
+        accounts, _ = evaluate_day(bots, data, o, c, ["TQQQ"], cfg)
+        self.assertLessEqual(len(accounts[0].trades), 3)
+
     def test_entry_is_subsequent_observable_close_not_signal_or_open(self):
         def change(rows, o):
             t = o+31*MINUTE  # first signal at 10:01; next completed close at 10:02
@@ -252,6 +259,130 @@ class EvolutionTests(unittest.TestCase):
         self.assertAlmostEqual(b.lifetime_equity, 100+1e-9)
         self.assertEqual(Account(100, ExecutionCostModel()).cash, 100)
 
+    def test_seven_session_window_does_not_kill_on_one_bad_day(self):
+        c = Config(population_size=2, evaluation_window_sessions=7)
+        bots = initial_population(c, random.Random(7), "2024-06-03")
+        batches = []
+        # Bot 0 loses day one but finishes the seven-session window positive.
+        # Bot 1 finishes the whole window negative.
+        p0 = [-1.0, .4, .4, .4, .4, .4, .4]
+        p1 = [-.2, -.2, -.2, -.2, -.2, -.2, -.2]
+        for i, (x, y) in enumerate(zip(p0, p1), start=1):
+            batch = []
+            for bot, pnl in zip(bots, (x, y)):
+                a = Account(100, ExecutionCostModel())
+                a.cash += pnl
+                batch.append(daily_evaluation(
+                    bot, a, f"2024-06-{i+2:02d}", c,
+                    update_lifetime=False, mark_death=False,
+                ))
+            batches.append(batch)
+        partial = aggregate_window_evaluations(bots, batches[:1], c, complete=False, mark_death=False)
+        self.assertEqual(partial[0]["survival"], "DEAD")
+        self.assertFalse(partial[0]["reproductionEligible"])
+        self.assertIsNone(bots[0].death_date)
+
+        final = aggregate_window_evaluations(bots, batches, c, complete=True, mark_death=True)
+        self.assertEqual(final[0]["survival"], "SURVIVE")
+        self.assertTrue(final[0]["reproductionEligible"])
+        self.assertAlmostEqual(final[0]["windowPnl"], 1.4)
+        self.assertIsNone(bots[0].death_date)
+        self.assertEqual(final[1]["survival"], "DEAD")
+        self.assertFalse(final[1]["reproductionEligible"])
+        self.assertIsNotNone(bots[1].death_date)
+
+    def test_v04_window_fitness_penalizes_overtrading_and_instability(self):
+        c = Config(
+            population_size=2, fitness_mode="v04_generalization",
+            transaction_cost_penalty=1.0, excessive_trading_penalty=.0015,
+            free_trade_count=2, losing_session_penalty=.01,
+            return_volatility_penalty=.25, evaluation_window_sessions=7,
+        )
+        bots = initial_population(c, random.Random(4), "2024-06-03")
+        def row(bot_id, ret, trades, cost):
+            return dict(
+                botId=bot_id, date="2024-06-03", survival="SURVIVE" if ret>0 else "DEAD",
+                reproductionEligible=ret>0, evaluationValid=True,
+                dailyPnl=ret*100, dailyReturn=ret, fitness=ret,
+                maxDrawdown=.005, trades=trades, transactionCost=cost, turnover=10,
+            )
+        low=[]; high=[]
+        low_returns=[.004,.003,-.001,.003,.002,-.001,.003]
+        high_returns=[.014,-.010,.013,-.009,.012,-.008,.010]
+        for lr,hr in zip(low_returns,high_returns):
+            low.append(row(bots[0].bot_id,lr,1,.03))
+            high.append(row(bots[1].bot_id,hr,8,.20))
+        batches=[[low[i],high[i]] for i in range(7)]
+        out=aggregate_window_evaluations(bots,batches,c,complete=True,mark_death=False)
+        by={x["botId"]:x for x in out}
+        self.assertGreater(by[bots[0].bot_id]["fitness"],by[bots[1].bot_id]["fitness"])
+        self.assertEqual(by[bots[0].bot_id]["fitnessMode"],"v04_generalization")
+        self.assertGreater(by[bots[1].bot_id]["tradesPerSession"],2)
+        self.assertIsNotNone(by[bots[1].bot_id]["fitnessComponents"])
+
+    def test_v05_parent_requires_four_profitable_sessions(self):
+        c = Config(
+            population_size=1, fitness_mode="v05_structural",
+            evaluation_window_sessions=7, min_profitable_sessions_for_parent=4,
+        )
+        bot = initial_population(c, random.Random(5), "2024-06-03")[0]
+        batches=[]
+        returns=[.02,.02,.02,-.005,-.005,-.005,-.005]  # positive total, only 3 winning sessions
+        for r in returns:
+            batches.append([dict(
+                botId=bot.bot_id,date="2024-06-03",survival="SURVIVE" if r>0 else "DEAD",
+                reproductionEligible=r>0,evaluationValid=True,dailyPnl=r*100,dailyReturn=r,
+                fitness=r,maxDrawdown=.001,trades=1,transactionCost=.01,turnover=10,
+            )])
+        out=aggregate_window_evaluations([bot],batches,c,complete=True,mark_death=False)[0]
+        self.assertGreater(out["windowPnl"],0)
+        self.assertEqual(out["profitableSessions"],3)
+        self.assertFalse(out["reproductionEligible"])
+
+    def test_v06_requires_stability_across_four_folds(self):
+        c = Config(
+            population_size=2,
+            fitness_mode="v06_stability",
+            evaluation_window_sessions=28,
+            stability_fold_sessions=7,
+            stability_min_positive_folds=3,
+            max_trades_per_session=3,
+            entry_cooldown_minutes=30,
+        )
+        bots = initial_population(c, random.Random(6), "2024-01-02")
+        fold_a=[.01,.01,.01,-.001]
+        fold_b=[.015,.015,-.001,-.001]
+        batches=[]
+        for day in range(28):
+            fa=fold_a[day//7]/7
+            fb=fold_b[day//7]/7
+            batch=[]
+            for bot,r in zip(bots,(fa,fb)):
+                batch.append(dict(
+                    botId=bot.bot_id,date=f"2024-02-{day+1:02d}",
+                    survival="SURVIVE" if r>0 else "DEAD",
+                    reproductionEligible=r>0,evaluationValid=True,
+                    dailyPnl=r*100,dailyReturn=r,fitness=r,
+                    maxDrawdown=.001,trades=1,transactionCost=.01,turnover=10,
+                ))
+            batches.append(batch)
+        out=aggregate_window_evaluations(bots,batches,c,complete=True,mark_death=False)
+        by={x["botId"]:x for x in out}
+        stable=by[bots[0].bot_id]
+        unstable=by[bots[1].bot_id]
+        self.assertEqual(stable["positiveFolds"],3)
+        self.assertEqual(len(stable["foldReturns"]),4)
+        self.assertTrue(stable["stabilityEligible"])
+        self.assertTrue(stable["reproductionEligible"])
+        self.assertEqual(unstable["positiveFolds"],2)
+        self.assertFalse(unstable["stabilityEligible"])
+        self.assertFalse(unstable["reproductionEligible"])
+
+    def test_v06_rejects_invalid_fold_configuration(self):
+        with self.assertRaises(ValueError):
+            Config(fitness_mode="v06_stability",evaluation_window_sessions=28,
+                   stability_fold_sessions=6,stability_min_positive_folds=3)
+
     def test_elite_preservation_and_dead_parent_exclusion(self):
         c = Config(population_size=20, elite_count=2, parent_fraction=1)
         bots = initial_population(c, random.Random(1), "2024-06-03")
@@ -307,7 +438,8 @@ class PipelineTests(unittest.TestCase):
             root = Path(tmp); data = root/"data"
             dates = list(exchange_sessions("2024-06-03", "2024-06-07"))
             write_fixtures(data, dates)
-            c = Config(population_size=20, train=("2024-06-03", "2024-06-04"),
+            c = Config(population_size=20, evaluation_window_sessions=1,
+                       train=("2024-06-03", "2024-06-04"),
                        validation=("2024-06-05", "2024-06-05"), final_oos=("2024-06-06", "2024-06-07"))
             cfg = root/"config.json"; cfg.write_text(json.dumps(c.snapshot()))
             args = ["--data-dir", str(data), "--results-dir", str(root/"results"), "--symbols", "TQQQ,AAPL",
@@ -329,11 +461,37 @@ class PipelineTests(unittest.TestCase):
             frozen = json.loads((p1/"frozen_population.json").read_text())["population"]
             self.assertEqual(frozen, json.loads((p1/"final_population.json").read_text()))
             self.assertEqual(len(list(p1.glob("generation_*"))), 2)
-            self.assertTrue((p1/"generation_0000/trades.csv").exists())
+            self.assertTrue((p1/"generation_0000_session_01/trades.csv").exists())
             self.assertEqual(before, {p.name: p.read_bytes() for p in data.iterdir()})
             monitor = status(root/"results")
             self.assertEqual(monitor["phase"], "completed")
             self.assertNotIn("inputManifest", monitor)
+
+    def test_default_seven_session_generation_boundary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); data = root/"data"
+            dates = list(exchange_sessions("2024-06-03", "2024-06-11"))
+            self.assertEqual(len(dates), 7)
+            write_fixtures(data, dates)
+            c = Config(population_size=4, evaluation_window_sessions=7,
+                       train=("2024-06-03", "2024-06-11"),
+                       validation=("2024-06-12", "2024-06-12"),
+                       final_oos=("2024-06-13", "2024-06-14"))
+            cfg = root/"config.json"; cfg.write_text(json.dumps(c.snapshot()))
+            args = ["--data-dir", str(data), "--results-dir", str(root/"results"),
+                    "--symbols", "TQQQ,AAPL", "--from-date", dates[0], "--to-date", dates[-1],
+                    "--config", str(cfg), "--provisional", "--data-origin", "synthetic"]
+            with contextlib.redirect_stdout(io.StringIO()):
+                out = main(args)
+            info = json.loads((out/"run.json").read_text())
+            state = json.loads((out/"status.json").read_text())
+            self.assertEqual(info["completedTrainGenerations"], 1)
+            self.assertEqual(info["nextPopulationGeneration"], 1)
+            self.assertEqual(state["evaluationWindowSessions"], 7)
+            self.assertEqual(state["windowSessionsCompleted"], 7)
+            self.assertTrue(state["windowComplete"])
+            self.assertEqual(len(list(out.glob("generation_0000_session_*"))), 7)
+            self.assertTrue((out/"generation_0000_session_07/window_evaluations.json").exists())
 
     def test_missing_benchmark_and_unreviewed_data_fail(self):
         with tempfile.TemporaryDirectory() as tmp:

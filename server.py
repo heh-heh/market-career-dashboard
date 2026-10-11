@@ -2061,7 +2061,12 @@ class Handler(BaseHTTPRequestHandler):
         if path=="/api/research/evolution/status":
             try:
                 from research.evolution.monitor import status as evolution_status
-                root=Path(os.getenv("EVOLUTION_RESULTS_DIR", str(ROOT/"research/results/evolution")))
+                configured=os.getenv("EVOLUTION_RESULTS_DIR")
+                if configured:
+                    root=Path(configured).expanduser()
+                else:
+                    external=Path("/home/ubuntu/evolution-results")
+                    root=external if external.exists() else ROOT/"research/results/evolution"
                 self.send_json({"ok":True,**evolution_status(root)})
             except Exception as e:
                 self.send_json({"ok":False,"error":str(e)},503)

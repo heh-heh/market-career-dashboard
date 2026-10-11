@@ -129,11 +129,105 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </div>
 
 <div class="card" style="margin-top:12px" id="evolutionV0Card">
-  <div class="label">Evolution AI V0 · 연구 전용</div>
-  <div id="evolutionV0Status" class="signal">상태 확인 중...</div>
-  <div id="evolutionV0Metrics" class="bt-symbols" style="margin-top:10px"></div>
-  <div id="evolutionV0Log" class="mini" style="margin-top:8px"></div>
-  <div class="muted">Historical simulation · $100 일별 초기화 · 실거래 연결 없음</div>
+  <div class="backtest-head">
+    <div>
+      <div class="label">Evolution Trading AI V0 · 연구 전용</div>
+      <h2 style="margin:5px 0">AI 세대 학습 모니터</h2>
+      <div id="evolutionV0Status" class="signal">상태 확인 중...</div>
+    </div>
+    <div><span id="evolutionV0ProgressText" class="bt-progress-text">0%</span></div>
+  </div>
+  <div class="bt-progress" style="margin-top:10px"><i id="evolutionV0ProgressBar"></i></div>
+  <div class="mini" id="evolutionV0Range" style="margin-top:7px">실행 범위 확인 중...</div>
+
+  <div class="bt-grid" style="margin-top:12px">
+    <div class="bt-stat"><div class="label">Generation</div><div class="v" id="evolutionV0Generation">-</div></div>
+    <div class="bt-stat"><div class="label">완료 세션</div><div class="v" id="evolutionV0Sessions">-</div></div>
+    <div class="bt-stat"><div class="label">Evaluated Population</div><div class="v" id="evolutionV0Population">-</div></div>
+    <div class="bt-stat"><div class="label">Alive / Dead</div><div class="v" id="evolutionV0Survival">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Best Bot</div><div class="v" id="evolutionV0BestBot">-</div></div>
+    <div class="bt-stat"><div class="label">Best Daily</div><div class="v" id="evolutionV0BestDaily">-</div></div>
+    <div class="bt-stat"><div class="label">Mean Daily</div><div class="v" id="evolutionV0MeanDaily">-</div></div>
+    <div class="bt-stat"><div class="label">Best Lifetime</div><div class="v" id="evolutionV0Lifetime">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">평가 Window</div><div class="v" id="evolutionV0Window">-</div></div>
+    <div class="bt-stat"><div class="label">Best Window</div><div class="v" id="evolutionV0BestWindow">-</div></div>
+    <div class="bt-stat"><div class="label">Mean Window</div><div class="v" id="evolutionV0MeanWindow">-</div></div>
+    <div class="bt-stat"><div class="label">Selection</div><div class="v" id="evolutionV0WindowState">-</div></div>
+  </div>
+  <div class="label" style="margin-top:12px">Stability Selection</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">Fold Structure</div><div class="v" id="evolutionV0FoldStructure">-</div></div>
+    <div class="bt-stat"><div class="label">Stable Parents</div><div class="v" id="evolutionV0StableParents">-</div></div>
+    <div class="bt-stat"><div class="label">Best Positive Folds</div><div class="v" id="evolutionV0BestFolds">-</div></div>
+    <div class="bt-stat"><div class="label">Best Median Fold</div><div class="v" id="evolutionV0BestMedianFold">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Best Worst Fold</div><div class="v" id="evolutionV0BestWorstFold">-</div></div>
+    <div class="bt-stat"><div class="label">Mean Positive Folds</div><div class="v" id="evolutionV0MeanFolds">-</div></div>
+  </div>
+
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Trades Today</div><div class="v" id="evolutionV0Trades">-</div></div>
+    <div class="bt-stat"><div class="label">Parent Pool</div><div class="v" id="evolutionV0Parents">-</div></div>
+    <div class="bt-stat"><div class="label">Mutations</div><div class="v" id="evolutionV0Mutations">-</div></div>
+    <div class="bt-stat"><div class="label">Neutral / Invalid</div><div class="v" id="evolutionV0Neutral">-</div></div>
+  </div>
+
+  <div class="label" style="margin-top:12px">Frozen Validation</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">Run Mode</div><div class="v" id="evolutionV0EvalMode">-</div></div>
+    <div class="bt-stat"><div class="label">Fitness</div><div class="v" id="evolutionV0FitnessMode">-</div></div>
+    <div class="bt-stat"><div class="label">Source Train</div><div class="v" id="evolutionV0SourceTrain">-</div></div>
+    <div class="bt-stat"><div class="label">Validation Best</div><div class="v" id="evolutionV0ValidationBest">-</div></div>
+    <div class="bt-stat"><div class="label">Validation Mean</div><div class="v" id="evolutionV0ValidationMean">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Validation Trades</div><div class="v" id="evolutionV0ValidationTrades">-</div></div>
+    <div class="bt-stat"><div class="label">Source Population</div><div class="v" id="evolutionV0SourcePopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Selection Mode</div><div class="v" id="evolutionV0SelectionMode">-</div></div>
+    <div class="bt-stat"><div class="label">Shortlist</div><div class="v" id="evolutionV0Shortlist">-</div></div>
+    <div class="bt-stat"><div class="label">Source Gen</div><div class="v" id="evolutionV0SourceGenerations">-</div></div>
+    <div class="bt-stat"><div class="label">Population Lock</div><div class="v" id="evolutionV0PopulationLock">-</div></div>
+  </div>
+
+  <div class="label" style="margin-top:12px">Generalization Diagnostics</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">Verdict</div><div class="v" id="evolutionV0GenVerdict">-</div></div>
+    <div class="bt-stat"><div class="label">Positive Bots</div><div class="v" id="evolutionV0PositiveBots">-</div></div>
+    <div class="bt-stat"><div class="label">Median Validation</div><div class="v" id="evolutionV0MedianValidation">-</div></div>
+    <div class="bt-stat"><div class="label">Train↔Val Rank Corr</div><div class="v" id="evolutionV0TrainValCorr">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Avg Trades/Bot</div><div class="v" id="evolutionV0AvgTrades">-</div></div>
+    <div class="bt-stat"><div class="label">Trade↔Val Corr</div><div class="v" id="evolutionV0TradeCorr">-</div></div>
+    <div class="bt-stat"><div class="label">Avg Cost/Bot</div><div class="v" id="evolutionV0AvgCost">-</div></div>
+    <div class="bt-stat"><div class="label">Final OOS</div><div class="v" id="evolutionV0OosGate">-</div></div>
+  </div>
+
+  <div class="label" style="margin-top:12px">Adaptive Resource Guard</div>
+  <div class="bt-grid" style="margin-top:8px">
+    <div class="bt-stat"><div class="label">CPU</div><div class="v" id="evolutionV0Cpu">-</div></div>
+    <div class="bt-stat"><div class="label">RAM</div><div class="v" id="evolutionV0Ram">-</div></div>
+    <div class="bt-stat"><div class="label">Swap</div><div class="v" id="evolutionV0Swap">-</div></div>
+    <div class="bt-stat"><div class="label">Process RAM</div><div class="v" id="evolutionV0ProcessRam">-</div></div>
+  </div>
+  <div class="bt-grid" style="margin-top:10px">
+    <div class="bt-stat"><div class="label">Next Population</div><div class="v" id="evolutionV0NextPopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Safe Population</div><div class="v" id="evolutionV0SafePopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Peak Population</div><div class="v" id="evolutionV0PeakPopulation">-</div></div>
+    <div class="bt-stat"><div class="label">Scale Decision</div><div class="v" id="evolutionV0ScaleDecision">-</div></div>
+  </div>
+
+  <div class="label" style="margin-top:12px">최근 상태</div>
+  <div id="evolutionV0Log" class="bt-log" style="max-height:120px">로그를 기다리는 중...</div>
+
+  <div class="label" style="margin-top:12px">최근 실행 기록</div>
+  <div id="evolutionV0RecentRuns" class="bt-symbols" style="margin-top:8px"></div>
+  <div class="muted" style="margin-top:8px">3초 자동 갱신 · Historical simulation · $100 일별 초기화 · 실거래 연결 없음</div>
 </div>
 
 <section id="researchExportCenter" class="card" style="margin-bottom:14px"></section>
@@ -797,22 +891,103 @@ async function loadTickCollectorMonitor(){
 }
 
 async function loadEvolutionMonitor(){
- const state=document.getElementById("evolutionV0Status"),metrics=document.getElementById("evolutionV0Metrics"),log=document.getElementById("evolutionV0Log");
+ const state=document.getElementById("evolutionV0Status"),log=document.getElementById("evolutionV0Log"),recent=document.getElementById("evolutionV0RecentRuns");
  if(!state)return;
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v==null?"-":String(v)};
+ const pct=v=>v==null?"-":(100*Number(v)).toFixed(3)+"%";
+ const money=v=>v==null?"-":"$"+Number(v).toFixed(2);
+ const phaseLabel=p=>({running:"진행 중",completed:"완료",error:"오류",interrupted:"중단됨",waiting:"대기"})[p]||p||"-";
+ const phaseClass=p=>p==="completed"?"bt-ok":p==="running"?"up":(["error","interrupted"].includes(p)?"down":"bt-wait");
  try{
   const base=(typeof AWS_API_BASE==="string"?AWS_API_BASE:"").replace(/\/$/,"");
   const r=await fetch(base+"/api/research/evolution/status?"+Date.now(),{cache:"no-store"});
   if(!r.ok)throw new Error("Evolution API 미배포 또는 응답 오류 ("+r.status+")");
   const d=await r.json();if(d.ok===false)throw new Error(d.error||"Evolution 상태 오류");
-  state.textContent=(d.phase||"waiting")+" · "+(d.split||"-")+" · "+(d.currentHistoricalDate||"-")+" · "+(d.dataMode||"연구 전용")+(d.dataOrigin==="synthetic"?" · SYNTHETIC TEST":"");
-  const number=(v,digits=0)=>v==null?"-":Number(v).toFixed(digits);
-  const pct=v=>v==null?"-":(100*Number(v)).toFixed(3)+"%";
-  const rows=[["Generation",d.generation],["Population",d.population],["Alive",d.alive],["Dead",d.dead],["Neutral",d.neutral],["Invalid",d.invalid],
-   ["Best Bot",d.bestBot||"-"],["Best Daily",pct(d.bestDailyReturn)],["Mean Daily",pct(d.meanDailyReturn)],["Median Daily",pct(d.medianDailyReturn)],
-   ["Best Lifetime","$"+number(d.bestLifetimeEquity,2)],["Trades Today",d.tradesToday],["Parent Pool",d.parentPoolSize],["Mutations",d.mutationCount]];
-  if(metrics)metrics.innerHTML=rows.map(([k,v])=>'<span class="bt-symbol">'+esc(k)+': '+esc(v==null?"-":v)+'</span>').join("");
-  if(log)log.textContent=d.error||d.latestLog||"";
- }catch(e){state.textContent=e.message;if(metrics)metrics.textContent="";if(log)log.textContent="상태를 확인할 수 없습니다. 실행 중으로 표시하지 않습니다.";}
+  if(!d.available){
+   state.innerHTML='<span class="bt-wait">● 실행 기록 없음</span>';
+   set("evolutionV0ProgressText","0%");
+   const bar=document.getElementById("evolutionV0ProgressBar");if(bar)bar.style.width="0%";
+   if(log)log.textContent=d.latestLog||"Evolution 실행을 기다리는 중...";
+   if(recent)recent.innerHTML='<div class="muted">아직 저장된 실행 결과가 없습니다.</div>';
+   return;
+  }
+  const mode=d.evaluationMode==="FROZEN_VALIDATION"?"VALIDATION":(d.smoke?"SMOKE":"RESEARCH");
+  state.innerHTML='<b class="'+phaseClass(d.phase)+'">● '+esc(phaseLabel(d.phase))+'</b>'+
+   ' · '+esc(mode)+' · '+esc(d.split||"-")+' · '+esc(d.currentHistoricalDate||"-")+
+   ' · '+esc(d.dataMode||"연구 전용")+(d.dataOrigin==="synthetic"?' · <span class="down">SYNTHETIC</span>':'');
+  const progress=Math.max(0,Math.min(100,Number(d.progressPct||0)));
+  set("evolutionV0ProgressText",progress.toFixed(1)+"%");
+  const bar=document.getElementById("evolutionV0ProgressBar");if(bar)bar.style.width=progress+"%";
+  set("evolutionV0Range",(d.fromDate||"-")+" → "+(d.toDate||"-")+" · 현재 "+(d.currentHistoricalDate||"-"));
+  set("evolutionV0Generation",d.generation==null?"-":d.generation);
+  set("evolutionV0Sessions",Number(d.completedSessions||0).toLocaleString()+" / "+Number(d.requestedSessions||0).toLocaleString());
+  set("evolutionV0Population",Number((d.evaluatedPopulation ?? d.population) || 0).toLocaleString());
+  set("evolutionV0Survival",Number(d.alive||0).toLocaleString()+" / "+Number(d.dead||0).toLocaleString());
+  set("evolutionV0BestBot",d.bestBot||"-");
+  set("evolutionV0BestDaily",pct(d.bestDailyReturn));
+  set("evolutionV0MeanDaily",pct(d.meanDailyReturn));
+  set("evolutionV0Lifetime",money(d.bestLifetimeEquity));
+  set("evolutionV0Trades",Number(d.tradesToday||0).toLocaleString());
+  set("evolutionV0Parents",Number(d.parentPoolSize||0).toLocaleString());
+  set("evolutionV0Mutations",Number(d.mutationCount||0).toLocaleString());
+  set("evolutionV0Neutral",Number(d.neutral||0).toLocaleString()+" / "+Number(d.invalid||0).toLocaleString());
+  set("evolutionV0Window",(d.windowSessionsCompleted==null||d.evaluationWindowSessions==null)?"-":Number(d.windowSessionsCompleted)+" / "+Number(d.evaluationWindowSessions)+"일");
+  set("evolutionV0BestWindow",pct(d.bestWindowReturn));
+  set("evolutionV0MeanWindow",pct(d.meanWindowReturn));
+  set("evolutionV0WindowState",d.evaluationMode==="FROZEN_VALIDATION"?"동결 검증":(d.windowComplete?"세대 교체 완료":(d.split==="train"?"평가 중":"동결")));
+  set("evolutionV0FoldStructure",(d.stabilityFoldCount&&d.stabilityFoldSessions)?(Number(d.stabilityFoldCount)+" × "+Number(d.stabilityFoldSessions)+"일"):"-");
+  set("evolutionV0StableParents",d.stabilityEligibleBots==null?"-":Number(d.stabilityEligibleBots).toLocaleString());
+  set("evolutionV0BestFolds",d.bestPositiveFolds==null?"-":Number(d.bestPositiveFolds)+" / "+Number(d.stabilityFoldCount||0));
+  set("evolutionV0BestMedianFold",pct(d.bestMedianFoldReturn));
+  set("evolutionV0BestWorstFold",pct(d.bestWorstFoldReturn));
+  set("evolutionV0MeanFolds",d.meanPositiveFolds==null?"-":Number(d.meanPositiveFolds).toFixed(2));
+  set("evolutionV0EvalMode",d.evaluationMode==="FROZEN_VALIDATION"?"FROZEN VALIDATION":"TRAIN / RESEARCH");
+  set("evolutionV0FitnessMode",d.fitnessMode||(d.config&&d.config.fitness_mode)||"-");
+  set("evolutionV0SourceTrain",d.sourceTrainFrom?((d.sourceTrainFrom||"-")+" → "+(d.sourceTrainTo||"-")):"-");
+  set("evolutionV0ValidationBest",pct(d.bestValidationReturn));
+  set("evolutionV0ValidationMean",pct(d.meanValidationReturn));
+  set("evolutionV0ValidationTrades",d.validationTotalTrades==null?"-":Number(d.validationTotalTrades).toLocaleString());
+  set("evolutionV0SourcePopulation",d.sourcePopulation==null?"-":Number(d.sourcePopulation).toLocaleString());
+  set("evolutionV0SelectionMode",d.selectionMode||"-");
+  set("evolutionV0Shortlist",d.shortlistCount==null?"-":Number(d.shortlistCount).toLocaleString());
+  set("evolutionV0SourceGenerations",d.sourceTrainGenerations==null?"-":Number(d.sourceTrainGenerations).toLocaleString());
+  set("evolutionV0PopulationLock",d.evaluationMode==="FROZEN_VALIDATION"?(d.sourcePopulationVerified===false?"검증 실패":"LOCKED"):"-");
+  set("evolutionV0GenVerdict",d.verdict||"-");
+  set("evolutionV0PositiveBots",d.positiveBots==null?"-":Number(d.positiveBots).toLocaleString()+" / "+Number((d.positiveBots||0)+(d.negativeBots||0)+(d.neutralBots||0)).toLocaleString());
+  set("evolutionV0MedianValidation",pct(d.medianValidationReturn));
+  set("evolutionV0TrainValCorr",d.trainValidationSpearman==null?"-":Number(d.trainValidationSpearman).toFixed(3));
+  set("evolutionV0AvgTrades",d.meanTradesPerBot==null?"-":Number(d.meanTradesPerBot).toFixed(1));
+  set("evolutionV0TradeCorr",d.tradesValidationPearson==null?"-":Number(d.tradesValidationPearson).toFixed(3));
+  set("evolutionV0AvgCost",d.meanTransactionCostPerBot==null?"-":"$"+Number(d.meanTransactionCostPerBot).toFixed(2));
+  set("evolutionV0OosGate",d.finalOosAllowed===true?"OPEN":(d.finalOosAllowed===false?"BLOCKED":"-"));
+  set("evolutionV0Cpu",d.resourceCpuPct==null?"-":Number(d.resourceCpuPct).toFixed(1)+"%");
+  set("evolutionV0Ram",d.resourceMemoryPct==null?"-":Number(d.resourceMemoryPct).toFixed(1)+"%");
+  set("evolutionV0Swap",d.resourceSwapPct==null?"-":Number(d.resourceSwapPct).toFixed(1)+"%");
+  set("evolutionV0ProcessRam",d.resourceProcessRssMb==null?"-":Number(d.resourceProcessRssMb).toFixed(0)+" MB");
+  set("evolutionV0NextPopulation",d.nextPopulation==null?"-":Number(d.nextPopulation).toLocaleString());
+  set("evolutionV0SafePopulation",d.safePopulation==null?"-":Number(d.safePopulation).toLocaleString());
+  set("evolutionV0PeakPopulation",d.peakPopulation==null?"-":Number(d.peakPopulation).toLocaleString());
+  set("evolutionV0ScaleDecision",d.adaptiveResources?(d.resourceDecision||"대기"):"OFF");
+  if(log)log.textContent=(d.error?("ERROR: "+d.error+"\n"):"")+(d.latestLog||"");
+  if(recent){
+   const runs=(d.recentRuns||[]).slice(0,6);
+   recent.innerHTML=runs.map(x=>{
+    const p=Math.max(0,Math.min(100,Number(x.progressPct||0)));
+    return '<div class="bt-symbol">'+
+     '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+(x.evaluationMode==="FROZEN_VALIDATION"?"Validation":(x.smoke?"Smoke":"Research"))+'</b><span class="'+phaseClass(x.phase)+'">'+esc(phaseLabel(x.phase))+'</span></div>'+
+     '<div class="mini" style="margin-top:5px">'+esc((x.fromDate||"-")+" → "+(x.toDate||"-"))+'</div>'+
+     '<div class="bt-mini-progress"><i style="width:'+p+'%"></i></div>'+
+     '<div class="mini" style="margin-top:5px">'+Number(x.completedSessions||0).toLocaleString()+'/'+Number(x.requestedSessions||0).toLocaleString()+
+     ' sessions · Gen '+esc(x.generation==null?"-":x.generation)+' · trades '+Number(x.tradesToday||0).toLocaleString()+
+     '<br>'+((x.evaluationMode==="FROZEN_VALIDATION")?('val best '+esc(pct(x.bestValidationReturn))+' · val mean '+esc(pct(x.meanValidationReturn))+' · total trades '+Number(x.validationTotalTrades||0).toLocaleString()):('best '+esc(pct(x.bestDailyReturn))+' · mean '+esc(pct(x.meanDailyReturn))+' · lifetime '+esc(money(x.bestLifetimeEquity))))+'</div>'+
+    '</div>';
+   }).join("")||'<div class="muted">최근 실행 기록이 없습니다.</div>';
+  }
+ }catch(e){
+  state.innerHTML='<span class="down">● '+esc(e.message)+'</span>';
+  if(log)log.textContent="상태를 확인할 수 없습니다. 실행 중으로 표시하지 않습니다.";
+  if(recent)recent.innerHTML="";
+ }
 }
 
 async function loadV4ResearchMonitor(){

@@ -245,6 +245,222 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Internal-holdout shortlist campaign (V0.7)
+
+V0.6 reduced turnover further but hurt generalization. V0.7 therefore returns to the
+V0.5 structural execution/fitness rules and changes only the development protocol:
+
+1. train on 2022-01-03 through 2023-12-29
+2. freeze the full population and evaluate 2024 as an internal holdout
+3. shortlist only mechanically valid genomes with positive 2024 holdout return,
+   capped at the existing parent-pool maximum of 40
+4. freeze that shortlist and evaluate 2025 as development validation
+5. keep 2026 completely untouched
+
+The shortlist is based only on 2024. No 2025 result participates in shortlist
+construction. The derived shortlist artifact records the source training run,
+holdout run and exact selected genome hashes.
+
+```bash
+python research/evolution/run_v07_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --shortlist-max 40 --seed 42
+```
+
+## Multi-fold stability selection (V0.6)
+
+V0.6 keeps V0.5 execution controls but changes parent selection inside the training
+period. A generation now spans 28 processed trading sessions, split chronologically
+into four independent 7-session folds.
+
+A genome can become a parent only when:
+
+- the full 28-session additive PnL is positive
+- at least 3 of the 4 seven-session folds are positive
+- the median fold return is positive
+- all sessions are mechanically valid
+
+The fitness coefficients from V0.5 are unchanged. This is a structural generalization
+gate rather than another 2025-fitted penalty adjustment.
+
+Training remains 2022-01-03 through 2024-12-31. 2025 is frozen development validation.
+2026 is not evaluated by this campaign.
+
+```bash
+python research/evolution/run_v06_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --seed 42
+```
+
+## Structural anti-overtrading campaign (V0.5)
+
+V0.4 soft penalties did not reduce validation turnover, so V0.5 makes the next
+change structural instead of increasing penalty coefficients.
+
+V0.5 keeps the same causal features, execution costs and seven-session generation,
+but adds:
+
+- maximum 3 completed trades per bot per trading session
+- 30 minute cooldown after a completed exit before another entry
+- at least 4 profitable sessions out of 7 before a profitable bot can become a parent
+- a broader training horizon from 2022-01-03 through 2024-12-31
+- 2025 remains frozen validation
+- 2026 remains untouched final OOS
+
+The profile is `research/evolution/v05_structural_config.json`.
+
+```bash
+python research/evolution/run_v05_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --seed 42
+```
+
+## Generalization fitness and campaign (V0.4)
+
+The V0.3 frozen validation showed strong negative association between validation
+performance and trade count, while train/validation rank correlation remained positive.
+V0.4 therefore adds a separate, opt-in `v04_generalization` fitness profile rather
+than changing the legacy V0 defaults.
+
+The V0.4 seven-session window fitness is:
+
+`window return - drawdown penalty - cost penalty - excess-trading penalty - losing-session penalty - return-volatility penalty`
+
+The repository profile is stored at
+`research/evolution/v04_generalization_config.json`. It does not alter execution
+costs, feature definitions, timestamp semantics, or the untouched 2026 final OOS split.
+
+A campaign runner executes only:
+
+1. 2024 training
+2. 2025 frozen validation
+3. generalization diagnostics
+
+It never evaluates 2026.
+
+```bash
+python research/evolution/run_v04_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --seed 42
+```
+
+## Frozen validation (V0.3)
+
+V0.3 adds a separate evaluator for a trained population. It loads the exact
+`final_population.json` from a completed training run, verifies every genome hash,
+and evaluates that fixed population on the configured validation split.
+
+There is no reproduction path in this runner:
+
+- no mutation
+- no crossover
+- no parent selection
+- no adaptive population resizing
+- no lifetime-state mutation
+- no live/paper broker calls
+
+The validator verifies the source population hash before, during, and after the run.
+It also re-hashes all market input files before finalizing.
+
+Use the newest completed training population:
+
+```bash
+python research/evolution/evaluate_population_v03.py \
+  --source-run latest \
+  --data-dir data/toss_1m --timestamp-kind end --provisional \
+  --from-date 2025-01-02 --to-date 2025-12-31 \
+  --results-dir /home/ubuntu/evolution-results
+```
+
+The source run's exact symbol universe and config are reused. A caller cannot silently
+change the validation symbol universe. Results are written to a new run directory as
+`validation.jsonl`, per-day validation artifacts, and `validation_summary.json`.
+
+## Seven-trading-day generations (V0.2)
+
+The default selection window is now **7 processed trading sessions**.
+
+- every daily simulation account still starts from `$100`
+- the same genome remains active for up to 7 processed train sessions
+- one losing day does **not** kill the bot immediately
+- daily PnL is accumulated across the window
+- window PnL < 0 -> DEAD
+- window PnL ~= 0 -> NEUTRAL
+- window PnL > 0 -> reproduction eligible
+- mutation/crossover and adaptive population scaling happen only when the 7-session window completes
+- an INVALID day makes the whole selection window INVALID for that bot
+- validation/final OOS remain frozen and never trigger reproduction
+
+The runner exposes `--evaluation-window-sessions` for controlled comparisons. The
+repository default is 7. A one-session baseline can still be reproduced explicitly
+with `--evaluation-window-sessions 1`.
+
+Example:
+
+```bash
+python research/evolution/run_evolution_v0.py \
+  --data-dir data/toss_1m --timestamp-kind end --provisional \
+  --symbols TQQQ,AAPL --population 20 \
+  --evaluation-window-sessions 7 \
+  --adaptive-resources --min-population 20 --max-population 300 \
+  --initial-capital 100 --seed 42 \
+  --from-date 2024-06-03 --to-date 2024-08-30 \
+  --results-dir /home/ubuntu/evolution-results
+```
+
+The dashboard reports the current window as `N / 7`, its best/mean cumulative
+window return, and whether selection is still waiting or a generation has completed.
+
+## Adaptive resource runner (V0.1)
+
+Longer research runs can opt into host-aware population scaling with
+`--adaptive-resources`. The initial population is still explicit; scaling happens only
+after a completed **train** session. Validation/final OOS populations are frozen.
+
+Default guardrails:
+
+- start/min population: 20 when requested by the caller
+- maximum population: 1000 (override with `--max-population`)
+- normal resources: next population = current x 1.25
+- RAM >= 70%, swap >= 5%, or CPU >= 85%: HOLD
+- RAM >= 85% or swap >= 20%: SCALE_DOWN x 0.75
+- never scales below `min_population` or above `max_population`
+- records CPU, RAM, swap, process RSS, session runtime, safe/peak/next population
+- resource pressure never changes genomes during validation/OOS
+
+Adaptive mode is intentionally **not bit-for-bit reproducible across hosts**, because
+population size depends on observed system load. The seed still controls genome
+randomness for a given scaling path.
+
+Example bounded research run:
+
+```bash
+python research/evolution/run_evolution_v0.py \
+  --data-dir data/toss_1m --timestamp-kind end --provisional \
+  --symbols TQQQ,AAPL --population 20 --adaptive-resources \
+  --min-population 20 --max-population 500 \
+  --initial-capital 100 --seed 42 \
+  --from-date 2024-06-03 --to-date 2024-06-28 \
+  --results-dir /home/ubuntu/evolution-results
+```
+
+Swap is an OOM safety net, not a performance tier. The runner never creates swap
+itself. On an EC2 host, `scripts/install_evolution_swap.sh` can create one guarded
+`/swapfile` (default 4 GiB) and set `vm.swappiness=10`. It refuses to overwrite an
+existing inactive file.
+
+```bash
+sudo bash scripts/install_evolution_swap.sh
+```
+
 ## Manual bounded EC2 smoke
 
 No new data collection/download, live order, service restart or full training:
@@ -281,7 +497,7 @@ hash mutation rejection, malformed timestamps/duplicates, read-only API/UI and n
 live imports. See `research/test_evolution_v0.py` and monitor smoke test.
 
 Actual Toss data and EC2 connectivity are absent in this workspace. The local CLI
-smoke uses **explicit synthetic data**, five XNYS dates, 20 bots, two candidate
+smoke uses **explicit synthetic data**, seven XNYS dates, 20 bots, two candidate
 instruments plus three references (9,750 fixture rows). It tests wiring only;
 repeated rising fixture days are not an economic experiment. No historical
 profitability, full-universe runtime or EC2 capacity claim can follow from it.

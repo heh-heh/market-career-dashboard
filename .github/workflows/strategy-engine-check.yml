@@ -28,15 +28,16 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Compile strategy sources
         run: |
-          python -m py_compile strategy_engine.py live_trader.py paper_trader.py simple_momentum_v1.py server.py backtest_manager.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py research/backtest_v2_tqqq_mr.py research/backtest_simple_v1.py research/backtest_intraday_v4.py research/test_simple_momentum_v1.py research/test_simple_momentum_api.py research/test_backtest_simple_v1.py research/test_backtest_engines_api.py research/test_backtest_multistrategy_streaming.py research/run_v4_sequence.py research/test_run_v4_sequence.py scripts/collect_toss_ticks.py research/intraday_v4_metrics.py
+          python -m py_compile strategy_engine.py live_trader.py paper_trader.py simple_momentum_v1.py server.py backtest_manager.py scripts/collect_toss_1m.py research/backtest_multistrategy_v1.py research/backtest_v2_tqqq_mr.py research/backtest_simple_v1.py research/backtest_intraday_v4.py research/test_simple_momentum_v1.py research/test_simple_momentum_api.py research/test_backtest_simple_v1.py research/test_backtest_engines_api.py research/test_backtest_multistrategy_streaming.py research/run_v4_sequence.py research/test_run_v4_sequence.py scripts/collect_toss_ticks.py research/intraday_v4_metrics.py research/evolution/config.py research/evolution/resource.py research/evolution/population.py research/evolution/run_evolution_v0.py research/evolution/evaluate_population_v03.py research/evolution/analyze_validation_v04.py research/evolution/run_v04_campaign.py research/evolution/run_v05_campaign.py research/evolution/run_v06_campaign.py research/evolution/run_v07_campaign.py research/evolution/build_shortlist_v07.py research/evolution/monitor.py
       - name: Test paper engines
         run: |
-          python -m unittest research.test_simple_momentum_v1 research.test_simple_momentum_api research.test_backtest_simple_v1 research.test_backtest_engines_api research.test_backtest_multistrategy_streaming research.test_run_v4_sequence research.test_collect_toss_ticks research.test_intraday_v4 research.test_build_v4_data_manifest research.test_v4_clock_context research.test_v4_direction_context research.test_v4_revalidation research.test_v4_integration_ready
+          python -m unittest research.test_simple_momentum_v1 research.test_simple_momentum_api research.test_backtest_simple_v1 research.test_backtest_engines_api research.test_backtest_multistrategy_streaming research.test_run_v4_sequence research.test_collect_toss_ticks research.test_intraday_v4 research.test_build_v4_data_manifest research.test_v4_clock_context research.test_v4_direction_context research.test_v4_revalidation research.test_v4_integration_ready research.test_evolution_v0 research.test_evolution_resource research.test_evolution_v03 research.test_evolution_validation_diagnostics research.test_evolution_campaigns research.test_evolution_v07
       - name: Smoke-test admin integration
         run: |
           node research/test_admin_backtest_smoke.cjs
           node research/test_admin_paper_smoke.cjs
           node research/test_data_collection_smoke.cjs
+          node research/test_evolution_monitor_smoke.cjs
       - name: Smoke-test feature and scoring engine
         run: |
           python - <<'PY'
