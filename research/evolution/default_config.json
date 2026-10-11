@@ -69,5 +69,6 @@
   "memory_hard_limit_pct": 85,
   "swap_soft_limit_pct": 5,
   "swap_hard_limit_pct": 20,
-  "cpu_soft_limit_pct": 85
+  "cpu_soft_limit_pct": 85,
+  "evaluation_window_sessions": 7
 }
