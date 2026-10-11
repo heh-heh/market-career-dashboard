@@ -29,6 +29,7 @@
     <button data-tab="paper">모의매매</button>
     <button data-tab="backtest">백테스트</button>
     <button data-tab="ai">AI 연구</button>
+    <button data-tab="api">API 설정</button>
     <button data-tab="collectors">수집 관리</button>
     <button data-tab="server">서버 콘솔</button>
     <button data-tab="git">GitHub · Git</button>
@@ -283,6 +284,36 @@
     <div class="card"><div class="label">최근 Iteration</div><div id="aiRecent" class="signal">기록 없음</div></div>
   </section>
 
+  <section id="api" class="panel">
+    <div class="section-title">API 설정</div>
+    <div class="section-subtitle">사용하지 않는 API 그룹을 즉시 차단합니다. 설정은 서버 재시작 후에도 유지되며 관리자 로그인·Git·서버 콘솔·수집 제어는 항상 켜져 있습니다.</div>
+
+    <div class="card">
+      <div class="label">API 제어 상태</div>
+      <div id="apiFeatureSummary" class="signal">상태 확인 중...</div>
+      <div class="actions">
+        <button id="apiFeatureRefresh">상태 새로고침</button>
+      </div>
+      <div class="mini" style="margin-top:8px">
+        실거래 API를 OFF하면 즉시 DISARM 및 실거래 엔진 OFF를 시도합니다. AI 연구 API를 OFF해도 기존 상태·로그 조회는 유지됩니다.
+        연구 Export를 OFF하면 새 AI Dry Run은 시작할 수 없습니다.
+      </div>
+    </div>
+
+    <div id="apiFeatureCards" class="grid">
+      <div class="card">API 설정을 불러오는 중...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">영향 안내</div>
+      <div class="signal">
+        <b>메인 대시보드 데이터</b> 또는 <b>시세·실시간 API</b>를 끄면 일반 메인 페이지 일부가 비거나 연결 실패로 표시될 수 있습니다.<br>
+        <b>연구 모니터 API</b>를 끄면 메인 페이지의 V4/Evolution/Tick 모니터가 갱신되지 않습니다.<br>
+        수집 프로세스 자체를 끄려면 이 탭이 아니라 <b>수집 관리</b> 탭을 사용하세요.
+      </div>
+    </div>
+  </section>
+
   <section id="collectors" class="panel">
     <div class="section-title">데이터 수집 관리</div>
     <div class="section-subtitle">원본 데이터는 삭제하지 않고 수집 프로세스의 실행 상태와 부팅 자동 실행만 제어합니다.</div>
@@ -411,7 +442,7 @@ async function authGate(){
     document.getElementById("gate").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     await loadBacktestEngines();
-    await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshGit()]);
+    await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshGit(),refreshApiFeatures()]);
   }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
 }
 function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
@@ -424,9 +455,58 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
   if(b.dataset.tab==="paper")refreshPaper();
   if(b.dataset.tab==="backtest")refreshSimpleBacktest();
   if(b.dataset.tab==="ai")refreshAI();
+  if(b.dataset.tab==="api")refreshApiFeatures();
   if(b.dataset.tab==="collectors")refreshCollectors();
   if(b.dataset.tab==="git")refreshGit();
 });
+
+let apiFeatureState={};
+const apiRiskLabel={high:"높음",medium:"중간",low:"낮음"};
+function apiFeatureCard(row){
+  const enabled=!!row.enabled;
+  const cls=enabled?"ok":"bad";
+  const state=enabled?"ON":"OFF";
+  const button=enabled?"끄기":"켜기";
+  const danger=enabled?"danger":"primary";
+  return '<div class="card">'+
+    '<div class="label">'+esc(row.label||row.key)+' · 위험도 '+esc(apiRiskLabel[row.risk]||row.risk||"-")+'</div>'+
+    '<div class="value '+cls+'" style="font-size:22px">'+state+'</div>'+
+    '<div class="mini" style="margin-top:8px;min-height:36px">'+esc(row.description||"")+'</div>'+
+    '<div class="actions"><button class="'+danger+'" data-api-feature="'+esc(row.key)+'" data-api-enabled="'+(!enabled)+'">'+button+'</button></div>'+
+  '</div>';
+}
+async function refreshApiFeatures(){
+  try{
+    const d=await req("/api/admin/api-features");
+    apiFeatureState=d.features||{};
+    const rows=Object.values(apiFeatureState);
+    const on=rows.filter(x=>x.enabled).length,off=rows.length-on;
+    document.getElementById("apiFeatureSummary").innerHTML='<span class="ok"><b>ON '+on+'</b></span> · <span class="'+(off?"warn":"muted")+'"><b>OFF '+off+'</b></span> · 설정 영구 저장 · 관리자 제어면 항상 ON';
+    document.getElementById("apiFeatureCards").innerHTML=rows.map(apiFeatureCard).join("")||'<div class="card">API 그룹 없음</div>';
+    document.querySelectorAll("[data-api-feature]").forEach(btn=>btn.onclick=()=>toggleApiFeature(btn.dataset.apiFeature,btn.dataset.apiEnabled==="true"));
+  }catch(e){
+    document.getElementById("apiFeatureSummary").innerHTML='<span class="bad">'+esc(e.message)+'</span>';
+  }
+}
+async function toggleApiFeature(feature,enabled){
+  const row=apiFeatureState[feature]||{};
+  const action=enabled?"켜기":"끄기";
+  let warning=(row.label||feature)+" API를 "+action+" 할까요?";
+  if(!enabled&&feature==="live_trading")warning+="\n\n실거래는 즉시 DISARM되고 엔진도 OFF됩니다.";
+  if(!enabled&&feature==="dashboard_data")warning+="\n\n메인 대시보드 일부 데이터가 표시되지 않습니다.";
+  if(!enabled&&feature==="market_data")warning+="\n\n실시간 시세 공급도 휴면 상태로 전환됩니다.";
+  if(!enabled&&feature==="research_export")warning+="\n\n새 AI Dry Run은 Export가 다시 켜질 때까지 시작할 수 없습니다.";
+  if(!confirm(warning))return;
+  try{
+    const d=await req("/api/admin/api-features",{method:"POST",body:JSON.stringify({feature,enabled})});
+    if(Array.isArray(d.actions)&&d.actions.length)alert(d.actions.join("\n"));
+    await refreshApiFeatures();
+  }catch(e){
+    alert(e.message);
+    await refreshApiFeatures();
+  }
+}
+document.getElementById("apiFeatureRefresh").onclick=refreshApiFeatures;
 
 let collectorState={};
 function collectorText(row){
