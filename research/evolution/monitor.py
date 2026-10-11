@@ -7,6 +7,7 @@ _MAX_RECENT_RUNS = 6
 
 _PUBLIC_FIELDS = {
     "phase", "runId", "generation", "nextPopulationGeneration", "completedTrainGenerations",
+    "evaluatedPopulation",
     "population", "alive", "dead", "neutral", "invalid", "bestBot", "bestDailyReturn",
     "meanDailyReturn", "medianDailyReturn", "bestLifetimeEquity", "tradesToday",
     "currentHistoricalDate", "parentPoolSize", "mutationCount", "crossoverCount",
@@ -69,6 +70,7 @@ def _run_summary(run_dir):
         "currentHistoricalDate": result.get("currentHistoricalDate"),
         "generation": result.get("generation"),
         "population": result.get("population"),
+        "evaluatedPopulation": result.get("evaluatedPopulation"),
         "completedSessions": result.get("completedSessions"),
         "requestedSessions": result.get("requestedSessions"),
         "progressPct": result.get("progressPct"),
