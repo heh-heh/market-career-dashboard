@@ -457,6 +457,47 @@ class AutonomousTests(unittest.TestCase):
             finally:
                 http.shutdown(); http.server_close(); thread.join(); manager.close()
 
+    def test_baseline_selection_skips_invalid_newest_without_relaxing(self):
+        from research.autonomous.artifact_reader import discover_runs
+        from research.autonomous.diagnostics import identify_baseline
+        from research.autonomous.runner import choose_valid_v07_baseline
+
+        good = self.base / "good-bundle"
+        bad = self.base / "bad-bundle"
+        fixed_artifacts(good)
+        fixed_artifacts(bad)
+        bad_dev = bad / "evolution" / "dev" / "run.json"
+        bad_info = read_json(bad_dev)
+        bad_info["missingSessions"] = ["2025-07-04"]
+        bad_info["resultsValid"] = False
+        write_json(bad_dev, bad_info)
+
+        with self.assertRaisesRegex(
+            ValueError,
+            r"BASELINE_INCOMPLETE_OR_INVALID: stage=development_validation: runId=dev: missingSessions=1, resultsValid=False",
+        ):
+            identify_baseline(discover_runs(bad))
+
+        older = {"id": "a" * 24, "runId": "dev-good", "updatedAt": "2026-01-01T00:00:00Z"}
+        newer = {"id": "b" * 24, "runId": "dev-bad", "updatedAt": "2026-02-01T00:00:00Z"}
+        catalog = {"runs": [older, newer]}
+
+        class FakeClient:
+            def collect(self, export_type, ids, _catalog):
+                folder = bad if ids == [newer["id"]] else good
+                return folder, ("b" if folder == bad else "a") * 64, {
+                    "type": export_type,
+                    "selection": {"type": export_type, "runIds": ids, "researchOnly": True},
+                }
+
+        choice = choose_valid_v07_baseline(FakeClient(), catalog, [older, newer])
+        self.assertEqual(choice["candidate"]["runId"], "dev-good")
+        self.assertEqual(choice["baseline"]["info"]["runId"], "dev")
+        self.assertEqual(len(choice["rejected"]), 1)
+        self.assertEqual(choice["rejected"][0]["runId"], "dev")
+        self.assertEqual(choice["rejected"][0]["code"], "BASELINE_INCOMPLETE_OR_INVALID")
+        self.assertEqual(choice["rejected"][0]["stage"], "development_validation")
+
     def test_secret_redacted_even_under_other_key(self):
         p = self.base/'artifact.json'
         with patch.dict(os.environ, {'RESEARCH_EXPORT_TOKEN': 'actual-test-secret'}):
