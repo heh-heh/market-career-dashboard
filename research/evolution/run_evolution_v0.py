@@ -178,6 +178,7 @@ def run(args):
                     executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY", generation=0, completedSessions=0,
                     adaptiveResources=config.adaptive_resources, minPopulation=config.min_population,
                     maxPopulation=config.max_population, evaluationWindowSessions=config.evaluation_window_sessions,
+                    fitnessMode=config.fitness_mode,
                     windowSessionsCompleted=0, nextPopulation=config.population_size,
                     safePopulation=config.population_size, peakPopulation=config.population_size,
                     createdAt=datetime.now(timezone.utc).isoformat())
