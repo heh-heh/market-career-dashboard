@@ -430,14 +430,21 @@ def loop(config, *, dry_run=False, resume=False, client=None):
                 (folder / "error_traceback.log").write_text(str(trace), encoding="utf-8")
             except OSError:
                 pass
+            resource_facts = getattr(exc, "facts", None)
+            extra = {}
+            if isinstance(resource_facts, dict):
+                safe_facts = sanitize(resource_facts)
+                extra["resourceGuard"] = safe_facts
+                write_json(folder / "resource_guard.json", safe_facts)
             value = registry.update(folder, "failed", error=sanitize(reason), failureCode=failure_code,
-                                    lastSuccessfulState=previous_state, finishedAt=utc())
+                                    lastSuccessfulState=previous_state, finishedAt=utc(), **extra)
             print(json.dumps({
                 "event":"autonomous_failure",
                 "iteration":value.get("iteration"),
                 "failureCode":failure_code,
                 "lastSuccessfulState":previous_state,
                 "error":sanitize(reason),
+                "resourceGuard":extra.get("resourceGuard"),
             },ensure_ascii=False,allow_nan=False,sort_keys=True),flush=True)
             create_report(folder, value, failure=reason)
             raise
