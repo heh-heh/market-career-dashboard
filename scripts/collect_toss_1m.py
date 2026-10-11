@@ -393,15 +393,17 @@ def collect(symbol, since, until, pages, sleep_s, batch_pages, batch_sleep, out_
 
         stored, oldest_ts, latest_ts = get_bounds(conn)
         exported = export_csv(conn, path)
+        # A pagination boundary is not proof of complete RTH coverage.
+        # Never label an incomplete archive as fully covered.
         write_progress(symbol, {
             "symbol": symbol,
-            "status": "completed",
+            "status": "collection_pass_finished_unverified",
             "page": n + 1 if "n" in locals() else 0,
             "pages": pages,
             "stored": exported,
             "fetched": stored,
             "added": 0,
-            "coveragePct": 100,
+            "coveragePct": round(coverage_pct(latest_ts, oldest_ts, since), 2),
             "latestTimestamp": latest_ts,
             "oldestTimestamp": oldest_ts,
             "since": since,
@@ -435,6 +437,9 @@ def main():
     selected = [x.strip().upper() for x in a.symbols.split(",") if x.strip()]
     if not 1 <= len(selected) <= 50 or len(selected) != len(set(selected)) or not all(x.isalnum() for x in selected):
         ap.error("requires 1-50 unique alphanumeric symbols")
+    global PROGRESS, ERROR_LOG
+    PROGRESS = out / "_collection_progress.json"
+    ERROR_LOG = out / "_collection_errors.jsonl"
     for s in selected:
         collect(s, a.since, a.until, a.pages, a.sleep, a.batch_pages, a.batch_sleep, out_dir=out)
 
