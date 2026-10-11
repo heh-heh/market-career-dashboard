@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import asyncio, io, json, os, pwd, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request, zipfile
+import asyncio, io, json, os, pwd, re, secrets, shlex, subprocess, sys, threading, time, urllib.parse, urllib.request, uuid, zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from trading import paper as paper_broker, strategy as trading_strategy
