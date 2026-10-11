@@ -99,4 +99,16 @@ class Registry:
         value.update(fields, state=state, updatedAt=utc(), researchOnly=True, finalOosGate="CLOSED")
         write_json(folder / "experiment.json", value)
         write_json(self.root / "status.json", value)
+        event={
+            "event":"autonomous_state",
+            "iteration":value.get("iteration"),
+            "state":state,
+            "updatedAt":value.get("updatedAt"),
+            "failureCode":value.get("failureCode"),
+            "trainingProgress":value.get("trainingProgress"),
+            "holdoutProgress":value.get("holdoutProgress"),
+            "validationProgress":value.get("validationProgress"),
+            "selectedCandidates":value.get("selectedCandidates"),
+        }
+        print(json.dumps(event,ensure_ascii=False,allow_nan=False,sort_keys=True),flush=True)
         return value
