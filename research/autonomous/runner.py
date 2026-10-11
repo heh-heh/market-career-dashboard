@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import traceback
 
 from .config import ROOT, LoopConfig
 from .artifact_reader import discover_runs, sha256, verify_cache
@@ -380,8 +381,23 @@ def loop(config, *, dry_run=False, resume=False, client=None):
             prefix = reason.split(":", 1)[0]
             failure_code = prefix if __import__("re").fullmatch(r"[A-Z][A-Z0-9_]+", prefix) else "RESEARCH_FAILURE"
             previous_state = read_json(folder / "experiment.json").get("state")
+            trace = traceback.format_exc()
+            if token:
+                trace = trace.replace(token, "[REDACTED]")
+            trace = sanitize(trace[-32000:])
+            try:
+                (folder / "error_traceback.log").write_text(str(trace), encoding="utf-8")
+            except OSError:
+                pass
             value = registry.update(folder, "failed", error=sanitize(reason), failureCode=failure_code,
                                     lastSuccessfulState=previous_state, finishedAt=utc())
+            print(json.dumps({
+                "event":"autonomous_failure",
+                "iteration":value.get("iteration"),
+                "failureCode":failure_code,
+                "lastSuccessfulState":previous_state,
+                "error":sanitize(reason),
+            },ensure_ascii=False,allow_nan=False,sort_keys=True),flush=True)
             create_report(folder, value, failure=reason)
             raise
     return completed
