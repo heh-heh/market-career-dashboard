@@ -99,11 +99,25 @@ class ExportClient:
             raise ValueError("Invalid export job identifier")
         write_json(pending, {"jobId": job_id, "type": export_type})
         deadline = time.monotonic() + self.config.export_timeout_seconds
+        last_progress=None
+        print(json.dumps({
+            "event":"export_job","jobId":job_id,"type":export_type,
+            "state":job.get("state"),"progressPct":job.get("progressPct"),
+        },sort_keys=True),flush=True)
         while job.get("state") in ("queued", "running"):
             if time.monotonic() > deadline:
                 raise ValueError("EXPORT_TIMEOUT")
             time.sleep(min(self.config.poll_seconds, 10))
             job = self.json("/api/research/export/jobs/" + job_id)
+            progress=(job.get("state"),job.get("progressPct"),job.get("filesProcessed"),job.get("bytesProcessed"))
+            if progress!=last_progress:
+                print(json.dumps({
+                    "event":"export_job","jobId":job_id,"type":export_type,
+                    "state":job.get("state"),"progressPct":job.get("progressPct"),
+                    "filesProcessed":job.get("filesProcessed"),"totalFiles":job.get("totalFiles"),
+                    "bytesProcessed":job.get("bytesProcessed"),"estimatedBytes":job.get("estimatedBytes"),
+                },sort_keys=True),flush=True)
+                last_progress=progress
         if job.get("state") != "completed":
             raise ValueError("EXPORT_JOB_FAILED")
         expected = job.get("archiveBytes")
@@ -113,12 +127,20 @@ class ExportClient:
         resource_gate(self.config, expected_bytes=expected + self.config.max_extracted_bytes)
         path = cache / (uuid.uuid4().hex + ".zip")
         size = 0
+        next_report=16*1024*1024
+        print(json.dumps({"event":"export_download","jobId":job_id,"bytes":0,"expectedBytes":expected},sort_keys=True),flush=True)
         with self.open("/api/research/export/jobs/" + job_id + "/download") as response, path.open("xb") as dest:
             for block in iter(lambda: response.read(1024 * 1024), b""):
                 size += len(block)
                 if size > expected:
                     raise ValueError("Archive larger than declared size")
                 dest.write(block)
+                if size>=next_report or size==expected:
+                    print(json.dumps({
+                        "event":"export_download","jobId":job_id,"bytes":size,"expectedBytes":expected,
+                        "progressPct":round((size/expected)*100,1) if expected else None,
+                    },sort_keys=True),flush=True)
+                    next_report+=16*1024*1024
         if size != expected:
             raise ValueError("Incomplete archive download")
         folder, digest = extract_verified(path, cache, self.config.max_extracted_bytes)
