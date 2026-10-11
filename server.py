@@ -407,6 +407,16 @@ def autonomous_admin_status():
                 "startedAt":stage.get("startedAt"),
                 "pid":(stage.get("identity") or {}).get("pid"),
             }
+        selection=_safe_ai_json(folder/"baseline_selection.json")
+        if selection:
+            detail["baselineSelection"]={
+                "policy":selection.get("policy"),
+                "candidateCount":selection.get("candidateCount"),
+                "selectedRunId":selection.get("selectedRunId"),
+                "selectedCatalogId":selection.get("selectedCatalogId"),
+                "criteriaRelaxed":selection.get("criteriaRelaxed"),
+                "rejected":selection.get("rejected") or [],
+            }
     dry_run=_latest_completed_dry_run()
     return {
         **result,
