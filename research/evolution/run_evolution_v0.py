@@ -30,7 +30,7 @@ from research.evolution.resource import decide_population, sample_resources
 
 
 def parser():
-    p = argparse.ArgumentParser(description="Evolution Trading AI V0.2: offline $100 daily accounts with multi-session selection; no live execution")
+    p = argparse.ArgumentParser(description="Evolution Trading AI research runner: offline $100 daily accounts with multi-session selection; no live execution")
     p.add_argument("--data-dir", type=Path, default=ROOT/"data/toss_1m")
     p.add_argument("--data-manifest", type=Path)
     p.add_argument("--provisional", action="store_true", help="Explicit mechanical audit only; never final performance evidence")
@@ -138,7 +138,8 @@ def run(args):
         raise ValueError("Reversed date bounds")
     calendar = exchange_sessions(first, last)
     if args.smoke:
-        calendar = dict(list(calendar.items())[:7])
+        smoke_sessions = max(7, config.evaluation_window_sessions)
+        calendar = dict(list(calendar.items())[:smoke_sessions])
     if not calendar:
         raise ValueError("No XNYS sessions in requested range")
     allowed = set(json.loads(args.universe.read_text())["symbols"])
@@ -179,6 +180,8 @@ def run(args):
                     adaptiveResources=config.adaptive_resources, minPopulation=config.min_population,
                     maxPopulation=config.max_population, evaluationWindowSessions=config.evaluation_window_sessions,
                     fitnessMode=config.fitness_mode,
+                    stabilityFoldSessions=config.stability_fold_sessions,
+                    stabilityMinPositiveFolds=config.stability_min_positive_folds,
                     windowSessionsCompleted=0, nextPopulation=config.population_size,
                     safePopulation=config.population_size, peakPopulation=config.population_size,
                     createdAt=datetime.now(timezone.utc).isoformat())
@@ -341,6 +344,20 @@ def run(args):
                 bestWindowReturn=best_window["windowReturn"] if best_window else None,
                 meanWindowReturn=statistics.mean(window_returns) if window_returns else None,
                 medianWindowReturn=statistics.median(window_returns) if window_returns else None,
+                stabilityFoldSessions=config.stability_fold_sessions,
+                stabilityFoldCount=(
+                    config.evaluation_window_sessions // config.stability_fold_sessions
+                    if config.stability_fold_sessions else 0
+                ),
+                stabilityMinPositiveFolds=config.stability_min_positive_folds,
+                stabilityEligibleBots=sum(e.get("stabilityEligible") is True for e in (window_evaluations or [])),
+                bestPositiveFolds=best_window.get("positiveFolds") if best_window else None,
+                bestMedianFoldReturn=best_window.get("medianFoldReturn") if best_window else None,
+                bestWorstFoldReturn=best_window.get("worstFoldReturn") if best_window else None,
+                meanPositiveFolds=(
+                    statistics.mean([e.get("positiveFolds",0) for e in window_evaluations])
+                    if window_evaluations else None
+                ),
                 bestLifetimeEquity=max(b.lifetime_equity for b in bots),
                 tradesToday=sum(e["trades"] for e in evaluations),
                 currentHistoricalDate=day,
@@ -403,7 +420,10 @@ def run(args):
                     "safePopulation", "peakPopulation", "evaluationWindowSessions",
                     "windowSessionsCompleted", "windowStartDate", "windowEndDate",
                     "windowComplete", "bestWindowReturn", "meanWindowReturn",
-                    "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral"):
+                    "medianWindowReturn", "dailyAlive", "dailyDead", "dailyNeutral",
+                    "stabilityFoldSessions", "stabilityFoldCount", "stabilityMinPositiveFolds",
+                    "stabilityEligibleBots", "bestPositiveFolds", "bestMedianFoldReturn",
+                    "bestWorstFoldReturn", "meanPositiveFolds"):
             if key in status:
                 final_status[key] = status[key]
         final_status["population"] = summary.get("population", len(bots))
