@@ -22,6 +22,7 @@ assert.match(server,/if path=="\/api\/admin\/ai\/status":[\s\S]{0,220}if not aut
 assert.match(server,/if path=="\/api\/admin\/ai\/log":[\s\S]{0,220}if not authorized\(self\)/);
 assert.match(server,/def _safe_log_tail\(/);
 assert.match(server,/AUTONOMOUS_WEB_LOG\.open\("wb"/);
+assert.match(server,/\bimport\s+[^\n]*\buuid\b/,'uuid import required for per-launch log archival');
 assert.match(server,/web-launch-/);
 assert.match(server,/from research_export import sanitize/);
 assert.match(server,/def _autonomous_pipeline\(/);
