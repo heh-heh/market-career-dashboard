@@ -50,6 +50,43 @@ class RepairTests(unittest.TestCase):
             conn.executemany("INSERT INTO candles VALUES (?,?,?,?,?,?,?)", [tuple(row[k] for k in FIELDS) for row in rows]); conn.commit()
         return path
 
+    def test_audit_shm_mtime_only_does_not_block(self):
+        # Simulate a read-only SQLite connection touching ephemeral WAL-index
+        # metadata. This is not evidence that the database/WAL changed.
+        import research.toss_1m_repair as repair
+        path = self.db([])
+        real_signature = repair.db_signature
+        calls = [0]
+
+        def simulated_signature(p):
+            signature = real_signature(p)
+            calls[0] += 1
+            signature[path.name + "-shm"] = [1, 2, 32768, calls[0]]
+            return signature
+
+        with patch.object(repair, "db_signature", side_effect=simulated_signature):
+            report = audit(self.prod, ["TQQQ"], [self.day])
+        self.assertTrue(report["symbols"]["TQQQ"]["sqlite"]["shmMetadataChangedDuringAudit"])
+
+    def test_audit_db_change_still_blocks(self):
+        import research.toss_1m_repair as repair
+        self.db([])
+        original = repair.db_signature
+        calls = [0]
+
+        def changed_signature(p):
+            result = original(p)
+            calls[0] += 1
+            if calls[0] >= 2:
+                key = p.name
+                result[key] = result[key][:]
+                result[key][-1] += 1
+            return result
+
+        with patch.object(repair, "db_signature", side_effect=changed_signature):
+            with self.assertRaisesRegex(ValueError, "SQLITE_CHANGED_DURING_AUDIT"):
+                audit(self.prod, ["TQQQ"], [self.day])
+
     def test_xnys_full_session_and_end_labels(self):
         report, rows = inspect_rows(iter(self.rows),"TQQQ",self.calendar)
         self.assertTrue(report["passed"])
