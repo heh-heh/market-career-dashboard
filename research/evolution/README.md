@@ -245,6 +245,33 @@ tab. Tick/V4 existing polling remains. Backend and CLI share `EVOLUTION_RESULTS_
 EC2 for both. Deployment / Pages synchronization is a separate operation; this
 change is committed/pushed only to `strategy-engine-v3`, never `main`.
 
+## Multi-fold stability selection (V0.6)
+
+V0.6 keeps V0.5 execution controls but changes parent selection inside the training
+period. A generation now spans 28 processed trading sessions, split chronologically
+into four independent 7-session folds.
+
+A genome can become a parent only when:
+
+- the full 28-session additive PnL is positive
+- at least 3 of the 4 seven-session folds are positive
+- the median fold return is positive
+- all sessions are mechanically valid
+
+The fitness coefficients from V0.5 are unchanged. This is a structural generalization
+gate rather than another 2025-fitted penalty adjustment.
+
+Training remains 2022-01-03 through 2024-12-31. 2025 is frozen development validation.
+2026 is not evaluated by this campaign.
+
+```bash
+python research/evolution/run_v06_campaign.py \
+  --data-dir data/toss_1m \
+  --results-dir /home/ubuntu/evolution-results \
+  --symbols TQQQ,AAPL \
+  --population 20 --max-population 300 --seed 42
+```
+
 ## Structural anti-overtrading campaign (V0.5)
 
 V0.4 soft penalties did not reduce validation turnover, so V0.5 makes the next
