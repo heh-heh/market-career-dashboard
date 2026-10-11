@@ -174,6 +174,7 @@ def _autonomous_checkpoints(folder):
     checks=[
         ("experiment","experiment.json"),
         ("source manifest","source_manifest.json"),
+        ("baseline selection","baseline_selection.json"),
         ("baseline metrics","baseline_metrics.json"),
         ("plan","plan.json"),
         ("quarterly diagnostics","quarterly_diagnostics.json"),
@@ -259,7 +260,8 @@ def autonomous_admin_status():
         experiment=_safe_ai_json(folder/"experiment.json")
         for key in ("error","failureCode","startedAt","updatedAt","finishedAt","decision","dryRun",
                     "dryRunReviewed","selectedCandidates","trainingProgress","holdoutProgress",
-                    "validationProgress","positiveBots","validationMean","validationMedian","avgTrades"):
+                    "validationProgress","positiveBots","validationMean","validationMedian","avgTrades",
+                    "baselineRunId","baselineCandidates","baselineRejected"):
             if key in experiment:
                 detail[key]=experiment.get(key)
         stage=_safe_ai_json(folder/"stage_process.json")
