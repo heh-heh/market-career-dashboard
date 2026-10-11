@@ -20,7 +20,7 @@ from research.evolution.config import Config
 from research.evolution.features import MinuteFeatureProvider, POLICY_FEATURES, POLICY_BASE, benchmark_for_symbol
 from research.evolution.genome import Genome, random_genome, mutate, crossover
 from research.evolution.engine import evaluate_day
-from research.evolution.population import Bot, daily_evaluation, initial_population, reproduce
+from research.evolution.population import Bot, aggregate_window_evaluations, daily_evaluation, initial_population, reproduce
 from research.evolution.run_evolution_v0 import main, population_hash, parser, prepare_inputs
 from research.evolution.monitor import status
 
@@ -252,6 +252,38 @@ class EvolutionTests(unittest.TestCase):
         self.assertAlmostEqual(b.lifetime_equity, 100+1e-9)
         self.assertEqual(Account(100, ExecutionCostModel()).cash, 100)
 
+    def test_seven_session_window_does_not_kill_on_one_bad_day(self):
+        c = Config(population_size=2, evaluation_window_sessions=7)
+        bots = initial_population(c, random.Random(7), "2024-06-03")
+        batches = []
+        # Bot 0 loses day one but finishes the seven-session window positive.
+        # Bot 1 finishes the whole window negative.
+        p0 = [-1.0, .4, .4, .4, .4, .4, .4]
+        p1 = [-.2, -.2, -.2, -.2, -.2, -.2, -.2]
+        for i, (x, y) in enumerate(zip(p0, p1), start=1):
+            batch = []
+            for bot, pnl in zip(bots, (x, y)):
+                a = Account(100, ExecutionCostModel())
+                a.cash += pnl
+                batch.append(daily_evaluation(
+                    bot, a, f"2024-06-{i+2:02d}", c,
+                    update_lifetime=False, mark_death=False,
+                ))
+            batches.append(batch)
+        partial = aggregate_window_evaluations(bots, batches[:1], c, complete=False, mark_death=False)
+        self.assertEqual(partial[0]["survival"], "DEAD")
+        self.assertFalse(partial[0]["reproductionEligible"])
+        self.assertIsNone(bots[0].death_date)
+
+        final = aggregate_window_evaluations(bots, batches, c, complete=True, mark_death=True)
+        self.assertEqual(final[0]["survival"], "SURVIVE")
+        self.assertTrue(final[0]["reproductionEligible"])
+        self.assertAlmostEqual(final[0]["windowPnl"], 1.4)
+        self.assertIsNone(bots[0].death_date)
+        self.assertEqual(final[1]["survival"], "DEAD")
+        self.assertFalse(final[1]["reproductionEligible"])
+        self.assertIsNotNone(bots[1].death_date)
+
     def test_elite_preservation_and_dead_parent_exclusion(self):
         c = Config(population_size=20, elite_count=2, parent_fraction=1)
         bots = initial_population(c, random.Random(1), "2024-06-03")
@@ -307,7 +339,8 @@ class PipelineTests(unittest.TestCase):
             root = Path(tmp); data = root/"data"
             dates = list(exchange_sessions("2024-06-03", "2024-06-07"))
             write_fixtures(data, dates)
-            c = Config(population_size=20, train=("2024-06-03", "2024-06-04"),
+            c = Config(population_size=20, evaluation_window_sessions=1,
+                       train=("2024-06-03", "2024-06-04"),
                        validation=("2024-06-05", "2024-06-05"), final_oos=("2024-06-06", "2024-06-07"))
             cfg = root/"config.json"; cfg.write_text(json.dumps(c.snapshot()))
             args = ["--data-dir", str(data), "--results-dir", str(root/"results"), "--symbols", "TQQQ,AAPL",
@@ -329,11 +362,37 @@ class PipelineTests(unittest.TestCase):
             frozen = json.loads((p1/"frozen_population.json").read_text())["population"]
             self.assertEqual(frozen, json.loads((p1/"final_population.json").read_text()))
             self.assertEqual(len(list(p1.glob("generation_*"))), 2)
-            self.assertTrue((p1/"generation_0000/trades.csv").exists())
+            self.assertTrue((p1/"generation_0000_session_01/trades.csv").exists())
             self.assertEqual(before, {p.name: p.read_bytes() for p in data.iterdir()})
             monitor = status(root/"results")
             self.assertEqual(monitor["phase"], "completed")
             self.assertNotIn("inputManifest", monitor)
+
+    def test_default_seven_session_generation_boundary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); data = root/"data"
+            dates = list(exchange_sessions("2024-06-03", "2024-06-11"))
+            self.assertEqual(len(dates), 7)
+            write_fixtures(data, dates)
+            c = Config(population_size=4, evaluation_window_sessions=7,
+                       train=("2024-06-03", "2024-06-11"),
+                       validation=("2024-06-12", "2024-06-12"),
+                       final_oos=("2024-06-13", "2024-06-14"))
+            cfg = root/"config.json"; cfg.write_text(json.dumps(c.snapshot()))
+            args = ["--data-dir", str(data), "--results-dir", str(root/"results"),
+                    "--symbols", "TQQQ,AAPL", "--from-date", dates[0], "--to-date", dates[-1],
+                    "--config", str(cfg), "--provisional", "--data-origin", "synthetic"]
+            with contextlib.redirect_stdout(io.StringIO()):
+                out = main(args)
+            info = json.loads((out/"run.json").read_text())
+            state = json.loads((out/"status.json").read_text())
+            self.assertEqual(info["completedTrainGenerations"], 1)
+            self.assertEqual(info["nextPopulationGeneration"], 1)
+            self.assertEqual(state["evaluationWindowSessions"], 7)
+            self.assertEqual(state["windowSessionsCompleted"], 7)
+            self.assertTrue(state["windowComplete"])
+            self.assertEqual(len(list(out.glob("generation_0000_session_*"))), 7)
+            self.assertTrue((out/"generation_0000_session_07/window_evaluations.json").exists())
 
     def test_missing_benchmark_and_unreviewed_data_fail(self):
         with tempfile.TemporaryDirectory() as tmp:
