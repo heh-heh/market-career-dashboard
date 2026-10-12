@@ -2554,6 +2554,11 @@ class Handler(BaseHTTPRequestHandler):
         import gzip as _gzip
         base = Path(os.getenv("COLLECTION_50_DIR", "/mnt/research/collection-50-v1")).resolve()
         progress_file = base / "_collection_progress.json"
+        if path == "/api/research/collection50/logs":
+            from research.collection_activity import recent
+            self.send_json({"ok": True, "events": recent(base, limit=120),
+                            "retention": "rolling_last_two_segments", "sanitized": True})
+            return
         if path == "/api/research/collection50/status":
             progress = {}
             if progress_file.is_file():
