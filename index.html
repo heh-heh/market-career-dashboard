@@ -39,7 +39,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   </div>
 </section>
 <section id="v2" class="view"><div class="grid"><div class="card"><div class="label">취업시장</div><div id="jobs"></div></div><div class="card"><div class="label">최근 채용시장 관련 정보</div><div id="jobnews"></div></div></div><div class="employment-market-content"><div class="grid"><div class="card"><div class="label">청년 고용 핵심지표 · 통계청</div><div id="employmentStats" class="cards" style="margin-top:12px"></div><div id="employmentPeriod" class="mini" style="margin-top:12px"></div></div><div class="card"><div class="label">취업시장 판단</div><div id="employmentSignal" class="signal">데이터를 불러오는 중...</div></div></div><div class="employment-chart-grid"><div class="card"><div class="label">최근 고용률 · 월별</div><div id="employmentTrend"></div></div><div class="card"><div class="label">청년 고용률 · 연간</div><div id="employmentAnnual"></div></div></div><div class="card" style="margin-top:12px"><div class="label">게임·IT 취업 관점</div><div id="employmentCareer"></div></div><div class="card" style="margin-top:12px"><div class="label">개발 동향</div><div id="trends"></div></div><div class="notice">고용률과 실업률은 통계청 경제활동인구조사 기준입니다. 월별 공식 통계는 발표 시점에 따라 최신 월이 달라질 수 있으며, 아래 수치는 마지막으로 확인된 공식 발표 기준으로 표시합니다.</div></div></section>
-<section id="v5" class="view"><div class="card"><div class="label">채용공고 · 최근 30일 누적 <span class="live">● 1시간 갱신</span></div><div id="jobFilters" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><select id="jobAreaFilter"><option value="">전체 직무</option><option>클라이언트</option><option>백엔드/서버</option><option>프론트엔드</option><option>AI/데이터</option><option>개발</option></select><select id="jobCareerFilter"><option value="">전체 경력</option><option>신입</option><option>인턴</option><option>신입/경력</option><option>경력</option></select><input id="jobSkillFilter" placeholder="기술 스택 검색" style="min-width:180px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e1627;color:var(--text)"></div><div id="jobPostingList"></div></div></section>
+<section id="v5" class="view"><div class="card"><div class="label">채용공고 · 최근 30일 누적 <span class="live">● 업데이트 시 갱신</span></div><p class="mini">개발 직무 중심 필터 · PM·기획·디자인 등 비개발 직군 제외 · 실제 업무는 원문에서 확인</p><div id="jobFilters" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><select id="jobAreaFilter"><option value="">전체 직무</option><option>클라이언트</option><option>백엔드/서버</option><option>프론트엔드</option><option>AI/데이터</option><option>개발</option></select><select id="jobCareerFilter"><option value="">전체 경력</option><option>신입</option><option>인턴</option><option>신입/경력</option><option>경력</option></select><input id="jobSkillFilter" placeholder="기술 스택 검색" style="min-width:180px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0e1627;color:var(--text)"></div><div id="jobPostingList"></div></div></section>
 
 
 <section id="v4" class="view"><div class="grid"><div class="card"><div class="label">신기술 · IT</div><div id="technews"></div></div><div class="card"><div class="label">자동 업데이트</div><div class="signal">시장 데이터는 브라우저에서 주기적으로 갱신하고, 뉴스·취업·개발 데이터는 GitHub Actions가 수집합니다.</div></div></div></section>
@@ -579,7 +579,7 @@ document.addEventListener("click",e=>{
  const stock=e.target.closest(".stock-click[data-symbol]");
  if(stock){openStockBySymbol(stock.dataset.symbol);return;}
  const job=e.target.closest("[data-job-link]");
- if(job){const item=(cached?.jobPostings||[]).find(x=>x.link===job.dataset.jobLink);if(item)openJob(item);return;}
+ if(job){const item=(cached?.jobPostings||[]).find(x=>x.link===job.dataset.jobLink);if(item&&visibleJobArea(item))openJob({...item,area:visibleJobArea(item)});return;}
  const action=e.target.closest("[data-action]");
  if(action?.dataset.action==="close-stock"){closeStock();return;}
  if(action?.dataset.action==="close-job"){closeJob();return;}
@@ -604,6 +604,25 @@ function openStock(s){
 }
 function closeStock(){document.getElementById("stockModal").classList.remove("open");document.body.style.overflow=""}
 
+// Client-side revalidation immediately removes stale mis-tagged jobs from the
+// published JSON; server-side collector applies the same title-first policy.
+function visibleJobArea(job){
+ const t=String(job?.title||"").toLowerCase();
+ if(!t)return null;
+ if(/기획|디자인|디자이너|아티스트|일러스트|원화|모델러|모델링|애니메이터|마케팅|마케터|홍보|프로듀서|사업\s*개발|서비스\s*운영|사업\s*운영|영업|경영\s*지원|채용\s*담당|인사\s*담당|고객\s*지원|\b(?:pm|po|pd|producer|product manager|product owner|project manager|planner|planning|designer|artist|illustrator|animator|modeler|marketing|marketer|recruiter|sales|customer success)\b/i.test(t))return null;
+ const developer=/개발|프로그래머|엔지니어|소프트웨어|클라이언트|게임플레이|게임\s*엔진|\b(?:developer|programmer|engineer|software|devops)\b/i.test(t);
+ if(!developer)return null;
+ if(/서버|백엔드|백\s*엔드|네트워크|인프라|\b(?:backend|back-end|server|devops)\b/i.test(t))return "백엔드/서버";
+ if(/프론트\s*엔드|웹\s*(?:프론트|개발)|\b(?:frontend|front-end)\b/i.test(t))return "프론트엔드";
+ if(/인공지능|머신러닝|딥러닝|데이터\s*(?:엔지니어|사이언티스트|분석)|\b(?:ai|ml|machine learning|data engineer|data scientist)\b/i.test(t))return "AI/데이터";
+ if(/클라이언트|게임플레이|게임\s*엔진|유니티|언리얼|렌더링|그래픽스|\b(?:client|gameplay|unity|unreal|directx|opengl)\b/i.test(t))return "클라이언트";
+ if(/게임|\b(?:game|gaming)\b/i.test(t)&&/c\+\+|c#/i.test(t))return "클라이언트";
+ return "개발";
+}
+function developerJobPostings(items){
+ return (items||[]).map(j=>({item:j,area:visibleJobArea(j)})).filter(x=>x.area).map(x=>({...x.item,area:x.area}));
+}
+
 function jobPostingRow(j,i){
  const source=(j.sources||[]).map(x=>esc(x.site)).filter(Boolean).join(" · ")||esc(j.source||"채용 사이트");
  const skills=(j.skills||[]).slice(0,8).map(x=>'<span class="tag">'+esc(x)+'</span>').join("");
@@ -617,8 +636,8 @@ function openJob(j){
 }
 function closeJob(){document.getElementById("jobModal").classList.remove("open");document.body.style.overflow=""}
 function renderJobPostings(){
- const list=cached?.jobPostings||[], area=document.getElementById("jobAreaFilter")?.value||"", career=document.getElementById("jobCareerFilter")?.value||"", skill=(document.getElementById("jobSkillFilter")?.value||"").toLowerCase();
- const filtered=list.filter(j=>(!area||j.area===area)&&(!career||j.career===career)&&(!skill||(j.skills||[]).some(s=>s.toLowerCase().includes(skill)))).slice(0,100);
+ const list=developerJobPostings(cached?.jobPostings||[]), area=document.getElementById("jobAreaFilter")?.value||"", career=document.getElementById("jobCareerFilter")?.value||"", skill=(document.getElementById("jobSkillFilter")?.value||"").toLowerCase();
+ const filtered=list.filter(j=>(!area||j.area===area)&&(!career||j.career===career)&&(!skill||(j.skills||[]).some(s=>String(s).toLowerCase().includes(skill)))).slice(0,100);
  document.getElementById("jobPostingList").innerHTML='<div class="muted" style="margin-bottom:8px">총 '+filtered.length+'건 · 최근 30일 누적 · 같은 기업의 동일/유사 공고는 여러 사이트에서 하나로 묶습니다.</div>'+filtered.map(jobPostingRow).join("")||'<p class="muted">조건에 맞는 채용공고가 없습니다.</p>';
 }
 function renderEmploymentMarket(d){
@@ -668,7 +687,7 @@ function renderEmploymentMarket(d){
  const signal=youth<45?"현재 청년 고용률이 45% 아래로 내려와 있어 취업 경쟁 환경을 보수적으로 보는 것이 좋습니다.":"청년 고용률은 45% 안팎으로, 채용공고 수와 함께 추세를 보는 것이 적절합니다.";
  document.getElementById("employmentSignal").innerHTML='<b>현재 판단</b><br>'+signal+'<br><br><span class="mini">취업률 하나만으로 취업 난이도를 판단하지 않고, 청년 실업률·채용공고 수·직무별 수요를 함께 봐야 합니다.</span>';
 
- const jobs=d.jobPostings||[];
+ const jobs=developerJobPostings(d.jobPostings||[]);
  const client=jobs.filter(j=>j.area==="클라이언트").length,server=jobs.filter(j=>j.area==="백엔드/서버").length,ai=jobs.filter(j=>j.area==="AI/데이터").length;
  document.getElementById("employmentCareer").innerHTML='<div class="item"><h3>현재 대시보드 채용공고 분포</h3><p>클라이언트 <b>'+client+'건</b> · 백엔드/서버 <b>'+server+'건</b> · AI/데이터 <b>'+ai+'건</b></p></div><div class="item"><h3>게임 개발 취업 전략</h3><p>청년 고용지표가 약한 시기에는 단순 지원 수보다 <b>C++/C#·Unity/Unreal·서버/네트워크</b>처럼 채용공고에서 반복되는 기술 스택을 기준으로 포트폴리오를 맞추는 편이 유리합니다.</p></div>';
 }
