@@ -120,6 +120,27 @@ class WorktreeDeploymentTests(unittest.TestCase):
         self.assertTrue(json.loads((self.layout.state/'control.json').read_text())['paused'])
         self.assertFalse(any(u==d.BROKER and action in ('stop','start','restart','disable') for action,u in self.host.events))
 
+    def test_installed_broker_not_checked_out_is_preserved_absent(self):
+        # Real EC2 runs the standalone broker from /opt, not from this checkout.
+        broker=self.target/'toss_token_broker.py'
+        broker.unlink()
+        txn,plan=self.analyze()
+        self.assertEqual(plan['blocked'], [])
+        self.assertTrue(plan['testsPassed'])
+        self.assertEqual(self.row(plan,'toss_token_broker.py')['action'],'PRESERVE_AUTH')
+        self.assertIsNone(self.row(plan,'toss_token_broker.py')['localSha256'])
+        self.assertFalse((txn/'stage/toss_token_broker.py').exists())
+        self.deploy.apply(txn)
+        self.assertFalse(broker.exists(), 'deployment must not insert auth code into the operational checkout')
+        self.assertFalse(any(u==d.BROKER and action in ('stop','start','restart','disable') for action,u in self.host.events))
+
+    def test_missing_application_auth_remains_blocked(self):
+        (self.target/'toss_auth.py').unlink()
+        txn,plan=self.analyze()
+        self.assertIn('toss_auth.py: MISSING_LOCAL_AUTH',plan['blocked'])
+        self.assertFalse(plan.get('testsPassed',False))
+        self.assertFalse(any(action=='stop' for action,_ in self.host.events))
+
     def test_nonconflicting_local_code_merge_is_tested_and_applied(self):
         p=self.target/'server.py';p.write_text(p.read_text().replace('"local"','"operator"'))
         self.host.validator=lambda stage:self.assertIn('"operator"',(stage/'server.py').read_text())
