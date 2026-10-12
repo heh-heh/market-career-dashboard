@@ -15,7 +15,7 @@ def found(pattern, text):
 # Explicit non-engineering titles take precedence over keywords in descriptions.
 NON_DEVELOPER_TITLE = (
     r"(?:기획자?|기획\s*(?:직|팀|담당|매니저)|"
-    r"디자이너|디자인|아티스트|일러스트|원화가?|모델러|모델링|애니메이터|"
+    r"디자이너|디자인|아티스트|일러스트|원화가?|모델러|모델링|애니메이터|테스터|테스트\s*담당|"
     r"마케터|마케팅|홍보|퍼블리셔|프로듀서|프로덕트\s*매니저|"
     r"프로젝트\s*매니저|사업\s*개발|사업\s*운영|서비스\s*운영|"
     r"커뮤니티\s*매니저|고객\s*지원|고객\s*상담|사무|경영\s*지원|"
@@ -23,7 +23,7 @@ NON_DEVELOPER_TITLE = (
     r"\b(?:pm|po|pd|producer|product manager|product owner|"
     r"project manager|planner|planning|designer|artist|illustrator|"
     r"animator|modeler|marketer|marketing|recruiter|sales|"
-    r"community manager|customer success)\b)"
+    r"community manager|customer success|client success|customer support|manager|qa|tester)\b)"
 )
 # A role term (rather than a framework/library name) is required.
 DEVELOPER_TITLE = (
