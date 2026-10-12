@@ -38,7 +38,11 @@ assert.ok(!server.includes('["reset","--hard"]'),'hard reset must not be exposed
 assert.ok(!server.includes('["clean","-fd"]'),'git clean must not be exposed');
 assert.ok(!server.includes('["switch","-C","strategy-engine-v3"'),'sync must not rewrite local branch history');
 
-assert.match(index,/data-view="v9">연구·데이터/);
+assert.ok(!index.includes('data-view="v9"'),'research-only content is removed from main navigation');
+assert.match(index,/data-view="v4">동향/);
+assert.match(html,/id="console" class="panel"/);
+assert.match(html,/class="console-layout"/);
+assert.ok(html.indexOf('id="consoleOut"')<html.indexOf('id="gitOut"'),'server left, Git right');
 assert.match(index,/data-view="v7">관리자/);
 assert.match(index,/자동 수집 현황은 새 페이지로 통합/);
 assert.ok(!index.includes('id="tickCollectorPhase"'),'duplicate legacy Tick panel removed');
@@ -46,4 +50,4 @@ assert.ok(!index.includes('id="btUniverseCards"'),'duplicate expanded universe p
 assert.match(index,/새 자동 수집 현황 보기/);
 assert.ok(!index.includes('let adminConsoleHistory=[];'),'dead main admin console JS should be removed');
 
-console.log('PASS: central collector admin controls, no legacy start actions, safe merge/deploy, and read-only public collection');
+console.log('PASS: grouped admin navigation, combined console, central collector controls, safe deploy, read-only main');
