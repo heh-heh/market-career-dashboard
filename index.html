@@ -21,7 +21,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style><style>.bt-symbol-pct{font-size:22px;font-weight:900;margin-top:8px;font-variant-numeric:tabular-nums}</style></head>
 <body><div class="app">
 <header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
-<nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업 시장</button><button data-view="v5">채용공고</button><button data-view="v4">IT 동향</button><button data-view="v9">연구·데이터</button><button data-view="v7">관리자</button></nav>
+<nav aria-label="메인 메뉴"><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업 시장</button><button data-view="v5">채용공고</button><button data-view="v4">동향</button><button data-view="v7">관리자</button></nav>
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
   <div class="stock-layout">
@@ -250,7 +250,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     </div>
     <div class="card">
       <div class="label">운영 구조</div>
-      <div class="signal">메인: 시장·취업·연구 현황 조회<br>관리자: 수집 ON/OFF · AI 연구 · 백테스트 · Git/배포 · 서버 제어<br>EC2 API: <b>https://35.79.235.14</b></div>
+      <div class="signal">메인: 종합 · 주식 · 취업 시장 · 채용공고 · 동향<br>관리자: 주식(거래/모의매매/백테스트) · AI 연구 · 관리(콘솔/API/설정) · 데이터(다운로드/수집)<br>EC2 API: <b>https://35.79.235.14</b></div>
     </div>
   </div>
 </section>
@@ -1205,7 +1205,7 @@ function startBacktestMonitor(){
  loadCollection50();
  btTimer=setInterval(()=>{loadV4ResearchMonitor();loadEvolutionMonitor();loadCollection50()},5000);
 }
-document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
+// Research monitors remain available in source but are no longer a public main-menu tab.
 
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 loadData();
