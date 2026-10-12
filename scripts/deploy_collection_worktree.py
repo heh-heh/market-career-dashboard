@@ -365,13 +365,15 @@ class Deployment:
             row.update(change_context(local,old,new,txn))
             data=new
             if name in AUTH:
-                # The standalone broker is installed and started from /opt.
-                # Production checkout may never have contained this file.
-                # Preserve absent broker locally; Host.broker() validates the
-                # installed systemd unit/socket at apply time instead.
+                # Standalone broker may exist only under /opt on EC2. Preserve
+                # its absence in production but stage the committed broker as
+                # an isolated test fixture for integration tests that spawn it.
                 row['action']='PRESERVE_AUTH'; data=local
                 if local is None and name == 'toss_auth.py':
                     blocked.append(name+': MISSING_LOCAL_AUTH')
+                if local is None and name == 'toss_token_broker.py' and new is not None:
+                    row['stageOnly']=True
+                    data=new
             elif new==local: row['action']='UNCHANGED'
             elif new==old: row['action']='PRESERVE_LOCAL'; data=local
             elif new is None:
@@ -386,7 +388,8 @@ class Deployment:
                 if code:
                     row['action']='BLOCKED_CONFLICT';blocked.append(name+': LOCAL_REMOTE_CONFLICT');data=local
                 else: row['action']='MERGED';data=merged
-            row['deployedSha256']=hashes(data); records.append(row)
+            row['deployedSha256']=hashes(local) if row.get('stageOnly') else hashes(data)
+            records.append(row)
             if data is not None: atomic(stage/name,data,0o644)
         # Static test fixtures only, never deployed or read from production data.
         for name in STAGE_ONLY:
@@ -456,7 +459,8 @@ class Deployment:
         for row in plan['files']:
             if not application(row['path']): raise Blocked('UNSAFE_PLAN_PATH')
             if hashes(read(self.layout.target/row['path']))!=row['localSha256']: raise Blocked('LOCAL_FILE_CHANGED: '+row['path'])
-            if hashes(read(txn/'stage'/row['path']))!=row['deployedSha256']: raise Blocked('STAGE_HASH_MISMATCH: '+row['path'])
+            expected_stage = row['sourceSha256'] if row.get('stageOnly') else row['deployedSha256']
+            if hashes(read(txn/'stage'/row['path']))!=expected_stage: raise Blocked('STAGE_HASH_MISMATCH: '+row['path'])
         self.host.validate_stage(txn/'stage',txn/'apply-tests.private.log')
     def remember(self,txn,journal,path,after,mode=0o644,uid=None,gid=None,volatile=False):
         path=safe(path);data=read(path);attrs=attributes(path)
