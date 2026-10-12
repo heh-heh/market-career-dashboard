@@ -529,7 +529,7 @@ function navigateAdmin(name, updateHash=true){
 }
 document.querySelectorAll('#adminGroups [data-group]').forEach(b=>b.onclick=()=>navigateAdmin(adminDefault[b.dataset.group]));
 document.querySelectorAll('#adminSubnav [data-tab]').forEach(b=>b.onclick=()=>navigateAdmin(b.dataset.tab));
-window.addEventListener('hashchange',()=>navigateAdmin(location.hash.slice(1),false));
+if(typeof window!=='undefined')window.addEventListener('hashchange',()=>navigateAdmin(location.hash.slice(1),false));
 
 let apiFeatureState={};
 const apiRiskLabel={high:"높음",medium:"중간",low:"낮음"};
