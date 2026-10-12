@@ -321,46 +321,17 @@
 
   <section id="collectors" class="panel">
     <div class="section-title">데이터 수집 관리</div>
-    <div class="section-subtitle">원본 데이터는 삭제하지 않고 수집 프로세스의 실행 상태와 부팅 자동 실행만 제어합니다.</div>
+    <div class="section-subtitle">중앙 자동 스케줄러만 제어합니다. 정규장 Tick / 장외 분봉은 자동 전환되며 기존 데이터는 보존됩니다.</div>
 
     <div class="card" style="margin-bottom:12px">
       <div class="label">정규장 Tick / 장외 1분봉 · 2026년 10월 → 2000년</div>
       <div id="collectionAutoState" class="signal">상태 확인 중...</div>
-      <div class="actions"><button id="collectionResume" class="primary" disabled>수집 시작</button><button id="collectionPause">수집 일시정지</button><button id="collectionPage">전용 수집 페이지</button></div>
+      <div class="actions"><button id="collectionResume" class="primary" disabled>수집 시작</button><button id="collectionPause">수집 일시정지</button><button id="collectionPage">새 수집 현황</button></div>
       <div class="mini">중앙 scheduler 배포 후 사용 · 독립 worker 시작은 차단됩니다. 운영 데이터 삭제 없음.</div>
     </div>
-    <details><summary>고급 · 기존 서비스 점검 (자동 관리 중 개별 시작 차단)</summary><div class="grid">
-      <div class="card">
-        <div class="label">Toss Raw Tick · 중앙 관리 시 정규장 전용</div>
-        <div id="collectorRawTickState" class="signal">상태 확인 중...</div>
-        <div class="actions">
-          <button data-collector="rawTick" data-action="start" class="primary">시작</button>
-          <button data-collector="rawTick" data-action="stop">중지</button>
-          <button data-collector="rawTick" data-action="restart">재시작</button>
-        </div>
-        <div class="actions">
-          <button data-collector="rawTick" data-action="enable">부팅 자동 ON</button>
-          <button data-collector="rawTick" data-action="disable">부팅 자동 OFF</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="label">Toss 1분봉 · 확장 Universe</div>
-        <div id="collectorOneMinuteState" class="signal">상태 확인 중...</div>
-        <div class="actions">
-          <button data-collector="oneMinute" data-action="start" class="primary">1회 수집 실행</button>
-          <button data-collector="oneMinute" data-action="stop">실행 중지</button>
-          <button data-collector="oneMinute" data-action="restart">다시 실행</button>
-        </div>
-        <div class="actions">
-          <button data-collector="oneMinute" data-action="enable">부팅 자동 ON</button>
-          <button data-collector="oneMinute" data-action="disable">부팅 자동 OFF</button>
-        </div>
-        <div class="mini" style="margin-top:8px">1분봉 수집 서비스는 oneshot입니다. 완료 후 inactive가 되어도 오류가 아닙니다.</div>
-      </div>
-    </div></details>
 
     <div class="card">
-      <div class="label">수집 빠른 점검</div>
+      <div class="label">읽기 전용 서비스 진단</div>
       <div class="actions">
         <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상세 상태</button>
         <button data-cmd="journalctl collect-toss-ticks.service 80">Tick 로그</button>
@@ -380,12 +351,12 @@
         <button data-cmd="df -h /">디스크</button>
         <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
         <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 상태</button>
-        <button data-cmd="systemctl start collect-expanded-universe.service" class="primary">1분봉 1회 실행</button>
-        <button data-cmd="systemctl stop collect-expanded-universe.service">1분봉 중지</button>
+        
+        
         <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상태</button>
-        <button data-cmd="systemctl start collect-toss-ticks.service" class="primary">Tick 시작</button>
-        <button data-cmd="systemctl stop collect-toss-ticks.service">Tick 중지</button>
-        <button data-cmd="systemctl restart collect-toss-ticks.service">Tick 재시작</button>
+        
+        
+        
         <button data-cmd="tail collector 80">수집 로그</button>
         <button data-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
         <button data-cmd="deps status">V4 의존성 확인</button>
@@ -452,6 +423,7 @@ async function authGate(){
     await req("/api/settings");
     document.getElementById("gate").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
+    if(location.hash==="#collectors")document.querySelector('button[data-tab="collectors"]')?.click();
     await loadBacktestEngines();
     await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshGit(),refreshApiFeatures()]);
   }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
@@ -541,24 +513,15 @@ async function pauseCollection(paused){
 }
 document.getElementById("collectionPause").onclick=()=>pauseCollection(true);
 document.getElementById("collectionResume").onclick=()=>pauseCollection(false);
-document.getElementById("collectionPage").onclick=()=>window.open(API+"/api/research/collection50/page",'_blank','noopener');
+document.getElementById("collectionPage").onclick=()=>window.open("./collection.html",'_blank','noopener');
 async function refreshCollectors(){
   refreshCollectionAuto();
   try{
     const d=await req("/api/admin/collectors"); collectorState=d.collectors||{};
-    document.getElementById("collectorRawTickState").innerHTML=collectorText(collectorState.rawTick);
-    document.getElementById("collectorOneMinuteState").innerHTML=collectorText(collectorState.oneMinute);
     setText("collectorMessage","원본 데이터 보존 · 마지막 갱신 "+new Date().toLocaleTimeString());
   }catch(e){setText("collectorMessage","상태 조회 실패: "+e.message);}
 }
-async function controlCollector(key,action){
-  if(action==="stop"&&!confirm("수집 프로세스를 중지할까요? 기존 저장 데이터는 삭제되지 않습니다."))return;
-  try{
-    await req("/api/admin/collectors/control",{method:"POST",body:JSON.stringify({collector:key,action})});
-    await refreshCollectors();
-  }catch(e){alert(e.message);await refreshCollectors();}
-}
-document.querySelectorAll("[data-collector]").forEach(b=>b.onclick=()=>controlCollector(b.dataset.collector,b.dataset.action));
+
 document.getElementById("collectorRefreshBtn").onclick=refreshCollectors;
 
 let aiAdminState={};
