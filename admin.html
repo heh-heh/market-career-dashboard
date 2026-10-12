@@ -16,7 +16,7 @@
 .admin-subnav button{font-size:13px;padding:9px 15px}
 .console-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
 .console-side{min-width:0}.console-side .terminal{min-height:330px;max-height:520px}
-.console-side .card{margin-bottom:12px}.admin-field{display:grid;gap:7px;font-size:13px;color:var(--muted);margin:12px 0}
+.console-side .card{margin-bottom:12px}.console-side .actions button{font-size:12px;padding:8px 10px}.console-side details summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);padding:6px 0}.admin-field{display:grid;gap:7px;font-size:13px;color:var(--muted);margin:12px 0}
 .admin-field input,.admin-field select{width:100%;background:#07111f;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px}
 .admin-help{color:var(--muted);font-size:12px;line-height:1.7}
 #researchExportCenter{min-width:0}
@@ -371,59 +371,68 @@
     <div class="console-layout">
       <div class="console-side" aria-label="서버 콘솔">
         <h3>서버 콘솔</h3>
-    <div class="card">
-      <div class="label">제한형 서버 관리 콘솔</div>
-      <div class="mini">임의 root shell은 노출하지 않습니다. 허용된 서버·Git 관리 명령만 실행됩니다.</div>
-      <div class="actions">
-        <button data-cmd="df -h /">디스크</button>
-        <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
-        <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 상태</button>
-        
-        
-        <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상태</button>
-        
-        
-        
-        <button data-cmd="tail collector 80">수집 로그</button>
-        <button data-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
-        <button data-cmd="deps status">V4 의존성 확인</button>
-        <button data-cmd="deps install" class="primary">V4 의존성 설치</button>
-        <button data-cmd="api status">API 서비스</button>
-        <button data-cmd="api restart" class="primary">API 재시작</button>
-        
-        
-        
-        
-      </div>
-    </div>
-    <div id="consoleOut" class="terminal">관리자 콘솔 준비됨. help 를 입력하세요.</div>
-    <div class="command"><input id="consoleIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="help"><button id="consoleRun" class="primary">실행</button></div>
+        <div class="card">
+          <div class="label">자주 사용하는 서버 점검</div>
+          <div class="actions">
+            <button data-cmd="api status">API 상태</button>
+            <button data-cmd="df -h /">디스크</button>
+            <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
+            <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 상태</button>
+            <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상태</button>
+            <button data-cmd="tail collector 80">수집 로그</button>
+          </div>
+          <details style="margin-top:10px">
+            <summary>고급 서버 관리</summary>
+            <div class="actions">
+              <button data-cmd="systemctl status backtest-v2-tqqq.service">V2 서비스</button>
+              <button data-cmd="deps status">V4 의존성 확인</button>
+              <button data-cmd="deps install" class="primary">V4 의존성 설치</button>
+              <button data-cmd="api restart" class="primary">API 재시작</button>
+            </div>
+          </details>
+        </div>
+        <div id="consoleOut" class="terminal" role="log">관리자 콘솔 준비됨. help 를 입력하세요.</div>
+        <div class="command"><input id="consoleIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="허용된 서버 명령 입력: help"><button id="consoleRun" class="primary">실행</button></div>
       </div>
       <div class="console-side" aria-label="Git 콘솔">
         <h3>Git 콘솔</h3>
-    <div class="card">
-      <div class="label">GitHub 인증</div>
-      <div id="gitStatus" class="signal">상태 확인 중...</div>
-      <div class="field" style="margin-top:10px"><input id="githubToken" type="password" autocomplete="off" placeholder="GitHub fine-grained PAT"></div>
-      <div class="actions"><button id="saveGitToken" class="primary">GitHub 연결 저장</button><button id="disconnectGit" class="danger">연결 제거</button></div>
-      <div class="mini" style="margin-top:8px">토큰은 GitHub Pages나 브라우저 저장소에 저장하지 않고 EC2의 권한 제한 credential 파일에만 저장합니다. 저장소 Contents 권한은 필요한 범위만 부여하세요.</div>
-    </div>
-    <div class="card">
-      <div class="label">Git · 배포 작업</div>
-      <div class="actions">
-        <button data-git="status">status</button><button data-git="log">log</button><button data-git="branches">branch</button><button data-git="diff">diff</button>
-        <button data-git="fetch">fetch</button><button data-git="sync-v3" class="primary">최신 패치 병합</button><button data-git="pull">pull --ff-only</button><button data-git="push">push</button>
-      </div>
-      <div class="field" style="margin-top:10px"><input id="gitMergeRef" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="병합할 ref 예: origin/feature-branch 또는 commit SHA"></div>
-      <div class="actions">
-        <button id="gitMergeRefBtn">지정 Ref 병합</button>
-        <button data-git="merge-abort" class="danger">병합 취소</button>
-        <button data-git="deploy-status">배포 검사</button>
-        <button data-git="deploy-apply" class="primary">의존성 검사 + API 배포</button>
-      </div>
-      <div class="mini" style="margin-top:8px">강제 reset/clean은 제공하지 않습니다. 최신 패치 병합은 fetch 후 현재 로컬 커밋을 보존하는 merge 방식입니다.</div>
-    </div>
-    <div id="gitOut" class="terminal">Git 상태를 불러오는 중...</div>
+        <div class="card">
+          <div class="label">GitHub 연결 상태</div>
+          <div id="gitStatus" class="signal">상태 확인 중...</div>
+          <details style="margin-top:10px">
+            <summary>GitHub 인증 정보 관리</summary>
+            <div class="field" style="margin-top:10px"><input id="githubToken" type="password" autocomplete="off" placeholder="GitHub fine-grained PAT"></div>
+            <div class="actions"><button id="saveGitToken" class="primary">연결 저장</button><button id="disconnectGit" class="danger">연결 제거</button></div>
+            <div class="mini" style="margin-top:8px">GitHub 토큰은 EC2 credential 파일에만 저장합니다.</div>
+          </details>
+        </div>
+        <div class="card">
+          <div class="label">Git · 버전 관리</div>
+          <div class="actions">
+            <button data-git="status">status</button>
+            <button data-git="log">log</button>
+            <button data-git="branches">branch</button>
+            <button data-git="diff">diff</button>
+            <button data-git="fetch">fetch</button>
+            <button data-git="pull">pull --ff-only</button>
+          </div>
+          <details style="margin-top:10px">
+            <summary>고급 Git / 배포 작업</summary>
+            <div class="actions">
+              <button data-git="sync-v3" class="primary">최신 패치 병합</button>
+              <button data-git="push">push</button>
+            </div>
+            <div class="field" style="margin-top:10px"><input id="gitMergeRef" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="병합할 ref 또는 commit SHA"></div>
+            <div class="actions">
+              <button id="gitMergeRefBtn">지정 Ref 병합</button>
+              <button data-git="merge-abort" class="danger">병합 취소</button>
+              <button data-git="deploy-status">배포 검사</button>
+              <button data-git="deploy-apply" class="primary">의존성 검사 + API 배포</button>
+            </div>
+            <div class="mini" style="margin-top:8px">강제 reset/clean 기능은 없습니다. 운영 중 배포는 서버 상태와 충돌 여부를 먼저 확인하세요.</div>
+          </details>
+        </div>
+        <div id="gitOut" class="terminal" role="log">Git 상태를 불러오는 중...</div>
       </div>
     </div>
   </section>
