@@ -365,8 +365,13 @@ class Deployment:
             row.update(change_context(local,old,new,txn))
             data=new
             if name in AUTH:
+                # The standalone broker is installed and started from /opt.
+                # Production checkout may never have contained this file.
+                # Preserve absent broker locally; Host.broker() validates the
+                # installed systemd unit/socket at apply time instead.
                 row['action']='PRESERVE_AUTH'; data=local
-                if local is None: blocked.append(name+': MISSING_LOCAL_AUTH')
+                if local is None and name == 'toss_auth.py':
+                    blocked.append(name+': MISSING_LOCAL_AUTH')
             elif new==local: row['action']='UNCHANGED'
             elif new==old: row['action']='PRESERVE_LOCAL'; data=local
             elif new is None:
