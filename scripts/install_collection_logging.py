@@ -212,11 +212,13 @@ def apply(source, target):
                 continue
             path = target / row["path"]
             metadata = path.stat() if path.exists() else (target / "server.py").stat()
-            write_atomic(path, payload[row["path"]], metadata)
+            # Intent is persisted before replace so an interruption cannot
+            # leave an unjournaled file replacement.
             installed.append(row["path"])
             manifest["phase"] = "INSTALLING"
             manifest["installed"] = installed[:]
             save_manifest(directory, manifest)
+            write_atomic(path, payload[row["path"]], metadata)
         systemctl("restart", SCHEDULER)
         systemctl("restart", API)
         for _ in range(30):
@@ -257,7 +259,26 @@ def rollback(directory, target):
         raise Blocked("TRANSACTION_IDENTITY_MISMATCH")
     if manifest.get("phase") not in ("INSTALLING", "RECOVERY_REQUIRED", "COMMITTED"):
         raise Blocked("TRANSACTION_NOT_APPLIED")
-    check_idle()
+    # Rollback also works when the new API cannot start: consult the on-disk
+    # scheduler status and process list instead of requiring a healthy HTTP API.
+    state_path = Path("/var/lib/market-career-dashboard/collection/status.json")
+    try:
+        state = json.loads(state_path.read_text(encoding="utf8"))
+    except (OSError, ValueError):
+        raise Blocked("ROLLBACK_SCHEDULER_STATUS_UNAVAILABLE")
+    if state.get("mode") != "PAUSED" or state.get("collector"):
+        raise Blocked("ROLLBACK_REQUIRES_PAUSED_SCHEDULER")
+    for proc in Path("/proc").iterdir():
+        if not proc.name.isdecimal() or int(proc.name) == os.getpid():
+            continue
+        try:
+            args = (proc / "cmdline").read_bytes().split(b"\0")
+        except (OSError, PermissionError):
+            continue
+        scripts = [Path(a.decode("utf8", errors="replace")).name for a in args
+                   if a.endswith(b".py")]
+        if any(name in WORKERS or name.startswith(RESEARCH_PREFIXES) for name in scripts):
+            raise Blocked("ROLLBACK_WORKER_STILL_RUNNING pid=" + proc.name)
     # Refuse to trample any edits made since installation.
     for row in manifest["files"]:
         if row["path"] not in manifest.get("installed", []):
