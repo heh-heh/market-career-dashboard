@@ -609,7 +609,7 @@ function closeStock(){document.getElementById("stockModal").classList.remove("op
 function visibleJobArea(job){
  const t=String(job?.title||"").toLowerCase();
  if(!t)return null;
- if(/기획|디자인|디자이너|아티스트|일러스트|원화|모델러|모델링|애니메이터|마케팅|마케터|홍보|프로듀서|사업\s*개발|서비스\s*운영|사업\s*운영|영업|경영\s*지원|채용\s*담당|인사\s*담당|고객\s*지원|\b(?:pm|po|pd|producer|product manager|product owner|project manager|planner|planning|designer|artist|illustrator|animator|modeler|marketing|marketer|recruiter|sales|customer success)\b/i.test(t))return null;
+ if(/기획|디자인|디자이너|아티스트|일러스트|원화|모델러|모델링|애니메이터|테스터|테스트\s*담당|마케팅|마케터|홍보|프로듀서|사업\s*개발|서비스\s*운영|사업\s*운영|영업|경영\s*지원|채용\s*담당|인사\s*담당|고객\s*지원|\b(?:pm|po|pd|producer|product manager|product owner|project manager|planner|planning|designer|artist|illustrator|animator|modeler|marketing|marketer|recruiter|sales|customer success|client success|customer support|manager|qa|tester)\b/i.test(t))return null;
  const developer=/개발|프로그래머|엔지니어|소프트웨어|클라이언트|게임플레이|게임\s*엔진|\b(?:developer|programmer|engineer|software|devops)\b/i.test(t);
  if(!developer)return null;
  if(/서버|백엔드|백\s*엔드|네트워크|인프라|\b(?:backend|back-end|server|devops)\b/i.test(t))return "백엔드/서버";
