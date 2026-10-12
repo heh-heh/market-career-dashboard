@@ -1,21 +1,27 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>자동 수집 현황</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#091120;color:#edf3ff;font:15px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:20px 14px}h1{font-size:25px}h2{font-size:18px;margin:0 0 10px}.card{background:#121e32;border:1px solid #293b58;border-radius:14px;padding:16px;margin:12px 0}.muted{color:#a0b1ce;font-size:13px}.actions,.stats{display:flex;gap:10px;flex-wrap:wrap}button,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #394a68;background:#182944;color:inherit}button{cursor:pointer}button.primary{background:#596bde}button:disabled{opacity:.45;cursor:not-allowed}.stats>div{flex:1;min-width:130px}.value{font-size:21px;font-weight:700}.symbols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.symbol{padding:12px;border:1px solid #293b58;border-radius:10px;overflow-wrap:anywhere}.warn{color:#ffcc75}.error{color:#ff8e98}#message{white-space:pre-wrap}.event-log{background:#070d18;border:1px solid #293b58;border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:350px;min-height:120px;overflow:auto;color:#cfdbed}.event-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}summary{cursor:pointer}a{color:#aebaff}input{max-width:100%}
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#091120;color:#edf3ff;font:15px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:20px 14px}h1{font-size:25px}h2{font-size:18px;margin:0 0 10px}.card{background:#121e32;border:1px solid #293b58;border-radius:14px;padding:16px;margin:12px 0}.muted{color:#a0b1ce;font-size:13px}.actions,.stats{display:flex;gap:10px;flex-wrap:wrap}button,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #394a68;background:#182944;color:inherit}button{cursor:pointer}button.primary{background:#596bde}button:disabled{opacity:.45;cursor:not-allowed}.stats>div{flex:1;min-width:130px}.value{font-size:21px;font-weight:700}.symbols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.symbol{padding:12px;border:1px solid #293b58;border-radius:10px;overflow-wrap:anywhere}.warn{color:#ffcc75}.error{color:#ff8e98}#message{white-space:pre-wrap}.event-log{background:#070d18;border:1px solid #293b58;border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:350px;min-height:120px;overflow:auto;color:#cfdbed}.event-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;align-items:stretch}.overview>.card{margin:0}.overview-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.overview-actions a{display:inline-block;color:#edf3ff;border:1px solid #394a68;background:#596bde;padding:10px;border-radius:9px;text-decoration:none}.overview .stats{gap:12px}.overview .stats>div{min-width:105px}.progress-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}.progress-number{font-size:29px;font-weight:850;color:#dfe6ff;font-variant-numeric:tabular-nums}.progress-track{height:11px;background:#263650;border:1px solid #3a4e70;border-radius:999px;overflow:hidden;margin:9px 0 7px}.progress-track>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6977f0,#5ac9a6);border-radius:999px;transition:width .35s}.symbol-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}.symbol-pct{font-size:20px;font-weight:850;font-variant-numeric:tabular-nums;color:#c6d3ff}.symbol .progress-track{height:9px;margin:9px 0}.progress-note{font-size:12px;color:#a0b1ce;line-height:1.6}summary{cursor:pointer}a{color:#aebaff}input{max-width:100%}@media(max-width:800px){.overview{grid-template-columns:1fr}.overview .stats>div{min-width:88px}}
 </style></head><body><main>
 <h1>자동 수집 현황</h1>
 <p class="muted">1분봉: 2026년 10월 → 2000년 · 기존 50종목 · Tick: 정규장 30종목<br>Tick과 1분봉은 중앙 scheduler가 번갈아 실행합니다. 원본 데이터는 삭제하지 않습니다.</p>
-<div class="card"><h2>조회 전용 · 중앙 자동 수집</h2>
-<div class="actions" style="margin-top:12px"><button id="refresh" type="button">상태 새로고침</button><a href="https://heh-heh.github.io/market-career-dashboard/admin.html#collectors" style="display:inline-block;color:#edf3ff;border:1px solid #394a68;background:#596bde;padding:10px;border-radius:9px;text-decoration:none">관리자 페이지 · 시작/일시정지</a></div>
-<p id="message" class="muted" role="status" aria-live="polite">상태 확인 중...</p></div>
-<div class="card"><h2>자동 전환 상태</h2><div class="stats"><div><span class="muted">현재 모드</span><div id="mode" class="value">-</div></div><div><span class="muted">실행 수집기</span><div id="worker" class="value">-</div></div><div><span class="muted">1분봉 현재 종목</span><div id="current" class="value">-</div></div></div>
+<div class="overview">
+<section class="card"><h2>상태 새로고침</h2><p class="muted">현재 수집 현황을 조회합니다. 시작·일시정지는 관리자 페이지에서만 제어합니다.</p>
+<div class="overview-actions"><button id="refresh" type="button">↻ 지금 새로고침</button><a href="https://heh-heh.github.io/market-career-dashboard/admin.html#collectors">관리자 · 수집 관리</a></div>
+<p id="message" class="muted" role="status" aria-live="polite">상태 확인 중...</p></section>
+<section class="card"><h2>자동 전환 상태</h2><div class="stats"><div><span class="muted">현재 모드</span><div id="mode" class="value">-</div></div><div><span class="muted">실행 수집기</span><div id="worker" class="value">-</div></div><div><span class="muted">1분봉 현재 종목</span><div id="current" class="value">-</div></div></div>
 <p id="clock" class="muted"></p><p id="reason" class="warn"></p>
-<p class="muted">정규장에는 Tick만, 장외에는 1분봉만 실행합니다. 장 시작 90초 전에 REST 요청을 중단하고 worker 종료를 확인한 뒤 전환합니다. 휴장·조기폐장·DST는 시장 캘린더를 따릅니다.</p></div>
-<div class="card"><h2>최근 수집 로그</h2>
+<p class="muted">정규장 Tick ↔ 장외 1분봉 자동 전환 · 휴장·조기폐장·DST 시장 캘린더 반영 · 장 시작 전 안전 중지</p></section>
+</div>
+<section class="card"><div class="progress-head"><div><h2>1분봉 수집 · 전체 탐색 진행률</h2><div class="muted">50종목 기준 · 과거 구간 탐색률 평균</div></div><div id="overallPct" class="progress-number" aria-live="polite">0.0%</div></div>
+<div id="overallTrack" class="progress-track" role="progressbar" aria-label="전체 종목 과거 기간 탐색 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="overallBar"></span></div>
+<p id="summary" class="muted"></p>
+<p class="progress-note">퍼센트는 각 종목의 과거 조회 커서가 2000년부터 현재까지의 시간 범위에서 얼마나 이동했는지를 뜻합니다. <b>실제 저장 봉 수·결측 복구율·정규장 390봉 완전성은 의미하지 않습니다.</b> 미래 데이터는 진행률 계산에서 제외합니다.</p>
+<div id="symbols" class="symbols"></div></section>
+<section class="card"><h2>최근 수집 로그</h2>
 <div class="event-meta"><p id="logSummary" class="muted">로그를 불러오는 중...</p><p class="muted">5초 자동 갱신 · 서버에 보관된 최근 기록 · 인증정보 제외</p></div>
 <pre id="logEvents" class="event-log" aria-live="off">로그를 불러오는 중...</pre>
-<p class="muted">모드 변경, Tick 연결 상태, 분봉 저장, 오류를 기록합니다. 최근 로그는 용량 제한에 따라 오래된 기록부터 교체됩니다.</p></div>
-<div class="card"><h2>1분봉 수집 진행</h2><p id="summary" class="muted"></p><div id="symbols" class="symbols"></div></div>
+<p class="muted">모드 변경, Tick 연결 상태, 분봉 저장, 오류를 기록합니다. 최근 로그는 용량 제한에 따라 오래된 기록부터 교체됩니다.</p></section>
 <details class="card"><summary>수집 한계 / 연구 데이터 보호</summary><p class="muted">2000~2026년 10월은 요청 범위입니다. 상장 이전 데이터나 Toss가 제공하지 않는 과거 데이터는 만들지 않습니다. 현재 이후의 10월 데이터도 미리 생성하지 않습니다. 누락일과 API 한계는 미검증으로 기록합니다.<br>2026 수집은 허용하지만 AI 연구·학습의 Final OOS gate는 CLOSED입니다. 연구 다운로드는 기존 2022~2025 범위를 유지합니다. Raw Tick은 LOSSY이며 완전한 거래소 tape가 아닙니다.</p></details>
 </main><script>
 'use strict';
@@ -23,6 +29,21 @@
 const BASE=location.pathname.startsWith('/api/')?'':'https://35.79.235.14';
 const el=id=>document.getElementById(id),text=(id,v)=>{const node=el(id);if(node)node.textContent=v};
 const esc=v=>String(v??'-').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Cursor-traversal progress only. A completed cursor is NOT verified candle coverage.
+const EXPECTED_SYMBOLS=50;
+function traversalPct(row,from,to){
+  if(!(Number.isFinite(from)&&Number.isFinite(to)&&to>from))return 0;
+  if(typeof row.historyCursor!=='string'||!row.historyCursor)return 0;
+  const cursor=Date.parse(row.historyCursor);
+  if(!Number.isFinite(cursor))return 0;
+  return Math.round(Math.max(0,Math.min(100,(to-cursor)/(to-from)*100))*10)/10;
+}
+function progressRange(data,now=Date.now()){
+  const from=Date.parse((data.collectionFrom||'2000-01-01')+'T00:00:00Z');
+  const last=Date.parse((data.collectionTo||'2026-10-31')+'T23:59:59Z');
+  return {from,to:Math.min(now,last)};
+}
+function progressTrack(id,pct){const track=el(id);track.setAttribute('aria-valuenow',String(pct));}
 async function refresh(){
  try{
   const r=await fetch(BASE+'/api/research/collection50/status',{cache:'no-store'});
@@ -33,8 +54,20 @@ async function refresh(){
   text('current',d.currentSymbol||'-');
   text('clock','ET '+(s.etTime||'-')+' · KST '+(s.kstTime||'-')+' · 정규장 '+(s.openAt||'-')+' ~ '+(s.closeAt||'-'));
   text('reason',s.reason||'');
-  text('summary',rows.length+'종목 상태 · 총 '+rows.reduce((n,r)=>n+(Number(r.stored)||0),0).toLocaleString()+'봉 · '+(d.collectionFrom||'2000-01-01')+' ~ '+(d.collectionTo||'2026-10-31')+' · 최신→과거');
-  el('symbols').innerHTML=rows.map(r=>'<div class="symbol"><b>'+esc(r.symbol)+'</b> · '+esc(r.status)+'<br>'+Number(r.stored||0).toLocaleString()+'봉 · 요청 '+Number(r.restRequests||0)+'회<br><span class="muted">최신 '+esc(r.latestTimestamp)+'<br>최초 '+esc(r.oldestTimestamp)+'<br>다음 과거 cursor '+esc(r.historyCursor)+'<br>검증된 거래일 '+Number(r.verifiedTradingDays||0)+' · 누락 '+Number(r.missingTradingDays||0)+'<br>'+esc(r.errorCode||r.terminationReason||'')+'</span></div>').join('')||'<p class="muted">수집 시작 후 종목별 상태가 표시됩니다.</p>';
+  const range=progressRange(d),denom=Math.max(EXPECTED_SYMBOLS,rows.length);
+  const percentBySymbol=rows.map(r=>({row:r,pct:traversalPct(r,range.from,range.to)}));
+  const overall=Math.round(percentBySymbol.reduce((sum,x)=>sum+x.pct,0)/denom*10)/10;
+  text('overallPct',overall.toFixed(1)+'%');
+  el('overallBar').style.width=overall+'%';
+  progressTrack('overallTrack',overall);
+  text('summary',rows.length+'/'+denom+'종목 상태 · 누적 '+rows.reduce((n,r)=>n+(Number(r.stored)||0),0).toLocaleString()+'봉 · '+(d.collectionFrom||'2000-01-01')+' ~ '+(d.collectionTo||'2026-10-31')+' · 최신→과거');
+  el('symbols').innerHTML=percentBySymbol.map(({row:r,pct})=>{
+   const status=r.status||'대기';
+   return '<div class="symbol"><div class="symbol-head"><b>'+esc(r.symbol)+'</b><span class="symbol-pct">'+pct.toFixed(1)+'%</span></div>'+
+     '<div class="progress-track" role="progressbar" aria-label="'+esc(r.symbol)+' 과거 기간 탐색 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+pct+'"><span style="width:'+pct+'%"></span></div>'+
+     '<div class="progress-note">기간 탐색률 · '+esc(status)+'</div>'+
+     '<div class="muted">'+Number(r.stored||0).toLocaleString()+'봉 저장 · 요청 '+Number(r.restRequests||0)+'회<br>최신 '+esc(r.latestTimestamp)+'<br>최초 '+esc(r.oldestTimestamp)+'<br>다음 과거 cursor '+esc(r.historyCursor)+'<br>검증된 거래일 '+Number(r.verifiedTradingDays||0)+' · 누락 '+Number(r.missingTradingDays||0)+'<br>'+esc(r.errorCode||r.terminationReason||'')+'</div></div>';
+  }).join('')||'<p class="muted">수집 시작 후 종목별 진행률이 표시됩니다.</p>';
   text('message',s.stale?'상태가 오래되었습니다. 관리자 페이지에서 확인하세요.':'자동 갱신 5초 · 제어 버튼은 관리자 페이지에만 있습니다.');
  }catch(e){text('message','수집 API 연결 실패: '+String(e.message||e))}
 }
