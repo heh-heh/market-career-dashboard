@@ -487,7 +487,7 @@ async function authGate(){
     await req("/api/settings");
     document.getElementById("gate").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
-    if(location.hash==="#collectors")document.querySelector('button[data-tab="collectors"]')?.click();
+    navigateAdmin((location.hash||"#trade").slice(1), false);
     await loadBacktestEngines();
     await Promise.allSettled([refreshTrade(),refreshPaper(),refreshSimpleBacktest(),refreshGit(),refreshApiFeatures()]);
   }catch(e){localStorage.removeItem(TOKEN_KEY);deny("로그인 세션이 없거나 만료되었습니다. 메인 설정 탭에서 다시 로그인하세요.");}
@@ -495,17 +495,41 @@ async function authGate(){
 function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
 document.getElementById("logoutBtn").onclick=async()=>{try{await req("/api/logout",{method:"POST",body:"{}"})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.href="./";};
 
-document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
-  document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));
-  document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===b.dataset.tab));
-  if(b.dataset.tab==="trade")refreshTrade();
-  if(b.dataset.tab==="paper")refreshPaper();
-  if(b.dataset.tab==="backtest")refreshSimpleBacktest();
-  if(b.dataset.tab==="ai")refreshAI();
-  if(b.dataset.tab==="api")refreshApiFeatures();
-  if(b.dataset.tab==="collectors")refreshCollectors();
-  if(b.dataset.tab==="git")refreshGit();
-});
+const adminGroups={stocks:['trade','paper','backtest'],ai:['ai'],manage:['console','api','settings'],data:['downloads','collectors']};
+const adminDefault={stocks:'trade',ai:'ai',manage:'console',data:'downloads'};
+let currentAdminGroup='stocks';
+function navigateAdmin(name, updateHash=true){
+ const sub=document.querySelector('[data-tab="'+name+'"]');
+ if(!sub)name='trade';
+ const button=document.querySelector('[data-tab="'+name+'"]');
+ const group=button.dataset.parent;
+ currentAdminGroup=group;
+ document.querySelectorAll('[data-group]').forEach(b=>{
+  const active=b.dataset.group===group;
+  b.classList.toggle('active',active);
+  b.setAttribute('aria-current',active?'page':'false');
+ });
+ document.querySelectorAll('#adminSubnav [data-tab]').forEach(b=>{
+  b.hidden=b.dataset.parent!==group;
+  const active=b.dataset.tab===name;
+  b.classList.toggle('active',active);
+  b.setAttribute('aria-current',active?'page':'false');
+ });
+ document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id===name));
+ if(updateHash&&location.hash!=='#'+name)history.replaceState(null,'','#'+name);
+ if(name==='trade')refreshTrade();
+ if(name==='paper')refreshPaper();
+ if(name==='backtest')refreshSimpleBacktest();
+ if(name==='ai')refreshAI();
+ if(name==='console')refreshGit();
+ if(name==='api')refreshApiFeatures();
+ if(name==='settings')refreshCredentials();
+ if(name==='downloads')refreshCollectionSymbols();
+ if(name==='collectors')refreshCollectors();
+}
+document.querySelectorAll('#adminGroups [data-group]').forEach(b=>b.onclick=()=>navigateAdmin(adminDefault[b.dataset.group]));
+document.querySelectorAll('#adminSubnav [data-tab]').forEach(b=>b.onclick=()=>navigateAdmin(b.dataset.tab));
+window.addEventListener('hashchange',()=>navigateAdmin(location.hash.slice(1),false));
 
 let apiFeatureState={};
 const apiRiskLabel={high:"높음",medium:"중간",low:"낮음"};
@@ -1029,6 +1053,78 @@ document.getElementById("gitMergeRefBtn").onclick=()=>{
   gitAction("merge-ref",ref);
 };
 
+
+// Settings: only explicitly entered secrets are sent; saved keys never leave EC2.
+const AWS_API_BASE=API;
+function settingsHeaders(){
+ const auth=token();
+ return auth?{'Content-Type':'application/json',Authorization:'Bearer '+auth}:{'Content-Type':'application/json'};
+}
+async function refreshCredentials(){
+ try{
+  const d=await req('/api/settings'),p=d.providers||{};
+  setText('credentialsStatus','Toss: '+(p.toss?.configured?'설정됨':'미설정')+' · 기타 API: '+(p.generic?.configured?'설정됨':'미설정')+' · 저장된 키는 표시하지 않습니다.');
+ }catch(e){setText('credentialsStatus','설정 조회 오류: '+e.message);}
+}
+document.getElementById('credentialsRefresh').onclick=refreshCredentials;
+document.getElementById('credentialsForm').onsubmit=async e=>{
+ e.preventDefault();
+ const fields=[
+  ['tossAppKey','toss','app_key'],['tossAppSecret','toss','app_secret'],['genericApiKey','generic','api_key']
+ ];
+ const body={};
+ for(const [id,provider,key] of fields){
+  const value=document.getElementById(id).value.trim();
+  if(value){(body[provider]??={})[key]=value;}
+ }
+ if(!Object.keys(body).length)return setText('credentialsStatus','입력한 키가 없습니다. 기존 설정은 유지됩니다.');
+ if(!confirm('입력한 API 인증정보를 변경할까요? 잘못 변경하면 데이터 연결에 영향을 줄 수 있습니다.'))return;
+ const btn=document.getElementById('credentialsSave');btn.disabled=true;
+ try{
+  await req('/api/settings',{method:'POST',body:JSON.stringify(body)});
+  for(const [id] of fields)document.getElementById(id).value='';
+  await refreshCredentials();
+ }catch(err){setText('credentialsStatus','저장 실패: '+err.message);}
+ finally{btn.disabled=false;}
+};
+document.getElementById('collectionViewLink').onclick=()=>location.href='./collection.html';
+document.getElementById('collectionManageLink').onclick=()=>navigateAdmin('collectors');
+let collectionOptionsFetched=false;
+async function refreshCollectionSymbols(){
+ if(collectionOptionsFetched)return;
+ try{
+  const d=await req('/api/research/collection50/status');
+  const select=document.getElementById('collectionDownloadSymbol');
+  select.replaceChildren();
+  for(const row of d.symbols||[]){
+   if(!/^[A-Z0-9]{1,8}$/.test(row.symbol))continue;
+   const option=document.createElement('option');
+   option.value=row.symbol;option.textContent=row.symbol+(row.downloadAvailable?'':' · 자료 미확인');
+   option.disabled=!row.downloadAvailable;
+   select.append(option);
+  }
+  collectionOptionsFetched=true;
+  setText('collectionDownloadStatus',select.options.length+'종목 조회 완료 · 연구 다운로드는 2022~2025 전용');
+ }catch(e){setText('collectionDownloadStatus','종목 조회 실패: '+e.message);}
+}
+document.getElementById('collectionDownloadRefresh').onclick=()=>{collectionOptionsFetched=false;refreshCollectionSymbols();};
+document.getElementById('collectionDownloadBtn').onclick=async()=>{
+ const symbol=document.getElementById('collectionDownloadSymbol').value;
+ const year=document.getElementById('collectionDownloadYear').value;
+ if(!/^[A-Z0-9]{1,8}$/.test(symbol)||!/^202[2-5]$/.test(year))return setText('collectionDownloadStatus','종목과 연도(2022~2025)를 선택하세요.');
+ const btn=document.getElementById('collectionDownloadBtn');btn.disabled=true;
+ setText('collectionDownloadStatus',symbol+' · '+year+' 데이터 요청 중...');
+ try{
+  const res=await fetch(API+'/api/research/collection50/download/'+symbol+'?year='+year,{cache:'no-store',headers:{Authorization:'Bearer '+token()}});
+  if(!res.ok){const d=await res.json().catch(()=>({}));throw Error(d.reason||d.error||'HTTP '+res.status);}
+  const blob=await res.blob(),url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download=symbol+'-'+year+'-research.csv.gz';
+  document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+  setText('collectionDownloadStatus',symbol+' · '+year+' 다운로드 요청 완료 · 검증되지 않은 연구 데이터');
+ }catch(e){setText('collectionDownloadStatus','다운로드 실패: '+e.message);}
+ finally{btn.disabled=false;}
+};
+
 authGate();
 setInterval(()=>{
   if(document.getElementById("app").classList.contains("hidden"))return;
@@ -1039,5 +1135,6 @@ setInterval(()=>{
   if(document.getElementById("collectors").classList.contains("active"))refreshCollectors();
 },5000);
 </script>
+<script src="research-export.js"></script>
 </body>
 </html>
