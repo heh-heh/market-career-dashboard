@@ -39,6 +39,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from toss_auth import get_token as shared_toss_token
+from research.collection_activity import emit as emit_collection_event
 
 SECRETS = ROOT / "server_secrets.json"
 UNIVERSE = ROOT / "research" / "universe_v3.json"
@@ -284,9 +285,16 @@ def write_status(**values) -> None:
             current = json.loads(STATUS_PATH.read_text(encoding="utf-8"))
         except Exception:
             current = {}
+    previous_state = current.get("state")
     current.update(values)
     current["updatedAt"] = utc_now_iso()
     atomic_json(STATUS_PATH, current)
+    next_state = values.get("state")
+    allowed = {"waiting_for_market_open", "opening_market_session", "connecting",
+               "collecting", "reconnecting", "paused_low_disk", "compressing", "stopped"}
+    if next_state in allowed and next_state != previous_state:
+        emit_collection_event(Path(os.getenv("COLLECTION_50_DIR", "/mnt/research/collection-50-v1")),
+                              "TICK_STATE", code=next_state)
 
 
 def disk_free_gb(path: Path) -> float:
