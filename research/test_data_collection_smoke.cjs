@@ -8,7 +8,9 @@ const admin=fs.readFileSync(path.join(root,'admin.html'),'utf8');
 for(const html of [index,collection,admin])
  for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))
   new vm.Script(m[1]);
-assert.match(index,/data-view="v9">연구·데이터/);
+assert.ok(!index.includes('data-view="v9"'),'main nav must hide internal research tab');
+assert.match(admin,/id="researchExportCenter"/);
+assert.match(admin,/id="downloads" class="panel"/);
 assert.match(index,/통합 자동 수집/);
 assert.match(index,/id="collection50Summary"/);
 assert.match(index,/id="collectionScheduler"/);
