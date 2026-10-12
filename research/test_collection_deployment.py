@@ -206,6 +206,17 @@ class CollectionPageTests(unittest.TestCase):
                         value=json.load(response)
                         self.assertEqual(value['collectionTo'],'2026-10-31')
                         self.assertEqual(value['finalOosGate'],'CLOSED')
+                    from research.collection_activity import emit
+                    with patch.dict(os.environ, {'COLLECTION_50_DIR': str(state)}):
+                        self.assertTrue(emit(state, 'CANDLE_PAGE', symbol='AAPL', page=5, added=42, stored=500,
+                                             authorization='Bearer private'))
+                        with request('/api/research/collection50/logs') as response:
+                            self.assertEqual(response.headers['Cache-Control'], 'no-store')
+                            result = json.load(response)
+                            self.assertTrue(result['ok'])
+                            self.assertEqual(result['events'][-1]['symbol'], 'AAPL')
+                            self.assertEqual(result['events'][-1]['added'], 42)
+                            self.assertNotIn('private', json.dumps(result))
                     scheduler.save(state/'status.json',{'mode':'PAUSED','automatic':False,'updatedAt':datetime.now(timezone.utc).isoformat()})
                     with self.assertRaises(HTTPError) as exc:request('/api/research/collection50/control',True,{'paused':False})
                     self.assertEqual(exc.exception.code,409)
