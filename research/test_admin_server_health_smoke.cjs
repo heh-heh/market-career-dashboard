@@ -46,7 +46,7 @@ new vm.Script(html.slice(start,end)).runInContext(ctx);
  assert.equal(calls[0][1],undefined,'read-only GET');
  assert.match(nodes.healthStats.innerHTML,/75\.5%/);
  assert.match(nodes.healthStats.innerHTML,/62\.0%/);
- assert.match(nodes.healthStats.innerHTML,/100000/);
+ assert.match(nodes.healthStats.innerHTML,/1일 3시간 46분/);
  assert.match(nodes.healthDisks.innerHTML,/\/mnt\/research/);
  assert.match(nodes.healthDisks.innerHTML,/\/dev\/nvme1n1/);
  assert.match(nodes.healthDevices.innerHTML,/nvme1n1/);
