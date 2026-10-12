@@ -129,7 +129,9 @@ class WorktreeDeploymentTests(unittest.TestCase):
         self.assertTrue(plan['testsPassed'])
         self.assertEqual(self.row(plan,'toss_token_broker.py')['action'],'PRESERVE_AUTH')
         self.assertIsNone(self.row(plan,'toss_token_broker.py')['localSha256'])
-        self.assertFalse((txn/'stage/toss_token_broker.py').exists())
+        self.assertTrue(self.row(plan,'toss_token_broker.py')['stageOnly'])
+        self.assertEqual((txn/'stage/toss_token_broker.py').read_bytes(),
+                         (self.source/'toss_token_broker.py').read_bytes())
         self.deploy.apply(txn)
         self.assertFalse(broker.exists(), 'deployment must not insert auth code into the operational checkout')
         self.assertFalse(any(u==d.BROKER and action in ('stop','start','restart','disable') for action,u in self.host.events))
