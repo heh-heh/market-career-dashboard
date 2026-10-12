@@ -20,6 +20,21 @@
 .admin-field input,.admin-field select{width:100%;background:#07111f;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px}
 .admin-help{color:var(--muted);font-size:12px;line-height:1.7}
 #researchExportCenter{min-width:0}
+.health-toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:12px 0}.health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.health-stat{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.health-stat .value{font-size:24px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.health-meter{height:9px;background:#253652;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.health-meter span{display:block;height:100%;background:#7c8cff;border-radius:99px;transition:width .3s}
+.health-meter span.warning{background:#f0b84b}.health-meter span.danger{background:#ff667a}
+.health-table{overflow:auto;max-width:100%}.health-table table{border-collapse:collapse;width:100%;min-width:620px;font-size:13px}
+.health-table th,.health-table td{text-align:left;padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.health-table td{font-variant-numeric:tabular-nums}
+.health-services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.health-service{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#0b1527;border:1px solid var(--line);border-radius:10px;padding:11px;min-width:0}
+.health-service span:first-child{overflow-wrap:anywhere}
+@media(max-width:850px){.health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.health-grid,.health-services{grid-template-columns:1fr}}
+
 @media(max-width:850px){.console-layout{grid-template-columns:1fr}.console-side .terminal{max-height:360px}}
 @media(max-width:520px){.admin-groups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.admin-groups button{min-width:0;padding:11px 4px;font-size:13px}.admin-subnav button{flex:1 1 auto}.console-side .terminal{min-height:250px}}
 </style>
@@ -50,6 +65,7 @@
     <button data-tab="backtest" data-parent="stocks" type="button">백테스트</button>
     <button data-tab="ai" data-parent="ai" type="button" hidden>연구</button>
     <button data-tab="console" data-parent="manage" type="button" hidden>콘솔</button>
+    <button data-tab="status" data-parent="manage" type="button" hidden>서버 상태</button>
     <button data-tab="api" data-parent="manage" type="button" hidden>API 관리</button>
     <button data-tab="settings" data-parent="manage" type="button" hidden>설정</button>
     <button data-tab="downloads" data-parent="data" type="button" hidden>다운로드 센터</button>
@@ -365,6 +381,28 @@
     </div>
   </section>
 
+  <section id="status" class="panel">
+    <div class="section-title">서버 상태 모니터</div>
+    <div class="section-subtitle">EC2 서버의 실제 시스템 사용량 · 읽기 전용 · 관리자 인증 필수</div>
+    <div class="health-toolbar"><div id="healthUpdated" class="mini" role="status">서버 정보 조회 대기</div><button id="healthRefresh" type="button">상태 새로고침</button></div>
+    <div id="healthAlerts" class="signal" role="status">CPU, 메모리, 저장장치, 서비스 상태를 조회합니다.</div>
+    <div id="healthStats" class="health-grid" style="margin:14px 0">
+      <div class="health-stat"><div class="label">CPU 사용률</div><div class="value">-</div></div>
+      <div class="health-stat"><div class="label">메모리</div><div class="value">-</div></div>
+      <div class="health-stat"><div class="label">서버 가동 시간</div><div class="value">-</div></div>
+    </div>
+    <div class="card"><div class="label">연결된 디스크 · 모든 로컬 마운트</div>
+      <div id="healthDisks" class="health-table" style="margin-top:10px">디스크 목록을 불러오는 중...</div>
+      <details style="margin-top:10px"><summary>블록 장치 · 미마운트 디스크 포함</summary>
+        <div id="healthDevices" class="health-table" style="margin-top:10px">디스크 장치를 불러오는 중...</div>
+      </details>
+      <div class="mini" style="margin-top:10px">표시되는 용량은 운영체제에서 인식한 실제 크기입니다. AWS EBS 크레딧/IOPS는 별도 CloudWatch 지표가 필요합니다.</div>
+    </div>
+    <div class="card"><div class="label">주요 서비스</div>
+      <div id="healthServices" class="health-services" style="margin-top:10px">서비스 상태를 불러오는 중...</div>
+      <div class="mini" style="margin-top:10px">수집기가 의도적으로 중지된 경우 'inactive'는 장애가 아닐 수 있습니다. 이 화면에서 서비스를 시작하거나 중지하지 않습니다.</div>
+    </div>
+  </section>
   <section id="console" class="panel">
     <div class="section-title">통합 운영 콘솔</div>
     <div class="section-subtitle">왼쪽은 서버 점검 · 오른쪽은 GitHub/Git 관리입니다. 각 실행 결과는 분리해서 표시됩니다.</div>
@@ -375,7 +413,9 @@
           <div class="label">자주 사용하는 서버 점검</div>
           <div class="actions">
             <button data-cmd="api status">API 상태</button>
-            <button data-cmd="df -h /">디스크</button>
+            <button data-cmd="df -h">전체 디스크</button>
+            <button data-cmd="lsblk">블록 디스크</button>
+            <button id="openHealthFromConsole" type="button">서버 상태 대시보드</button>
             <button data-cmd="du -sh data/toss_1m">수집 데이터</button>
             <button data-cmd="systemctl status collect-expanded-universe.service">1분봉 상태</button>
             <button data-cmd="systemctl status collect-toss-ticks.service">Tick 상태</button>
@@ -505,7 +545,7 @@ async function authGate(){
 function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
 document.getElementById("logoutBtn").onclick=async()=>{try{await req("/api/logout",{method:"POST",body:"{}"})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.href="./";};
 
-const adminGroups={stocks:['trade','paper','backtest'],ai:['ai'],manage:['console','api','settings'],data:['downloads','collectors']};
+const adminGroups={stocks:['trade','paper','backtest'],ai:['ai'],manage:['console','status','api','settings'],data:['downloads','collectors']};
 const adminDefault={stocks:'trade',ai:'ai',manage:'console',data:'downloads'};
 let currentAdminGroup='stocks';
 function navigateAdmin(name, updateHash=true){
@@ -532,6 +572,7 @@ function navigateAdmin(name, updateHash=true){
  if(name==='backtest')refreshSimpleBacktest();
  if(name==='ai')refreshAI();
  if(name==='console')refreshGit();
+ if(name==='status')refreshServerStatus();
  if(name==='api')refreshApiFeatures();
  if(name==='settings')refreshCredentials();
  if(name==='downloads')refreshCollectionSymbols();
@@ -1063,6 +1104,88 @@ document.getElementById("gitMergeRefBtn").onclick=()=>{
   gitAction("merge-ref",ref);
 };
 
+
+// Authenticated read-only server health monitor. Values originate from the
+// local Linux host; no AWS API, shell input, trading or collector controls.
+let healthRefreshing=false;
+function healthBytes(value){
+ const n=Number(value);
+ if(value==null||!Number.isFinite(n)||n<0)return '—';
+ const units=['B','KiB','GiB','TiB'];
+ if(n<1024)return Math.round(n)+' B';
+ if(n<1024*1024)return (n/1024).toFixed(1)+' KiB';
+ if(n<1024*1024*1024)return (n/(1024*1024)).toFixed(1)+' MiB';
+ if(n<1024**4)return (n/(1024**3)).toFixed(2)+' GiB';
+ return (n/(1024**4)).toFixed(2)+' TiB';
+}
+function healthPercent(value){
+ if(value==null)return null;
+ const n=Number(value);
+ return Number.isFinite(n)?Math.max(0,Math.min(100,n)):null;
+}
+function healthCard(label,value,pct,detail=''){
+ const p=healthPercent(pct);
+ const tone=p!=null&&p>=90?'danger':p!=null&&p>=80?'warning':'';
+ const meter=p==null?'':('<div class="health-meter"><span class="'+tone+'" style="width:'+p+'%"></span></div>');
+ return '<div class="health-stat"><div class="label">'+esc(label)+'</div><div class="value">'+esc(value)+'</div>'+
+ meter+'<div class="mini">'+esc(detail)+'</div></div>';
+}
+const healthServiceLabels={
+ 'market-career-dashboard.service':'대시보드 API',
+ 'research-collection-scheduler.service':'자동 수집 스케줄러',
+ 'toss-token-broker.service':'Toss 토큰 브로커',
+ 'collect-toss-ticks.service':'기존 Tick 수집기',
+ 'collect-expanded-universe.service':'기존 1분봉 수집기'
+};
+async function refreshServerStatus(){
+ if(healthRefreshing||!token())return;
+ healthRefreshing=true;
+ const btn=document.getElementById('healthRefresh');
+ btn.disabled=true;
+ try{
+  const d=await req('/api/admin/server-health');
+  if(!d.ok)throw Error(d.error||'서버 상태 조회 실패');
+  const c=d.cpu||{},m=d.memory||{};
+  const cpu=healthPercent(c.usedPct),ram=healthPercent(m.usedPct),swap=healthPercent(m.swapUsedPct);
+  const uptime=Number(d.uptimeSeconds);
+  const duration=Number.isFinite(uptime)&&uptime>=0?(Math.floor(uptime/86400)+'일 '+Math.floor(uptime%86400/3600)+'시간 '+Math.floor(uptime%3600/60)+'분'):'—';
+  const load=Array.isArray(c.loadAverage)?c.loadAverage.map(x=>Number(x).toFixed(2)).join(' / '):'—';
+  const cards=[
+   healthCard('CPU 사용률',cpu==null?'—':cpu.toFixed(1)+'%',cpu,'논리 CPU '+(c.cores??'—')+'개 · 0.15초 샘플'),
+   healthCard('RAM 메모리',ram==null?'—':ram.toFixed(1)+'%',ram,healthBytes(m.usedBytes)+' / '+healthBytes(m.totalBytes)+' · 사용 가능 '+healthBytes(m.availableBytes)),
+   healthCard('스왑',swap==null?'사용 안 함':swap.toFixed(1)+'%',swap,healthBytes(m.swapUsedBytes)+' / '+healthBytes(m.swapTotalBytes)),
+   healthCard('CPU Load Average',load,null,'1분 / 5분 / 15분 · 논리 CPU '+(c.cores??'—')+'개'),
+   healthCard('서버 가동 시간',duration,null,'OS 부팅 후 경과 시간'),
+   healthCard('네트워크 (부팅 후)',healthBytes(d.network?.receivedBytes),null,'수신 '+healthBytes(d.network?.receivedBytes)+' · 송신 '+healthBytes(d.network?.sentBytes)),
+  ];
+  document.getElementById('healthStats').innerHTML=cards.join('');
+  const disks=Array.isArray(d.mounts)?d.mounts:[];
+  document.getElementById('healthDisks').innerHTML=disks.length?
+   '<table><thead><tr><th>마운트</th><th>장치</th><th>전체</th><th>사용</th><th>여유</th><th>사용률</th></tr></thead><tbody>'+
+   disks.map(x=>'<tr><td>'+esc(x.mount)+'</td><td>'+esc(x.device)+'</td><td>'+healthBytes(x.totalBytes)+'</td><td>'+healthBytes(x.usedBytes)+'</td><td>'+healthBytes(x.availableBytes)+'</td><td>'+esc(x.usedPct)+'%</td></tr>').join('')+'</tbody></table>':
+   '<span class="warn">마운트 정보를 읽지 못했습니다.</span>';
+  const devices=Array.isArray(d.devices)?d.devices:[];
+  document.getElementById('healthDevices').innerHTML=devices.length?
+   '<table><thead><tr><th>장치</th><th>종류</th><th>총 용량</th><th>파일시스템</th><th>마운트</th></tr></thead><tbody>'+
+   devices.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.type)+'</td><td>'+healthBytes(x.sizeBytes)+'</td><td>'+esc(x.filesystem||'—')+'</td><td>'+esc(x.mount||'미마운트')+'</td></tr>').join('')+'</tbody></table>':
+   '<span class="muted">장치 정보를 조회할 수 없습니다.</span>';
+  const services=Array.isArray(d.services)?d.services:[];
+  document.getElementById('healthServices').innerHTML=services.map(x=>
+   '<div class="health-service"><span>'+esc(healthServiceLabels[x.name]||x.name)+'</span><strong class="'+(x.state==='active'?'ok':x.state==='failed'?'bad':'warn')+'">'+esc(x.state||'unknown')+'</strong></div>').join('')||'상태를 불러올 수 없습니다.';
+  const warnings=Array.isArray(d.warnings)?d.warnings:[];
+  const unavailable=Array.isArray(d.unavailable)?d.unavailable:[];
+  setText('healthAlerts',warnings.length?'주의 필요: '+warnings.join(' · '):unavailable.length?'일부 지표 확인 불가: '+unavailable.join(' · '):'주요 리소스 임계치 경고 없음 · 서비스별 상태는 아래에서 확인하세요.');
+  setText('healthUpdated','최근 측정: '+(d.sampledAt?new Date(d.sampledAt).toLocaleString('ko-KR',{hour12:false}):'—')+' · 15초 자동 갱신 (탭 열림 시)');
+ }catch(e){
+  setText('healthUpdated','서버 상태 연결 실패');
+  setText('healthAlerts','조회 오류: '+e.message+' · EC2에 신규 API 서버 코드가 아직 반영되지 않았을 수 있습니다.');
+ }finally{
+  healthRefreshing=false;btn.disabled=false;
+ }
+}
+document.getElementById('healthRefresh').onclick=refreshServerStatus;
+document.getElementById('openHealthFromConsole').onclick=()=>navigateAdmin('status');
+setInterval(()=>{if(currentAdminGroup==='manage'&&document.getElementById('status').classList.contains('active'))refreshServerStatus()},15000);
 
 // Settings: only explicitly entered secrets are sent; saved keys never leave EC2.
 const AWS_API_BASE=API;
