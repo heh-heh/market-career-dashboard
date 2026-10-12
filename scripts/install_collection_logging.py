@@ -285,12 +285,16 @@ def rollback(directory, target):
             continue
         path = target / row["path"]
         check_file(path)
-        if not path.is_file() or sha(path.read_bytes()) != row["afterSha256"]:
+        actual = sha(path.read_bytes()) if path.exists() else None
+        if actual not in (row["afterSha256"], row["beforeSha256"]):
             raise Blocked("FILE_CHANGED_SINCE_INSTALL: " + row["path"])
     for row in reversed(manifest["files"]):
         if row["path"] not in manifest.get("installed", []):
             continue
         path = target / row["path"]
+        current_hash = sha(path.read_bytes()) if path.exists() else None
+        if current_hash == row["beforeSha256"]:
+            continue  # journaled intent, but crash preceded this file write
         saved = directory / "before" / row["path"]
         if saved.exists():
             write_atomic(path, saved.read_bytes(), saved.stat())
