@@ -1,24 +1,24 @@
-// Preserve the upstream combined collection tab, without external network calls.
+// Static smoke: the public research tab has one automatic collection summary.
+// Old standalone Tick/expanded-universe panels and collector controls are retired.
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-for(const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
-assert.match(html,/data-view="v9">연구·데이터/);
-assert.ok(html.includes('Toss Raw Tick'));
-assert.ok(html.includes('/api/backtest/monitor'));
-assert.ok(!fs.existsSync(path.join(root,'tick-status.html')));
-const a=html.indexOf('async function loadTickCollectorMonitor()'),b=html.indexOf('let btTimer=',a);
-assert.ok(a>0&&b>a);
-const nodes=new Map();
-for(const m of html.matchAll(/id="(tick[^\"]+)"/g))nodes.set(m[1],{textContent:'',innerHTML:''});
-let observed=[];
-const ctx=vm.createContext({AWS_API_BASE:'https://offline.invalid',esc:x=>String(x),formatKSTDateTime:x=>x||'-',
- document:{getElementById:id=>nodes.get(id)},async fetch(url){observed.push(url);return{ok:true,json:async()=>({ok:true,state:'collecting',marketSession:'AFTER',sessionDate:'2026-10-09',calendarSource:'toss_market_calendar',symbols:['AAPL'],ticksBySymbol:{AAPL:2},ticksTotal:2,subscribed:30,symbolCount:30})}}});
-new vm.Script(html.slice(a,b)).runInContext(ctx);
-(async()=>{
- await vm.runInContext('loadTickCollectorMonitor()',ctx);
- assert.equal(observed.length,1);assert.ok(observed[0].includes('/api/ticks/status'));
- assert.match(nodes.get('tickMarketSession').textContent,/AFTER/);
- assert.match(nodes.get('tickBySymbol').innerHTML,/AAPL/);
- assert.equal(nodes.get('tickSubscribed').textContent,'30 / 30');
- console.log('PASS: combined data collection tab, tick status rendering, no standalone page, index JavaScript syntax');
-})().catch(e=>{console.error(e);process.exitCode=1});
+const root=path.join(__dirname,'..');
+const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const collection=fs.readFileSync(path.join(root,'collection.html'),'utf8');
+const admin=fs.readFileSync(path.join(root,'admin.html'),'utf8');
+for(const html of [index,collection,admin])
+ for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))
+  new vm.Script(m[1]);
+assert.match(index,/data-view="v9">연구·데이터/);
+assert.match(index,/통합 자동 수집/);
+assert.match(index,/id="collection50Summary"/);
+assert.match(index,/id="collectionScheduler"/);
+assert.match(index,/새 자동 수집 현황 보기/);
+assert.ok(index.includes('/api/research/collection50/status'));
+assert.ok(!index.includes('id="tickCollectorPhase"'),'old Tick panel removed');
+assert.ok(!index.includes('id="btUniverseCards"'),'old expanded-universe panel removed');
+assert.ok(!index.includes('id="btLog"'),'old log panel removed');
+assert.ok(collection.includes('admin.html#collectors'),'collection links to admin controls');
+assert.ok(!collection.includes('id="start"')&&!collection.includes('id="pause"'),'collection status is read-only');
+assert.ok(admin.includes('id="collectionResume"')&&admin.includes('id="collectionPause"'),'central controls retained in admin');
+assert.ok(!fs.existsSync(path.join(root,'tick-status.html')),'no stale separate Tick page');
+console.log('PASS: consolidated read-only collection UI, admin controls retained, JS syntax');
