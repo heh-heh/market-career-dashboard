@@ -200,6 +200,7 @@
   <section id="ai" class="panel">
     <div class="section-title">Autonomous AI Research</div>
     <div class="section-subtitle">RESEARCH ONLY · 2026 Final OOS 자동 접근 차단 · 실거래 주문 없음</div>
+    <div class="card"><div class="label">기존 연구 모니터</div><div class="admin-help">V4·Evolution 연구 진행 현황은 기존 읽기 전용 모니터에서 확인할 수 있습니다. 연구 실행 제어는 아래에서 유지됩니다.</div><div class="actions"><button type="button" id="openResearchMonitor">V4 / Evolution 현황 보기</button></div></div>
     <div class="card">
       <div class="label">연구 제어</div>
       <div id="aiGate" class="signal">상태 확인 중...</div>
@@ -1087,6 +1088,7 @@ document.getElementById('credentialsForm').onsubmit=async e=>{
  }catch(err){setText('credentialsStatus','저장 실패: '+err.message);}
  finally{btn.disabled=false;}
 };
+document.getElementById('openResearchMonitor').onclick=()=>location.href='./#v9';
 document.getElementById('collectionViewLink').onclick=()=>location.href='./collection.html';
 document.getElementById('collectionManageLink').onclick=()=>navigateAdmin('collectors');
 let collectionOptionsFetched=false;
