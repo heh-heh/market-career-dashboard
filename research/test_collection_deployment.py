@@ -191,7 +191,11 @@ class CollectionPageTests(unittest.TestCase):
                 with patch.object(scheduler,'STATE_DIR',state):
                     with request('/api/research/collection50/page') as response:
                         self.assertEqual(response.headers['Cache-Control'],'no-store')
-                        self.assertIn('수집 시작',response.read().decode())
+                        page=response.read().decode()
+                        self.assertIn('조회 전용',page)
+                        self.assertIn('admin.html#collectors',page)
+                        self.assertNotIn('id="start"',page)
+                        self.assertNotIn('id="pause"',page)
                     for auth,expected in ((False,401),(True,409)):
                         with self.assertRaises(HTTPError) as exc:request('/api/research/collection50/control',auth,{'paused':False})
                         self.assertEqual(exc.exception.code,expected)
