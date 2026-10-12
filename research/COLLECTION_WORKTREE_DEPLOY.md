@@ -80,6 +80,42 @@ For interrupted/failed maintenance, or to roll back a completed release:
 sudo /home/ubuntu/market-career-dashboard/.venv/bin/python /mnt/research/collection-deploy-tools-20261012/scripts/deploy_collection_worktree.py --source /mnt/research/collection-deploy-20261012 --target /home/ubuntu/market-career-dashboard --rollback TRANSACTION_DIR
 ```
 
+## 2026-10-12: recovery from hung legacy Tick collector
+
+On the first EC2 application attempt, the **old** Tick process ignored SIGTERM
+and SIGINT. The systemd stop timed out and the transaction required explicit
+rollback; the rollback reached ROLLED_BACK only after the single old process
+was safely identified and stopped. The dashboard, Broker and Tick service
+were then restored.
+
+The current research branch includes signal-responsive backoff and low-disk
+waits and nonblocking calendar/broker calls for the **new** Tick collector,
+plus SIGTERM regressions. These changes cannot fix a process already running
+old code. For the next deploy:
+
+1. Choose an XNYS market-closed maintenance window (not just a local clock
+   approximation) and verify scheduler inactive, legacy Tick active, Broker
+   active, and API healthy.
+2. Create a **new detached source worktree** at the intended updated release
+   commit, not the old pinned `abb3f7e` source. Run the deployment tool's
+   fresh `--analyze` and require `testsPassed=true`, `blocked=[]`.
+3. Before `--apply`, gracefully stop `collect-toss-ticks.service` with
+   `sudo systemctl stop --no-block collect-toss-ticks.service`, then wait
+   and verify the old collector PID has **actually exited**. This avoids
+   entering a journaled deployment while a known unresponsive legacy worker
+   is still running. Do not send SIGKILL automatically: an in-memory queue
+   may be lost. If it remains after the grace period, stop and explicitly
+   assess the operator's data-loss tolerance and the PID identity.
+4. Run `--apply` only when no old/manual collectors remain. The tool will
+   still check active processes, current file hashes and systemd settings.
+5. A successful deployment must report `COMMITTED` and `PAUSED`, with the
+   scheduler and API active, Broker active, old standalone collectors
+   disabled, and `finalOosGate=CLOSED`. Operator must explicitly unpause
+   from the authenticated page to begin automatic collection.
+6. If the journal instead reports `RECOVERY_BLOCKED`, stop. Do not run a
+   second deployment, re-enable Tick, or reset Git. Diagnose the exact
+   barrier and finish the same transaction's rollback.
+
 ## Transaction / recovery behavior
 
 - Canonical production Git-directory flock serializes deployments, including
