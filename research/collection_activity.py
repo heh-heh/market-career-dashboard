@@ -13,7 +13,7 @@ from pathlib import Path
 
 KINDS = frozenset({
     "MODE_CHANGED", "WORKER_STARTED", "WORKER_EXITED", "WORKER_ERROR",
-    "CANDLE_PAGE", "CANDLE_ERROR", "SCHEDULER_STOPPED",
+    "CANDLE_PAGE", "CANDLE_ERROR", "SCHEDULER_STOPPED", "TICK_STATE",
 })
 FIELDS = ("mode", "worker", "symbol", "code", "page", "added", "stored", "exitCode")
 CURRENT = "_collection_events.jsonl"
