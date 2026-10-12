@@ -14,7 +14,7 @@ for(const id of ['ai','aiGate','aiDryRunBtn','aiRunBtn','aiRefreshBtn','aiState'
  'aiBaselinePid','aiBaselineCampaign','aiBaselineLog','aiBaselineLogMeta',
  'aiResourceGuard','aiGuardCpu','aiGuardRam','aiGuardSwap','aiGuardDisk',
  'apiFeatureSummary','apiFeatureRefresh','apiFeatureCards']) assert.ok(ids.includes(id),'missing '+id);
-assert.match(html,/data-tab="ai">AI 연구</);
+assert.match(html,/data-tab="ai" data-parent="ai"[^>]*>연구</);
 assert.match(html,/req\("\/api\/admin\/ai\/status"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/log\?lines=180"\)/);
 assert.match(html,/req\("\/api\/admin\/ai\/start"/);
@@ -56,7 +56,7 @@ assert.match(server,/LIVE_TRADER\.disarm\(\)/);
 assert.match(server,/API_DISABLED/);
 assert.match(html,/data-tab="api"/);
 assert.match(html,/\/api\/admin\/api-features/);
-assert.match(html,/API 설정/);
+assert.match(html,/API 관리/);
 assert.match(server,/run_v07_campaign\.py/);
 assert.match(server,/--symbols","TQQQ,AAPL"/);
 assert.match(server,/--population","20"/);
