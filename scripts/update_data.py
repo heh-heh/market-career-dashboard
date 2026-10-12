@@ -4,6 +4,8 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import time
 
+from job_classifier import classify_role
+
 OUT=Path("data/dashboard.json")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
@@ -374,16 +376,9 @@ def classify_job(title, description):
         import re
         m=re.search(r"(?:경력|experience)\s*(?:\(|:)?\s*(\d+)\s*[~\-]?\s*(\d+)?\s*년",t)
         career=(m.group(1)+"년+" if m else "경력")
-    if any(x in t for x in ["클라이언트","client","unity","unreal","언리얼","c++","게임 클라이언트"]):
-        area="클라이언트"
-    elif any(x in t for x in ["서버","server","backend","back-end","백엔드","api","네트워크"]):
-        area="백엔드/서버"
-    elif any(x in t for x in ["프론트","frontend","front-end","react","vue","웹 개발"]):
-        area="프론트엔드"
-    elif any(x in t for x in ["ai","머신러닝","machine learning","ml","데이터"]):
-        area="AI/데이터"
-    else:
-        area="개발"
+    # Job-board descriptions often contain names of adjacent roles/technologies.
+    # Classify by the position title first, not by substring matches in a page.
+    area=classify_role(title, description) or "비개발"
     stack_candidates=[
         ("C++","c++"),("C#","c#"),("Java","java"),("Python","python"),
         ("JavaScript","javascript"),("TypeScript","typescript"),("Go","golang"),
@@ -446,7 +441,7 @@ def fetch_job_detail(url):
 def parse_job_detail(item):
     detail=fetch_job_detail(item.get("link",""))
     text=detail.get("detailText","")
-    title=(item.get("title","")+" "+text).strip()
+    title=item.get("title","")
     meta=classify_job(title,text)
     import re
     skill_patterns=[
@@ -657,7 +652,17 @@ def collect_job_postings(previous):
         detail=parse_job_detail(item)
         item={**item,**{k:v for k,v in detail.items() if v}}
         enriched.append(item)
-    candidates=enriched
+    # Recheck previously saved jobs too: a role may have been tagged as
+    # '클라이언트' merely because a scraped page mentioned Unity/C++.
+    # Invalid/unverified developer roles never enter the job feed.
+    candidates=[]
+    for item in enriched:
+        role=classify_role(item.get("title",""),
+                           item.get("detailText") or item.get("description") or "")
+        if role is None:
+            continue
+        item={**item,"area":role}
+        candidates.append(item)
 
     def role_tokens(title, company):
         import re
