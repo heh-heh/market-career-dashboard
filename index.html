@@ -49,7 +49,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
     <div>
       <div class="label">Research & Data</div>
       <h2 style="margin:5px 0">연구·데이터 현황</h2>
-      <div class="muted">메인 화면은 조회·다운로드 중심입니다. 수집 시작/중지, AI 연구 실행, Git 패치 병합과 배포는 관리자 페이지에서 제어합니다.</div>
+      <div class="muted">자동 수집 현황은 새 페이지로 통합했습니다. 시작·일시정지는 관리자 페이지에서만 제어하며 기존 연구·백테스트 결과는 유지됩니다.</div>
     </div>
     <div><button type="button" onclick="location.href='./admin.html'">관리자 페이지</button></div>
   </div>
@@ -57,52 +57,20 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 <div class="card" style="margin-bottom:12px">
   <div class="backtest-head">
     <div>
-      <div class="label">Toss 1m · Research Collection · 최대 50종목</div>
-      <h2 style="margin:5px 0">장기 분봉 수집 · 2026년 10월 → 2000년</h2>
+      <div class="label">통합 자동 수집 · 정규장 Tick / 장외 1분봉</div>
+      <h2 style="margin:5px 0">자동 수집 현황 · 50종목</h2>
       <div id="collection50Summary" class="muted">EC2 수집 상태 확인 중...</div>
     </div>
     <div class="muted">2026 수집 허용 · Final OOS 연구 차단 유지</div>
   </div>
   <div id="collectionScheduler" class="mini" style="margin:10px 0">자동 전환 상태 확인 중...</div>
-  <button id="collectionPageLink" type="button">수집 전용 화면 · 시작/일시정지</button>
+  <button id="collectionPageLink" type="button">새 자동 수집 현황 보기</button>
   <details><summary>종목별 상세 상태 · 연구 다운로드</summary>
   <div style="margin-top:10px"><label class="mini">연구 데이터 연도 <select id="collection50Year"><option>2022</option><option>2023</option><option selected>2024</option><option>2025</option></select></label></div>
   <div id="collection50Symbols" class="bt-symbols" style="margin-top:12px"></div>
   </details>
   <div class="mini" style="margin-top:10px">표시되는 저장량은 정규장 390봉 완전성 검증 결과가 아닙니다. 연도별 CSV 다운로드는 관리자 인증이 필요하며 연구·Codex 검증용입니다.</div>
 </div>
-<div class="card">
-  <div class="backtest-head">
-    <div>
-      <div class="label">Toss Raw Tick · 미국주식 30종목</div>
-      <h2 style="margin:5px 0">실시간 Tick 수집</h2>
-      <div id="tickCollectorPhase" class="muted">Tick collector 상태 확인 중...</div>
-    </div>
-    <div><span id="tickSessionBadge" class="bt-progress-text">-</span></div>
-  </div>
-  <div class="bt-grid" style="margin-top:12px">
-    <div class="bt-stat"><div class="label">현재 세션</div><div class="v" id="tickMarketSession">-</div></div>
-    <div class="bt-stat"><div class="label">구독 종목</div><div class="v" id="tickSubscribed">-</div></div>
-    <div class="bt-stat"><div class="label">누적 Tick</div><div class="v" id="tickTotal">-</div></div>
-    <div class="bt-stat"><div class="label">현재 세션 저장량</div><div class="v" id="tickDataSize">-</div></div>
-  </div>
-  <div class="grid" style="margin-top:12px">
-    <div class="card" style="margin-top:0">
-      <div class="label">장 운영 정보</div>
-      <div id="tickWindow" class="signal">상태 확인 중...</div>
-    </div>
-    <div class="card" style="margin-top:0">
-      <div class="label">연결 / 데이터 품질</div>
-      <div id="tickQuality" class="signal">상태 확인 중...</div>
-    </div>
-  </div>
-  <div class="card" style="margin-top:12px">
-    <div class="label">종목별 수신 Tick</div>
-    <div id="tickBySymbol" class="bt-symbols" style="margin-top:10px"></div>
-  </div>
-  <div class="mini" style="margin-top:10px;color:#f0b84b">Toss 실시간 WebSocket은 LOSSY입니다. 표시되는 수치는 이 서버가 실제 수신한 Tick이며 완전한 exchange tape를 의미하지 않습니다.</div>
-</div>
-
 <div class="card" style="margin-top:12px">
   <div class="backtest-head">
     <div>
@@ -259,43 +227,7 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 
 <section id="autonomousResearchCard" class="card" style="margin-bottom:14px"></section>
 <section id="researchExportCenter" class="card" style="margin-bottom:14px"></section>
-<div class="card" style="margin-top:12px">
-  <div class="backtest-head">
-    <div>
-      <div class="label">Toss 1분봉 · 확장 Universe</div>
-      <h2 style="margin:5px 0">데이터 수집 모니터</h2>
-      <div id="btPhase" class="muted">수집 상태 확인 중...</div>
-    </div>
-    <div>
-      <a href="./backtest-v2.html" style="display:inline-block;margin-right:10px">V2 백테스트 결과</a>
-      <span class="bt-progress-text" id="btProgressText">0%</span>
-    </div>
-  </div>
-  <div class="bt-progress"><i id="btProgressBar"></i></div>
-  <div class="bt-grid" style="margin-top:12px">
-    <div class="bt-stat"><div class="label">완료 종목</div><div class="v" id="btUniverseDone">-</div></div>
-    <div class="bt-stat"><div class="label">전체 종목</div><div class="v" id="btUniverseTotal">-</div></div>
-    <div class="bt-stat"><div class="label">현재 수집</div><div class="v" id="btUniverseCurrent">-</div></div>
-    <div class="bt-stat"><div class="label">현재 저장 봉</div><div class="v" id="btUniverseRows">-</div></div>
-  </div>
-  <div class="bt-grid" style="margin-top:10px">
-    <div class="bt-stat"><div class="label">디스크 사용</div><div class="v" id="btDiskUsed">-</div></div>
-    <div class="bt-stat"><div class="label">남은 용량</div><div class="v" id="btDiskFree">-</div></div>
-    <div class="bt-stat"><div class="label">수집 데이터 크기</div><div class="v" id="btDataSize">-</div></div>
-    <div class="bt-stat"><div class="label">저장공간 상태</div><div class="v" id="btDiskState">-</div></div>
-  </div>
-</div>
 
-<div class="card" style="margin-top:12px">
-  <div class="label">종목별 수집 현황</div>
-  <div id="btUniverseSummary" class="mini" style="margin-top:6px">상태 확인 중...</div>
-  <div id="btUniverseCards" class="bt-symbols" style="margin-top:10px"></div>
-</div>
-
-<div class="card" style="margin-top:12px">
-  <div class="label">수집 로그 · 최근 120줄</div>
-  <div id="btLog" class="bt-log">로그를 불러오는 중...</div>
-</div>
 </section>
 <section id="v7" class="view">
   <div class="grid">
@@ -1142,7 +1074,7 @@ document.getElementById("collection50Symbols")?.addEventListener("click",e=>{
  const button=e.target.closest("[data-collection50-download]");
  if(button)downloadCollection50(button.dataset.collection50Download).catch(err=>alert(String(err)));
 });
-document.getElementById('collectionPageLink')?.addEventListener('click',()=>window.open(AWS_API_BASE+'/api/research/collection50/page','_blank','noopener'));
+document.getElementById('collectionPageLink')?.addEventListener('click',()=>{location.href='./collection.html';});
 async function loadCollection50(){
  const summary=document.getElementById("collection50Summary");
  const holder=document.getElementById("collection50Symbols");
@@ -1268,12 +1200,10 @@ async function loadBacktestMonitor(){
 }
 function startBacktestMonitor(){
  if(btTimer)clearInterval(btTimer);
- loadTickCollectorMonitor();
  loadV4ResearchMonitor();
  loadEvolutionMonitor();
- loadBacktestMonitor();
  loadCollection50();
- btTimer=setInterval(()=>{loadTickCollectorMonitor();loadV4ResearchMonitor();loadEvolutionMonitor();loadBacktestMonitor();loadCollection50()},3000);
+ btTimer=setInterval(()=>{loadV4ResearchMonitor();loadEvolutionMonitor();loadCollection50()},5000);
 }
 document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
 
