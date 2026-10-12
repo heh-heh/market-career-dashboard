@@ -12,7 +12,7 @@ for(const id of [
   'gitMergeRef','gitMergeRefBtn','gitOut'
 ]) assert.ok(ids.includes(id),'missing '+id);
 
-assert.match(html,/data-tab="collectors">수집 관리/);
+assert.match(html,/data-tab="collectors" data-parent="data"[^>]*>수집 관리/);
 assert.match(html,/\/api\/admin\/collectors/);
 assert.match(html,/\/api\/research\/collection50\/control/);
 assert.ok(!html.includes('data-collector="rawTick"'),'old individual Tick controls must be hidden');
