@@ -18,6 +18,8 @@ from zoneinfo import ZoneInfo
 import exchange_calendars as xcals
 import pandas as pd
 
+from research.collection_activity import emit as emit_collection_event
+
 ROOT = Path(__file__).resolve().parent
 UTC = timezone.utc
 ET = ZoneInfo('America/New_York')
@@ -142,6 +144,7 @@ class Scheduler:
         self.last_exit = None
         self.retry_at = 0
         self.failures = 0
+        self._last_event_signature = None
 
     def stop_child(self):
         if self.child and self.child.poll() is None:
@@ -162,6 +165,8 @@ class Scheduler:
         if self.stopping: desired = None
         if self.child and self.child.poll() is not None:
             code = self.child.poll()
+            emit_collection_event(getattr(self.args, 'data_dir', None), 'WORKER_EXITED',
+                                  worker=self.role, exitCode=code)
             self.stop_child()
             self.failures = self.failures+1 if code else 0
             self.retry_at = time.monotonic()+min(300, 5*2**min(self.failures, 6))
@@ -188,15 +193,25 @@ class Scheduler:
                 self.child = self.launch(cmd, cwd=ROOT, env=env)
                 self.role = desired
                 self.stop_sent = False
+                emit_collection_event(getattr(self.args, 'data_dir', None), 'WORKER_STARTED',
+                                      mode=decision['mode'], worker=desired)
             except OSError:
                 self.failures += 1
                 self.retry_at = time.monotonic()+min(300, 5*2**min(self.failures, 6))
                 decision = {**decision, 'mode': 'ERROR', 'reason': 'WORKER_LAUNCH_FAILED'}
+                emit_collection_event(getattr(self.args, 'data_dir', None), 'WORKER_ERROR',
+                                      code='WORKER_LAUNCH_FAILED')
                 save(self.args.state_dir/'permit.json', {'mode': 'ERROR'})
         state = {**decision, 'collector': self.role, 'pid': self.child.pid if self.child else None,
                  'lastExitCode': self.last_exit, 'workerFailures': self.failures,
                  'updatedAt': now.isoformat(), 'researchOnly': True, 'finalOosGate': 'CLOSED'}
         save(self.args.state_dir/'status.json', state)
+        signature = (state['mode'], state['collector'], state.get('reason'))
+        if signature != self._last_event_signature:
+            emit_collection_event(getattr(self.args, 'data_dir', None), 'MODE_CHANGED',
+                                  mode=state['mode'], worker=state.get('collector'),
+                                  code=state.get('reason'))
+            self._last_event_signature = signature
         return state
 
     def run(self):
@@ -224,6 +239,7 @@ class Scheduler:
         while not self.stop_child(): time.sleep(0.2)
         save(self.args.state_dir/'status.json', {'mode': 'PAUSED', 'collector': None,
              'automatic': False, 'updatedAt': datetime.now(UTC).isoformat()})
+        emit_collection_event(getattr(self.args, 'data_dir', None), 'SCHEDULER_STOPPED', mode='PAUSED')
 
 
 def main():
