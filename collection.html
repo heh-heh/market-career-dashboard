@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>자동 수집 현황</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#091120;color:#edf3ff;font:15px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:20px 14px}h1{font-size:25px}h2{font-size:18px;margin:0 0 10px}.card{background:#121e32;border:1px solid #293b58;border-radius:14px;padding:16px;margin:12px 0}.muted{color:#a0b1ce;font-size:13px}.actions,.stats{display:flex;gap:10px;flex-wrap:wrap}button,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #394a68;background:#182944;color:inherit}button{cursor:pointer}button.primary{background:#596bde}button:disabled{opacity:.45;cursor:not-allowed}.stats>div{flex:1;min-width:130px}.value{font-size:21px;font-weight:700}.symbols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.symbol{padding:12px;border:1px solid #293b58;border-radius:10px;overflow-wrap:anywhere}.warn{color:#ffcc75}.error{color:#ff8e98}#message{white-space:pre-wrap}summary{cursor:pointer}a{color:#aebaff}input{max-width:100%}
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#091120;color:#edf3ff;font:15px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:20px 14px}h1{font-size:25px}h2{font-size:18px;margin:0 0 10px}.card{background:#121e32;border:1px solid #293b58;border-radius:14px;padding:16px;margin:12px 0}.muted{color:#a0b1ce;font-size:13px}.actions,.stats{display:flex;gap:10px;flex-wrap:wrap}button,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #394a68;background:#182944;color:inherit}button{cursor:pointer}button.primary{background:#596bde}button:disabled{opacity:.45;cursor:not-allowed}.stats>div{flex:1;min-width:130px}.value{font-size:21px;font-weight:700}.symbols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}.symbol{padding:12px;border:1px solid #293b58;border-radius:10px;overflow-wrap:anywhere}.warn{color:#ffcc75}.error{color:#ff8e98}#message{white-space:pre-wrap}.event-log{background:#070d18;border:1px solid #293b58;border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:350px;min-height:120px;overflow:auto;color:#cfdbed}.event-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}summary{cursor:pointer}a{color:#aebaff}input{max-width:100%}
 </style></head><body><main>
 <h1>자동 수집 현황</h1>
 <p class="muted">1분봉: 2026년 10월 → 2000년 · 기존 50종목 · Tick: 정규장 30종목<br>Tick과 1분봉은 중앙 scheduler가 번갈아 실행합니다. 원본 데이터는 삭제하지 않습니다.</p>
@@ -11,6 +11,10 @@
 <div class="card"><h2>자동 전환 상태</h2><div class="stats"><div><span class="muted">현재 모드</span><div id="mode" class="value">-</div></div><div><span class="muted">실행 수집기</span><div id="worker" class="value">-</div></div><div><span class="muted">1분봉 현재 종목</span><div id="current" class="value">-</div></div></div>
 <p id="clock" class="muted"></p><p id="reason" class="warn"></p>
 <p class="muted">정규장에는 Tick만, 장외에는 1분봉만 실행합니다. 장 시작 90초 전에 REST 요청을 중단하고 worker 종료를 확인한 뒤 전환합니다. 휴장·조기폐장·DST는 시장 캘린더를 따릅니다.</p></div>
+<div class="card"><h2>최근 수집 로그</h2>
+<div class="event-meta"><p id="logSummary" class="muted">로그를 불러오는 중...</p><p class="muted">5초 자동 갱신 · 서버에 보관된 최근 기록 · 인증정보 제외</p></div>
+<pre id="logEvents" class="event-log" aria-live="off">로그를 불러오는 중...</pre>
+<p class="muted">모드 변경, Tick 연결 상태, 분봉 저장, 오류를 기록합니다. 최근 로그는 용량 제한에 따라 오래된 기록부터 교체됩니다.</p></div>
 <div class="card"><h2>1분봉 수집 진행</h2><p id="summary" class="muted"></p><div id="symbols" class="symbols"></div></div>
 <details class="card"><summary>수집 한계 / 연구 데이터 보호</summary><p class="muted">2000~2026년 10월은 요청 범위입니다. 상장 이전 데이터나 Toss가 제공하지 않는 과거 데이터는 만들지 않습니다. 현재 이후의 10월 데이터도 미리 생성하지 않습니다. 누락일과 API 한계는 미검증으로 기록합니다.<br>2026 수집은 허용하지만 AI 연구·학습의 Final OOS gate는 CLOSED입니다. 연구 다운로드는 기존 2022~2025 범위를 유지합니다. Raw Tick은 LOSSY이며 완전한 거래소 tape가 아닙니다.</p></details>
 </main><script>
@@ -34,6 +38,44 @@ async function refresh(){
   text('message',s.stale?'상태가 오래되었습니다. 관리자 페이지에서 확인하세요.':'자동 갱신 5초 · 제어 버튼은 관리자 페이지에만 있습니다.');
  }catch(e){text('message','수집 API 연결 실패: '+String(e.message||e))}
 }
-el('refresh').onclick=refresh;
-refresh();setInterval(refresh,5000);
+const logLabels={
+ MODE_CHANGED:'자동 전환', WORKER_STARTED:'작업 시작', WORKER_EXITED:'작업 종료',
+ WORKER_ERROR:'작업 오류', CANDLE_PAGE:'1분봉 저장', CANDLE_ERROR:'수집 오류',
+ SCHEDULER_STOPPED:'스케줄러 종료', TICK_STATE:'Tick 연결'
+};
+const modeLabels={PAUSED:'일시정지',MARKET_CLOSED:'장외 · 1분봉',MARKET_OPEN:'정규장 · Tick',
+ SWITCHING:'수집기 전환',ERROR:'오류'};
+async function refreshLogs(){
+ try{
+  const response=await fetch(BASE+'/api/research/collection50/logs',{cache:'no-store'});
+  const data=await response.json();
+  if(!response.ok||!data.ok||!Array.isArray(data.events))throw Error(data.error||'HTTP '+response.status);
+  const lines=data.events.map(row=>{
+   const dt=new Date(row.at);
+   const ts=Number.isNaN(dt.getTime())?'-':dt.toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false});
+   const label=logLabels[row.kind]||row.kind||'이벤트';
+   const attrs=[];
+   if(row.mode)attrs.push(modeLabels[row.mode]||row.mode);
+   if(row.worker)attrs.push(row.worker==='tick'?'Tick':row.worker==='backfill'?'1분봉':row.worker);
+   if(row.symbol)attrs.push(row.symbol);
+   if(row.page!=null)attrs.push('페이지 '+row.page);
+   if(row.added!=null)attrs.push('신규 '+row.added+'봉');
+   if(row.stored!=null)attrs.push('누적 '+Number(row.stored).toLocaleString()+'봉');
+   if(row.exitCode!=null)attrs.push('종료 코드 '+row.exitCode);
+   if(row.code)attrs.push(String(row.code));
+   return '['+ts+'] '+label+(attrs.length?' · '+attrs.join(' · '):'');
+  });
+  const panel=el('logEvents');
+  const pinned=panel.scrollTop+panel.clientHeight>=panel.scrollHeight-40;
+  panel.textContent=lines.join('\n')||'아직 저장된 수집 로그가 없습니다. 수집을 시작하면 여기에 기록됩니다.';
+  if(pinned)panel.scrollTop=panel.scrollHeight;
+  text('logSummary','서버 기록 '+lines.length+'건 표시 · 최근 로그부터 최대 120건');
+ }catch(e){
+  text('logSummary','로그 연결 오류');
+  text('logEvents','수집 로그를 불러오지 못했습니다: '+String(e.message||e));
+ }
+}
+el('refresh').onclick=()=>{refresh();refreshLogs()};
+refresh();refreshLogs();
+setInterval(()=>{refresh();refreshLogs()},5000);
 </script></body></html>
