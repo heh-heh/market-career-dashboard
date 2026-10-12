@@ -345,6 +345,58 @@ class ShutdownTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(meta['endReason'],'service_stopped')
 
 
+    async def test_low_disk_pause_exits_promptly_on_stop(self):
+        import asyncio
+        from scripts import collect_toss_ticks as ticks
+        with tempfile.TemporaryDirectory() as directory:
+            stop=asyncio.Event()
+            waiting=asyncio.Event()
+            args=SimpleNamespace(data_dir=Path(directory),symbols_list=['AAPL'],
+                                 queue_size=1000,flush_seconds=.1,min_free_gb=10)
+            window=dict(sessionDate='2024-07-26',openAt='2024-07-26T13:30:00+00:00',
+                        closeAt='2099-01-01T00:00:00+00:00',marketSession='REGULAR')
+            def status(**kw):
+                if kw.get('state') == 'paused_low_disk':
+                    waiting.set()
+            with patch.object(ticks,'disk_free_gb',return_value=0),patch.object(ticks,'write_status',side_effect=status):
+                task=asyncio.create_task(ticks.collect_market_session(args,window,stop))
+                await asyncio.wait_for(waiting.wait(),2)
+                stop.set()
+                await asyncio.wait_for(task,2)
+            meta=json.loads((Path(directory)/'2024-07-26/session_meta.json').read_text())
+            self.assertEqual(meta['endReason'],'service_stopped')
+
+    async def test_idle_tick_daemon_exits_on_os_sigterm(self):
+        import asyncio
+        import subprocess
+        import sys
+        from scripts import collect_toss_ticks as ticks
+        program=(
+            'import asyncio\n'
+            'from types import SimpleNamespace\n'
+            'from scripts import collect_toss_ticks as ticks\n'
+            'ticks.market_window=lambda: dict(isOpen=False,sessionDate="2099-01-02",'
+            'marketSession="REGULAR",calendarSource="test",openAt="2099-01-02T14:30:00+00:00",'
+            'closeAt="2099-01-02T21:00:00+00:00")\n'
+            'def status(**kw):\n'
+            ' if kw.get("state")=="waiting_for_market_open": print("IDLE_READY",flush=True)\n'
+            'ticks.write_status=status\n'
+            'asyncio.run(ticks.daemon(SimpleNamespace(regular_only=False,symbols_list=["AAPL"])))\n'
+        )
+        child=subprocess.Popen([sys.executable,'-c',program],cwd=ticks.ROOT,
+                               stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        try:
+            line=await asyncio.wait_for(asyncio.to_thread(child.stdout.readline),timeout=15)
+            self.assertEqual(line.strip(),'IDLE_READY')
+            child.terminate()
+            out,error=await asyncio.wait_for(asyncio.to_thread(child.communicate),timeout=8)
+            self.assertEqual(child.returncode,0,error)
+        finally:
+            if child.poll() is None:
+                child.kill()
+                child.communicate()
+
+
 class CollectionAPITests(unittest.TestCase):
     def test_public_status_admin_download_and_control(self):
         with tempfile.TemporaryDirectory() as directory:
