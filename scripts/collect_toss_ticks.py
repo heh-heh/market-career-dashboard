@@ -436,7 +436,8 @@ async def stream_once(
     meta: dict,
     force_token: bool,
 ) -> None:
-    token = access_token(force=force_token)
+    # Keep the asyncio signal/event loop responsive during broker I/O.
+    token = await asyncio.to_thread(access_token, force=force_token)
     headers = {"Authorization": "Bearer " + token}
     try:
         major = int(str(getattr(websockets, "__version__", "15")).split(".", 1)[0])
@@ -554,10 +555,21 @@ async def stream_once(
         finally:
             keep_task.cancel()
             close_task.cancel()
+            await asyncio.gather(keep_task, close_task, return_exceptions=True)
             if meta.get("connections"):
                 meta["connections"][-1]["disconnectedAt"] = utc_now_iso()
                 meta["connections"][-1]["acked"] = acked
             atomic_json(writer.meta_path, meta)
+
+
+async def sleep_or_stop(stop: asyncio.Event, seconds: float) -> None:
+    """Bounded, promptly interruptible retry/disk wait."""
+    if stop.is_set():
+        return
+    try:
+        await asyncio.wait_for(stop.wait(), timeout=max(0.0, seconds))
+    except asyncio.TimeoutError:
+        pass
 
 
 async def collect_market_session(args, window: dict, stop: asyncio.Event) -> None:
@@ -640,7 +652,7 @@ async def collect_market_session(args, window: dict, stop: asyncio.Event) -> Non
                     freeGb=round(free, 2),
                     minFreeGb=args.min_free_gb,
                 )
-                await asyncio.sleep(min(60.0, max(1.0, (close_at - as_utc_timestamp()).total_seconds())))
+                await sleep_or_stop(stop, min(60.0, max(1.0, (close_at - as_utc_timestamp()).total_seconds())))
                 continue
 
             try:
@@ -675,7 +687,7 @@ async def collect_market_session(args, window: dict, stop: asyncio.Event) -> Non
                         retrySeconds=backoff,
                     )
                     remaining = max(0.0, (close_at - now).total_seconds())
-                    await asyncio.sleep(min(backoff, remaining))
+                    await sleep_or_stop(stop, min(backoff, remaining))
                     backoff = min(30.0, backoff * 2)
                 else:
                     backoff = 1.0
@@ -703,7 +715,7 @@ async def collect_market_session(args, window: dict, stop: asyncio.Event) -> Non
                 # recovers revoked/expired cached credentials.
                 force_token = True
                 remaining = max(0.0, (close_at - now).total_seconds())
-                await asyncio.sleep(min(backoff, remaining))
+                await sleep_or_stop(stop, min(backoff, remaining))
                 backoff = min(30.0, backoff * 2)
     finally:
         writer_stop.set()
@@ -735,7 +747,11 @@ async def daemon(args) -> None:
             pass
 
     while not stop.is_set():
-        window = _fallback_regular_window() if getattr(args, "regular_only", False) else market_window()
+        # Market calendar REST calls may block; never stall SIGTERM handling.
+        window = (_fallback_regular_window() if getattr(args, "regular_only", False)
+                  else await asyncio.to_thread(market_window))
+        if stop.is_set():
+            break
         if not window["isOpen"]:
             seconds = max(
                 1.0,
