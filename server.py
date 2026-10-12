@@ -1896,7 +1896,7 @@ def run_admin_console(command):
         return 0,(
             "허용 명령\n"
             "  pwd\n"
-            "  df -h /\n"
+            "  df -h (all mounted disks) | df -h / (root only) | lsblk\n"
             "  du -sh data/toss_1m\n"
             "  git status|branch|diff|fetch|pull|push\n"
             "  git merge-v3 | git merge <ref> | git merge --abort\n"
@@ -1914,8 +1914,12 @@ def run_admin_console(command):
     if parts==["pwd"]:
         return 0,str(ROOT)
 
-    if parts in (["df","-h"],["df","-h","/"]):
-        return _console_run(["df","-h","/"])
+    if parts==["df","-h"]:
+        return _console_run(["df","-h","-l"],timeout=10)
+    if parts==["df","-h","/"]:
+        return _console_run(["df","-h","/"],timeout=10)
+    if parts==["lsblk"]:
+        return _console_run(["lsblk","-o","NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT"],timeout=10)
 
     if parts in (["du","-sh","data/toss_1m"],["du","-sh",str(ROOT/"data"/"toss_1m")]):
         return _console_run(["du","-sh",str(ROOT/"data"/"toss_1m")],timeout=30)
@@ -3093,6 +3097,15 @@ class Handler(BaseHTTPRequestHandler):
         if path=="/api/realtime":
             snap=realtime_snapshot()
             self.send_json({"ok":True,**snap})
+            return
+        if path=="/api/admin/server-health":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                from server_health import snapshot
+                self.send_json(snapshot())
+            except Exception:
+                self.send_json({"ok":False,"error":"SERVER_HEALTH_UNAVAILABLE"},503)
             return
         if path=="/api/admin/github":
             if not authorized(self):
