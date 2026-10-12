@@ -8,17 +8,17 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(ids.length,new Set(ids).size,'duplicate admin DOM IDs');
 for(const id of [
-  'collectors','collectorRawTickState','collectorOneMinuteState','collectorRefreshBtn',
+  'collectors','collectionAutoState','collectionResume','collectionPause','collectionPage','collectorRefreshBtn',
   'gitMergeRef','gitMergeRefBtn','gitOut'
 ]) assert.ok(ids.includes(id),'missing '+id);
 
 assert.match(html,/data-tab="collectors">수집 관리/);
 assert.match(html,/\/api\/admin\/collectors/);
-assert.match(html,/\/api\/admin\/collectors\/control/);
-assert.match(html,/data-action="start"/);
-assert.match(html,/data-action="stop"/);
-assert.match(html,/data-action="enable"/);
-assert.match(html,/data-action="disable"/);
+assert.match(html,/\/api\/research\/collection50\/control/);
+assert.ok(!html.includes('data-collector="rawTick"'),'old individual Tick controls must be hidden');
+assert.ok(!html.includes('data-collector="oneMinute"'),'old individual candle controls must be hidden');
+assert.ok(!html.includes('data-cmd="systemctl start collect-toss-ticks.service"'),'no direct legacy Tick start');
+assert.ok(!html.includes('data-cmd="systemctl start collect-expanded-universe.service"'),'no direct legacy candle start');
 assert.match(html,/data-git="deploy-status"/);
 assert.match(html,/data-git="deploy-apply"/);
 assert.match(html,/data-git="merge-abort"/);
@@ -40,7 +40,10 @@ assert.ok(!server.includes('["switch","-C","strategy-engine-v3"'),'sync must not
 
 assert.match(index,/data-view="v9">연구·데이터/);
 assert.match(index,/data-view="v7">관리자/);
-assert.match(index,/메인 화면은 조회·다운로드 중심/);
+assert.match(index,/자동 수집 현황은 새 페이지로 통합/);
+assert.ok(!index.includes('id="tickCollectorPhase"'),'duplicate legacy Tick panel removed');
+assert.ok(!index.includes('id="btUniverseCards"'),'duplicate expanded universe panel removed');
+assert.match(index,/새 자동 수집 현황 보기/);
 assert.ok(!index.includes('let adminConsoleHistory=[];'),'dead main admin console JS should be removed');
 
-console.log('PASS: collector controls, safe merge/deploy, and streamlined read-only main navigation');
+console.log('PASS: central collector admin controls, no legacy start actions, safe merge/deploy, and read-only public collection');
