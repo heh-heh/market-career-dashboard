@@ -76,12 +76,17 @@ def write_json(path, obj): atomic(path, json.dumps(obj, indent=2, ensure_ascii=T
 
 
 @contextlib.contextmanager
-def lock(path):
+def lock(path, worker_owner=None):
     path = safe(path); path.parent.mkdir(parents=True, exist_ok=True)
     fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     try:
         try: fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError: raise Blocked('DEPLOY_OR_COLLECTOR_LOCKED') from None
+        if worker_owner is not None:
+            # Deployment runs as root, collection workers run as ubuntu.
+            # Keep the same inode and lock, but make it writable by the worker.
+            os.fchown(fd, *worker_owner)
+            os.fchmod(fd, 0o660)
         yield
     finally: os.close(fd)
 
@@ -539,7 +544,7 @@ class Deployment:
             if hashes(read(self.layout.env))!=plan['environmentSha256'] or hashes(read(self.layout.target/'.env'))!=plan['operationalEnvironmentSha256']:
                 raise Blocked('ENVIRONMENT_CHANGED_DURING_MAINTENANCE')
             # No worker may enter until commit/rollback has verified quiescence.
-            with lock(self.layout.state/'worker.lock'):
+            with lock(self.layout.state/'worker.lock', worker_owner=(uid,gid)):
                 journal['phase']='APPLYING';write_json(txn/'journal.json',journal)
                 # This is a control lock, not market data. Never truncate its
                 # cooldowns; only set the exact file's group/mode after quiescence.
@@ -606,7 +611,7 @@ class Deployment:
             if snapshot[API]['exists']: self.host.ctl('stop',API,required=False)
             self.host.no_api()
             self.host.research_idle()
-            with lock(self.layout.state/'worker.lock'):
+            with lock(self.layout.state/'worker.lock', worker_owner=(uid,gid)):
                 for row in reversed(journal['files']):
                     if not row['intent']: continue
                     path=safe(row['path']);data=read(path)
