@@ -19,6 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from research_collection_scheduler import aware, save, exclusive_lock, backfill_permitted
+from research.collection_activity import emit as emit_collection_event
 from scripts.collect_toss_1m import fetch_page, token, FIELDS, DEFAULT_SYMBOLS
 from research.toss_1m_repair import fingerprint
 from research.backtest_v4_strategies import exchange_sessions
@@ -325,6 +326,8 @@ class Backfill:
         while self.allowed():
             index = self.state['nextIndex'] % len(self.symbols)
             symbol = self.symbols[index]
+            before = self.progress.get(symbol, {})
+            prior_page = int(before.get('page') or 0)
             save(self.root/'_worker_status.json', {'currentSymbol': symbol, 'updatedAt': datetime.now(UTC).isoformat(), 'state': 'collecting'})
             try:
                 if time.monotonic() >= self.cooldowns.get(symbol, 0): self.step_symbol(symbol)
@@ -334,6 +337,15 @@ class Backfill:
                 self.cooldowns[symbol] = time.monotonic()+60
             self.state['nextIndex'] = (index+1) % len(self.symbols)
             self.persist()
+            record = self.progress.get(symbol, {})
+            new_page = int(record.get('page') or 0)
+            if new_page > prior_page:
+                emit_collection_event(self.root, 'CANDLE_PAGE', symbol=symbol,
+                                      page=new_page, added=int(record.get('added') or 0),
+                                      stored=int(record.get('stored') or 0))
+            elif record.get('status') == 'error' and time.time() - float(record.get('updatedAt') or 0) < 3:
+                emit_collection_event(self.root, 'CANDLE_ERROR', symbol=symbol,
+                                      code=record.get('errorCode'))
             # Conservative per-worker REST pacing; shared group limiter is also used.
             for _ in range(8):
                 if not self.allowed(): break
