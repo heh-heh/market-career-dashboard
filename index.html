@@ -1205,7 +1205,14 @@ function startBacktestMonitor(){
  loadCollection50();
  btTimer=setInterval(()=>{loadV4ResearchMonitor();loadEvolutionMonitor();loadCollection50()},5000);
 }
-// Research monitors remain available in source but are no longer a public main-menu tab.
+// Research monitors stay accessible only via the AI admin's direct link.
+function openReadOnlyResearchFromLink(){
+ if(location.hash!=='#v9')return;
+ showView('v9',null);
+ startBacktestMonitor();
+}
+window.addEventListener('hashchange',openReadOnlyResearchFromLink);
+openReadOnlyResearchFromLink();
 
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 loadData();
