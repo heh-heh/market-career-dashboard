@@ -9,8 +9,17 @@ from .features import MinuteFeatureProvider, POLICY_BASE, benchmark_for_symbol
 
 def evaluate_day(bots, rows, opening, closing, symbols, config):
     from research.backtest_v4_strategies import MINUTE
+    from .regime_timing import MODE, CONTEXT_FEATURES
+    candidate = config.fitness_mode == MODE
     provider = MinuteFeatureProvider(config).prepare(rows, opening, closing, symbols)
     accounts = [Account(config.initial_capital, ExecutionCostModel(config.slippage_bps, config.half_spread_bps)) for _ in bots]
+    if candidate:
+        complete = all(provider.duration == len(provider.bars.get(s, {})) for s in rows) and all(
+            s in rows for s in set(symbols) | {"SPY", "QQQ", "SOXX"})
+        for account in accounts:
+            account.research_timing = True
+            account.research_data_complete = complete
+    context_weights = np.array([b.genome.context_weights or (0.,)*len(CONTEXT_FEATURES) for b in bots])
     weights = np.array([b.genome.weights for b in bots])
     symbol_index = {s: i for i, s in enumerate(provider.symbols)}
     cutoff = closing-config.cutoff_minutes*MINUTE
@@ -18,6 +27,8 @@ def evaluate_day(bots, rows, opening, closing, symbols, config):
     for ti, t in enumerate(provider.times):
         # Shared market computation once per minute, not once per bot/file.
         base_scores = provider.matrix[ti] @ weights[:, :len(POLICY_BASE)].T
+        if candidate and provider.market[t]["valid"]:
+            base_scores = base_scores + np.asarray(provider.market[t]["policyValues"]) @ context_weights.T
         for bi, (bot, account) in enumerate(zip(bots, accounts)):
             filled = False
             pending = account.pending
@@ -29,6 +40,16 @@ def evaluate_day(bots, rows, opening, closing, symbols, config):
                     account.pending = None
                 elif bar:
                     if pending["side"] == "BUY":
+                        if candidate:
+                            observation = provider.raw.get((pending["symbol"], t), {})
+                            pending = dict(pending, entryRegime=provider.market[t]["regime"],
+                                entryContextTimestamp=t.isoformat(),
+                                entryVolatility15m=observation.get("volatility_15m", 0.),
+                                entryVwapDistance=observation.get("distance_from_vwap", 0.),
+                                entrySourceCandle=dict(start=bar.start.isoformat(), end=bar.end.isoformat(), close=bar.c),
+                                entryMarketContext={r: {k: provider.raw.get((r,t),{}).get(k) for k in
+                                    ("return_5m", "return_15m", "return_30m", "volatility_30m", "distance_from_vwap", "vwap_slope_5m", "volume_ratio")}
+                                    for r in ("SPY", "QQQ")})
                         account.buy(pending["symbol"], bar.c, t, bot.genome.position_fraction, pending, bot.genome)
                     else:
                         account.sell(bar.c, t, pending["reason"], pending["signalTimestamp"])
@@ -80,6 +101,9 @@ def evaluate_day(bots, rows, opening, closing, symbols, config):
                                            sourceCandle=dict(start=bar.start.isoformat(), end=bar.end.isoformat(),
                                                              open=bar.o, high=bar.h, low=bar.l, close=bar.c, volume=bar.v),
                                            features=dict(provider.raw[symbol, t]), benchmark=benchmark_for_symbol(symbol)[0])
+                    if candidate:
+                        account.pending.update(signalRegime=provider.market[t]["regime"],
+                                               entryQualityMinutes=config.entry_quality_minutes)
                     decisions["BUY"] += 1
     return accounts, dict(provider.diagnostics, decisions=dict(decisions), executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY",
                           observationExtrema="Completed close marks only; high/low never used for trade exits or MFE/MAE")

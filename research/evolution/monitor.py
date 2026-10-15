@@ -30,7 +30,7 @@ _PUBLIC_FIELDS = {
     "bestValidationReturn", "meanValidationReturn", "medianValidationReturn",
     "validationTotalTrades", "sourcePopulationVerified",
     "expectedSplit", "evaluationLabel", "selectionMode", "shortlistCount",
-    "holdoutRunId",
+    "holdoutRunId", "researchDiagnostics", "finalOosGate",
 }
 
 

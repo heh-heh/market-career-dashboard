@@ -29,6 +29,9 @@ class Account:
     last_price: float | None = None
     pending: dict | None = None
     cancellations: dict = field(default_factory=dict)
+    research_timing: bool = False
+    research_data_complete: bool = True
+    research_marks: list = field(default_factory=list)
 
     def __post_init__(self):
         self.cash = self.peak_equity = self.initial_capital
@@ -51,6 +54,18 @@ class Account:
                 p["lowestObservedPrice"], p["maeTimestamp"] = price, t.isoformat()
         self.peak_equity = max(self.peak_equity, self.equity)
         self.max_drawdown = max(self.max_drawdown, (self.peak_equity-self.equity)/self.peak_equity)
+        if self.research_timing:
+            mark = (t, self.equity)
+            if self.research_marks and self.research_marks[-1][0] == t:
+                self.research_marks[-1] = mark
+            else:
+                self.research_marks.append(mark)
+            if self.position:
+                from datetime import datetime
+                p = self.position
+                elapsed = (t-datetime.fromisoformat(p["entryTimestamp"])).total_seconds()/60
+                if elapsed <= p["entryQualityMinutes"]:
+                    p["earlyLowestObservedPrice"] = min(p["earlyLowestObservedPrice"], price)
 
     def buy(self, symbol, price, t, fraction, signal, genome):
         if self.position or not 0 < fraction <= 1:
@@ -83,6 +98,16 @@ class Account:
             else "DOWN" if spy30 is not None and qqq30 is not None and max(spy, qqq, spy30, qqq30) < 0
             else "MIXED_OR_FLAT"
         )
+        if self.research_timing:
+            self.position.update(signalRegime=signal.get("signalRegime", "SIDEWAYS"),
+                                 entryRegime=signal.get("entryRegime", "SIDEWAYS"),
+                                 entryContextTimestamp=signal.get("entryContextTimestamp"),
+                                 entrySourceCandle=signal.get("entrySourceCandle"),
+                                 entryMarketContext=signal.get("entryMarketContext"),
+                                 entryVolatility15m=signal.get("entryVolatility15m", 0.),
+                                 entryVwapDistance=signal.get("entryVwapDistance", 0.),
+                                 entryQualityMinutes=signal["entryQualityMinutes"],
+                                 earlyLowestObservedPrice=price)
         self.mark(price, t)
 
     def sell(self, price, t, reason, signal_timestamp):

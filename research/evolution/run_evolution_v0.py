@@ -77,7 +77,12 @@ def prepare_inputs(args, symbols):
     if not args.provisional:
         raise ValueError("Provide --data-manifest; unreviewed data requires explicit --provisional")
     paths = {s: source_file(root, s) for s in sorted(needed)}
-    meta = {s: provisional_inspect_file(p, s, "end", args.naive_timezone) for s, p in paths.items()}
+    if getattr(args, "research_window", None):
+        from research.evolution.data_access import inspect_window
+        first, last = args.research_window
+        meta = {s: inspect_window(p, s, first, last, args.naive_timezone) for s,p in paths.items()}
+    else:
+        meta = {s: provisional_inspect_file(p, s, "end", args.naive_timezone) for s, p in paths.items()}
     errors = [f"{s}: {', '.join(m['validationErrors'])}" for s, m in meta.items() if m["validationErrors"]]
     if errors:
         raise ValueError("Mechanical data audit failed: "+"; ".join(errors))
@@ -89,6 +94,8 @@ def save_day(path, bots, accounts, evaluations, next_population, selection, diag
     path.mkdir(exist_ok=False)
     atomic_json(path/"population.json", [b.record() for b in bots])
     atomic_json(path/"next_population.json", [b.record() for b in next_population])
+    from research.evolution.regime_timing import public_evaluation
+    evaluations = [public_evaluation(e) for e in evaluations]
     for state, filename in (("SURVIVE", "survivors"), ("DEAD", "dead"), ("NEUTRAL", "neutral"), ("INVALID", "invalid")):
         atomic_json(path/(filename+".json"), [e for e in evaluations if e["survival"] == state])
     atomic_json(path/"metrics.json", dict(bots=evaluations, selection=selection, diagnostics=diagnostics))
@@ -136,6 +143,11 @@ def run(args):
         raise ValueError("Explicit --from-date and --to-date required outside --smoke; no implicit multi-year training")
     if datetime.fromisoformat(first).date() > datetime.fromisoformat(last).date():
         raise ValueError("Reversed date bounds")
+    from research.evolution.data_access import check_dates, scheduled_days
+    from research.evolution.regime_timing import CONTEXT_FEATURES
+    check_dates(first, last)
+    candidate = config.fitness_mode == "v07_regime_timing"
+    args.research_window = (first, last)
     calendar = exchange_sessions(first, last)
     if args.smoke:
         smoke_sessions = max(7, config.evaluation_window_sessions)
@@ -179,7 +191,8 @@ def run(args):
                     executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY", generation=0, completedSessions=0,
                     adaptiveResources=config.adaptive_resources, minPopulation=config.min_population,
                     maxPopulation=config.max_population, evaluationWindowSessions=config.evaluation_window_sessions,
-                    fitnessMode=config.fitness_mode,
+                    fitnessMode=config.fitness_mode, finalOosGate="CLOSED",
+                    contextPolicySchema=list(CONTEXT_FEATURES) if candidate else [],
                     stabilityFoldSessions=config.stability_fold_sessions,
                     stabilityMinPositiveFolds=config.stability_min_positive_folds,
                     windowSessionsCompleted=0, nextPopulation=config.population_size,
@@ -200,8 +213,12 @@ def run(args):
     if config.adaptive_resources:
         # Prime psutil interval counters before the first measured training session.
         sample_resources()
+    from research.evolution.completeness import SessionCoverage
+    coverage = SessionCoverage(paths)
+    scheduled = scheduled_days(paths, manifest, calendar)
+    stream = scheduled if candidate else ((day,rows) for day,rows in scheduled if rows)
     try:
-        for day, rows in day_stream(paths, manifest):
+        for day, rows in stream:
             if day > max(calendar):
                 break
             if day not in calendar:
@@ -214,6 +231,13 @@ def run(args):
             if frozen is not None and population_hash(bots) != frozen:
                 raise AssertionError("Validation/OOS genome mutation detected")
             opening, closing = calendar[day]
+            if candidate:
+                from research.evolution.audit_v07_data import resource_preflight
+                resource_preflight(directory)
+                pressure = sample_resources()
+                if pressure["memoryPct"] >= config.memory_hard_limit_pct or pressure["swapPct"] >= config.swap_hard_limit_pct:
+                    raise ValueError("RESOURCE_GUARD_PAUSED: host RAM/swap hard limit; no services touched")
+                coverage.observe(day, rows, opening, closing)
             session_started = time.perf_counter()
             accounts, diagnostics = evaluate_day(bots, rows, opening, closing, symbols, config)
             session_runtime = time.perf_counter() - session_started
@@ -363,6 +387,24 @@ def run(args):
                 currentHistoricalDate=day,
                 **selection,
             )
+            if candidate:
+                evaluated = window_evaluations or evaluations
+                usable = [e for e in evaluated if e["evaluationValid"]]
+                summary["researchDiagnostics"] = dict(
+                    regimePerformance={r: {k: sum(e["regimePerformance"][r][k] for e in usable)
+                        for k in ("trades", "pnlUsd", "costUsd")} for r in ("BULL", "BEAR", "SIDEWAYS")},
+                    timing={k: sum(e["timing"][k] for e in usable) for k in
+                        ("trades", "earlyAdverse", "profitGiveback", "lateChaseCount")},
+                    meanWinRate=statistics.mean(e["winRate"] for e in usable if e.get("winRate") is not None) if any(e.get("winRate") is not None for e in usable) else None,
+                    meanHoldMinutes=statistics.mean(e["averageHoldMinutes"] for e in usable if e.get("averageHoldMinutes") is not None) if any(e.get("averageHoldMinutes") is not None for e in usable) else None,
+                    meanFitness=statistics.mean(e["fitness"] for e in usable) if usable else None,
+                    medianFitness=statistics.median(e["fitness"] for e in usable) if usable else None,
+                    meanMaxDrawdown=statistics.mean(e.get("windowMaxDrawdown", e["maxDrawdown"]) for e in usable) if usable else None,
+                    transactionCost=sum(e["transactionCost"] for e in usable),
+                    meanFitnessComponents={k: statistics.mean(e["fitnessComponents"][k] for e in usable)
+                        for k in usable[0]["fitnessComponents"]} if usable and window_evaluations else None,
+                    regimeEvidenceInsufficient=sum(e.get("regimeEvidence") == "INSUFFICIENT_REGIME_SAMPLES" for e in usable))
+                summary["finalOosGate"] = "CLOSED"
             append_json(directory/"generations.jsonl", summary)
             if split == "train" and window_complete and best_window:
                 atomic_json(directory/"best_genomes.json", [
@@ -399,6 +441,7 @@ def run(args):
         atomic_json(directory/"evaluation_summary.json", evaluation_ledger)
         run_info.update(phase="completed", generation=summary["generation"], nextPopulationGeneration=generation,
                         completedTrainGenerations=generation, completedSessions=len(processed),
+                        **({"sessionCoverage": coverage.snapshot(), "resultsValid": not missing_days and coverage.incomplete == 0} if candidate else {}),
                         missingSessions=missing_days, splitDays=split_days, frozenPopulationHash=frozen,
                         # Keep the final evaluated population distinct from offspring
                         # created after selection. Alive/dead/neutral counts refer to

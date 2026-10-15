@@ -37,7 +37,8 @@ def initial_population(config, rng, birth_date):
 
 def daily_evaluation(bot, account, day, config, *, update_lifetime=True, mark_death=True):
     # A missed session exit cannot fabricate liquidation or become a profitable parent.
-    valid = account.position is None
+    from .regime_timing import MODE, day_diagnostics
+    valid = account.position is None and (config.fitness_mode != MODE or account.research_data_complete)
     pnl = account.cash-account.initial_capital if valid else None
     survival = ("SURVIVE" if pnl > config.epsilon else "DEAD" if pnl < -config.epsilon else "NEUTRAL") if valid else "INVALID"
     ret = pnl/config.initial_capital if valid else None
@@ -52,7 +53,7 @@ def daily_evaluation(bot, account, day, config, *, update_lifetime=True, mark_de
             bot.lifetime_equity = bot.lifetime_initial_capital+bot.lifetime_pnl
         if mark_death and survival == "DEAD":
             bot.death_date = day
-    return dict(botId=bot.bot_id, date=day, survival=survival, reproductionEligible=survival == "SURVIVE",
+    result = dict(botId=bot.bot_id, date=day, survival=survival, reproductionEligible=survival == "SURVIVE",
                 evaluationValid=valid, dailyPnl=pnl, dailyReturn=ret, fitness=fitness,
                 maxDrawdown=account.max_drawdown, trades=len(account.trades),
                 transactionCost=account.transaction_cost, turnover=account.turnover,
@@ -60,7 +61,10 @@ def daily_evaluation(bot, account, day, config, *, update_lifetime=True, mark_de
                 averageR=sum(t["netR"] for t in account.trades)/len(account.trades) if account.trades else None,
                 averageHoldMinutes=sum(t["holdMinutes"] for t in account.trades)/len(account.trades) if account.trades else None,
                 lifetimeEquity=bot.lifetime_equity, cancellations=account.cancellations,
-                unresolvedPosition=account.position, failureReason=None if valid else "NO_OBSERVABLE_SESSION_EXIT")
+                unresolvedPosition=account.position, failureReason=None if valid else ("INCOMPLETE_REQUIRED_SESSION" if account.position is None else "NO_OBSERVABLE_SESSION_EXIT"))
+    if config.fitness_mode == MODE:
+        result.update(day_diagnostics(account, config))
+    return result
 
 
 
@@ -90,8 +94,9 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
         trades = sum(e["trades"] for e in rows)
         costs = sum(e["transactionCost"] for e in rows)
         trades_per_session = trades / expected if expected else 0.0
-        losing_sessions = sum(r < 0 for r in daily_returns)
-        profitable_sessions = sum(r > 0 for r in daily_returns)
+        daily_tolerance = config.epsilon/config.initial_capital if config.fitness_mode == "v07_regime_timing" else 0.
+        losing_sessions = sum(r < -daily_tolerance for r in daily_returns)
+        profitable_sessions = sum(r > daily_tolerance for r in daily_returns)
         neutral_sessions = sum(abs(r) <= config.epsilon / config.initial_capital for r in daily_returns)
         losing_ratio = losing_sessions / expected if expected else 0.0
         return_volatility = (
@@ -121,6 +126,11 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
         else:
             fitness_components = None
             fitness = (sum(e["fitness"] for e in rows) / expected) if valid else None
+        research = {}
+        if valid and config.fitness_mode == "v07_regime_timing":
+            from .regime_timing import window_objective
+            research = window_objective(rows, config)
+            fitness, fitness_components = research["fitness"], research["fitnessComponents"]
         survival = (
             "SURVIVE" if pnl > config.epsilon
             else "DEAD" if pnl < -config.epsilon
@@ -153,9 +163,11 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             )
 
         parent_consistency_ok = (
-            config.fitness_mode not in {"v05_structural", "v06_stability"}
+            config.fitness_mode not in {"v05_structural", "v06_stability", "v07_regime_timing"}
             or profitable_sessions >= config.min_profitable_sessions_for_parent
         )
+        if config.fitness_mode == "v07_regime_timing":
+            parent_consistency_ok = parent_consistency_ok and bool(valid and trades > 0 and fitness > config.epsilon/config.initial_capital and research["windowMaxDrawdown"] <= config.parent_max_drawdown)
         if config.fitness_mode == "v06_stability":
             parent_consistency_ok = parent_consistency_ok and bool(stability_eligible)
 
@@ -200,6 +212,12 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             turnover=sum(e["turnover"] for e in rows),
             lifetimeEquity=bot.lifetime_equity,
             failureReason=None if valid else "INVALID_SESSION_IN_EVALUATION_WINDOW",
+            **{k:v for k,v in research.items() if k not in ("fitness", "fitnessComponents")},
+            **({"parentSelectionReason": "PROFITABLE_CONSISTENT_WITHIN_RISK_LIMIT" if complete and survival == "SURVIVE" and parent_consistency_ok else
+                "INCOMPLETE_WINDOW" if not complete else "INVALID_DATA" if not valid else
+                "NONPOSITIVE_WINDOW" if survival != "SURVIVE" else "CONSISTENCY_OR_RISK_GATE"}
+               if config.fitness_mode == "v07_regime_timing" else {}),
+
         ))
     return result
 
@@ -240,7 +258,12 @@ def reproduce(bots, evaluations, config, rng, generation, birth_date):
                             lifetime_equity=ancestor.lifetime_equity if inherited else config.initial_capital,
                             lifetime_initial_capital=config.initial_capital,
                             lifetime_pnl=ancestor.lifetime_pnl if inherited else 0, origin=origin))
-    return children, dict(parentPoolSize=len(parents), eliteCount=len(elites), mutationCount=mutations,
+    metadata = {}
+    if config.fitness_mode == "v07_regime_timing":
+        metadata["parentSelection"] = [dict(botId=e["botId"], fitness=e["fitness"],
+             reason=e["parentSelectionReason"], fitnessComponents=e["fitnessComponents"],
+             genomeHash=lookup[e["botId"]].genome.digest) for e in eligible[:count]]
+    return children, dict(**metadata, parentPoolSize=len(parents), eliteCount=len(elites), mutationCount=mutations,
                           crossoverCount=sum(c.origin == "CROSSOVER_MUTATION" for c in children),
                           randomRecovery=not parents, parentIds=[p.bot_id for p in parents])
 

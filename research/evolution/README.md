@@ -503,3 +503,11 @@ repeated rising fixture days are not an economic experiment. No historical
 profitability, full-universe runtime or EC2 capacity claim can follow from it.
 Real END-label evidence, adjustment/survivorship review, fee/quote executability,
 missing-session impact and independent OOS are still required before long training.
+
+
+## Isolated V0.7 five-session regime/timing experiment
+
+See [V07_5D_REGIME_TIMING.md](V07_5D_REGIME_TIMING.md) for the separate candidate
+and five-day control configs, read-only coverage audit, safety gates, synthetic
+validation and manual EC2 commands. Existing V0.7 defaults remain seven sessions;
+2026 Final OOS remains CLOSED. No campaign is started by installing this code.

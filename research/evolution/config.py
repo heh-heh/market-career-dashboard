@@ -31,6 +31,13 @@ class Config:
     up_regime_loss_penalty: float = 0.0
     entry_adverse_penalty: float = 0.0
     exit_giveback_penalty: float = 0.0
+    regime_return_floor: float = 0.001  # 10bp over 30m, not optimized
+    regime_noise_multiplier: float = 1.0
+    regime_concentration_penalty: float = 0.1
+    min_regime_trades: int = 3  # diagnostic adequacy only, not a trade incentive
+    entry_quality_minutes: int = 5
+    timing_noise_floor: float = 0.001
+    parent_max_drawdown: float = 0.05
     max_trades_per_session: int = 0  # 0 disables the structural cap
     entry_cooldown_minutes: int = 0
     min_profitable_sessions_for_parent: int = 0
@@ -104,6 +111,15 @@ class Config:
             raise ValueError("Structural trade controls must be nonnegative")
         if self.min_profitable_sessions_for_parent > self.evaluation_window_sessions:
             raise ValueError("Parent profitability requirement exceeds evaluation window")
+        if self.fitness_mode == "v07_regime_timing":
+            if self.transaction_cost_penalty or self.losing_session_penalty or self.down_regime_loss_penalty or self.up_regime_loss_penalty:
+                raise ValueError("V07-R1 net return already includes costs/losses; duplicate penalties must be zero")
+            if not 0 < self.parent_max_drawdown < 1:
+                raise ValueError("parent_max_drawdown must be in (0,1)")
+        if any(type(x) is not int or x < 1 for x in (self.min_regime_trades, self.entry_quality_minutes)):
+            raise ValueError("Positive integer regime sample/entry timing window required")
+        if min(self.regime_return_floor, self.regime_noise_multiplier, self.timing_noise_floor) <= 0 or self.regime_concentration_penalty < 0:
+            raise ValueError("Invalid context/timing scales")
         if self.fitness_mode == "v06_stability":
             if self.stability_fold_sessions < 1:
                 raise ValueError("V0.6 requires stability_fold_sessions")

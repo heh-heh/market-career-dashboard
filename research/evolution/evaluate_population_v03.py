@@ -105,6 +105,10 @@ def run(args):
     first, last = args.from_date, args.to_date
     if not first or not last or datetime.fromisoformat(first).date() > datetime.fromisoformat(last).date():
         raise ValueError("Valid chronological --from-date/--to-date are required")
+    from research.evolution.data_access import check_dates, scheduled_days
+    check_dates(first, last)
+    candidate = config.fitness_mode == "v07_regime_timing"
+    args.research_window = (first, last)
     calendar = exchange_sessions(first, last)
     if not calendar:
         raise ValueError("No XNYS sessions in validation range")
@@ -153,8 +157,9 @@ def run(args):
         mutationCount=0, crossoverCount=0, parentPoolSize=0,
         dataMode=mode, dataOrigin=args.data_origin,
         performanceClaim="NOT_VALID_FOR_FINAL_PERFORMANCE_CLAIMS" if mode != "REVIEWED_DATA" or args.data_origin == "synthetic" else "RESEARCH_ONLY_NO_SIGNIFICANCE_CLAIM",
-        timestampKind="end", config=config.snapshot(), symbols=symbols,
+        timestampKind="end", finalOosGate="CLOSED", config=config.snapshot(), symbols=symbols,
         featureSchema=BASE_FEATURES, policySchema=POLICY_FEATURES,
+        contextPolicySchema=source_info.get("contextPolicySchema", []),
         inputManifest=manifest, dataRoot=str(data_root), gitCommit=git.stdout.strip(),
         fromDate=first, toDate=last, requestedSessions=len(calendar), completedSessions=0,
         generation=max((b.generation for b in bots), default=0),
@@ -169,11 +174,19 @@ def run(args):
     coverage = SessionCoverage(paths)
     original_hash = source_hash
     try:
-        for day, rows in day_stream(paths, manifest):
+        scheduled = scheduled_days(paths, manifest, calendar)
+        for day, rows in (scheduled if candidate else ((d,r) for d,r in scheduled if r)):
             if day > max(calendar):
                 break
             if day not in calendar:
                 continue
+            if candidate:
+                from research.evolution.audit_v07_data import resource_preflight
+                from research.evolution.resource import sample_resources
+                resource_preflight(directory)
+                pressure=sample_resources()
+                if pressure["memoryPct"] >= config.memory_hard_limit_pct or pressure["swapPct"] >= config.swap_hard_limit_pct:
+                    raise ValueError("RESOURCE_GUARD_PAUSED: host RAM/swap hard limit; no services touched")
             opening, closing = calendar[day]
             coverage.observe(day, rows, opening, closing)
             accounts, diagnostics = evaluate_day(bots, rows, opening, closing, symbols, config)
@@ -187,12 +200,28 @@ def run(args):
                     x["pnlUsd"] += e["dailyPnl"]
                 else:
                     x["invalidDays"] += 1
+                if candidate:
+                    from research.evolution.regime_timing import REGIMES
+                    if "regimePerformance" not in x:
+                        x.update(regimePerformance={r: dict(trades=0,pnlUsd=0.,costUsd=0.) for r in REGIMES},
+                                 timing={k:0. for k in e["timing"]}, equityPeak=config.initial_capital,
+                                 maxDrawdown=0.)
+                    for r in REGIMES:
+                        for k in x["regimePerformance"][r]:
+                            x["regimePerformance"][r][k] += e["regimePerformance"][r][k]
+                    for k in x["timing"]: x["timing"][k] += e["timing"][k]
+                    offset=x["pnlUsd"]-(e["dailyPnl"] or 0.)
+                    for equity in e["equityPath"]:
+                        value=offset+equity
+                        x["equityPeak"]=max(x["equityPeak"],value)
+                        x["maxDrawdown"]=max(x["maxDrawdown"],(x["equityPeak"]-value)/x["equityPeak"])
                 e["validationPnlUsd"] = x["pnlUsd"]
                 e["validationReturn"] = x["pnlUsd"]/config.initial_capital
 
             day_dir = directory/f"validation_{len(processed)+1:04d}"
             day_dir.mkdir(exist_ok=False)
-            atomic_json(day_dir/"metrics.json", dict(bots=evaluations, diagnostics=diagnostics))
+            from research.evolution.regime_timing import public_evaluation
+            atomic_json(day_dir/"metrics.json", dict(bots=[public_evaluation(e) for e in evaluations], diagnostics=diagnostics))
             _write_trades(day_dir/"trades.csv", bots, accounts)
 
             valid = [x for x in ledger.values() if x["invalidDays"] == 0]
@@ -250,6 +279,7 @@ def run(args):
                 validDays=x["validDays"], invalidDays=x["invalidDays"], trades=x["trades"],
                 pnlUsd=x["pnlUsd"], validationReturn=x["pnlUsd"]/config.initial_capital,
                 transactionCost=x["transactionCost"],
+                **({"regimePerformance": x["regimePerformance"], "timing": x["timing"], "maxDrawdown": x["maxDrawdown"]} if candidate else {}),
             ))
         results_valid = not missing and coverage.incomplete == 0
         atomic_json(directory/"validation_summary.json", dict(

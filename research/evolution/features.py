@@ -45,6 +45,7 @@ class MinuteFeatureProvider:
         self.duration = len(self.times)
         self.bars = {}
         self.raw = {}
+        self.market = {}
         # Every local formula receives only this prefix of contiguous completed bars.
         for symbol, minutes in rows.items():
             ends = {b.end: b for b in minutes.values() if opening <= b.start < closing}
@@ -78,13 +79,19 @@ class MinuteFeatureProvider:
                          minute_from_regular_open=(t-opening).total_seconds()/60,
                          minute_to_regular_close=(closing-t).total_seconds()/60,
                          vwap=cum_pv/cum_v, close=b.c)
+                path = float(np.abs(np.diff(prices)).sum())
+                f["efficiency_30m"] = abs(prices[-1]-prices[0])/path if path else 0.
+                prior = self.raw.get((symbol, t-5*MINUTE))
+                f["vwap_slope_5m"] = (f["vwap"]/prior["vwap"]-1) if prior else 0.
                 self.raw[symbol, t] = f
         self.matrix = np.zeros((len(self.times), len(self.symbols), len(POLICY_BASE)), dtype=float)
         self.valid = np.zeros((len(self.times), len(self.symbols)), dtype=bool)
         self.diagnostics = {"missingRegularMinutes": {s: self.duration-len(self.bars.get(s, {})) for s in sorted(rows)},
                             "eligibleObservations": 0, "contextUnavailable": 0,
                             "vwapGapPolicy": "No new signals after any missing regular-session prefix minute"}
+        from .regime_timing import market_context
         for ti, t in enumerate(self.times):
+            self.market[t] = market_context(self.raw.get(("SPY", t)), self.raw.get(("QQQ", t)), self.config)
             for si, s in enumerate(self.symbols):
                 benchmark, sector = benchmark_for_symbol(s)
                 refs = [self.raw.get((r, t)) for r in ("SPY", "QQQ", sector, benchmark)]
@@ -94,6 +101,7 @@ class MinuteFeatureProvider:
                     continue
                 spy, qqq, sec, bench = refs
                 own.update(spy_return=spy["return_5m"], qqq_return=qqq["return_5m"],
+                           spy_return_15m=spy["return_15m"], qqq_return_15m=qqq["return_15m"],
                            spy_return_30m=spy["return_30m"], qqq_return_30m=qqq["return_30m"],
                            sector_return=sec["return_5m"],
                            benchmark_momentum=bench["return_15m"], benchmark_volatility=bench["volatility_15m"],

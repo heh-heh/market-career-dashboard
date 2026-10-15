@@ -19,11 +19,13 @@ from research.evolution.analyze_validation_v04 import analyze
 
 def main(argv=None):
     p=argparse.ArgumentParser()
+    p.add_argument("--experiment", choices=("baseline", "five-day"), default="baseline")
+    p.add_argument("--naive-timezone", choices=("UTC", "America/New_York"))
     p.add_argument("--data-dir",type=Path,default=ROOT/"data/toss_1m")
     p.add_argument("--results-dir",type=Path,default=Path("/home/ubuntu/evolution-results"))
     p.add_argument("--symbols",default="TQQQ,AAPL")
     p.add_argument("--population",type=int,default=20)
-    p.add_argument("--max-population",type=int,default=300)
+    p.add_argument("--max-population",type=int,help="Baseline default 300; five-day default 50")
     p.add_argument("--shortlist-max",type=int,default=40)
     p.add_argument("--seed",type=int,default=42)
     p.add_argument("--dataset-snapshot",type=Path,help="Optional verified repaired CSV snapshot; copied into NEW campaign provenance")
@@ -34,7 +36,15 @@ def main(argv=None):
         from research.toss_1m_repair import verify_snapshot, symbols_checked
         snapshot_info=verify_snapshot(args.dataset_snapshot,args.data_dir,symbols_checked(args.symbols))
 
-    campaign_id=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-v07"
+    candidate=args.experiment == "five-day"
+    if args.max_population is None:
+        args.max_population=50 if candidate else 300
+    if candidate and args.results_dir == Path("/home/ubuntu/evolution-results"):
+        args.results_dir=Path("/mnt/research/evolution-v07-5d-results")
+    if candidate:
+        from research.evolution.audit_v07_data import resource_preflight
+        resource_preflight(args.results_dir,require_research_mount=True)
+    campaign_id=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+("-v07-5d-r1" if candidate else "-v07")
     cdir=args.results_dir.resolve()/("campaign-"+campaign_id)
     cdir.mkdir(parents=True,exist_ok=False)
     state=dict(
@@ -44,7 +54,8 @@ def main(argv=None):
         developmentValidationFrom="2025-01-02",developmentValidationTo="2025-12-31",
         finalOos="2026_UNTOUCHED",
         selectionMode="V07_INTERNAL_HOLDOUT_SHORTLIST",
-        baseFitness="v05_structural",
+        baseFitness="v07_regime_timing" if candidate else "v05_structural",
+        experiment=args.experiment, finalOosGate="CLOSED",
         population=args.population,maxPopulation=args.max_population,shortlistMax=args.shortlist_max,
         seed=args.seed,createdAt=datetime.now(timezone.utc).isoformat(),
     )
@@ -55,17 +66,18 @@ def main(argv=None):
                                       sourceManifestSha256=file_sha256(args.dataset_snapshot),
                                       repairedDates=snapshot_info["repairedDates"],timestampKind="end",finalOosGate="CLOSED")
     atomic_json(cdir/"campaign.json",state)
-    cfg=ROOT/"research/evolution/v07_holdout_config.json"
+    cfg=ROOT/"research/evolution"/("v07_5d_regime_timing_config.json" if candidate else "v07_holdout_config.json")
+    extra=["--naive-timezone",args.naive_timezone] if args.naive_timezone else []
     try:
         train=train_main([
             "--data-dir",str(args.data_dir),"--timestamp-kind","end","--provisional",
             "--symbols",args.symbols,"--population",str(args.population),
             "--adaptive-resources","--min-population",str(args.population),
             "--max-population",str(args.max_population),
-            "--evaluation-window-sessions","7","--initial-capital","100",
+            "--evaluation-window-sessions","5" if candidate else "7","--initial-capital","100",
             "--seed",str(args.seed),"--from-date","2022-01-03","--to-date","2023-12-29",
             "--results-dir",str(args.results_dir),"--config",str(cfg),
-        ])
+        ]+extra)
         state.update(phase="internal_holdout",trainRun=str(train),updatedAt=datetime.now(timezone.utc).isoformat())
         atomic_json(cdir/"campaign.json",state)
 
@@ -74,7 +86,7 @@ def main(argv=None):
             "--from-date","2024-01-02","--to-date","2024-12-31",
             "--expected-split","validation","--evaluation-label","internal_holdout",
             "--results-dir",str(args.results_dir),
-        ])
+        ]+extra)
         state.update(phase="shortlist",holdoutRun=str(holdout),updatedAt=datetime.now(timezone.utc).isoformat())
         atomic_json(cdir/"campaign.json",state)
 
@@ -94,7 +106,7 @@ def main(argv=None):
             "--from-date","2025-01-02","--to-date","2025-12-31",
             "--expected-split","none","--evaluation-label","development_validation",
             "--results-dir",str(args.results_dir),
-        ])
+        ]+extra)
         state.update(phase="diagnostics",developmentValidationRun=str(validation),updatedAt=datetime.now(timezone.utc).isoformat())
         atomic_json(cdir/"campaign.json",state)
 
