@@ -75,6 +75,14 @@ class Account:
         features = signal["features"]
         spy, qqq = features.get("spy_return", 0), features.get("qqq_return", 0)
         self.position["marketRegime"] = "UP" if spy > 0 and qqq > 0 else "DOWN" if spy < 0 and qqq < 0 else "MIXED_OR_FLAT"
+        # Separate V0.7 confirmation: only completed SPY/QQQ 5m AND 30m
+        # observations at entry. This field is an audit label, not a future input.
+        spy30, qqq30 = features.get("spy_return_30m"), features.get("qqq_return_30m")
+        self.position["confirmedMarketRegime"] = (
+            "UP" if spy30 is not None and qqq30 is not None and min(spy, qqq, spy30, qqq30) > 0
+            else "DOWN" if spy30 is not None and qqq30 is not None and max(spy, qqq, spy30, qqq30) < 0
+            else "MIXED_OR_FLAT"
+        )
         self.mark(price, t)
 
     def sell(self, price, t, reason, signal_timestamp):
