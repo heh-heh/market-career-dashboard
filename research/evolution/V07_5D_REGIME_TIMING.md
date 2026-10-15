@@ -168,7 +168,9 @@ integrity inspection, not research use of 2026 prices. No isolated 2026 files ar
 selected. The untouched reviewed-manifest validator still governs reviewed data;
 mechanical audit produces no fake review flags and remains PROVISIONAL.
 
-Source hashes are checked before/after audit and after evaluation. Active
+Source hashes are checked before/after audit and after evaluation. The candidate
+campaign refuses to enter internal holdout when training `resultsValid` is not true;
+partial source data cannot silently become a validated campaign. Active
 collector mutation fails the research run; it does not stop/restart the collector.
 Use an existing finalized snapshot if the source is still changing. Source paths,
 SHA256, config snapshot, code hashes, commit, seed, timestamp basis and execution
@@ -269,7 +271,7 @@ these measurements are not a promise for a 2GB host. No extra Python dependencie
 ## Verification recorded for this change
 
 - Before changes: 554 existing Python tests passed (54.8s).
-- Release: 575 Python tests passed (66.3s), including 21 new V07-R1 tests.
+- Release: 576 Python tests passed, including 22 new V07-R1 tests.
 - All 14 existing admin/collector/paper/export JavaScript smoke tests passed.
 - `compileall`, five CLI `--help` checks and `git diff --check` passed.
 - Actual script entrypoint smoke and data-audit CLI passed on tiny explicitly

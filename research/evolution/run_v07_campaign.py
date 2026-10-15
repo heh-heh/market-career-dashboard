@@ -78,6 +78,10 @@ def main(argv=None):
             "--seed",str(args.seed),"--from-date","2022-01-03","--to-date","2023-12-29",
             "--results-dir",str(args.results_dir),"--config",str(cfg),
         ]+extra)
+        if candidate:
+            train_info=json.loads((train/"run.json").read_text(encoding="utf-8"))
+            if train_info.get("resultsValid") is not True:
+                raise ValueError("TRAIN_DATA_INCOMPLETE: five-day campaign stops before holdout; inspect sessionCoverage")
         state.update(phase="internal_holdout",trainRun=str(train),updatedAt=datetime.now(timezone.utc).isoformat())
         atomic_json(cdir/"campaign.json",state)
 

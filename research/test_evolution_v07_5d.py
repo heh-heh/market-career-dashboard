@@ -301,6 +301,21 @@ class DataAndPipelineTests(unittest.TestCase):
             self.assertEqual(original,(source/'final_population.json').read_bytes())
             self.assertEqual(bots[0].genome,load_population_records([bots[0].record()],c)[0].genome)
 
+    def test_campaign_does_not_validate_an_invalid_training_run(self):
+        from research.evolution.run_v07_campaign import main as campaign
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);train=root/'train';train.mkdir()
+            (train/'run.json').write_text(json.dumps(dict(resultsValid=False)))
+            with patch('research.evolution.audit_v07_data.resource_preflight'), \
+                 patch('research.evolution.run_v07_campaign.train_main',return_value=train), \
+                 patch('research.evolution.run_v07_campaign.eval_main') as frozen:
+                with self.assertRaisesRegex(ValueError,'TRAIN_DATA_INCOMPLETE'):
+                    campaign(['--experiment','five-day','--results-dir',str(root/'results')])
+                frozen.assert_not_called()
+            state=json.loads(next((root/'results').glob('campaign-*/campaign.json')).read_text())
+            self.assertEqual(state['phase'],'error')
+            self.assertEqual(state['finalOosGate'],'CLOSED')
+
     def test_incomplete_source_invalidates_account_not_profitable_parent(self):
         rows,o,c=fixture();del rows['AAPL'][o+100*MINUTE]
         cfg=config();bots=[Bot('b',buy_genome(cfg),0,[],'2023-06-01')]
