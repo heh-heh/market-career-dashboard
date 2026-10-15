@@ -93,7 +93,9 @@ class MinuteFeatureProvider:
                     self.diagnostics["contextUnavailable"] += 1
                     continue
                 spy, qqq, sec, bench = refs
-                own.update(spy_return=spy["return_5m"], qqq_return=qqq["return_5m"], sector_return=sec["return_5m"],
+                own.update(spy_return=spy["return_5m"], qqq_return=qqq["return_5m"],
+                           spy_return_30m=spy["return_30m"], qqq_return_30m=qqq["return_30m"],
+                           sector_return=sec["return_5m"],
                            benchmark_momentum=bench["return_15m"], benchmark_volatility=bench["volatility_15m"],
                            relative_strength=own["return_15m"]-bench["return_15m"],
                            sector_relative_strength=own["return_15m"]-sec["return_15m"])
