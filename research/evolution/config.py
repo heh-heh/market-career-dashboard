@@ -26,6 +26,11 @@ class Config:
     fitness_mode: str = "v0"
     losing_session_penalty: float = 0.0
     return_volatility_penalty: float = 0.0
+    # V0.7 regime/timing: selection fitness only, never future observation features.
+    down_regime_loss_penalty: float = 0.0
+    up_regime_loss_penalty: float = 0.0
+    entry_adverse_penalty: float = 0.0
+    exit_giveback_penalty: float = 0.0
     max_trades_per_session: int = 0  # 0 disables the structural cap
     entry_cooldown_minutes: int = 0
     min_profitable_sessions_for_parent: int = 0
@@ -92,7 +97,7 @@ class Config:
             raise ValueError("Probabilities must be in [0,1]")
         if min(self.epsilon, self.return_scale, self.volume_scale, self.feature_clip) <= 0 or self.cutoff_minutes < 1:
             raise ValueError("Invalid numerical scale/cutoff")
-        if self.fitness_mode not in {"v0", "v04_generalization", "v05_structural", "v06_stability"}:
+        if self.fitness_mode not in {"v0", "v04_generalization", "v05_structural", "v06_stability", "v07_regime_timing"}:
             raise ValueError("Unknown fitness_mode")
         if min(self.max_trades_per_session, self.entry_cooldown_minutes, self.min_profitable_sessions_for_parent,
                self.stability_fold_sessions, self.stability_min_positive_folds) < 0:
@@ -109,7 +114,8 @@ class Config:
                 raise ValueError("Invalid stability_min_positive_folds")
         if min(self.slippage_bps, self.half_spread_bps, self.mutation_strength,
                self.drawdown_penalty, self.transaction_cost_penalty, self.excessive_trading_penalty,
-               self.losing_session_penalty, self.return_volatility_penalty) < 0:
+               self.losing_session_penalty, self.return_volatility_penalty, self.down_regime_loss_penalty,
+               self.up_regime_loss_penalty, self.entry_adverse_penalty, self.exit_giveback_penalty) < 0:
             raise ValueError("Costs/penalties must be nonnegative")
         if self.slippage_bps + self.half_spread_bps >= 10000:
             raise ValueError("Invalid execution cost")
