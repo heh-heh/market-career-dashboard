@@ -67,7 +67,7 @@ def bounded_bars(path, symbol, meta, first, last, audit=None):
             yield bar
 
 
-def inspect_window(path, symbol, first, last, naive_timezone=None):
+def inspect_window(path, symbol, first, last, naive_timezone=None, *, allow_empty=False):
     before = path.stat()
     sha = file_sha256(path)
     meta = dict(symbol=symbol, path=path.name, sha256=sha, rows=0, firstTimestamp=None,
@@ -81,7 +81,7 @@ def inspect_window(path, symbol, first, last, naive_timezone=None):
     after = path.stat()
     if (before.st_size, before.st_mtime_ns, before.st_ino) != (after.st_size, after.st_mtime_ns, after.st_ino) or file_sha256(path) != sha:
         raise ValueError(f"{symbol}: source changed during read-only audit")
-    if meta["rows"] == 0:
+    if meta["rows"] == 0 and not allow_empty:
         raise ValueError(f"{symbol}: no rows in requested window")
     return meta
 

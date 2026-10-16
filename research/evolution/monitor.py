@@ -31,6 +31,8 @@ _PUBLIC_FIELDS = {
     "validationTotalTrades", "sourcePopulationVerified",
     "expectedSplit", "evaluationLabel", "selectionMode", "shortlistCount",
     "holdoutRunId", "researchDiagnostics", "finalOosGate",
+    "dataSelectionPolicy", "evaluationStatus", "skippedGenerationAttempts", "excludedDataSessions",
+    "selectedSessionCount", "excludedSessionCount", "annualValidationComplete",
 }
 
 
@@ -50,7 +52,7 @@ def _read_status(path):
 def _process_alive(pid):
     try:
         command = Path(f"/proc/{int(pid)}/cmdline").read_bytes()
-        return b"run_evolution_v0.py" in command or b"evaluate_population_v03.py" in command
+        return b"run_evolution_v0.py" in command or b"evaluate_population_v03.py" in command or b"run_v07_available.py" in command
     except (OSError, ValueError, TypeError):
         return False
 

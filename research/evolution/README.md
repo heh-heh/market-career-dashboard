@@ -511,3 +511,11 @@ See [V07_5D_REGIME_TIMING.md](V07_5D_REGIME_TIMING.md) for the separate candidat
 and five-day control configs, read-only coverage audit, safety gates, synthetic
 validation and manual EC2 commands. Existing V0.7 defaults remain seven sessions;
 2026 Final OOS remains CLOSED. No campaign is started by installing this code.
+
+
+## Available-data research selection (separate experiment)
+
+See [AVAILABLE_DATA.md](AVAILABLE_DATA.md) for all-universe streaming coverage,
+causal per-symbol availability, interrupted five-session windows, partial frozen
+validation, comparison safeguards and the three manual EC2 commands. Original
+seven-session and strict five-session configs/results remain unchanged.

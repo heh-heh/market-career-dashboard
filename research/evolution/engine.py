@@ -7,15 +7,22 @@ from .account import Account, ExecutionCostModel
 from .features import MinuteFeatureProvider, POLICY_BASE, benchmark_for_symbol
 
 
-def evaluate_day(bots, rows, opening, closing, symbols, config):
+def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="strict"):
+    if data_policy not in ("strict", "causal_available"):
+        raise ValueError("Unknown data policy")
     from research.backtest_v4_strategies import MINUTE
     from .regime_timing import MODE, CONTEXT_FEATURES
     candidate = config.fitness_mode == MODE
+    if data_policy == "causal_available" and not candidate:
+        raise ValueError("causal_available is isolated to V07-R1 research fitness")
     provider = MinuteFeatureProvider(config).prepare(rows, opening, closing, symbols)
     accounts = [Account(config.initial_capital, ExecutionCostModel(config.slippage_bps, config.half_spread_bps)) for _ in bots]
     if candidate:
         complete = all(provider.duration == len(provider.bars.get(s, {})) for s in rows) and all(
             s in rows for s in set(symbols) | {"SPY", "QQQ", "SOXX"})
+        if data_policy == "causal_available":
+            # Quality verdict only: never used as a future symbol-selection mask.
+            complete = all(provider.duration == len(provider.bars.get(s, {})) for s in ("SPY", "QQQ", "SOXX"))
         for account in accounts:
             account.research_timing = True
             account.research_data_complete = complete
@@ -61,6 +68,9 @@ def evaluate_day(bots, rows, opening, closing, symbols, config):
                 symbol = account.position["symbol"]
                 bar = provider.bars.get(symbol, {}).get(t)
                 if bar is None:
+                    if data_policy == "causal_available":
+                        account.research_data_complete = False  # sticky even after recovery/exit
+                        account.cancellations["HELD_SYMBOL_OBSERVATION_GAP"] = account.cancellations.get("HELD_SYMBOL_OBSERVATION_GAP", 0)+1
                     continue  # no stale/fabricated execution or price-forward-fill
                 account.mark(bar.c, t)
                 if account.pending:
@@ -105,5 +115,5 @@ def evaluate_day(bots, rows, opening, closing, symbols, config):
                         account.pending.update(signalRegime=provider.market[t]["regime"],
                                                entryQualityMinutes=config.entry_quality_minutes)
                     decisions["BUY"] += 1
-    return accounts, dict(provider.diagnostics, decisions=dict(decisions), executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY",
+    return accounts, dict(provider.diagnostics, dataPolicy=data_policy, decisions=dict(decisions), executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY",
                           observationExtrema="Completed close marks only; high/low never used for trade exits or MFE/MAE")
