@@ -431,6 +431,22 @@
             </div>
           </details>
         </div>
+        <div class="card" id="v07WebPanel">
+          <div class="label">V0.7 · 가용 데이터 연구 (웹 실행)</div>
+          <div class="mini" style="margin:8px 0">브라우저/Session Manager를 닫아도 서버 작업은 계속됩니다. 순서대로 실행하세요. 원본 CSV·수집기·실거래는 변경하지 않습니다.</div>
+          <div class="actions">
+            <button data-v07="prepare" type="button">1. 코드 준비</button>
+            <button data-v07="audit" type="button">2. 30종목 감사</button>
+            <button data-v07="select" type="button">3. 학습 구간 선별</button>
+            <button data-v07="smoke" type="button" class="primary">4. 10거래일 시험 학습</button>
+            <button id="v07WebRefresh" type="button">진행 상태 / 로그 갱신</button>
+          </div>
+          <div class="label" style="margin:12px 0 6px">작업 상태</div>
+          <div id="v07WebStatus" class="terminal" role="status" aria-live="polite" style="min-height:95px;max-height:210px">조회 대기</div>
+          <details style="margin-top:10px"><summary>최근 실행 로그</summary>
+            <div id="v07WebLog" class="terminal" role="log" style="min-height:140px;max-height:320px">로그 조회 대기</div>
+          </details>
+        </div>
         <div id="consoleOut" class="terminal" role="log">관리자 콘솔 준비됨. help 를 입력하세요.</div>
         <div class="command"><input id="consoleIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="허용된 서버 명령 입력: help"><button id="consoleRun" class="primary">실행</button></div>
       </div>
@@ -571,7 +587,7 @@ function navigateAdmin(name, updateHash=true){
  if(name==='paper')refreshPaper();
  if(name==='backtest')refreshSimpleBacktest();
  if(name==='ai')refreshAI();
- if(name==='console')refreshGit();
+ if(name==='console'){refreshGit();refreshV07Web();}
  if(name==='status')refreshServerStatus();
  if(name==='api')refreshApiFeatures();
  if(name==='settings')refreshCredentials();
@@ -1061,6 +1077,33 @@ document.getElementById("paperLogsDownload").onclick=downloadPaperLogs;
 async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refreshSimple()])}
 for(const [id,enabled] of [["simpleStart",true],["simpleStop",false]])document.getElementById(id).onclick=async()=>{try{await req("/api/trading/paper/simple-v1/auto",{method:"POST",body:JSON.stringify({enabled})});await refreshSimple()}catch(e){alert(e.message)}};
 document.getElementById("simpleScan").onclick=async()=>{const b=document.getElementById("simpleScan");b.disabled=true;try{await req("/api/trading/paper/simple-v1/scan",{method:"POST",body:"{}"});await refreshSimple()}catch(e){alert(e.message)}finally{b.disabled=false}};
+
+let v07WebPending=false;
+async function refreshV07Web(){
+  if(v07WebPending||!token())return;
+  v07WebPending=true;
+  try{
+    const results=await Promise.all([
+      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 status"})}),
+      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 log"})})
+    ]);
+    setText("v07WebStatus",results[0].output||"상태 없음");
+    setText("v07WebLog",results[1].output||"로그 없음");
+  }catch(e){setText("v07WebStatus","조회 실패: "+e.message)}
+  finally{v07WebPending=false}
+}
+document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>{
+  const cmd="v07 "+button.dataset.v07;
+  if(button.dataset.v07==="smoke"&&!confirm("20개체로 10거래일 연구용 시험 학습을 시작할까요? 실거래는 수행하지 않습니다."))return;
+  button.disabled=true;
+  try{
+    const response=await req("/api/admin/console",{method:"POST",body:JSON.stringify({command:cmd})});
+    appendConsole("$ "+cmd+"\\n"+(response.output||""));
+  }catch(e){appendConsole(cmd+" ERROR: "+e.message)}
+  finally{button.disabled=false;await refreshV07Web()}
+});
+document.getElementById("v07WebRefresh").onclick=refreshV07Web;
+setInterval(()=>{if(currentAdminGroup==="manage"&&document.getElementById("console").classList.contains("active"))refreshV07Web()},15000);
 
 function appendConsole(v){const e=document.getElementById("consoleOut");e.textContent+=(e.textContent?"\n":"")+v;e.scrollTop=e.scrollHeight}
 async function runConsole(cmd){
