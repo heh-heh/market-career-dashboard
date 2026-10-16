@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -163,8 +164,9 @@ def _run_fixed(stage, job):
         raise ValueError("REVIEW_VERSION_NOT_PINNED")
     if not PYTHON.is_file() or not DATA.is_dir() or not (REVIEW / SCRIPT[stage]).is_file():
         raise ValueError("PYTHON_DATA_OR_RESEARCH_SCRIPT_MISSING")
-    from research.evolution.audit_v07_data import resource_preflight
-    resource_preflight(job, require_research_mount=True)
+    free = shutil.disk_usage(job)
+    if free.free < max(10 * 1024**3, free.total * .1):
+        raise ValueError("RESOURCE_GUARD_PAUSED: insufficient research disk free")
 
     if stage == "audit":
         argv = [str(PYTHON), SCRIPT[stage], "--data-dir", str(DATA),
@@ -186,7 +188,7 @@ def _run_fixed(stage, job):
                 "--results-dir", str(job / "smoke"), "--require-ebs"]
     env = {**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
            "MKL_NUM_THREADS": "1", "GIT_TERMINAL_PROMPT": "0"}
-    if "nice" in (Path("/usr/bin/nice").name,):
+    if Path("/usr/bin/nice").is_file():
         argv = ["/usr/bin/nice", "-n", "10"] + argv
     result = subprocess.run(argv, cwd=str(REVIEW), env=env, timeout=14400, check=False)
     if result.returncode:
@@ -221,8 +223,6 @@ def start(stage):
                 if _state(job, name)["phase"] in {"starting", "running"}:
                     raise ValueError(f"V07_BUSY: {name} already running")
         if stage == "prepare":
-            if job and _state(job, "prepare")["phase"] == "completed":
-                raise ValueError("V07_ALREADY_PREPARED: next use v07 audit")
             name = datetime.now(timezone.utc).strftime("job-%Y%m%dT%H%M%SZ-") + os.urandom(6).hex()
             job = ROOT / name
             job.mkdir(mode=0o700)
@@ -238,11 +238,15 @@ def start(stage):
         _write(job / (stage + ".json"), {"stage": stage, "phase": "starting",
                                          "startedEpoch": time.time()})
         logfile = job / (stage + ".log")
-        with logfile.open("xb") as log:
-            subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--worker", stage, str(job)],
-                             cwd=str(job), stdout=log, stderr=subprocess.STDOUT,
-                             stdin=subprocess.DEVNULL, start_new_session=True,
-                             close_fds=True, env={**os.environ, "PYTHONUNBUFFERED": "1"})
+        try:
+            with logfile.open("xb") as log:
+                subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--worker", stage, str(job)],
+                                 cwd=str(job), stdout=log, stderr=subprocess.STDOUT,
+                                 stdin=subprocess.DEVNULL, start_new_session=True,
+                                 close_fds=True, env={**os.environ, "PYTHONUNBUFFERED": "1"})
+        except (OSError, ValueError):
+            (job / (stage + ".json")).unlink(missing_ok=True)
+            raise
     return f"STARTED {stage}: {job}\n브라우저/SSM 종료 후에도 실행됩니다. v07 status / v07 log 확인."
 
 
