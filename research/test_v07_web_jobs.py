@@ -65,7 +65,7 @@ class V07WebJobsTests(unittest.TestCase):
             jobs.start("select")
             jobs._write(job / "select.json", {"phase": "completed"})
             jobs.start("smoke")
-            with self.assertRaisesRegex(ValueError, "V07_STAGE_ALREADY_STARTED"):
+            with self.assertRaisesRegex(ValueError, "V07_BUSY"):
                 jobs.start("smoke")
 
     def test_failure_and_restart_status_persist_without_http_state(self):
