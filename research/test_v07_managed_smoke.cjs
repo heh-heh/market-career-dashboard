@@ -1,0 +1,18 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'admin.html'),'utf8');
+for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(m[1]);
+const panel=html.slice(html.indexOf('<!-- V07_MANAGED_CARD_BEGIN -->'),html.indexOf('<!-- V07_MANAGED_CARD_END -->'));
+for(const cmd of ['analyze','train','holdout','validation','export'])assert.ok(panel.includes('data-v07="'+cmd+'"'));
+assert.ok(html.indexOf('id="v07ManagedPanel"')>html.indexOf('<section id="ai"'));
+const begin=html.indexOf('function renderV07Managed(d)'),end=html.indexOf('document.getElementById("v07ManagedRefresh")',begin);
+const elements=new Map(),texts={};
+const get=id=>{if(!elements.has(id))elements.set(id,{});return elements.get(id)};
+const context=vm.createContext({setText:(k,v)=>texts[k]=v,document:{getElementById:get}});
+vm.runInContext(html.slice(begin,end),context);
+vm.runInContext('renderV07Managed({jobId:"actual",stages:{train:{phase:"interrupted",error:"WORKER_NOT_RUNNING"}},runs:{train:{completedSessions:37,requestedSessions:504,completedTrainGenerations:2,skippedGenerationAttempts:4}},generations:[{returns:{mean:0.03}}],downloadAvailable:false})',context);
+assert.match(texts.v07ManagedSummary,/37 \/ 504/);assert.match(texts.v07ManagedSummary,/interrupted/);
+assert.ok(get('v07ManagedDownload').disabled);
+assert.match(get('v07ManagedGraph').innerHTML,/points="10.00,10.00"/);
+assert.ok(!html.includes('fetch(BASE+"/api/research/v07/download"'));
+assert.match(html,/fetch\(API\+"\/api\/research\/v07\/download"/);
+console.log('PASS: managed V07 real artifact metrics, graph, interrupted status, explicit commands and authenticated download');

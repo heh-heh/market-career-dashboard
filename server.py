@@ -2633,6 +2633,15 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/collection50/"):
             self.collection50_get(path); return
+        if path=="/api/research/v07/download":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                from v07_web_jobs import download
+                self.send_export_file(download(), "v07-research-results.zip")
+            except (ValueError,OSError) as exc:
+                self.send_json({"ok":False,"error":str(exc)},409)
+            return
         if path=="/api/admin/api-features":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return

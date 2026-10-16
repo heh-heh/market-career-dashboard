@@ -12,6 +12,8 @@ sudo python3 /mnt/research/install_v07_web_console_overlay.py --apply
 """
 from __future__ import annotations
 import argparse
+from contextlib import contextmanager
+import fcntl
 import ast
 from datetime import datetime, timezone
 import hashlib
@@ -31,6 +33,8 @@ TARGET = Path("/home/ubuntu/market-career-dashboard")
 SERVICE = "market-career-dashboard.service"
 BACKUP_ROOT = Path("/mnt/research/v07-web-install-backups")
 MODULE = "v07_web_jobs.py"
+MANAGED = False
+BASE_REV = "759238f"
 ANCHOR = '    if parts==["pwd"]:\n'
 INSERT = ('    if parts and parts[0]=="v07":\n'
           '        from v07_web_jobs import console as v07_console\n'
@@ -72,7 +76,7 @@ def payload():
     pinned = "60b0f43fc6cf2a3eafea823e7c2ef2dbcc811edc"
     command("git", "-c", f"safe.directory={TOOLS}", "-C", str(TOOLS),
             "merge-base", "--is-ancestor", pinned, branch_sha)
-    data = git("show", f"{BRANCH}:{MODULE}")
+    data = git("show", f"{branch_sha}:{MODULE}")
     compile(data.decode("utf-8"), MODULE, "exec")
     if f'REV = "{pinned}"'.encode() not in data:
         raise Blocked("PINNED_RESEARCH_REVISION_MISMATCH")
@@ -99,11 +103,49 @@ def plan():
         raise Blocked("MODULE_PATH_UNSAFE")
     existing = target_module.read_bytes() if target_module.exists() else None
     if existing is not None and existing != module:
-        raise Blocked("EXISTING_WEB_MODULE_DIFFERS - preserve local edits")
-    return {
-        "server.py": (raw, new),
-        MODULE: (existing, module)
-    }, branch_sha
+        # Only the published predecessor may be upgraded automatically. Unknown
+        # EC2 local edits remain a hard conflict, even with --managed.
+        if existing != git("show", f"{BASE_REV}:{MODULE}"):
+            raise Blocked("EXISTING_WEB_MODULE_DIFFERS - preserve local edits")
+    files = {"server.py": (raw, new), MODULE: (existing, module)}
+    if b"from v07_research_report import" in module:
+        name = "v07_research_report.py"
+        data = git("show", f"{branch_sha}:{name}")
+        compile(data.decode(), name, "exec")
+        dest = TARGET/name
+        if dest.is_symlink() or dest.exists() and not dest.is_file():
+            raise Blocked("REPORT_MODULE_UNSAFE")
+        old = dest.read_bytes() if dest.exists() else None
+        if old is not None and old != data:
+            raise Blocked("REPORT_MODULE_LOCAL_EDITS")
+        files[name] = (old, data)
+    if MANAGED:
+        # Three-way merge just our new server route and UI. Unknown overlapping
+        # local customizations fail before any write; unrelated logic is retained.
+        for name in ("server.py", "admin.html"):
+            dest = TARGET/name
+            check_regular(dest)
+            original = dest.read_bytes()
+            local = new if name == "server.py" else original
+            base = git("show", f"{BASE_REV}:{name}")
+            wanted = git("show", f"{branch_sha}:{name}")
+            with tempfile.TemporaryDirectory() as temp:
+                paths = [Path(temp)/n for n in ("local", "base", "wanted")]
+                for path, value in zip(paths, (local, base, wanted)):
+                    path.write_bytes(value)
+                merged = subprocess.run(["git", "merge-file", "-p", *map(str, paths)], capture_output=True)
+                if merged.returncode:
+                    raise Blocked("LOCAL_MERGE_CONFLICT: " + name)
+            if name == "server.py":
+                ast.parse(merged.stdout.decode(), filename=name)
+            else:
+                import re
+                js = "\n".join(re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", merged.stdout.decode(), re.S))
+                test = subprocess.run(["node", "--check"], input=js.encode(), capture_output=True)
+                if test.returncode:
+                    raise Blocked("ADMIN_JAVASCRIPT_SYNTAX_ERROR")
+            files[name] = (original, merged.stdout)
+    return files, branch_sha
 
 
 def atomically(path, data, st):
@@ -136,12 +178,43 @@ def health():
         return False
 
 
+@contextmanager
+def research_idle():
+    path = Path("/mnt/research/v07-web-jobs/research.lock")
+    handle = None
+    try:
+        if path.parent.exists():
+            if path.is_symlink() or path.parent.is_symlink():
+                raise Blocked("UNSAFE_RESEARCH_LOCK")
+            handle = path.open("a+")
+            try:
+                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise Blocked("RESEARCH_CHILD_ACTIVE")
+        yield
+    finally:
+        if handle is not None:
+            handle.close()
+
+
 def apply():
+    with research_idle():
+        _apply()
+
+
+def _apply():
     if os.geteuid():
         raise Blocked("ROOT_REQUIRED")
     market_guard()
     if command("systemctl", "is-active", SERVICE).decode().strip() != "active" or not health():
         raise Blocked("API_NOT_HEALTHY_BEFORE_UPDATE")
+    for proc in Path("/proc").glob("[0-9]*/cmdline"):
+        try:
+            cmd = proc.read_bytes()
+        except OSError:
+            continue
+        if b"v07_web_jobs.py\x00--worker\x00" in cmd:
+            raise Blocked("V07_WORKER_ACTIVE: wait before overlay update")
     parts, git_head = plan()
     changed = [key for key, (before, after) in parts.items() if before != after]
     if not changed:
@@ -156,8 +229,11 @@ def apply():
     for name, (before, _) in parts.items():
         if before is not None:
             shutil.copy2(TARGET / name, backup / name)
+            st = (TARGET/name).stat()
+            os.chown(backup/name, st.st_uid, st.st_gid)
     manifest = {"phase": "PREPARED", "sourceHead": git_head,
-                "changedFiles": changed, "oldHashes": {k:sha(v[0]) if v[0] is not None else None for k,v in parts.items()}}
+                "changedFiles": changed, "oldHashes": {k:sha(v[0]) if v[0] is not None else None for k,v in parts.items()},
+                "newHashes": {k:sha(v[1]) for k,v in parts.items()}}
     (backup / "manifest.json").write_text(json.dumps(manifest, indent=2))
     installed = []
     try:
@@ -201,12 +277,57 @@ def apply():
         raise
 
 
+
+def rollback(backup):
+    """Explicit rollback of this install's files only; reject subsequent edits."""
+    if os.geteuid():
+        raise Blocked("ROOT_REQUIRED")
+    market_guard()
+    backup = Path(backup)
+    if backup.is_symlink() or backup.parent.resolve() != BACKUP_ROOT.resolve():
+        raise Blocked("UNSAFE_BACKUP_PATH")
+    check_regular(backup/"manifest.json")
+    manifest = json.loads((backup/"manifest.json").read_text())
+    names = manifest.get("changedFiles", [])
+    if not names or not set(names) <= {"server.py", "admin.html", MODULE, "v07_research_report.py"}:
+        raise Blocked("INVALID_ROLLBACK_MANIFEST")
+    with research_idle():
+        for name in names:
+            check_regular(TARGET/name)
+            if sha((TARGET/name).read_bytes()) != manifest.get("newHashes", {}).get(name):
+                raise Blocked("POST_INSTALL_EDITS: " + name)
+            if manifest["oldHashes"].get(name) is not None:
+                check_regular(backup/name)
+                if sha((backup/name).read_bytes()) != manifest["oldHashes"][name]:
+                    raise Blocked("BACKUP_HASH_MISMATCH")
+        for name in reversed(names):
+            if manifest["oldHashes"].get(name) is None:
+                (TARGET/name).unlink()  # Only the newly installed application module.
+            else:
+                atomically(TARGET/name, (backup/name).read_bytes(), (backup/name).stat())
+        command("systemctl", "restart", SERVICE, timeout=40)
+        healthy = False
+        for _ in range(18):
+            if health():
+                healthy = True; break
+            time.sleep(1)
+        manifest["phase"] = "ROLLED_BACK" if healthy else "ROLLBACK_HEALTH_FAILED"
+        (backup/"manifest.json").write_text(json.dumps(manifest, indent=2))
+        if not healthy:
+            raise Blocked("ROLLBACK_HEALTH_FAILED")
+        print(json.dumps(dict(phase="ROLLED_BACK", backup=str(backup))))
+
+
 def main():
     p = argparse.ArgumentParser()
     g = p.add_mutually_exclusive_group(required=True)
     g.add_argument("--check", action="store_true")
     g.add_argument("--apply", action="store_true")
+    g.add_argument("--rollback", type=Path, help="Restore only hash-verified application backups")
+    p.add_argument("--managed", action="store_true", help="Also merge the reviewed management UI and authenticated download route")
     a = p.parse_args()
+    global MANAGED
+    MANAGED = a.managed
     try:
         if a.check:
             parts, head = plan()
@@ -214,6 +335,8 @@ def main():
                               "changes": [{"file":k,"mode":"UNCHANGED" if v[0]==v[1] else "CREATE" if v[0] is None else "PATCH",
                                            "beforeSha256":sha(v[0]) if v[0] is not None else None}
                                           for k,v in parts.items()]}))
+        elif a.rollback:
+            rollback(a.rollback)
         else:
             apply()
     except (Blocked, OSError, ValueError, SyntaxError, subprocess.TimeoutExpired) as e:

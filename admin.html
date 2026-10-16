@@ -279,6 +279,29 @@
       <div class="label">Checkpoint / Artifact 상태</div>
       <div id="aiCheckpoints" class="signal">상태 확인 중...</div>
     </div>
+    <!-- V07_MANAGED_CARD_BEGIN -->
+    <div class="card" id="v07ManagedPanel">
+      <div class="label">V0.7 장기 학습 관리 · RESEARCH ONLY</div>
+      <div class="mini">2022~2023 학습 → 동결된 동일 개체군의 2024 내부 홀드아웃 → 2025 개발 검증. 2026 Final OOS CLOSED. 후보 창 수는 완료 세대 수가 아닙니다. 원본 데이터는 변경하지 않습니다.</div>
+      <div class="actions" style="margin-top:8px">
+        <button data-v07="analyze">시험 결과 상세 분석</button>
+        <button data-v07="train" class="primary">2022~2023 전체 학습 시작</button>
+        <button data-v07="holdout">동결 2024 홀드아웃</button>
+        <button data-v07="validation">동결 2025 개발 검증</button>
+        <button data-v07="export">결과 ZIP 준비</button>
+        <button id="v07ManagedRefresh">상태 갱신</button>
+        <button id="v07ManagedDownload" disabled>결과 ZIP 다운로드</button>
+        <button data-v07="smoke">10거래일 시험 학습</button>
+      </div>
+      <div id="v07ManagedSummary" class="terminal" role="status" style="min-height:100px;max-height:250px">조회 대기</div>
+      <div class="mini">완료된 5거래일 창의 평균 수익률 · 데이터 제외와 비용을 포함한 조건부 연구 결과</div>
+      <svg id="v07ManagedGraph" viewBox="0 0 600 140" role="img" aria-label="완료 세대 평균 수익률 그래프" style="width:100%;max-height:160px"></svg>
+      <details><summary>전체 30종목 감사 / 누락률 / 제외 사유</summary><pre id="v07AuditDetail" style="max-height:300px;overflow:auto;white-space:pre-wrap">-</pre></details>
+      <details><summary>세대 성과 / 부모 선발 / 시험 분석 / 동결 검증</summary><pre id="v07ManagedAnalysis" style="max-height:340px;overflow:auto;white-space:pre-wrap">-</pre></details>
+      <details><summary>중단 작업 복구</summary><div class="mini">기존 결과는 보존합니다. 실패/중단 작업만 동일 seed로 처음부터 새 디렉터리에 재실행합니다. 체크포인트 이어하기가 아닙니다. 실행 중인 자식 프로세스가 남아 있으면 차단됩니다.</div><div class="actions"><button data-v07-retry="train">학습 재실행</button><button data-v07-retry="holdout">2024 재실행</button><button data-v07-retry="validation">2025 재실행</button></div></details>
+      <div class="mini">코드 준비·감사·구간 선별·콘솔·최근 로그는 관리 → 서버 콘솔의 기존 V0.7 영역에서 사용할 수 있습니다.</div>
+    </div>
+    <!-- V07_MANAGED_CARD_END -->
     <div class="card">
       <div class="label">V0.7 Baseline 선택 진단</div>
       <div id="aiBaselineSelectionSummary" class="signal">선택 기록 없음</div>
@@ -586,7 +609,7 @@ function navigateAdmin(name, updateHash=true){
  if(name==='trade')refreshTrade();
  if(name==='paper')refreshPaper();
  if(name==='backtest')refreshSimpleBacktest();
- if(name==='ai')refreshAI();
+ if(name==='ai'){refreshAI();refreshV07Web();}
  if(name==='console'){refreshGit();refreshV07Web();}
  if(name==='status')refreshServerStatus();
  if(name==='api')refreshApiFeatures();
@@ -1085,15 +1108,18 @@ async function refreshV07Web(){
   try{
     const results=await Promise.all([
       req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 status"})}),
-      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 log"})})
+      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 log"})}),
+      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 report"})})
     ]);
     setText("v07WebStatus",results[0].output||"상태 없음");
     setText("v07WebLog",results[1].output||"로그 없음");
-  }catch(e){setText("v07WebStatus","조회 실패: "+e.message)}
+    renderV07Managed(JSON.parse(results[2].output||"{}"));
+  }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message)}
   finally{v07WebPending=false}
 }
 document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>{
   const cmd="v07 "+button.dataset.v07;
+  if(["train","holdout","validation"].includes(button.dataset.v07)&&!confirm(cmd+" 연구를 시작할까요? 기존 원본/결과는 보존하며 2026은 사용하지 않습니다."))return;
   if(button.dataset.v07==="smoke"&&!confirm("20개체로 10거래일 연구용 시험 학습을 시작할까요? 실거래는 수행하지 않습니다."))return;
   button.disabled=true;
   try{
@@ -1103,7 +1129,39 @@ document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>
   finally{button.disabled=false;await refreshV07Web()}
 });
 document.getElementById("v07WebRefresh").onclick=refreshV07Web;
-setInterval(()=>{if(currentAdminGroup==="manage"&&document.getElementById("console").classList.contains("active"))refreshV07Web()},15000);
+setInterval(()=>{if(document.getElementById("ai").classList.contains("active")||(currentAdminGroup==="manage"&&document.getElementById("console").classList.contains("active")))refreshV07Web()},15000);
+
+
+// V07_MANAGED_JS_BEGIN
+function renderV07Managed(d){
+  const stages=d.stages||{},runs=d.runs||{};
+  const phaseText=Object.entries(stages).map(([k,v])=>k+": "+v.phase+(v.error?" · "+v.error:"")).join("\n");
+  const r=runs.validation||runs.holdout||runs.train||runs.smoke||{};
+  setText("v07ManagedSummary",(d.jobId||"작업 없음")+"\n"+phaseText+"\n진행 "+(r.completedSessions??"-")+" / "+(r.requestedSessions??"-")+" 거래일 · 완료 세대 "+(r.completedTrainGenerations??"-")+" · 무효 시도 "+(r.skippedGenerationAttempts??"-")+"\n실제 사용일 "+(r.selectedSessionCount??"-")+" · 제외일 "+(r.excludedSessionCount??"-")+"\n"+(r.dataMode||"PROVISIONAL_UNREVIEWED_DATA")+" / "+(r.evaluationStatus||"UNVERIFIED")+"\nFinal OOS "+(d.finalOosGate||"CLOSED")+" · 디스크 여유 "+(d.diskFreeBytes==null?"-":(d.diskFreeBytes/1024**3).toFixed(1)+" GiB")+"\n리소스 "+JSON.stringify(d.resources||{})+"\n현재 연구 거래일: "+(r.currentHistoricalDate||"-")+" · "+(r.latestLog||""));
+  setText("v07AuditDetail",JSON.stringify({audit:d.audit,plan:d.plan,excludedSamples:d.excludedSamples},null,2));
+  setText("v07ManagedAnalysis",JSON.stringify({generations:d.generations,analysis:d.analysis,latest:r},null,2));
+  document.getElementById("v07ManagedDownload").disabled=!d.downloadAvailable;
+  const graph=document.getElementById("v07ManagedGraph"), vals=(d.generations||[]).map(x=>x.returns?.mean).filter(Number.isFinite);
+  const bound=Math.max(.001,...vals.map(Math.abs));
+  const points=vals.map((v,i)=>(10+i*580/Math.max(1,vals.length-1)).toFixed(2)+","+(70-v/bound*60).toFixed(2)).join(" ");
+  // Only calculated finite numbers enter SVG markup, never artifact strings.
+  graph.innerHTML='<line x1="10" y1="70" x2="590" y2="70" stroke="#888"/><polyline fill="none" stroke="#42c9ad" stroke-width="2" points="'+points+'"/>';
+}
+document.getElementById("v07ManagedRefresh").onclick=refreshV07Web;
+document.querySelectorAll("[data-v07-retry]").forEach(b=>b.onclick=async()=>{
+  if(!confirm("실패/중단 작업을 새 결과로 재실행할까요? 기존 연구 기록은 보존합니다."))return;
+  b.disabled=true;
+  try{const d=await req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 retry "+b.dataset.v07Retry})});appendConsole(d.output||"");}
+  catch(e){alert(e.message)}finally{b.disabled=false;await refreshV07Web()}
+});
+document.getElementById("v07ManagedDownload").onclick=async()=>{
+  try{
+    const r=await fetch(API+"/api/research/v07/download",{headers:{Authorization:"Bearer "+token()}});
+    if(!r.ok){const e=await r.json();throw new Error(e.error||"다운로드 실패")}
+    const u=URL.createObjectURL(await r.blob()),a=document.createElement("a");a.href=u;a.download="v07-research-results.zip";a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);
+  }catch(e){alert(e.message)}
+};
+// V07_MANAGED_JS_END
 
 function appendConsole(v){const e=document.getElementById("consoleOut");e.textContent+=(e.textContent?"\n":"")+v;e.scrollTop=e.scrollHeight}
 async function runConsole(cmd){

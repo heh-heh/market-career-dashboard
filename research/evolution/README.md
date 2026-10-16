@@ -519,3 +519,5 @@ See [AVAILABLE_DATA.md](AVAILABLE_DATA.md) for all-universe streaming coverage,
 causal per-symbol availability, interrupted five-session windows, partial frozen
 validation, comparison safeguards and the three manual EC2 commands. Original
 seven-session and strict five-session configs/results remain unchanged.
+
+장기 웹 관리/시험 분석/동결 검증: [V07_MANAGED_RESEARCH.md](V07_MANAGED_RESEARCH.md). 기존 정책·비용 변경 없이 가용 데이터 모드의 고정 명령을 확장합니다.
