@@ -1908,8 +1908,13 @@ def run_admin_console(command):
             "  journalctl <service> [N]\n"
             "  tail collector|v2|multi [N]\n"
             "  state collector|v2|multi\n"
+            "  v07 prepare|audit|select|smoke|status|log (detached read-only research)\n"
             "서비스: "+", ".join(sorted(ADMIN_CONSOLE_SERVICES))
         )
+
+    if parts and parts[0]=="v07":
+        from v07_web_jobs import console as v07_console
+        return v07_console(parts)
 
     if parts==["pwd"]:
         return 0,str(ROOT)
