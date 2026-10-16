@@ -49,7 +49,7 @@ const ctx=vm.createContext({location:{hash:'#trade'},history:{replaceState(...ar
   if(sel==='#adminSubnav [data-tab]')return subs;
   if(sel==='.panel')return panels;return []}},
  refreshTrade(){},refreshPaper(){},refreshSimpleBacktest(){},refreshAI(){},refreshGit(){},
- refreshApiFeatures(){},refreshCredentials(){},refreshCollectionSymbols(){},refreshCollectors(){},refreshServerStatus(){}});
+ refreshApiFeatures(){},refreshCredentials(){},refreshCollectionSymbols(){},refreshCollectors(){},refreshServerStatus(){},refreshV07Web(){}});
 new vm.Script(admin.slice(start,end)).runInContext(ctx);
 for(const target of ['console','status','downloads','collectors','settings','paper','ai']){
  vm.runInContext('navigateAdmin("'+target+'")',ctx);
