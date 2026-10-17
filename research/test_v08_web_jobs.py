@@ -36,6 +36,7 @@ class V08WebJobsTests(unittest.TestCase):
             job = root / "job-20261017T121314Z-aabbccddeeff"
             job.mkdir()
             (root / "current.json").write_text(json.dumps({"name": job.name}))
+            (root / "plan.json").write_text(json.dumps({"smokeRange": {"fromDate": "2022-01-03", "toDate": "2022-01-14"}}))
             (job / "smoke.json").write_text(json.dumps({"phase": "completed"}))
             with patch.object(jobs, "ROOT", root), patch.object(jobs.legacy, "ROOT", legacy_root), patch.object(jobs, "_storage"), \
                  patch.object(jobs, "_other_active"), patch.object(jobs, "_plan", return_value=root/"plan.json"), \
