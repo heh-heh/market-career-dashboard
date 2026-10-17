@@ -15,6 +15,7 @@ on:
       - "research/test_bot_roster_smoke.cjs"
       - "v082_web_jobs.py"
       - "scripts/install_v082_admin_api_overlay.py"
+      - "research/test_v08_web_smoke.cjs"
       - "research/test_v082*"
       - "collection.html"
       - "backtest-v2.html"
