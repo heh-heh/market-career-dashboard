@@ -35,6 +35,8 @@ function render(d){
     ["진행 거래일",processed==null?"—":processed+" / "+(requested??"?"),"서버 보고 기준"],
     ["완료 세대",number(run.completedTrainGenerations),"연속 유효 5거래일"],
     ["수익 부모",number(latest?.parents),"최신 완료 창"],
+    ["수익 봇 비율",latest?pct(latest.profitableBotRatio):"—","최신 5거래일 평가 창"],
+    ["자식 생성",number(latest?.offspringCount),"최신 완료 창"],
     ["RANDOM_RECOVERY",latest?.recovery==null?"—":latest.recovery?"발생":"미발생","최신 완료 창"],
     ["유전자 다양성",number(latest?.uniqueGenomes),"서로 다른 유전자 수"],
     ["최신 평균 수익",latest?pct(latest.meanReturn):"—","비용 차감 기준"],
@@ -47,7 +49,7 @@ function render(d){
   chart("v08ReturnChart","v08ReturnSummary",gens,"meanReturn",pct);
   chart("v08MddChart","v08MddSummary",gens,"meanMdd",pct);
   chart("v08FitnessChart","v08FitnessSummary",gens,"meanFitness",v=>v.toFixed(4));
-  write("v08WebLineage",gens.map(g=>"세대 "+g.generation+" · "+(g.dates||[]).join(" ~ ")+" · 평균 수익 "+pct(g.meanReturn)+" · MDD "+pct(g.meanMdd)+" · fitness "+(numeric(g.meanFitness)==null?"—":g.meanFitness.toFixed(4))+" · 부모 "+number(g.parents)+" · 유전자 "+number(g.uniqueGenomes)+" · 무작위 회복 "+(g.recovery?"예":"아니오")).join("\n")||"완료된 세대 없음");
+  write("v08WebLineage",gens.map(g=>"세대 "+g.generation+" · "+(g.dates||[]).join(" ~ ")+" · 평균 수익 "+pct(g.meanReturn)+" · MDD "+pct(g.meanMdd)+" · fitness "+(numeric(g.meanFitness)==null?"—":g.meanFitness.toFixed(4))+" · 부모 "+number(g.parents)+" · 자식 "+number(g.offspringCount)+" · 엘리트 "+number(g.eliteCount)+" · 변이 유전자 "+number(g.mutationCount)+" · 유전자 "+number(g.uniqueGenomes)+" · 최대 부모 기여 "+pct(g.maxParentContribution)+" · 무작위 회복 "+(g.recovery?"예":"아니오")).join("\n")||"완료된 세대 없음");
   const downloading=Boolean(d.downloadAvailable);
   get("v08WebDownload").disabled=!downloading;
   document.querySelectorAll("[data-v08-retry]").forEach(b=>b.disabled=busy||!["failed","interrupted"].includes(stages[b.dataset.v08Retry]?.phase));
