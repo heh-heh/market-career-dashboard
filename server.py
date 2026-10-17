@@ -1916,6 +1916,7 @@ def run_admin_console(command):
     if parts and parts[0]=="v07":
         from v07_web_jobs import console as v07_console
         return v07_console(parts)
+
     if parts and parts[0]=="v08":
         from v08_web_jobs import console as v08_console
         return v08_console(parts)
