@@ -1128,6 +1128,13 @@ document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>
   }catch(e){appendConsole(cmd+" ERROR: "+e.message)}
   finally{button.disabled=false;await refreshV07Web()}
 });
+// Keep this V0.7 status refresh independent of locally customized navigateAdmin().
+document.querySelectorAll('#adminSubnav [data-tab="ai"], #adminSubnav [data-tab="console"]').forEach(
+  button=>button.addEventListener('click',()=>refreshV07Web())
+);
+if(typeof window!=='undefined')window.addEventListener('hashchange',()=>{
+  if(location.hash==='#ai'||location.hash==='#console')refreshV07Web();
+});
 document.getElementById("v07WebRefresh").onclick=refreshV07Web;
 setInterval(()=>{if(document.getElementById("ai").classList.contains("active")||(currentAdminGroup==="manage"&&document.getElementById("console").classList.contains("active")))refreshV07Web()},15000);
 
