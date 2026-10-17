@@ -35,7 +35,7 @@ class V08WebJobsTests(unittest.TestCase):
             job.mkdir()
             (root / "current.json").write_text(json.dumps({"name": job.name}))
             (job / "smoke.json").write_text(json.dumps({"phase": "completed"}))
-            with patch.object(jobs, "ROOT", root), patch.object(jobs, "_storage"), \
+            with patch.object(jobs, "ROOT", root), patch.object(jobs.legacy, "ROOT", root), patch.object(jobs, "_storage"), \
                  patch.object(jobs, "_other_active"), patch.object(jobs, "_plan", return_value=root/"plan.json"), \
                  patch.object(jobs.legacy, "_check_service_lifetime"), \
                  patch.object(jobs, "PYTHON", Path(__file__)), patch.object(jobs, "_verify_source"), \
