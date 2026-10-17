@@ -81,8 +81,9 @@ class WebTests(unittest.TestCase):
             job=jobs._job()
             self.assertEqual(jobs._population(job),10)
             self.assertEqual(json.loads((job/'population.json').read_text())['population'],10)
-            with self.assertRaisesRegex(ValueError,'V083_POPULATION_CHANGE_REQUIRES_NEW_CAMPAIGN'):
-                jobs.start('smoke',population=5)
+            with patch.object(jobs,'_state',return_value={'phase':'failed'}):
+                with self.assertRaisesRegex(ValueError,'V083_POPULATION_CHANGE_REQUIRES_NEW_CAMPAIGN'):
+                    jobs.start('smoke',population=5)
             self.assertEqual(jobs._population(job),10)
 
     def test_no_valid_smoke_cannot_unlock_calibration(self):
