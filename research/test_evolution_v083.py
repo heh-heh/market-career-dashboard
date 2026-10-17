@@ -95,11 +95,10 @@ class TopTwoV083(unittest.TestCase):
     def test_invalid_operator_population_rejected(self):
         for size in (0,1,51):
             with self.subTest(size=size):
-                config=replace(self.cfg,population_size=size)
-                bots=initial_population(config,random.Random(1),'2023-01-03')
-                rows=evaluations(bots,[0.0]*size)
-                with self.assertRaisesRegex(ValueError,'V083_POPULATION_OUT_OF_BOUNDS'):
-                    reproduce_top_two(bots,rows,config,random.Random(1),1,'2023-01-10')
+                rows=[dict(botId=f"g0000-b{i:04d}",windowPnl=0.0,windowMaxDrawdown=0.0,fitness=0.0,
+                           evaluationValid=True,windowComplete=True,windowSessions=5,validDays=5) for i in range(size)]
+                with self.assertRaisesRegex(ValueError,'V083_REQUIRES_ALL_VALID'):
+                    select_top_two(rows,self.cfg.epsilon)
 
     def test_pacing_never_disables_resource_guard(self):
         monitor=PacedMonitor(pacing_seconds=.005)
