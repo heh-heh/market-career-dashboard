@@ -84,6 +84,55 @@ class TopTwoV083(unittest.TestCase):
                 monitor.check()
             sleeper.assert_not_called()
 
+    def test_synthetic_rewind_replays_first_date_with_new_child_population(self):
+        # Five valid synthetic XNYS sessions, no AWS, no broker, no CPU pacing
+        # in this unit test. Force the restart signal to exercise control flow.
+        import contextlib
+        import io
+        import tempfile
+        from pathlib import Path
+        from research.backtest_v4_strategies import exchange_sessions
+        from research.test_evolution_available_data import prepare
+        from research.evolution.run_v07_available import parser as base_parser, run
+        import research.evolution.v083_top_two as policy
+        original = policy.reproduce_top_two
+        calls = []
+        def forced(bots, rows, cfg, rng, generation, birth_date):
+            children, meta = original(bots, rows, cfg, rng, generation, birth_date)
+            calls.append(generation)
+            if generation == 1:
+                meta['restartRequested'] = True
+            else:
+                meta['restartRequested'] = False
+            return children, meta
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            days=list(exchange_sessions('2023-06-01','2023-06-07'))
+            plan=prepare(root,days)
+            args=base_parser().parse_args([
+                '--selection-plan',str(plan),'--config',str(CONFIG),
+                '--population','50','--from-date',days[0],'--to-date',days[-1],
+                '--results-dir',str(root/'results'),'--data-origin','synthetic'])
+            args.v083_mode=True
+            args.max_restarts=1
+            with patch('research.evolution.run_v07_available.resource_preflight',return_value={}), \
+                 patch('research.evolution.v083_top_two.reproduce_top_two',side_effect=forced), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                out=run(args)
+            info=json.loads((out/'run.json').read_text())
+            self.assertEqual(info['version'],'V083_TOP_TWO_1')
+            self.assertEqual(info['restarts'],1)
+            self.assertEqual(info['completedTrainGenerations'],2)
+            self.assertEqual(info['totalProcessedSessions'],10)
+            self.assertEqual(calls,[1,2])
+            day_rows=[json.loads(x) for x in (out/'generations.jsonl').read_text().splitlines()]
+            self.assertEqual([x['date'] for x in day_rows],[*days,*days])
+            self.assertTrue((out/'window_0000.json').is_file())
+            self.assertTrue((out/'window_0001.json').is_file())
+            self.assertEqual(json.loads((out/'checkpoint.json').read_text())['completedGeneration'],2)
+            self.assertEqual(len(json.loads((out/'final_population.json').read_text())),50)
+            self.assertEqual(len((out/'v083_restarts.jsonl').read_text().splitlines()),1)
+
     def test_runner_explicit_opt_in_and_bounded_restarts(self):
         p=parser()
         a=p.parse_args(['--selection-plan','dummy.json'])
