@@ -25,7 +25,7 @@ TARGET=APP/"server.py"
 CONTROLLER=APP/"v08_web_jobs.py"
 
 CONSOLE_ANCHOR='    if parts and parts[0]=="v07":\n        from v07_web_jobs import console as v07_console\n        return v07_console(parts)\n'
-CONSOLE_ADD='    if parts and parts[0]=="v08":\n        from v08_web_jobs import console as v08_console\n        return v08_console(parts)\n'
+CONSOLE_ADD='\n    if parts and parts[0]=="v08":\n        from v08_web_jobs import console as v08_console\n        return v08_console(parts)\n'
 DOWNLOAD_ANCHOR='        if path=="/api/research/v07/download":'
 DOWNLOAD_ADD='''        if path=="/api/research/v08/download":
             if not authorized(self):
