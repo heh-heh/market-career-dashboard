@@ -156,12 +156,13 @@ def start(stage, retry=False):
     if stage != "export":
         _verify_source()
     _plan()
-    with (ROOT / "start.lock").open("a+") as start_lock, (ROOT / "research.lock").open("a+") as run_lock:
+    with (ROOT / "start.lock").open("a+") as start_lock, (ROOT / "research.lock").open("a+") as run_lock, (legacy.ROOT / "research.lock").open("a+") as shared_lock:
         fcntl.flock(start_lock, fcntl.LOCK_EX)
         try:
             fcntl.flock(run_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(shared_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise ValueError("V08_BUSY: existing worker/child holds research lock")
+            raise ValueError("V08_BUSY: V0.7/V0.8 research worker or child holds a lock")
         job = _job()
         if job and any(_state(job, st)["phase"] in ("starting", "running") for st in STAGES):
             raise ValueError("V08_BUSY: a stage is already running")
@@ -201,8 +202,9 @@ def start(stage, retry=False):
             with (job / logfile).open("xb") as log:
                 subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--worker", stage, str(job)],
                     cwd=str(job), stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
-                    close_fds=True, start_new_session=True, pass_fds=(run_lock.fileno(),),
-                    env={**os.environ, "PYTHONUNBUFFERED": "1", "V08_LOCK_FD": str(run_lock.fileno())})
+                    close_fds=True, start_new_session=True, pass_fds=(run_lock.fileno(), shared_lock.fileno()),
+                    env={**os.environ, "PYTHONUNBUFFERED": "1", "V08_LOCK_FD": str(run_lock.fileno()),
+                         "V08_SHARED_LOCK_FD": str(shared_lock.fileno())})
         except OSError as exc:
             _write(job / (stage + ".json"), {**state, "phase": "failed", "error": str(exc)[:200]})
             raise
@@ -267,12 +269,13 @@ def worker(stage, job):
             env = {**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1",
                    "MKL_NUM_THREADS": "1", "GIT_TERMINAL_PROMPT": "0"}
             inherited = int(os.environ.get("V08_LOCK_FD", "-1"))
+            shared = int(os.environ.get("V08_SHARED_LOCK_FD", "-1"))
             last_dir = None
             log = (job / state["logFile"]).open("ab", buffering=0)
             try:
                 with subprocess.Popen(argv, cwd=str(APP), env=env, stdin=subprocess.DEVNULL,
                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                      pass_fds=(inherited,) if inherited >= 0 else ()) as child:
+                                      pass_fds=tuple(fd for fd in (inherited, shared) if fd >= 0)) as child:
                     state["childPid"] = child.pid
                     _write(statefile, state)
                     for line in iter(child.stdout.readline, b""):
@@ -315,6 +318,13 @@ def report():
     runs, history = {}, []
     for k in ("smoke", "train", "holdout", "validation"):
         folder = Path(states[k].get("runDir") or "")
+        if (not states[k].get("runDir") and states[k]["phase"] in ("running", "starting")
+                and isinstance(states[k].get("childPid"), int)):
+            # Match by runner PID: never display an unrelated command-line result.
+            candidates = [p for p in RESULTS.iterdir() if p.is_dir() and not p.is_symlink()
+                          and _read(p/"status.json").get("pid") == states[k]["childPid"]]
+            if len(candidates) == 1:
+                folder = candidates[0]
         if folder.is_dir() and not folder.is_symlink() and folder.resolve().parent == RESULTS.resolve():
             runs[k] = _read(folder / "status.json")
             if k == "train":
