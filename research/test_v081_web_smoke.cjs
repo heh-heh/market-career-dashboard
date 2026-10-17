@@ -3,6 +3,7 @@ const root=path.join(__dirname,'..'),h=fs.readFileSync(root+'/admin.html','utf8'
 for(const id of ['v081WebPanel','v081WebCapacity','v081WebStats','v081WebLineage'])assert.ok(h.includes('id="'+id+'"'));
 assert.ok(h.includes('id="v08WebPanel"'),'V08 retained');
 assert.match(h,/data-v081="smoke" type="button" disabled/);
+assert.match(h,/data-v081-retry="calibrate">자원 산정 재실행<\/button>/);
 assert.match(js,/V081_BACKEND_UNSUPPORTED/);assert.match(js,/V081_WEB_1/);assert.match(js,/2026 OOS CLOSED/);
 new vm.Script(js);
 const nodes=new Map(),buttons=Array.from(h.matchAll(/data-v081="(\w+)"/g)).map(x=>({dataset:{v081:x[1]},addEventListener(){},disabled:true}));
@@ -18,5 +19,8 @@ vm.runInContext(js.replace('})();','globalThis.test={refresh,action,render};})()
  assert.ok(buttons.find(b=>b.dataset.v081==='train').disabled);
  context.test.render({protocol:'V081_WEB_1',stages:{smoke:{phase:'completed'},calibrate:{phase:'completed'}},capacity:{recommendation:{recommendedPopulation:225}},runs:{},generations:[]});
  assert.match(get('v081WebStats').innerHTML,/225/);assert.equal(buttons.find(b=>b.dataset.v081==='train').disabled,false);
+ context.test.render({protocol:'V081_WEB_1',stages:{smoke:{phase:'completed'},calibrate:{phase:'failed',error:'V081_RUN_EXIT_2'}},capacity:{trials:[{population:100,measuredRuns:[{guardPassed:false,failure:'RESOURCE_TARGET_EXCEEDED:cpuPct:75.5>75.0'}]}],recommendation:{status:'BLOCKED_100_UNSAFE_OR_INVALID'}},runs:{},generations:[]});
+ assert.match(get('v081WebFeedback').textContent,/RESOURCE_TARGET_EXCEEDED:cpuPct:75\.5>75\.0/);
+ assert.match(get('v081WebFeedback').textContent,/BLOCKED_100_UNSAFE_OR_INVALID/);
  console.log('PASS: V081 protocol gate, disabled unsupported actions, measured capacity and legacy V08 retained');
 })().catch(e=>{console.error(e);process.exit(1)});
