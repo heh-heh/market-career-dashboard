@@ -25,6 +25,7 @@ APP = MOUNT / "v083-source"
 PYTHON = Path("/home/ubuntu/market-career-dashboard/.venv/bin/python")
 RUNNER = APP / "research/evolution/run_v083.py"
 PROTOCOL = "V083_WEB_1"
+MIN_POPULATION = 2
 MAX_POPULATION = 50
 MAX_SESSION_SECONDS = float(os.getenv("V083_MAX_SESSION_SECONDS", "900"))
 if MAX_POPULATION != 50 or MAX_SESSION_SECONDS <= 0: raise ValueError("V083_INVALID_CAPACITY_CONFIG")
@@ -130,9 +131,24 @@ def _capacity(job):
     data = _read(path)
     population = data.get("population")
     if not 0<=time.time()-float(data.get("createdEpoch",0))<=24*3600:raise ValueError("V083_CAPACITY_EXPIRED_REMEASURE")
-    if data.get("version")!="V083_CAPACITY_1" or data.get("status")!="MEASURED_SAFE" or not isinstance(population,int) or population != 50:
+    if data.get("version")!="V083_CAPACITY_1" or data.get("status")!="MEASURED_SAFE" or not isinstance(population,int) or population != _population(job):
         raise ValueError("V083_CAPACITY_NOT_SAFE")
     return dict(path=path,population=population)
+
+
+def _population(job):
+    if job is None: return MAX_POPULATION
+    settings = _read(job / "population.json")
+    number = settings.get("population", 50)  # Existing V083 jobs used 50.
+    if type(number) is not int or not MIN_POPULATION <= number <= MAX_POPULATION:
+        raise ValueError("V083_INVALID_CAMPAIGN_POPULATION")
+    return number
+
+
+def _validate_population(number):
+    if type(number) is not int or not MIN_POPULATION <= number <= MAX_POPULATION:
+        raise ValueError(f"V083_POPULATION_MUST_BE_{MIN_POPULATION}_TO_{MAX_POPULATION}")
+    return number
 
 
 def _last_log(job):
@@ -179,9 +195,10 @@ def _verify_source():
         raise ValueError("V083_RUNNER_MISSING")
 
 
-def start(stage, retry=False, new_job=False):
+def start(stage, retry=False, new_job=False, population=None):
     if stage not in STAGES:
         raise ValueError("V083_COMMAND_NOT_ALLOWED")
+    if population is not None: _validate_population(population)
     _storage()
     legacy._check_service_lifetime()
     _other_active()
@@ -212,7 +229,11 @@ def start(stage, retry=False, new_job=False):
             name = datetime.now(timezone.utc).strftime("job-%Y%m%dT%H%M%SZ-") + os.urandom(6).hex()
             job = ROOT / name
             job.mkdir(mode=0o700)
+            _write(job / "population.json", {"population": _validate_population(population if population is not None else 50), "finalOosGate": "CLOSED"})
             _write(ROOT / "current.json", {"name": name})
+        selected = _population(job)
+        if population is not None and population != selected:
+            raise ValueError("V083_POPULATION_CHANGE_REQUIRES_NEW_CAMPAIGN")
         evidence = _read(job / "source_plan.json")
         if evidence:
             if stage!="export" and evidence.get("sourceCommit")!=_read(ROOT/"source_revision.json").get("commit"):
@@ -315,8 +336,9 @@ def worker(stage, job):
                     legacy._hash(plan) != evidence.get("sha256")):
                 raise ValueError("V083_PLAN_CHANGED_DURING_LAUNCH")
             app=_source_app()
+            selected=_population(job)
             argv = [str(PYTHON), str(app/"research/evolution/run_v083.py"), "--selection-plan", str(plan),
-                    "--seed", "42", "--require-ebs", "--research-mount", str(MOUNT), "--results-dir", str(RESULTS), "--max-session-seconds", str(MAX_SESSION_SECONDS)]
+                    "--seed", "42", "--require-ebs", "--research-mount", str(MOUNT), "--results-dir", str(RESULTS), "--max-session-seconds", str(MAX_SESSION_SECONDS), "--population", str(selected)]
             if stage == "smoke":
                 argv += ["--pilot"]
             elif stage == "calibrate":
@@ -326,7 +348,7 @@ def worker(stage, job):
                 argv = [str(PYTHON), str(app / "research/evolution/calibrate_v083.py"),
                     "--selection-plan", str(plan), "--out", str(output), "--require-ebs",
                     "--research-mount", str(MOUNT),
-                    "--max-session-seconds", str(MAX_SESSION_SECONDS)]
+                    "--max-session-seconds", str(MAX_SESSION_SECONDS), "--population", str(selected)]
             else:
                 a, b = DATES[stage]
                 argv += ["--from-date", a, "--to-date", b]
@@ -377,7 +399,7 @@ def worker(stage, job):
                 if not capacity_path.is_file() or capacity_path.is_symlink() or capacity_path.resolve().parent.parent != job.resolve():
                     raise ValueError("V083_CAPACITY_RESULT_PATH_INVALID")
                 capacity = _read(capacity_path)
-                if capacity.get("status") != "MEASURED_SAFE" or capacity.get("population") != 50:
+                if capacity.get("status") != "MEASURED_SAFE" or capacity.get("population") != selected:
                     raise ValueError("V083_CAPACITY_50_UNSAFE_OR_INVALID")
                 state.update(capacityReport=str(capacity_path), capacitySha256=legacy._hash(capacity_path))
             else:
@@ -441,7 +463,7 @@ def report():
     _storage()
     job = _job()
     if not job:
-        return {"protocol":PROTOCOL,"priorZeroGeneration":_prior_zero_diagnosis(),"resources":_live_resources(),"maxPopulation":MAX_POPULATION,"initialPopulation":50,"researchOnly": True, "finalOosGate": "CLOSED", "stages": {}, "runs": {},
+        return {"protocol":PROTOCOL,"priorZeroGeneration":_prior_zero_diagnosis(),"resources":_live_resources(),"minPopulation":MIN_POPULATION,"maxPopulation":MAX_POPULATION,"selectedPopulation":50,"initialPopulation":50,"researchOnly": True, "finalOosGate": "CLOSED", "stages": {}, "runs": {},
                 "jobId": None, "message": "V0.8.3 시험 학습 전"}
     states = {k: _state(job, k) for k in STAGES}
     runs, history = {}, []
@@ -488,7 +510,7 @@ def report():
     capacity_state=states["calibrate"]
     capacity_path=Path(capacity_state.get("capacityReport") or "")
     capacity = _read(capacity_path) if capacity_path.is_file() and capacity_path.resolve().parent.parent==job.resolve() else {}
-    return {"protocol":PROTOCOL,"priorZeroGeneration":_prior_zero_diagnosis(),"maxPopulation":MAX_POPULATION,"initialPopulation":50,
+    return {"protocol":PROTOCOL,"priorZeroGeneration":_prior_zero_diagnosis(),"minPopulation":MIN_POPULATION,"maxPopulation":MAX_POPULATION,"selectedPopulation":_population(job),"initialPopulation":_population(job),
             "resources":_live_resources(),"capacity":capacity,
             "researchOnly": True, "finalOosGate": "CLOSED", "jobId": job.name,
             "stages": states, "runs": runs, "generations": history,"historyStage":history_stage,
@@ -509,9 +531,10 @@ def download():
 
 def console(parts):
     if parts in (["v083"], ["v083", "help"]):
-        return 0, "v083 smoke | calibrate | train | holdout | validation | export | status | log | report | retry <stage>. 2026 OOS CLOSED."
-    if parts == ["v083", "new"]:
-        return 0,start("smoke",new_job=True)
+        return 0, "v083 smoke [2..50] | new [2..50] | calibrate | train | holdout | validation | export | status | log | report | retry <stage>. Current campaign population is immutable. 2026 OOS CLOSED."
+    if len(parts) in (2,3) and parts[:2] == ["v083", "new"]:
+        if len(parts)==3 and not re.fullmatch(r"[0-9]{1,2}",parts[2]): raise ValueError("V083_INVALID_POPULATION")
+        return 0,start("smoke",new_job=True,population=_validate_population(int(parts[2]) if len(parts)==3 else 50))
     if parts == ["v083", "report"]:
         return 0, json.dumps(report(), ensure_ascii=False)
     if parts == ["v083", "status"]:
@@ -519,6 +542,9 @@ def console(parts):
     if parts == ["v083", "log"]:
         job = _job()
         return 0, legacy._tail(_last_log(job)) if job else "(V0.8.3 작업 없음)"
+    if len(parts) in (2,3) and parts[1] == "smoke":
+        if len(parts)==3 and not re.fullmatch(r"[0-9]{1,2}",parts[2]): raise ValueError("V083_INVALID_POPULATION")
+        return 0,start("smoke",population=_validate_population(int(parts[2]) if len(parts)==3 else 50))
     if len(parts) == 2 and parts[1] in STAGES:
         return 0, start(parts[1])
     if len(parts) == 3 and parts[1] == "retry" and parts[2] in STAGES:
