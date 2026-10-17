@@ -4,6 +4,10 @@ for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm
 const panel=html.slice(html.indexOf('<!-- V07_MANAGED_CARD_BEGIN -->'),html.indexOf('<!-- V07_MANAGED_CARD_END -->'));
 for(const cmd of ['analyze','train','holdout','validation','export'])assert.ok(panel.includes('data-v07="'+cmd+'"'));
 assert.ok(html.indexOf('id="v07ManagedPanel"')>html.indexOf('<section id="ai"'));
+assert.match(panel,/id="v07ActionFeedback"[^>]*role="status"/,'AI page must show launch response and rejection inline');
+assert.match(html,/setNotice\(cmd\+" · 실행 요청 차단 또는 실패:/,'rejected launches must be visible on AI tab');
+assert.match(html,/setNotice\(cmd\+" · 서버 응답:/,'accepted launches must be visible on AI tab');
+assert.match(html,/let v07ActionPending=false;/,'prevent duplicate launch attempts while HTTP request is pending');
 const begin=html.indexOf('function renderV07Managed(d)'),end=html.indexOf('document.getElementById("v07ManagedRefresh")',begin);
 const elements=new Map(),texts={};
 const get=id=>{if(!elements.has(id))elements.set(id,{});return elements.get(id)};
