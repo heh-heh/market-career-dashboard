@@ -27,7 +27,7 @@ for(const id of ['credentialsForm','credentialsSave','tossAppKey','tossAppSecret
                  'researchExportCenter','collectionDownloadBtn','collectionResume','collectionPause'])
  assert.ok(admin.includes('id="'+id+'"'),'missing '+id);
 assert.ok(admin.includes('src="research-export.js"')&&admin.includes('href="research-export.css"'));
-assert.ok(admin.includes('id="openResearchMonitor"')&&admin.includes("location.href='./#v9'"));
+assert.ok(admin.includes('id="v07ManagedPanel"')&&!admin.includes('id="openResearchMonitor"'),'AI tab contains current V0.7 panel, not legacy V4 monitor link');
 assert.ok(index.includes("openReadOnlyResearchFromLink"),"legacy research monitor accessible only by direct link");
 assert.ok(admin.includes('2022')&&admin.includes('2025'),'historic collection download scope present');
 for(const html of [index,admin])for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))
