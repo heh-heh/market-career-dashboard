@@ -38,7 +38,7 @@ class V08WebJobsTests(unittest.TestCase):
             with patch.object(jobs, "ROOT", root), patch.object(jobs, "_storage"), \
                  patch.object(jobs, "_other_active"), patch.object(jobs, "_plan", return_value=root/"plan.json"), \
                  patch.object(jobs.legacy, "_check_service_lifetime"), \
-                 patch.object(jobs, "PYTHON", __file__), patch.object(jobs, "RUNNER", __file__), \
+                 patch.object(jobs, "PYTHON", Path(__file__)), patch.object(jobs, "_verify_source"), \
                  patch.object(jobs.subprocess, "Popen") as spawn:
                 with self.assertRaisesRegex(ValueError, "ALREADY_STARTED"):
                     jobs.start("smoke")
