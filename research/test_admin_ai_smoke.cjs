@@ -1,5 +1,5 @@
-// Current AI tab shows only managed V0.7 learning; legacy autonomous API remains
-// in the backend for historical compatibility but its UI is intentionally absent.
+// Current AI tab focuses on V083; V07-V082 archival markup is hidden and inert.
+// Server-side legacy APIs remain for authenticated read-only Past charts and audit compatibility.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'admin.html'),'utf8');
@@ -9,17 +9,21 @@ assert.ok(ai,'AI research panel exists');
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(ids.length,new Set(ids).size,'no duplicate admin DOM IDs');
 assert.match(html,/data-tab="ai" data-parent="ai"[^>]*>연구</);
+assert.match(ai[1],/id="v083WebPanel"/);
+assert.match(ai[1],/id="v083PopulationInput"[^>]*min="2" max="50"/);
+const legacy=html.match(/<div id="legacyResearchRuntime" hidden inert aria-hidden="true">([\s\S]*?)<section id="api"/);
+assert.ok(legacy,'legacy reports and controls are in the inert compatibility archive');
 for(const id of ['v07ManagedPanel','v07ManagedSummary','v07ManagedRefresh',
                  'v07ManagedGraph','v07ManagedAnalysis','v07AuditDetail','v07AiLog',
                  'v07ManagedDownload','v07WebStatus','v07WebLog',
                  'apiFeatureSummary','apiFeatureRefresh','apiFeatureCards'])
   assert.ok(ids.includes(id),'missing '+id);
 for(const command of ['analyze','train','holdout','validation','export'])
-  assert.match(ai[1],new RegExp('data-v07="'+command+'"'));
+  assert.match(legacy[1],new RegExp('data-v07="'+command+'"'));
 for(const stage of ['train','holdout','validation'])
-  assert.match(ai[1],new RegExp('data-v07-retry="'+stage+'"'));
-assert.match(ai[1],/2026 Final OOS CLOSED/);
-assert.match(ai[1],/2022~2023/);
+  assert.match(legacy[1],new RegExp('data-v07-retry="'+stage+'"'));
+assert.match(ai[1],/2026 OOS CLOSED/);
+assert.match(legacy[1],/2022~2023/);
 assert.match(html,/req\("\/api\/admin\/console"/);
 assert.match(html,/command:"v07 report"/);
 assert.match(html,/setText\("v07AiLog",results\[1\]\.output/);
@@ -44,4 +48,4 @@ for(const text of ['function refreshAI()','function refreshAILog()',
  assert.ok(!html.includes(text),'unused AI polling or actions should be removed: '+text);
 for(const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))
  new vm.Script(match[1]);
-console.log('PASS: focused V0.7-only AI tab; legacy autonomous UI/polling removed without changing protected backend');
+console.log('PASS: focused V083 AI tab with population selector and inert V07-V082 compatibility archive');
