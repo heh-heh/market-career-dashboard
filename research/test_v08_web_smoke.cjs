@@ -4,7 +4,7 @@ const path=require('node:path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(root+'/admin.html','utf8');
 const js=fs.readFileSync(root+'/v08-web.js','utf8');
-assert.match(html,/class="section-title">V0\.8\.2 Indicator-Aware Evolution AI 연구/);
+assert.match(html,/class="section-title">V0\.8\.3 Top-Two Evolution AI 연구/);
 assert.match(html,/id="v08WebPanel"/);
 assert.match(html,/#v07ManagedPanel,#v07WebPanel\{display:none!important\}/);
 assert.match(html,/<script src="v08-web\.js"><\/script>/);
