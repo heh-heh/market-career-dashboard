@@ -1930,12 +1930,17 @@ def run_admin_console(command):
             "  state collector|v2|multi\n"
             "  v07 prepare|audit|select|smoke|status|log (legacy research compatibility)\n"
             "  v08 smoke|train|holdout|validation|export|status|log|report|retry (detached V0.8 research)\n"
+            "  bots report (V0.8.2 read-only roster; no trading commands)\n"
             "서비스: "+", ".join(sorted(ADMIN_CONSOLE_SERVICES))
         )
 
     if parts and parts[0]=="v07":
         from v07_web_jobs import console as v07_console
         return v07_console(parts)
+
+    if parts and parts[0]=="bots":
+        from v082_bot_roster import console as bots_console
+        return bots_console(parts)
 
     if parts and parts[0]=="v082":
         from v082_web_jobs import console as v082_console
