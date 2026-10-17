@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -88,12 +89,29 @@ def git_with_source(*args):
     return subprocess.check_output(["git","-c",f"safe.directory={SOURCE}","-C",str(SOURCE),*args],text=True,timeout=15).strip()
 
 def active_workers():
+    # A worker can die while a child still inherits the research flock.
+    for lock in (Path("/mnt/research/v07-web-jobs/research.lock"),
+                 Path("/mnt/research/v08-web-jobs/research.lock")):
+        if not lock.is_file() or lock.is_symlink():
+            continue
+        with lock.open("a+") as file:
+            try:
+                fcntl.flock(file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                return True
+            finally:
+                fcntl.flock(file, fcntl.LOCK_UN)
     for proc in Path("/proc").iterdir():
-        if not proc.name.isdecimal():continue
-        try:cmd=(proc/"cmdline").read_bytes()
-        except OSError:continue
-        if b"v07_web_jobs.py" in cmd or b"v08_web_jobs.py" in cmd:
-            if b"--worker" in cmd:return True
+        if not proc.name.isdecimal():
+            continue
+        try:
+            cmd=(proc/"cmdline").read_bytes()
+        except OSError:
+            continue
+        if any(name in cmd for name in (b"run_v07_available.py", b"run_v08_profit_only.py")):
+            return True
+        if (b"v07_web_jobs.py" in cmd or b"v08_web_jobs.py" in cmd) and b"--worker" in cmd:
+            return True
     return False
 
 def atomic_write(path,data,reference=None):
