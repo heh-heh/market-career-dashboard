@@ -736,7 +736,7 @@ function navigateAdmin(name, updateHash=true){
  if(name==='paper')refreshPaper();
  if(name==='backtest')refreshSimpleBacktest();
  if(name==='ai')refreshV07Web();
- if(name==='bots'&&typeof window.refreshBotRoster==='function')window.refreshBotRoster();
+ if(name==='bots'&&typeof window!=='undefined'&&typeof window.refreshBotRoster==='function')window.refreshBotRoster();
  if(name==='console'){refreshGit();refreshV07Web();}
  if(name==='status')refreshServerStatus();
  if(name==='api')refreshApiFeatures();
