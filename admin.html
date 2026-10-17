@@ -279,12 +279,17 @@
       <div class="v083-stats" id="v083WebStats" aria-live="polite"><div class="v083-tile">V0.8.3 지원 서버 확인 전 · 실행 차단</div></div>
       <div id="v083WebStages" class="v083-stages" aria-label="V0.8.3 연구 단계"></div>
       <div id="v083WebFeedback" class="v083-status-line" role="status" aria-live="polite">학습을 시작하면 서버 승인 또는 차단 이유가 이곳에 표시됩니다.</div>
+      <div class="v083-tile" style="margin:12px 0">
+        <label for="v083PopulationInput" class="label">봇 개체 수 직접 설정 (2~50개)</label>
+        <input id="v083PopulationInput" type="number" inputmode="numeric" min="2" max="50" step="1" value="50" style="display:block;max-width:230px;width:100%;padding:10px;margin:6px 0;background:#07111f;border:1px solid var(--line);border-radius:9px;color:var(--text)" aria-describedby="v083PopulationHint">
+        <div class="v083-muted" id="v083PopulationHint">선택 수는 새 실험의 시험·자원 검증·전체 학습에 동일하게 적용됩니다. 기존 실험에서 수를 바꾸려면 「새 실험」을 누르세요. CPU 75% 보호 유지.</div>
+      </div>
       <div class="actions">
         <button id="v083WebRefresh" type="button">상태·로그 새로고침</button>
-        <button data-v083="smoke" type="button" disabled class="primary">① 50개체 시험 학습</button>
-        <button data-v083="new" type="button" disabled>새 실험 · 기존 결과 보존</button>
-        <button data-v083="calibrate" type="button" disabled>② 50개체 반복 자원 검증</button>
-        <button data-v083="train" type="button" disabled>③ 50개체 전체 학습 승인</button>
+        <button data-v083="smoke" type="button" disabled class="primary">① 선택한 봇 수로 시험 학습</button>
+        <button data-v083="new" type="button" disabled>새 실험 · 선택 개체 수 적용</button>
+        <button data-v083="calibrate" type="button" disabled>② 같은 개체 수로 자원 검증</button>
+        <button data-v083="train" type="button" disabled>③ 같은 개체 수로 전체 학습 승인</button>
         <button data-v083="holdout" type="button" disabled>④ 2024 동결 홀드아웃</button>
         <button data-v083="validation" type="button" disabled>⑤ 2025 개발 검증</button>
       </div>
