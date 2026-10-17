@@ -182,8 +182,6 @@ def start(stage, retry=False):
         if evidence:
             if evidence.get("path") != str(plan.resolve()) or evidence.get("sha256") != plan_hash:
                 raise ValueError("V08_PLAN_CHANGED: preserve frozen research selection")
-        else:
-            _write(job / "source_plan.json", {"path": str(plan.resolve()), "sha256": plan_hash})
         previous = PRIOR[stage]
         if previous:
             if previous in ("train", "smoke"):
@@ -204,6 +202,8 @@ def start(stage, retry=False):
                     shutil.copy2(source, archive / source.name)
         elif retry:
             raise ValueError("V08_NO_FAILED_STAGE")
+        if not evidence:
+            _write(job / "source_plan.json", {"path": str(plan.resolve()), "sha256": plan_hash})
         logfile = stage + ("-" + uuid.uuid4().hex if retry else "") + ".log"
         state = dict(stage=stage, phase="starting", startedEpoch=time.time(), logFile=logfile, finalOosGate="CLOSED")
         _write(job / (stage + ".json"), state)
