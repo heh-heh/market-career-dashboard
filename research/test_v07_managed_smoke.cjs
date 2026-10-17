@@ -7,9 +7,9 @@ assert.ok(html.indexOf('id="v07ManagedPanel"')>html.indexOf('<section id="ai"'))
 const begin=html.indexOf('function renderV07Managed(d)'),end=html.indexOf('document.getElementById("v07ManagedRefresh")',begin);
 const elements=new Map(),texts={};
 const get=id=>{if(!elements.has(id))elements.set(id,{});return elements.get(id)};
-const context=vm.createContext({setText:(k,v)=>texts[k]=v,document:{getElementById:get}});
+const context=vm.createContext({setText:(k,v)=>texts[k]=v,document:{getElementById:get,querySelectorAll:()=>[]}});
 vm.runInContext(html.slice(begin,end),context);
-vm.runInContext('renderV07Managed({jobId:"actual",stages:{train:{phase:"interrupted",error:"WORKER_NOT_RUNNING"}},runs:{train:{completedSessions:37,requestedSessions:504,completedTrainGenerations:2,skippedGenerationAttempts:4}},generations:[{returns:{mean:0.03}}],downloadAvailable:false})',context);
+vm.runInContext('renderV07Managed({jobId:"actual",stages:{train:{phase:"interrupted",error:"WORKER_NOT_RUNNING"}},runs:{train:{completedSessions:37,requestedSessions:504,completedTrainGenerations:2,skippedGenerationAttempts:4}},generations:[{generation:1,dates:["a","b","c","d","e"],returns:{mean:0.03}}],downloadAvailable:false})',context);
 assert.match(texts.v07ManagedSummary,/37 \/ 504/);assert.match(texts.v07ManagedSummary,/interrupted/);
 assert.ok(get('v07ManagedDownload').disabled);
 assert.match(get('v07ManagedGraph').innerHTML,/points="10.00,10.00"/);

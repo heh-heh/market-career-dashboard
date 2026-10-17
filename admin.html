@@ -218,48 +218,47 @@
     <div class="section-subtitle">가용 데이터 기반 5거래일 학습 · 2022~2023 학습 / 2024 홀드아웃 / 2025 검증 · 2026 Final OOS CLOSED</div>
     <!-- V07_MANAGED_CARD_BEGIN -->
     <div class="card" id="v07ManagedPanel">
-      <div class="label">현재 연구 진행 상황</div>
-      <div id="v07ManagedSummary" class="terminal" role="status" aria-live="polite" style="min-height:120px;max-height:260px;margin-top:10px;white-space:pre-wrap">진행 상태 조회 중...</div>
-      <div class="actions" style="margin-top:10px">
-        <button id="v07ManagedRefresh" type="button">상태 갱신</button>
-        <button data-v07="analyze" type="button">시험 결과 분석</button>
+      <style>
+      #v07ManagedPanel .v07-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+      #v07ManagedPanel .v07-tile{min-width:0;background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:13px}
+      #v07ManagedPanel .v07-number{font-size:25px;font-weight:800;line-height:1.3;overflow-wrap:anywhere;margin:5px 0}
+      #v07ManagedPanel .v07-muted{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+      #v07ManagedPanel .v07-track{height:9px;border-radius:8px;background:#263653;overflow:hidden;margin:8px 0}
+      #v07ManagedPanel .v07-fill{height:100%;background:var(--accent);transition:width .2s}
+      #v07ManagedPanel .v07-timeline{display:grid;gap:8px;margin:12px 0}
+      #v07ManagedPanel .v07-stage{padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0;overflow-wrap:anywhere}
+      #v07ManagedPanel .v07-stage[data-phase="running"],#v07ManagedPanel .v07-stage[data-phase="starting"]{border-color:var(--accent)}
+      #v07ManagedPanel .v07-charts{display:grid;gap:12px}#v07ManagedPanel svg{width:100%;height:auto;display:block;max-height:190px}
+      #v07ManagedPanel .v07-scroll{max-width:100%;overflow:auto}#v07ManagedPanel table{width:100%;font-size:12px;border-collapse:collapse}
+      #v07ManagedPanel th,#v07ManagedPanel td{text-align:left;padding:9px;border-bottom:1px solid var(--line);white-space:nowrap}
+      #v07ManagedPanel details{margin-top:14px}#v07ManagedPanel summary{cursor:pointer;padding:8px 0}
+      #v07ManagedPanel pre{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
+      #v07ManagedPanel .actions button{min-height:44px}#v07ManagedPanel .v07-error{color:var(--bad);white-space:pre-wrap;overflow-wrap:anywhere}
+      @media(min-width:760px){#v07ManagedPanel .v07-grid{grid-template-columns:repeat(4,minmax(0,1fr))}#v07ManagedPanel .v07-timeline{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media(max-width:480px){#v07ManagedPanel{padding:12px}#v07ManagedPanel .actions button{flex:1 1 140px}#v07ManagedPanel .v07-number{font-size:21px}}
+      </style>
+      <div class="label">V0.7 연구 대시보드 · 2026 Final OOS CLOSED</div>
+      <div id="v07Overview" aria-live="polite"><div class="v07-number">집계 중</div></div>
+      <div id="v07RefreshError" class="v07-error" role="alert"></div>
+      <div id="v07Progress"></div>
+      <div id="v07Timeline" class="v07-timeline" aria-label="학습과 동결 검증 단계"></div>
+      <div id="v07RefreshMeta" class="v07-muted">데이터 없음 · 15초 자동 갱신</div>
+      <div class="actions"><button id="v07ManagedRefresh" type="button">상태 갱신</button><button data-v07="analyze" type="button">시험 결과 분석</button></div>
+      <div class="actions"><button data-v07="train" class="primary" type="button">2022~2023 학습</button><button data-v07="holdout" type="button">2024 홀드아웃</button><button data-v07="validation" type="button">2025 개발 검증</button></div>
+      <p class="v07-muted">유효한 연속 5거래일의 완료 기록만 표시합니다. 후보 창 수는 목표 세대 수가 아니며, 예상 완료 시간을 추정하지 않습니다. PROVISIONAL 연구 결과입니다.</p>
+      <div class="v07-charts">
+        <div class="v07-tile"><div class="label">세대별 평균 수익률 · 5거래일 누적</div><svg id="v07ManagedGraph" viewBox="0 0 600 160" role="img" aria-label="완료 세대별 평균 수익률"></svg><div id="v07ReturnLegend" class="v07-muted">데이터 없음</div></div>
+        <div class="v07-tile"><div class="label">세대별 평균 MDD</div><svg id="v07MddGraph" viewBox="0 0 600 160" role="img" aria-label="완료 세대별 평균 최대 낙폭"></svg><div id="v07MddLegend" class="v07-muted">데이터 없음</div></div>
+        <div class="v07-tile"><div class="label">세대별 평균 fitness</div><svg id="v07FitnessGraph" viewBox="0 0 600 160" role="img" aria-label="완료 세대별 평균 적합도"></svg><div id="v07FitnessLegend" class="v07-muted">데이터 없음</div></div>
       </div>
-      <div class="label" style="margin-top:18px">장기 학습 · 동결 검증</div>
-      <div class="mini" style="margin:6px 0 10px">각 단계를 완료한 후 다음 단계로 진행합니다. 검증 시 학습 개체군을 변경하지 않습니다.</div>
-      <div class="actions">
-        <button data-v07="train" class="primary" type="button">1. 2022~2023 학습</button>
-        <button data-v07="holdout" type="button">2. 2024 홀드아웃</button>
-        <button data-v07="validation" type="button">3. 2025 개발 검증</button>
-      </div>
-      <div class="label" style="margin-top:18px">완료 세대 평균 수익률</div>
-      <div class="mini" style="margin:6px 0">유효한 연속 5거래일의 실제 기록만 반영하며, 조건부 연구 결과입니다.</div>
-      <svg id="v07ManagedGraph" viewBox="0 0 600 140" role="img" aria-label="완료 세대 평균 수익률 그래프" style="width:100%;max-height:160px"></svg>
-      <div class="actions" style="margin-top:12px">
-        <button data-v07="export" type="button">결과 ZIP 준비</button>
-        <button id="v07ManagedDownload" type="button" disabled>ZIP 다운로드</button>
-      </div>
-      <details style="margin-top:14px">
-        <summary>세대 성과 · MDD · 부모 선발 · 검증 상세</summary>
-        <pre id="v07ManagedAnalysis" style="max-height:340px;overflow:auto;white-space:pre-wrap">-</pre>
-      </details>
-      <details style="margin-top:10px">
-        <summary>30종목 데이터 품질 · 제외 거래일</summary>
-        <pre id="v07AuditDetail" style="max-height:300px;overflow:auto;white-space:pre-wrap">-</pre>
-      </details>
-      <details style="margin-top:10px">
-        <summary>현재 연구 실행 로그</summary>
-        <pre id="v07AiLog" style="max-height:320px;overflow:auto;white-space:pre-wrap">로그 조회 대기</pre>
-      </details>
-      <details style="margin-top:10px">
-        <summary>실패·중단된 학습 재실행</summary>
-        <div class="mini">실패·중단된 작업만 새 결과 디렉터리에서 처음부터 재실행합니다. 기존 결과는 보존됩니다.</div>
-        <div class="actions">
-          <button data-v07-retry="train" type="button">학습 재실행</button>
-          <button data-v07-retry="holdout" type="button">2024 재실행</button>
-          <button data-v07-retry="validation" type="button">2025 재실행</button>
-        </div>
-      </details>
-      <div class="mini" style="margin-top:12px">코드 준비·전체 감사·시험 학습·서버 점검은 관리 → 콘솔에서 진행합니다. 실거래와 별도로 동작합니다.</div>
+      <details open><summary>부모 선발 · 세대교체 이력</summary><div id="v07Lineage" class="v07-scroll">데이터 없음</div></details>
+      <details><summary>30종목 결측률 · 제외 사유</summary><div id="v07AuditTable" class="v07-scroll">집계 중</div><div id="v07Exclusions" class="v07-scroll"></div></details>
+      <details open><summary>최근 실행 로그 · 최대 25줄</summary><pre id="v07AiLog">로그 조회 대기</pre></details>
+      <details><summary>시험 결과 분석 · 검증 상세</summary><div id="v07AnalysisSummary">데이터 없음</div><pre id="v07ManagedAnalysis">데이터 없음</pre></details>
+      <div class="actions"><button data-v07="export" type="button">결과 ZIP 준비</button><button id="v07ManagedDownload" type="button" disabled>ZIP 다운로드</button></div>
+      <details><summary>실패·중단 작업 재실행</summary><div class="v07-muted">실패·중단 작업만 새 디렉터리에서 재실행합니다. 기존 결과는 보존됩니다. 실행 중에는 재실행할 수 없습니다.</div><div class="actions"><button data-v07-retry="train" type="button">학습 재실행</button><button data-v07-retry="holdout" type="button">2024 재실행</button><button data-v07-retry="validation" type="button">2025 재실행</button></div></details>
+      <details><summary>원본 상태 · 감사 JSON</summary><pre id="v07ManagedSummary">집계 중</pre><pre id="v07AuditDetail">데이터 없음</pre></details>
+      <div class="v07-muted">코드 준비·전체 감사·시험 학습은 관리 → 콘솔에서 진행합니다. 실거래와 별도로 동작합니다.</div>
     </div>
     <!-- V07_MANAGED_CARD_END -->
   </section>
@@ -906,13 +905,15 @@ async function refreshV07Web(){
     const results=await Promise.all([
       req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 status"})}),
       req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 log"})}),
-      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 report"})})
+      req("/api/admin/console",{method:"POST",body:JSON.stringify({command:"v07 report"})}),
+      document.getElementById('ai').classList.contains('active') ? req('/api/admin/server-health').catch(()=>null) : Promise.resolve(null)
     ]);
     setText("v07WebStatus",results[0].output||"상태 없음");
     setText("v07WebLog",results[1].output||"로그 없음");
-    setText("v07AiLog",results[1].output||"로그 없음");
-    renderV07Managed(JSON.parse(results[2].output||"{}"));
-  }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message);setText("v07AiLog","로그 조회 실패: "+e.message)}
+    setText("v07AiLog",results[1].output ? results[1].output.split('\n').slice(-25).join('\n') : "로그 없음");
+    const view=JSON.parse(results[2].output||"{}");view.hostHealth=results[3];view.fetchedAt=new Date().toISOString();
+    renderV07Managed(view);setText('v07RefreshError','');
+  }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message);setText('v07RefreshError','갱신 실패: '+e.message+' · 아래 값은 마지막 성공 조회 기준입니다.');setText("v07AiLog","로그 조회 실패: "+e.message)}
   finally{v07WebPending=false}
 }
 document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>{
@@ -939,18 +940,58 @@ setInterval(()=>{if(document.getElementById("ai").classList.contains("active")||
 
 // V07_MANAGED_JS_BEGIN
 function renderV07Managed(d){
-  const stages=d.stages||{},runs=d.runs||{};
-  const phaseText=Object.entries(stages).map(([k,v])=>k+": "+v.phase+(v.error?" · "+v.error:"")).join("\n");
-  const r=runs.validation||runs.holdout||runs.train||runs.smoke||{};
-  setText("v07ManagedSummary",(d.jobId||"작업 없음")+"\n"+phaseText+"\n진행 "+(r.completedSessions??"-")+" / "+(r.requestedSessions??"-")+" 거래일 · 완료 세대 "+(r.completedTrainGenerations??"-")+" · 무효 시도 "+(r.skippedGenerationAttempts??"-")+"\n실제 사용일 "+(r.selectedSessionCount??"-")+" · 제외일 "+(r.excludedSessionCount??"-")+"\n"+(r.dataMode||"PROVISIONAL_UNREVIEWED_DATA")+" / "+(r.evaluationStatus||"UNVERIFIED")+"\nFinal OOS "+(d.finalOosGate||"CLOSED")+" · 디스크 여유 "+(d.diskFreeBytes==null?"-":(d.diskFreeBytes/1024**3).toFixed(1)+" GiB")+"\n리소스 "+JSON.stringify(d.resources||{})+"\n현재 연구 거래일: "+(r.currentHistoricalDate||"-")+" · "+(r.latestLog||""));
-  setText("v07AuditDetail",JSON.stringify({audit:d.audit,plan:d.plan,excludedSamples:d.excludedSamples},null,2));
-  setText("v07ManagedAnalysis",JSON.stringify({generations:d.generations,analysis:d.analysis,latest:r},null,2));
-  document.getElementById("v07ManagedDownload").disabled=!d.downloadAvailable;
-  const graph=document.getElementById("v07ManagedGraph"), vals=(d.generations||[]).map(x=>x.returns?.mean).filter(Number.isFinite);
-  const bound=Math.max(.001,...vals.map(Math.abs));
-  const points=vals.map((v,i)=>(10+i*580/Math.max(1,vals.length-1)).toFixed(2)+","+(70-v/bound*60).toFixed(2)).join(" ");
-  // Only calculated finite numbers enter SVG markup, never artifact strings.
-  graph.innerHTML='<line x1="10" y1="70" x2="590" y2="70" stroke="#888"/><polyline fill="none" stroke="#42c9ad" stroke-width="2" points="'+points+'"/>';
+  const num=v=>typeof v==='number'&&Number.isFinite(v)?v:null;
+  const fmt=(v,suffix='')=>num(v)==null?'집계 중':v.toLocaleString('ko-KR',{maximumFractionDigits:2})+suffix;
+  const pct=v=>num(v)==null?'데이터 없음':(v*100).toFixed(2)+'%';
+  const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const html=(id,value)=>{const n=document.getElementById(id);if(n)n.innerHTML=value};
+  const labels={starting:'시작 중',running:'실행 중',completed:'완료',failed:'실패',error:'실패',interrupted:'중단',not_started:'대기'};
+  const names={prepare:'코드 준비',audit:'데이터 감사',select:'구간 선별',smoke:'시험 학습',analyze:'시험 분석',train:'2022~2023 학습',holdout:'2024 홀드아웃',validation:'2025 개발 검증',export:'결과 ZIP'};
+  const stages=d.stages||{},runs=d.runs||{},entries=Object.entries(stages).filter(([,s])=>s&&s.phase!=='not_started');
+  const active=entries.find(([,s])=>['starting','running'].includes(s.phase));
+  const latest=active||entries.reduce((a,b)=>!a||(b[1].startedEpoch??0)>=(a[1].startedEpoch??0)?b:a,null);
+  const key=latest?.[0],state=latest?.[1],r=runs[key]||runs.validation||runs.holdout||runs.train||runs.smoke||{};
+  const processed=num(r.completedSessions),total=num(r.requestedSessions),used=num(r.selectedSessionCount??r.selectedSessions);
+  const pending=r.windowComplete===true?0:num(r.windowSessionsCompleted);
+  const excluded=num(r.excludedSessionCount)??(processed!=null&&used!=null&&pending!=null&&processed>=used+pending?processed-used-pending:null);
+  const progress=(!active||runs[key])&&processed!=null&&total>0?Math.min(100,Math.max(0,100*processed/total)):null;
+  const h=d.hostHealth||{},resources=d.resources||{};
+  const cpu=num(h.cpu?.usedPct)??num(resources.cpuPct),ram=num(h.memory?.usedPct)??num(resources.memoryPct),swap=num(h.memory?.swapUsedPct)??num(resources.swapPct);
+  const tiles=[['현재 상태',labels[state?.phase]||'대기',names[key]||'시작된 작업 없음'],['단계 진행률',fmt(progress,'%'),names[key]||'집계 중'],
+    ['처리 거래일',processed==null?'집계 중':fmt(processed)+' / '+fmt(total),'실제 평가일 '+fmt(r.evaluatedSessionCount)],
+    ['현재 단계 사용 / 제외일',fmt(used)+' / '+fmt(excluded),'선발에 반영된 날짜와 버려진 날짜'],['완료 학습 세대',fmt(runs.train?.completedTrainGenerations??r.completedTrainGenerations),'예상 목표 세대 수 미표시'],
+    ['무효 시도',fmt(r.skippedGenerationAttempts),'데이터 문제로 무효화된 시도'],['CPU / RAM',fmt(cpu,'%')+' / '+fmt(ram,'%'),'서버 사용률 · CPU load를 %로 환산하지 않음'],
+    ['Swap / 디스크 여유',fmt(swap,'%')+' / '+(num(d.diskFreeBytes)==null?'집계 중':fmt(d.diskFreeBytes/1024**3,' GiB')),'연구 볼륨 · Final OOS CLOSED']];
+  html('v07Overview','<div class="v07-grid">'+tiles.map(([label,value,help])=>'<div class="v07-tile"><div class="label">'+e(label)+'</div><div class="v07-number">'+e(value)+'</div><div class="v07-muted">'+e(help)+'</div></div>').join('')+'</div>');
+  const bar=(label,value)=>'<div class="v07-muted">'+e(label)+' · '+fmt(value,'%')+'</div><div class="v07-track" role="progressbar" aria-label="'+e(label)+'" aria-valuemin="0" aria-valuemax="100"'+(value==null?'':' aria-valuenow="'+value.toFixed(2)+'"')+'><div class="v07-fill" style="width:'+(value??0)+'%"></div></div>';
+  const windowSize=num(r.evaluationWindowSessions),windowDone=num(r.windowSessionsCompleted);
+  html('v07Progress',bar('거래일 처리',progress)+bar('현재 평가 창 '+fmt(windowDone)+' / '+fmt(windowSize)+' 거래일',windowDone!=null&&windowSize>0?Math.min(100,100*windowDone/windowSize):null));
+  html('v07Timeline',['train','holdout','validation'].map(k=>'<div class="v07-stage" data-phase="'+e(stages[k]?.phase||'not_started')+'"><strong>'+names[k]+'</strong><div>'+e(labels[stages[k]?.phase]||'대기')+'</div></div>').join(''));
+  const time=v=>{const n=v?new Date(v):null;return n&&Number.isFinite(n.getTime())?n.toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' KST':'미제공'};
+  setText('v07RefreshMeta','평가 중 거래일: '+(r.currentHistoricalDate||r.date||'데이터 없음')+' · 상태 갱신: '+time(r.updatedAt||r.finishedAt||state?.endedAt)+' · 조회: '+time(d.fetchedAt)+' · 평가 상태: '+(r.evaluationStatus||'집계 중')+' · 15초 자동 갱신 · 최근 사유: '+(r.latestLog||'미제공'));
+  const phaseText=entries.map(([k,s])=>k+': '+s.phase+(s.error?' · '+s.error:'')).join('\n');
+  setText('v07ManagedSummary',(d.jobId||'작업 없음')+'\n'+phaseText+'\n진행 '+fmt(processed)+' / '+fmt(total)+' · '+(r.dataMode||'데이터 없음')+' / '+(r.evaluationStatus||'집계 중')+'\nFinal OOS CLOSED');
+  const table=(heads,rows)=>rows.length?'<table><thead><tr>'+heads.map(x=>'<th>'+e(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td>'+e(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table>':'데이터 없음';
+  const tr=runs.train||{},count=num(tr.completedTrainGenerations);
+  const seen=new Set(),gens=(d.generations||[]).filter(g=>num(g.generation)!=null&&count!=null&&g.generation<=count&&g.generation>0&&Array.isArray(g.dates)&&g.dates.length===5&&!seen.has(g.generation)&&seen.add(g.generation)).sort((a,b)=>a.generation-b.generation);
+  const chart=(id,legend,key,format,color)=>{
+    const points=gens.map(g=>({g:g.generation,v:num(g[key]?.mean)})),valid=points.filter(p=>p.v!=null);
+    if(!valid.length){html(id,'<text x="300" y="80" fill="#8fa2c2" text-anchor="middle">데이터 없음</text>');setText(legend,'완료 세대 데이터 없음');return}
+    const bound=Math.max(.001,...valid.map(p=>Math.abs(p.v))),first=points[0].g,last=points.at(-1).g;
+    const paths=[];let part=[];for(const p of points){if(p.v==null){if(part.length)paths.push(part);part=[]}else part.push(p)}if(part.length)paths.push(part);
+    const xy=p=>(10+(p.g-first)*580/Math.max(1,last-first)).toFixed(2)+','+(70-p.v/bound*60).toFixed(2);
+    html(id,'<line x1="10" y1="70" x2="590" y2="70" stroke="#52617b"/>'+paths.map(a=>'<polyline fill="none" stroke="'+color+'" stroke-width="2" points="'+a.map(xy).join(' ')+'"/>').join('')+valid.map(p=>{const [x,y]=xy(p).split(',');return '<circle cx="'+x+'" cy="'+y+'" r="3" fill="'+color+'"><title>세대 '+p.g+': '+e(format(p.v))+'</title></circle>'}).join('')+'<text x="10" y="150" fill="#8fa2c2">세대 '+first+'</text><text x="515" y="150" fill="#8fa2c2">세대 '+last+'</text>');
+    setText(legend,'최근 '+format(valid.at(-1).v)+' · 최저 '+format(Math.min(...valid.map(p=>p.v)))+' · 최고 '+format(Math.max(...valid.map(p=>p.v)))+' · 0 기준');
+  };
+  chart('v07ManagedGraph','v07ReturnLegend','returns',pct,'#42c9ad');chart('v07MddGraph','v07MddLegend','mdd',pct,'#f0b84b');chart('v07FitnessGraph','v07FitnessLegend','fitness',v=>v.toFixed(4),'#a798ff');
+  html('v07Lineage',table(['세대','평가 기간','평균 수익','평균 MDD','평균 fitness','부모 / 엘리트','변이 유전자 / 교차 개체'],gens.map(g=>[g.generation,g.dates[0]+' ~ '+g.dates.at(-1),pct(g.returns?.mean),pct(g.mdd?.mean),fmt(g.fitness?.mean),fmt(g.selection?.parentPoolSize)+' / '+fmt(g.selection?.eliteCount),fmt(g.selection?.mutationCount)+' / '+fmt(g.selection?.crossoverCount)])));
+  html('v07AuditTable',table(['종목','결측 분봉률','완전 / 부분 / 결측 거래일'],Object.entries(d.audit?.perSymbol||{}).map(([s,a])=>[s,num(a.expectedMinutes)>0?fmt(100*(a.expectedMinutes-a.observedMinutes)/a.expectedMinutes,'%'):'집계 중',fmt(a.completeSessions)+' / '+fmt(a.partialSessions)+' / '+fmt(a.missingSessions)])));
+  html('v07Exclusions','<p class="v07-muted">감사 단계의 사전 제외 표본 · 최대 20개. 실제 실행의 무효 사유는 최근 로그와 완료 분석에서 확인합니다.</p>'+table(['제외일','사유','기준 종목'],(d.excludedSamples||[]).map(x=>[x.sessionDate,x.reason,(x.referenceFailures||[]).map(y=>y.symbol+': '+y.reason).join(', ')])));
+  const analysis=d.analysis||{};html('v07AnalysisSummary',table(['연구','완료 세대','정합성','무효 시도','검증 상태'],Object.entries(analysis).map(([k,a])=>[names[k]||k,fmt(a.completedGenerations),a.accountingIntegrity||'집계 중',fmt(a.skippedGenerationAttempts),a.evaluationStatus||'데이터 없음']))+table(['분석 대상','제외 사유','제외 거래일 수'],Object.entries(analysis).flatMap(([k,a])=>Object.entries(a.exclusionReasons||{}).map(([reason,n])=>[names[k]||k,reason,fmt(n)]))));
+  setText('v07AuditDetail',JSON.stringify({audit:d.audit,plan:d.plan,excludedSamples:d.excludedSamples},null,2));
+  setText('v07ManagedAnalysis',JSON.stringify({generations:d.generations,analysis:d.analysis,latest:r},null,2));
+  document.getElementById('v07ManagedDownload').disabled=!d.downloadAvailable;
+  document.querySelectorAll('[data-v07-retry]').forEach(b=>b.disabled=!['failed','interrupted'].includes(stages[b.dataset.v07Retry]?.phase)||!!active);
 }
 document.getElementById("v07ManagedRefresh").onclick=refreshV07Web;
 document.querySelectorAll("[data-v07-retry]").forEach(b=>b.onclick=async()=>{
