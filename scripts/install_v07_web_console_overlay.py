@@ -128,7 +128,7 @@ def merge_managed_admin(local_bytes, wanted_bytes, base_bytes):
         # GitHub. Locate the unique element by ID and preserve its entire line;
         # never depend on exactly eight leading spaces.
         console_pos = local.index('<div id="consoleOut"')
-        pos = local.rfind("\\n", 0, console_pos) + 1
+        pos = local.rfind("\n", 0, console_pos) + 1
         if local[pos:console_pos].strip() or "<section" not in local[:console_pos]:
             raise Blocked("CONSOLE_OUTPUT_ANCHOR_UNSAFE")
         local = local[:pos] + web + local[pos:]
