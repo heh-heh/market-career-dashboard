@@ -83,8 +83,8 @@ calibration. Intermediate failure leaves the last tested safe recommendation.
 
 Targets: host CPU <=75%, RAM <=65%, swap <=3%. The sampler runs throughout the
 replay, records averages/peaks/RSS/CPU seconds/process and system I/O/free disk,
-and observes other jobs' RSS and interval CPU contributions without logging
-command lines. Host totals include collectors/API/other work. Shared features are
+and samples other visible jobs' RSS and interval CPU contributions without logging
+command lines. Optional process inspection is time-bounded and infrequent; host safety counters are committed first so /proc enumeration cannot starve the guard. Host totals include collectors/API/other work. Shared features are
 computed once per day; no per-bot CSV reloads or GPU. Stop callbacks execute each
 minute. A configurable 900-second processing budget per session and bounded child
 wall timeout also constrain slow I/O. Disk free retains max(10GiB,10%). Existing

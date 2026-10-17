@@ -125,6 +125,16 @@ class V081CapacityTests(unittest.TestCase):
             out.write_text(json.dumps(cert))
             with self.assertRaisesRegex(ValueError,'MEASUREMENT_MISMATCH'):c.verify_capacity(out,plan,out.parent/'trial_config.json',150)
 
+    def test_host_guard_committed_before_optional_process_scan(self):
+        m=ResourceMonitor()
+        def process_scan(*args):
+            self.assertEqual(m.count,1)
+            self.assertIn('memoryPct',m.latest)
+            return []
+        with patch('research.evolution.adaptive_capacity.psutil.cpu_percent',return_value=1),patch('research.evolution.adaptive_capacity.psutil.process_iter',side_effect=process_scan) as scan:
+            m.sample();m.sample();self.assertEqual(scan.call_count,1)
+        self.assertEqual(m.count,2)
+
     def test_explicit_extra_ebs_and_wrong_mount_rejected(self):
         def storage(path):
             mount='/mnt/research-extra' if str(path).startswith('/mnt/research-extra') else '/'

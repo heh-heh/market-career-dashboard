@@ -63,9 +63,19 @@ class ResourceMonitor:
         vm=psutil.virtual_memory();sw=psutil.swap_memory()
         values=dict(cpuPct=psutil.cpu_percent(interval=None),memoryPct=vm.percent,
                     swapPct=sw.percent if sw.total else 0.,processRssMb=self.proc.memory_info().rss/1024**2)
-        others=[]
-        now=time.monotonic();elapsed=max(.001,now-self._process_time);current_cpu={}
+        # Commit safety measurements before optional per-process inspection.
+        # /proc enumeration can be slow; it must not starve the host guard.
+        with self._lock:
+            self.count+=1;self.latest=values;self.sums.update(values)
+            for k,v in values.items():self.peaks[k]=max(self.peaks[k],v)
+            for k,limit in self.targets.items():
+                if values[k]>limit:self.failure=self.failure or f'RESOURCE_TARGET_EXCEEDED:{k}:{values[k]}>{limit}'
+            inspect_others=self.count%10==1
+        if not inspect_others:return
+        others=[];now=time.monotonic();elapsed=max(.001,now-self._process_time);current_cpu={}
+        deadline=now+.05
         for process in psutil.process_iter(['pid','name','memory_info','cpu_times','create_time']):
+            if time.monotonic()>deadline:break
             try:
                 if process.pid!=self.proc.pid:
                     key=(process.pid,process.info['create_time']);cpu=sum(process.info['cpu_times'][:2]);current_cpu[key]=cpu
@@ -74,12 +84,7 @@ class ResourceMonitor:
                     others.append(dict(pid=process.pid,name=process.info['name'],rssMb=process.info['memory_info'].rss/1024**2,cpuHostPct=other_cpu))
             except (psutil.Error,AttributeError,TypeError,KeyError):continue
         self._process_cpu=current_cpu;self._process_time=now
-        with self._lock:
-            self.other_processes=sorted(others,key=lambda p:-p['rssMb'])[:8]
-            self.count+=1;self.latest=values;self.sums.update(values)
-            for k,v in values.items():self.peaks[k]=max(self.peaks[k],v)
-            for k,limit in self.targets.items():
-                if values[k]>limit:self.failure=self.failure or f'RESOURCE_TARGET_EXCEEDED:{k}:{values[k]}>{limit}'
+        with self._lock:self.other_processes=sorted(others,key=lambda p:-p['rssMb'])[:8]
 
     def _loop(self):
         # psutil CPU baselines are per-thread; prime in this same sampler thread.
@@ -120,7 +125,7 @@ class ResourceMonitor:
                 systemWriteBytes=max(0,disk.write_bytes-self.disk_start.write_bytes) if disk and self.disk_start else None,
                 elapsedSeconds=time.monotonic()-self.started,otherProcessesByRss=self.other_processes,
                 diskFreeBytes=shutil.disk_usage(self.output).free if self.output else None,
-                backgroundLoad='Host CPU/RAM/swap include collectors, API and all other jobs; system I/O is not attributed to this trainer')
+                backgroundLoad='Host CPU/RAM/swap include all jobs; per-process rows are a bounded visible sample, not a complete process ranking; system I/O is not attributed to this trainer')
 
     def close(self):
         self._stop.set()
