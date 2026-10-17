@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "validationContract": "NODE_SYNTAX_AND_OFFLINE_SMOKE_IN_CI",
+  "parts": {
+    "runtime": "ac6078ab37b18e8c4923139f37296364567373f6651a1a25695d71f63d4ce5fd",
+    "webCard": "c6a2c7a8ce5274b05865378dce54fd3c9f50b45af1102a510b1a5a09c58af45b",
+    "managedCard": "29069a5f56148231dde5fab557ac76d6868b266afa84861495e961cd2b56f9af"
+  },
+  "legacyRuntimeHashes": [
+    "3e92c96974dba8f84ee9e3d960a9f42097fa1111ca978a4d0e687cc637b1c153",
+    "6504b00daeb6380cbac14b18fdc98fad8af793034d8b5d4e45f00411d23b48e7",
+    "6aa82458c36ee2b23d79649f7eb3ddecc9f450071c7f5efc3eb2ff3a27ff5057"
+  ]
+}

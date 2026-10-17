@@ -157,7 +157,9 @@ worker/flock이 있으면 설치를 막는다. 기존 API/수집기 무분별한
 
 운영 저장소가 ahead/behind이고 로컬 수정이 있어도 강제 pull/reset/clean/stash하지 않는다.
 별도 tools checkout에서 fetch만 하고 설치 도구가 공개 predecessor를 기준으로
-서버·admin을 3-way merge한다. local 변경과 겹치면 **쓰기 전에 중단**한다.
+server는 3-way merge하고 admin은 V0.7 카드·스크립트만 구조 기반으로 삽입한다.
+기존 navigateAdmin/onclick과 그 밖의 JavaScript는 보존한다. V0.7 소유 영역의
+알 수 없는 변경은 **쓰기 전에 중단**한다.
 web module은 알려진 759238f 버전 또는 동일 새 코드만 허용한다.
 토큰/인증/수집기/원본 데이터/연구 결과/운영 Git index는 배포하지 않는다.
 
@@ -172,7 +174,14 @@ sudo python3 /mnt/research/install-v07-managed.py --managed --check
 sudo python3 /mnt/research/install-v07-managed.py --managed --apply
 ```
 
-필요 도구: Git, node(--check), 기존 연구 venv. installer는 추가 패키지를 자동 설치하지 않는다.
+필요 도구: Git, 기존 연구 venv. Node.js는 설치 서버에서 선택 사항이다.
+Node가 있으면 전체 inline JavaScript 구문 검사와 V0.7 SHA256 검사를 함께 한다.
+Node가 없으면 `scripts/v07_web_bundle_manifest.json`의 CI 검증 대상 블록 SHA256을
+대조하고, 기존 V0.7 이외 script 내용·속성이 변경되지 않았음을 검사한다.
+이 경우 `javascriptValidation=VERIFIED_V07_SHA256_EXISTING_JS_PRESERVED`가 표시된다.
+이는 기존 사용자 정의 JS 전체를 다시 파싱했다는 뜻이 아니다. 신규 블록은 CI에서
+Node 구문 및 오프라인 UI 테스트를 통과해야 하며 임의 JS 변경을 승인하지 않는다.
+installer는 Node나 추가 패키지를 자동 설치하지 않는다.
 변경 파일별 private EBS 백업, SHA/owner/mode 보존, 원자 교체, API 구문 및 JS 문법 검사,
 API health 확인을 수행한다. API 서비스만 필요한 경우 한 번 재시작하며 수집기는 건드리지 않는다.
 health 실패 시 자동 롤백. 성공 후에도 아래 명령으로 manifest의 신규 SHA와
@@ -219,3 +228,29 @@ v07 export
   연결이 없어 실행하지 않았다. 학습 시간/메모리/결과 크기를 실제라고 추정하지 않는다.
 - 코드 실행 경로가 이전 검증 커밋에 고정되므로 기존 규칙의 결과 재현성을 유지한다.
   새로운 작업 관리/분석/UI 코드는 배포 커밋으로 별도 버전 관리한다.
+
+
+## 2026-10-17 설치 호환성 수정
+
+- `LOCAL_MERGE_CONFLICT: admin.html`: 전체 화면 3-way merge 대신 소유 카드·runtime만 삽입한다.
+- `substring not found`: HTMLParser로 ID/태그 범위를 찾고 없는 앵커·불완전한 요소를 명시적 코드로 차단한다.
+- `LOCAL_NAVIGATION_CONFLICT`: 탐색 함수는 치환하지 않으며 기존 독립 탭/hash listener를 그대로 쓴다.
+- `node` 미발견: `shutil.which`로 선택한다. Node가 없으면 SHA/기존 JS 보존 증명 경로를 사용한다.
+
+V0.7이 전혀 없으면 DOM 컨트롤 뒤, 기존 console startup script 앞에 독립 script를
+삽입한다. 알려진 이전 inline runtime은 승인된 hash일 때만 갱신한다.
+전체/부분 설치와 들여쓰기 차이를 지원하고, 중복 ID·중복 runtime·알 수 없는
+소유 코드 변경은 정확한 코드로 BLOCKED 처리한다. 두 번째 적용은 파일 쓰기와
+API 재시작 없이 ALREADY_INSTALLED다. --check는 운영 파일·백업을 생성/변경하지 않는다.
+
+--apply는 사전 검사를 다시 수행하고 적용 직전 원본 bytes, 적용 후 설치 SHA를 대조한다.
+READY의 afterSha256, 백업 manifest의 newHashes, COMMITTED의 installedHashes를 비교할 수 있다.
+원본이 검사 후 바뀌면 CHANGED_DURING_BACKUP/CHANGED_SINCE_PREFLIGHT로 중단한다.
+동시 변경이나 롤백 자체 실패는 RECOVERY_BLOCKED로 남겨 덮어쓰지 않는다.
+health 복구가 안 되면 ROLLBACK_HEALTH_FAILED이며 정상 복구로 표시하지 않는다.
+
+추가 통합 테스트는 임시 운영 디렉터리와 Git만 있는 PATH를 사용한다. 실제 EC2
+파일/서비스에는 접근하지 않으며 systemd/health만 모의 처리한다. 준비 검사에서
+bytes/mode/mtime 불변, 설치된 코드의 정확한 일치, 반복 설치, 중간 실패/health 실패
+롤백, worker/flock 차단, 기존 이벤트 유지 및 필요한 명령 버튼을 검증한다.
+배포 전 GitHub Actions의 `Verify V07 installer UI bundle`과 전체 테스트 성공을 확인한다.

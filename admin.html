@@ -1101,6 +1101,7 @@ async function refreshPaper(){await Promise.allSettled([refreshV3Paper(),refresh
 for(const [id,enabled] of [["simpleStart",true],["simpleStop",false]])document.getElementById(id).onclick=async()=>{try{await req("/api/trading/paper/simple-v1/auto",{method:"POST",body:JSON.stringify({enabled})});await refreshSimple()}catch(e){alert(e.message)}};
 document.getElementById("simpleScan").onclick=async()=>{const b=document.getElementById("simpleScan");b.disabled=true;try{await req("/api/trading/paper/simple-v1/scan",{method:"POST",body:"{}"});await refreshSimple()}catch(e){alert(e.message)}finally{b.disabled=false}};
 
+// V07_RUNTIME_BEGIN
 let v07WebPending=false;
 async function refreshV07Web(){
   if(v07WebPending||!token())return;
@@ -1169,6 +1170,7 @@ document.getElementById("v07ManagedDownload").onclick=async()=>{
   }catch(e){alert(e.message)}
 };
 // V07_MANAGED_JS_END
+// V07_RUNTIME_END
 
 function appendConsole(v){const e=document.getElementById("consoleOut");e.textContent+=(e.textContent?"\n":"")+v;e.scrollTop=e.scrollHeight}
 async function runConsole(cmd){
