@@ -52,6 +52,7 @@ jobs:
         run: |
           test "$GITHUB_REF" = "refs/heads/strategy-engine-v3"
           node research/test_admin_navigation_smoke.cjs
+          node research/test_admin_ai_smoke.cjs
           node research/test_v07_dashboard_smoke.cjs
           node research/test_v08_web_smoke.cjs
           node research/test_v081_web_smoke.cjs
