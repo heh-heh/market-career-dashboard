@@ -214,140 +214,54 @@
   </section>
 
   <section id="ai" class="panel">
-    <div class="section-title">Autonomous AI Research</div>
-    <div class="section-subtitle">RESEARCH ONLY · 2026 Final OOS 자동 접근 차단 · 실거래 주문 없음</div>
-    <div class="card"><div class="label">기존 연구 모니터</div><div class="admin-help">V4·Evolution 연구 진행 현황은 기존 읽기 전용 모니터에서 확인할 수 있습니다. 연구 실행 제어는 아래에서 유지됩니다.</div><div class="actions"><button type="button" id="openResearchMonitor">V4 / Evolution 현황 보기</button></div></div>
-    <div class="card">
-      <div class="label">연구 제어</div>
-      <div id="aiGate" class="signal">상태 확인 중...</div>
-      <div class="actions">
-        <button id="aiDryRunBtn" class="primary">Dry Run 실행</button>
-        <button id="aiRunBtn">실제 1회 연구 실행</button>
-        <button id="aiBaselineRebuildBtn">V0.7 기준선 재생성</button>
-        <button id="aiRefreshBtn">상태 새로고침</button>
-      </div>
-      <div class="mini" style="margin-top:8px">Dry Run은 다운로드·검증·V0.8 계획까지만 수행합니다. 실제 실행은 완료된 Dry Run을 이어서 최대 1 iteration만 수행합니다. Reviewed manifest가 없으면 확인 후 PROVISIONAL 모드로만 실행합니다.</div>
-    </div>
-    <div class="card">
-      <div class="label">V0.7 기준선 상태</div>
-      <div id="aiBaselineRebuildState" class="signal">상태 확인 중...</div>
-      <div class="stats" style="margin-top:10px">
-        <div class="stat"><div class="label">Phase</div><div id="aiBaselinePhase" class="value">-</div></div>
-        <div class="stat"><div class="label">Progress</div><div id="aiBaselineProgress" class="value">-</div></div>
-        <div class="stat"><div class="label">PID</div><div id="aiBaselinePid" class="value">-</div></div>
-        <div class="stat"><div class="label">Campaign</div><div id="aiBaselineCampaign" class="value" style="font-size:13px">-</div></div>
-      </div>
-      <div class="mini" style="margin-top:8px">2022–2023 학습 → 2024 내부 Holdout → shortlist → 2025 개발 검증. 2026 Final OOS는 접근하지 않습니다.</div>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="label">State</div><div id="aiState" class="value">-</div></div>
-      <div class="stat"><div class="label">Iteration</div><div id="aiIteration" class="value">-</div></div>
-      <div class="stat"><div class="label">Candidate</div><div id="aiCandidate" class="value">-</div></div>
-      <div class="stat"><div class="label">Final OOS</div><div id="aiOos" class="value">CLOSED</div></div>
-    </div>
-    <div class="stats" style="margin-top:12px">
-      <div class="stat"><div class="label">Process PID</div><div id="aiProcessPid" class="value">-</div></div>
-      <div class="stat"><div class="label">Process State</div><div id="aiProcessState" class="value">-</div></div>
-      <div class="stat"><div class="label">Process RAM</div><div id="aiProcessRam" class="value">-</div></div>
-      <div class="stat"><div class="label">Uptime</div><div id="aiProcessUptime" class="value">-</div></div>
-    </div>
-    <div class="stats" style="margin-top:10px">
-      <div class="stat"><div class="label">Started</div><div id="aiStartedAt" class="value" style="font-size:14px">-</div></div>
-      <div class="stat"><div class="label">Last Update</div><div id="aiUpdatedAt" class="value" style="font-size:14px">-</div></div>
-      <div class="stat"><div class="label">Mode</div><div id="aiProcessMode" class="value">-</div></div>
-      <div class="stat"><div class="label">Server Time</div><div id="aiServerTime" class="value" style="font-size:14px">-</div></div>
-    </div>
-    <div class="grid" style="margin-top:12px">
-      <div class="card"><div class="label">현재 가설</div><div id="aiHypothesis" class="signal">-</div></div>
-      <div class="card"><div class="label">실행 환경</div><div id="aiEnvironment" class="signal">-</div></div>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="label">Training</div><div id="aiTraining" class="value">-</div></div>
-      <div class="stat"><div class="label">Holdout</div><div id="aiHoldout" class="value">-</div></div>
-      <div class="stat"><div class="label">Validation</div><div id="aiValidation" class="value">-</div></div>
-      <div class="stat"><div class="label">Selected</div><div id="aiSelected" class="value">-</div></div>
-    </div>
-    <div class="grid" style="margin-top:12px">
-      <div class="card"><div class="label">성과</div><div id="aiMetrics" class="signal">-</div></div>
-      <div class="card"><div class="label">Decision / Failure</div><div id="aiDecision" class="signal">-</div></div>
-    </div>
-    <div class="card">
-      <div class="label">연구 파이프라인</div>
-      <div id="aiPipeline" class="signal">상태 확인 중...</div>
-    </div>
-    <div class="card">
-      <div class="label">Checkpoint / Artifact 상태</div>
-      <div id="aiCheckpoints" class="signal">상태 확인 중...</div>
-    </div>
+    <div class="section-title">V0.7 AI 학습</div>
+    <div class="section-subtitle">가용 데이터 기반 5거래일 학습 · 2022~2023 학습 / 2024 홀드아웃 / 2025 검증 · 2026 Final OOS CLOSED</div>
     <!-- V07_MANAGED_CARD_BEGIN -->
     <div class="card" id="v07ManagedPanel">
-      <div class="label">V0.7 장기 학습 관리 · RESEARCH ONLY</div>
-      <div class="mini">2022~2023 학습 → 동결된 동일 개체군의 2024 내부 홀드아웃 → 2025 개발 검증. 2026 Final OOS CLOSED. 후보 창 수는 완료 세대 수가 아닙니다. 원본 데이터는 변경하지 않습니다.</div>
-      <div class="actions" style="margin-top:8px">
-        <button data-v07="analyze">시험 결과 상세 분석</button>
-        <button data-v07="train" class="primary">2022~2023 전체 학습 시작</button>
-        <button data-v07="holdout">동결 2024 홀드아웃</button>
-        <button data-v07="validation">동결 2025 개발 검증</button>
-        <button data-v07="export">결과 ZIP 준비</button>
-        <button id="v07ManagedRefresh">상태 갱신</button>
-        <button id="v07ManagedDownload" disabled>결과 ZIP 다운로드</button>
-        <button data-v07="smoke">10거래일 시험 학습</button>
+      <div class="label">현재 연구 진행 상황</div>
+      <div id="v07ManagedSummary" class="terminal" role="status" aria-live="polite" style="min-height:120px;max-height:260px;margin-top:10px;white-space:pre-wrap">진행 상태 조회 중...</div>
+      <div class="actions" style="margin-top:10px">
+        <button id="v07ManagedRefresh" type="button">상태 갱신</button>
+        <button data-v07="analyze" type="button">시험 결과 분석</button>
       </div>
-      <div id="v07ManagedSummary" class="terminal" role="status" style="min-height:100px;max-height:250px">조회 대기</div>
-      <div class="mini">완료된 5거래일 창의 평균 수익률 · 데이터 제외와 비용을 포함한 조건부 연구 결과</div>
+      <div class="label" style="margin-top:18px">장기 학습 · 동결 검증</div>
+      <div class="mini" style="margin:6px 0 10px">각 단계를 완료한 후 다음 단계로 진행합니다. 검증 시 학습 개체군을 변경하지 않습니다.</div>
+      <div class="actions">
+        <button data-v07="train" class="primary" type="button">1. 2022~2023 학습</button>
+        <button data-v07="holdout" type="button">2. 2024 홀드아웃</button>
+        <button data-v07="validation" type="button">3. 2025 개발 검증</button>
+      </div>
+      <div class="label" style="margin-top:18px">완료 세대 평균 수익률</div>
+      <div class="mini" style="margin:6px 0">유효한 연속 5거래일의 실제 기록만 반영하며, 조건부 연구 결과입니다.</div>
       <svg id="v07ManagedGraph" viewBox="0 0 600 140" role="img" aria-label="완료 세대 평균 수익률 그래프" style="width:100%;max-height:160px"></svg>
-      <details><summary>전체 30종목 감사 / 누락률 / 제외 사유</summary><pre id="v07AuditDetail" style="max-height:300px;overflow:auto;white-space:pre-wrap">-</pre></details>
-      <details><summary>세대 성과 / 부모 선발 / 시험 분석 / 동결 검증</summary><pre id="v07ManagedAnalysis" style="max-height:340px;overflow:auto;white-space:pre-wrap">-</pre></details>
-      <details><summary>중단 작업 복구</summary><div class="mini">기존 결과는 보존합니다. 실패/중단 작업만 동일 seed로 처음부터 새 디렉터리에 재실행합니다. 체크포인트 이어하기가 아닙니다. 실행 중인 자식 프로세스가 남아 있으면 차단됩니다.</div><div class="actions"><button data-v07-retry="train">학습 재실행</button><button data-v07-retry="holdout">2024 재실행</button><button data-v07-retry="validation">2025 재실행</button></div></details>
-      <div class="mini">코드 준비·감사·구간 선별·콘솔·최근 로그는 관리 → 서버 콘솔의 기존 V0.7 영역에서 사용할 수 있습니다.</div>
+      <div class="actions" style="margin-top:12px">
+        <button data-v07="export" type="button">결과 ZIP 준비</button>
+        <button id="v07ManagedDownload" type="button" disabled>ZIP 다운로드</button>
+      </div>
+      <details style="margin-top:14px">
+        <summary>세대 성과 · MDD · 부모 선발 · 검증 상세</summary>
+        <pre id="v07ManagedAnalysis" style="max-height:340px;overflow:auto;white-space:pre-wrap">-</pre>
+      </details>
+      <details style="margin-top:10px">
+        <summary>30종목 데이터 품질 · 제외 거래일</summary>
+        <pre id="v07AuditDetail" style="max-height:300px;overflow:auto;white-space:pre-wrap">-</pre>
+      </details>
+      <details style="margin-top:10px">
+        <summary>현재 연구 실행 로그</summary>
+        <pre id="v07AiLog" style="max-height:320px;overflow:auto;white-space:pre-wrap">로그 조회 대기</pre>
+      </details>
+      <details style="margin-top:10px">
+        <summary>실패·중단된 학습 재실행</summary>
+        <div class="mini">실패·중단된 작업만 새 결과 디렉터리에서 처음부터 재실행합니다. 기존 결과는 보존됩니다.</div>
+        <div class="actions">
+          <button data-v07-retry="train" type="button">학습 재실행</button>
+          <button data-v07-retry="holdout" type="button">2024 재실행</button>
+          <button data-v07-retry="validation" type="button">2025 재실행</button>
+        </div>
+      </details>
+      <div class="mini" style="margin-top:12px">코드 준비·전체 감사·시험 학습·서버 점검은 관리 → 콘솔에서 진행합니다. 실거래와 별도로 동작합니다.</div>
     </div>
     <!-- V07_MANAGED_CARD_END -->
-    <div class="card">
-      <div class="label">V0.7 Baseline 선택 진단</div>
-      <div id="aiBaselineSelectionSummary" class="signal">선택 기록 없음</div>
-      <div id="aiBaselineSelectionDetail" class="terminal" style="min-height:100px;max-height:260px;margin-top:8px;white-space:pre-wrap">-</div>
-    </div>
-    <div class="card">
-      <div class="label">Resource Guard</div>
-      <div id="aiResourceGuard" class="signal">리소스 차단 기록 없음</div>
-      <div class="stats" style="margin-top:10px">
-        <div class="stat"><div class="label">CPU</div><div id="aiGuardCpu" class="value">-</div></div>
-        <div class="stat"><div class="label">RAM</div><div id="aiGuardRam" class="value">-</div></div>
-        <div class="stat"><div class="label">Swap</div><div id="aiGuardSwap" class="value">-</div></div>
-        <div class="stat"><div class="label">Disk Free / Required</div><div id="aiGuardDisk" class="value" style="font-size:14px">-</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="label">현재 실패 상세</div>
-      <div id="aiErrorSummary" class="signal">실패 없음</div>
-      <div id="aiErrorDetail" class="terminal" style="min-height:100px;max-height:280px;margin-top:8px;white-space:pre-wrap">-</div>
-    </div>
-    <details class="card" open>
-      <summary>Research Storage / API 상태</summary>
-      <div id="aiResearchStorage" class="terminal" style="min-height:80px;max-height:260px;white-space:pre-wrap;margin-top:8px">-</div>
-      <div id="aiApiDependencies" class="mini" style="margin-top:8px">-</div>
-    </details>
-    <div class="card">
-      <div class="label">실시간 연구 로그</div>
-      <div class="actions">
-        <button id="aiLogRefreshBtn">로그 새로고침</button>
-        <button id="aiLogClearViewBtn">화면만 비우기</button>
-        <label class="mini" style="display:flex;align-items:center;gap:6px"><input id="aiLogAutoScroll" type="checkbox" checked> 자동 스크롤</label>
-      </div>
-      <div id="aiLogMeta" class="mini" style="margin-top:8px">로그 확인 중...</div>
-      <div id="aiLog" class="terminal" style="min-height:220px;max-height:420px;margin-top:8px;white-space:pre-wrap">-</div>
-    </div>
-    <div class="card">
-      <div class="label">V0.7 기준선 재생성 로그</div>
-      <div id="aiBaselineLogMeta" class="mini">기준선 로그 없음</div>
-      <div id="aiBaselineLog" class="terminal" style="min-height:140px;max-height:320px;margin-top:8px;white-space:pre-wrap">-</div>
-    </div>
-    <div class="card">
-      <div class="label">Validation Worker 로그</div>
-      <div id="aiStageLogMeta" class="mini">별도 worker 로그 없음</div>
-      <div id="aiStageLog" class="terminal" style="min-height:120px;max-height:300px;margin-top:8px;white-space:pre-wrap">-</div>
-    </div>
-    <div class="card"><div class="label">최근 Iteration</div><div id="aiRecent" class="signal">기록 없음</div></div>
   </section>
 
   <section id="api" class="panel">
@@ -609,7 +523,7 @@ function navigateAdmin(name, updateHash=true){
  if(name==='trade')refreshTrade();
  if(name==='paper')refreshPaper();
  if(name==='backtest')refreshSimpleBacktest();
- if(name==='ai'){refreshAI();refreshV07Web();}
+ if(name==='ai')refreshV07Web();
  if(name==='console'){refreshGit();refreshV07Web();}
  if(name==='status')refreshServerStatus();
  if(name==='api')refreshApiFeatures();
@@ -701,124 +615,6 @@ async function refreshCollectors(){
 }
 
 document.getElementById("collectorRefreshBtn").onclick=refreshCollectors;
-
-let aiAdminState={};
-function pctText(v){return v==null?"-":Number(v).toFixed(1)+"%"}
-function aiDuration(seconds){
-  const n=Math.max(0,Number(seconds)||0),h=Math.floor(n/3600),m=Math.floor((n%3600)/60),sec=Math.floor(n%60);
-  if(h)return h+"h "+m+"m";
-  if(m)return m+"m "+sec+"s";
-  return sec+"s";
-}
-function aiTime(v){
-  if(!v)return "-";
-  const d=new Date(v); return Number.isNaN(d.getTime())?String(v):d.toLocaleString();
-}
-function aiPipelineHtml(rows){
-  const icon={complete:"✓",active:"●",pending:"○",failed:"✕",skipped:"–"};
-  const cls={complete:"ok",active:"warn",pending:"muted",failed:"bad",skipped:"muted"};
-  return (rows||[]).map(x=>'<div class="row"><span class="'+(cls[x.status]||"muted")+'"><b>'+icon[x.status]+'</b> '+esc(x.label||x.key)+'</span> <span class="mini">'+esc(x.status||"-")+'</span></div>').join("")||'<span class="muted">단계 정보 없음</span>';
-}
-function aiCheckpointHtml(rows){
-  return (rows||[]).map(x=>'<span style="display:inline-block;margin:3px 8px 3px 0" class="'+(x.present?"ok":"muted")+'">'+(x.present?"✓ ":"○ ")+esc(x.label)+(x.present&&x.bytes?" · "+Number(x.bytes).toLocaleString()+" B":"")+'</span>').join("")||'<span class="muted">checkpoint 없음</span>';
-}
-async function refreshAI(){
-  try{
-    const d=await req("/api/admin/ai/status"); aiAdminState=d; const c=d.current||{},running=!!d.running,rb=d.baselineRebuild||{},rebuilding=!!rb.running;
-    document.getElementById("aiGate").innerHTML='<b>'+(rebuilding?'<span class="warn">V0.7 기준선 재생성 중</span>':(running?'<span class="ok">연구 프로세스 실행 중</span>':'<span class="warn">대기</span>'))+'</b> · Research Only · Final OOS <b>CLOSED</b>';
-    const campaign=rb.campaign||{},rp=(rb.processes||[])[0]||{};
-    document.getElementById("aiBaselineRebuildState").innerHTML=rebuilding?'<span class="warn"><b>재생성 실행 중</b></span>':(campaign.phase==="completed"?'<span class="ok"><b>최근 기준선 완료</b></span>':(campaign.phase==="error"?'<span class="bad"><b>최근 기준선 실패</b></span>':'<span class="muted">대기</span>'));
-    setText("aiBaselinePhase",campaign.phase||"-");
-    setText("aiBaselineProgress",campaign.progressPct==null?"-":Number(campaign.progressPct).toFixed(0)+"%");
-    setText("aiBaselinePid",rp.pid??"-");
-    setText("aiBaselineCampaign",campaign.campaignId||campaign.campaignDir||"-");
-    setText("aiState",c.state||"waiting"); setText("aiIteration",c.iteration??"-"); setText("aiCandidate",c.candidateVersion||"-"); setText("aiOos",d.finalOosGate||"CLOSED");
-    setText("aiHypothesis",c.hypothesis||"V0.8 계획 대기");
-    const reviewedDry=d.reviewedDryRun||{},bs=c.baselineSelection||{},rejected=Array.isArray(bs.rejected)?bs.rejected:[];
-    document.getElementById("aiEnvironment").innerHTML='Reviewed manifest: <b>'+(d.manifestAvailable?'사용 가능':'없음')+'</b><br>Dry Run 준비: <b>'+(d.dryRunReady?('완료 · Iteration '+esc(reviewedDry.iteration??"-")):'필요')+'</b><br>Baseline: <b>'+esc(c.baselineRunId||bs.selectedRunId||"-")+'</b> · 후보 '+esc(c.baselineCandidates??bs.candidateCount??"-")+' · 탈락 '+esc(c.baselineRejected??rejected.length??"-")+'<br>현재 프로세스: <b>'+Number((d.processes||[]).length)+'</b><br>실거래: <b>연결 안 함</b><br>로그: <b>'+(d.logAvailable?'사용 가능':'없음')+'</b>';
-    document.getElementById("aiBaselineSelectionSummary").innerHTML=bs.policy?('정책: <b>'+esc(bs.policy)+'</b> · 후보 '+esc(bs.candidateCount??"-")+' · 선택 '+esc(bs.selectedRunId||"없음")+' · 기준 완화 <b>'+esc(String(bs.criteriaRelaxed))+'</b>'):'선택 기록 없음';
-    document.getElementById("aiBaselineSelectionDetail").textContent=rejected.length?rejected.map((x,i)=>{
-      const f=x.facts||{},parts=[];
-      if(f.missingCount!=null)parts.push('missing='+String(f.missingCount));
-      if(f.completedCount!=null||f.requestedCount!=null)parts.push('sessions='+String(f.completedCount??'-')+'/'+String(f.requestedCount??'-')+' expected='+String(f.expectedSessions??'-'));
-      if(f.rootCause)parts.push('rootCause='+String(f.rootCause));
-      if(f.sessionCoverage?.incompleteSessions)parts.push('incomplete='+String(f.sessionCoverage.incompleteSessions)+' '+JSON.stringify(f.sessionCoverage.samples||[]));
-      if(f.resultsValid!==undefined)parts.push('resultsValid='+String(f.resultsValid));
-      if(Array.isArray(f.missingDates)&&f.missingDates.length)parts.push('dates='+f.missingDates.join(', ')+(f.missingDatesTruncated?' ...':''));
-      return '#'+(i+1)+' catalog='+String(x.catalogId||'-')+' run='+String(x.runId||'-')+'\n  '+String(x.code||'-')+' · stage='+String(x.stage||'-')+(x.detail?' · '+String(x.detail):'')+(parts.length?'\n  '+parts.join(' · '):'');
-    }).join('\n'):'탈락 후보 없음';
-    const p=(d.processes||[])[0]||{};
-    setText("aiProcessPid",p.pid??"-");
-    setText("aiProcessState",p.processState||"-");
-    setText("aiProcessRam",p.rssMb==null?"-":Number(p.rssMb).toFixed(1)+" MB");
-    setText("aiProcessUptime",p.uptimeSeconds==null?"-":aiDuration(p.uptimeSeconds));
-    setText("aiStartedAt",aiTime(p.startedAt||c.startedAt));
-    setText("aiUpdatedAt",aiTime(c.updatedAt));
-    setText("aiProcessMode",p.dryRun?"DRY RUN":(p.resume?"RESUME":"-"));
-    setText("aiServerTime",aiTime(d.serverTime));
-    document.getElementById("aiPipeline").innerHTML=aiPipelineHtml(d.pipeline);
-    document.getElementById("aiCheckpoints").innerHTML=aiCheckpointHtml(d.checkpoints);
-    setText("aiTraining",pctText(c.trainingProgress)); setText("aiHoldout",pctText(c.holdoutProgress)); setText("aiValidation",pctText(c.validationProgress)); setText("aiSelected",c.selectedCandidates??"-");
-    document.getElementById("aiMetrics").innerHTML='Positive bots: <b>'+esc(c.positiveBots??"-")+'</b><br>Validation mean: <b>'+esc(c.validationMean??"-")+'</b><br>Validation median: <b>'+esc(c.validationMedian??"-")+'</b><br>Avg trades: <b>'+esc(c.avgTrades??"-")+'</b>';
-    const rg=c.resourceGuard||{};
-    document.getElementById("aiResourceGuard").innerHTML=rg.reason?('<b>'+esc(rg.reason)+'</b> · pressure '+esc(rg.resourcePressure||"-")+' · decision '+esc(rg.resourceDecision||"-")+(rg.samples?' · samples '+esc(rg.samples):'')):'리소스 차단 기록 없음';
-    setText("aiGuardCpu",rg.cpuPct==null?"-":Number(rg.cpuPct).toFixed(1)+"%");
-    setText("aiGuardRam",rg.memoryPct==null?"-":Number(rg.memoryPct).toFixed(1)+"%"+(rg.memoryAvailableGb==null?"":(" · "+Number(rg.memoryAvailableGb).toFixed(2)+" GB avail")));
-    setText("aiGuardSwap",rg.swapPct==null?"-":Number(rg.swapPct).toFixed(1)+"%"+(rg.swapUsedGb==null?"":(" · "+Number(rg.swapUsedGb).toFixed(2)+" / "+Number(rg.swapTotalGb||0).toFixed(2)+" GB")));
-    document.getElementById("aiResearchStorage").textContent=Object.entries(d.storage||{}).map(([name,s])=>name+' · '+String(s.device||s.code||'-')+' · '+String(s.mount||'-')+'\n  total '+Number((s.totalBytes||0)/1024**3).toFixed(2)+' GB · used '+Number((s.usedBytes||0)/1024**3).toFixed(2)+' GB · free '+Number((s.freeBytes||0)/1024**3).toFixed(2)+' GB ('+String(s.usedPct??'-')+'% used)'+(s.exists===false?' · PATH MISSING':'' )).join('\n');
-    document.getElementById("aiApiDependencies").textContent=Object.entries(d.apiFeatures||{}).map(([k,v])=>k+': '+(v.enabled?'ON':'OFF')).join(' · ');
-    setText("aiGuardDisk",rg.diskFreeGb==null?"-":Number(rg.diskFreeGb).toFixed(2)+" / "+Number(rg.requiredFreeGb||0).toFixed(2)+" GB");
-    document.getElementById("aiDecision").innerHTML='Decision: <b>'+esc(c.decision||"-")+'</b>'+(c.failureCode?'<br><span class="bad">Failure: '+esc(c.failureCode)+'</span>':'')+(c.error?'<br><span class="bad">'+esc(c.error)+'</span>':'')+(c.validationStage?'<br>Validation attempt: <b>'+esc(c.validationStage.attempt??"-")+'</b> · PID '+esc(c.validationStage.pid??"-"):'');
-    document.getElementById("aiRecent").innerHTML=(d.recent||[]).map(x=>'<div class="row"><b>Iteration '+esc(x.iteration??"-")+' · '+esc(x.candidateVersion||"-")+'</b> · '+esc(x.state||"-")+(x.decision?' · '+esc(x.decision):'')+(x.failureCode?' · <span class="bad">'+esc(x.failureCode)+'</span>':'')+'</div>').join("")||'<span class="muted">아직 기록이 없습니다.</span>';
-    document.getElementById("aiDryRunBtn").disabled=running||rebuilding;
-    document.getElementById("aiRunBtn").disabled=running||rebuilding||!d.dryRunReady;
-    document.getElementById("aiRunBtn").textContent=d.dryRunReady?"실제 1회 연구 실행":"Dry Run 완료 필요";
-    document.getElementById("aiBaselineRebuildBtn").disabled=running||rebuilding;
-    await refreshAILog();
-  }catch(e){document.getElementById("aiGate").innerHTML='<span class="bad">'+esc(e.message)+'</span>';}
-}
-async function refreshAILog(){
-  try{
-    const d=await req("/api/admin/ai/log?lines=180");
-    const box=document.getElementById("aiLog"),stage=document.getElementById("aiStageLog");
-    box.textContent=(d.launch&&d.launch.text)||"아직 로그가 없습니다.";
-    stage.textContent=(d.stage&&d.stage.text)||"별도 Validation worker 로그가 없습니다.";
-    setText("aiLogMeta","web-launch.log · "+Number(d.launch?.bytes||0).toLocaleString()+" B · "+aiTime(d.launch?.updatedAt));
-    setText("aiStageLogMeta",(d.stageName||"Validation worker 로그 없음")+" · "+Number(d.stage?.bytes||0).toLocaleString()+" B · "+aiTime(d.stage?.updatedAt));
-    const rb=d.baselineRebuildLog||{};
-    document.getElementById("aiBaselineLog").textContent=rb.text||"아직 기준선 재생성 로그가 없습니다.";
-    setText("aiBaselineLogMeta","v07-rebuild.log · "+Number(rb.bytes||0).toLocaleString()+" B · "+aiTime(rb.updatedAt));
-    const err=d.errorDetail||{};
-    document.getElementById("aiErrorSummary").innerHTML=d.failureCode?'<span class="bad"><b>'+esc(d.failureCode)+'</b></span> · last stage: <b>'+esc(d.lastSuccessfulState||"-")+'</b><br>'+esc(d.currentError||""):'<span class="ok">현재 실패 없음</span>';
-    document.getElementById("aiErrorDetail").textContent=err.text||d.currentError||"상세 오류 없음";
-    if(document.getElementById("aiLogAutoScroll").checked){box.scrollTop=box.scrollHeight;stage.scrollTop=stage.scrollHeight;}
-  }catch(e){
-    setText("aiLogMeta","로그 조회 실패: "+e.message);
-  }
-}
-async function startBaselineRebuild(){
-  if(!confirm("새 V0.7 기준선을 백그라운드에서 재생성할까요? 기존 결과는 보존되며 2026 Final OOS는 사용하지 않습니다."))return;
-  try{
-    await req("/api/admin/ai/rebuild-baseline",{method:"POST",body:"{}"});
-    await refreshAI();
-  }catch(e){alert(e.message);await refreshAI();}
-}
-async function startAIResearch(mode){
-  const isRun=mode==="run"; let provisional=false;
-  if(isRun){
-    if(!aiAdminState.dryRunReady){alert("먼저 Dry Run을 정상 완료해야 실제 연구를 실행할 수 있습니다.");return;}
-    const reviewed=aiAdminState.reviewedDryRun||{};
-    if(!confirm("완료된 Dry Run Iteration "+(reviewed.iteration??"-")+"을 기준으로 실제 연구 1회를 실행할까요? Dry Run 기록은 보존되고 새 iteration에서 실행됩니다."))return;
-    if(!aiAdminState.manifestAvailable){if(!confirm("Reviewed manifest가 없습니다. PROVISIONAL_UNREVIEWED_DATA로 1회 실행할까요?"))return;provisional=true;}
-  }
-  try{await req("/api/admin/ai/start",{method:"POST",body:JSON.stringify({mode,provisional})});await refreshAI();}catch(e){alert(e.message);await refreshAI();}
-}
-document.getElementById("aiDryRunBtn").onclick=()=>startAIResearch("dry-run");
-document.getElementById("aiRunBtn").onclick=()=>startAIResearch("run");
-document.getElementById("aiBaselineRebuildBtn").onclick=startBaselineRebuild;
-document.getElementById("aiRefreshBtn").onclick=refreshAI;
-document.getElementById("aiLogRefreshBtn").onclick=refreshAILog;
-document.getElementById("aiLogClearViewBtn").onclick=()=>{document.getElementById("aiLog").textContent="";document.getElementById("aiStageLog").textContent="";};
 
 let live={};
 async function refreshTrade(){
@@ -1114,8 +910,9 @@ async function refreshV07Web(){
     ]);
     setText("v07WebStatus",results[0].output||"상태 없음");
     setText("v07WebLog",results[1].output||"로그 없음");
+    setText("v07AiLog",results[1].output||"로그 없음");
     renderV07Managed(JSON.parse(results[2].output||"{}"));
-  }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message)}
+  }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message);setText("v07AiLog","로그 조회 실패: "+e.message)}
   finally{v07WebPending=false}
 }
 document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>{
@@ -1330,7 +1127,6 @@ document.getElementById('credentialsForm').onsubmit=async e=>{
  }catch(err){setText('credentialsStatus','저장 실패: '+err.message);}
  finally{btn.disabled=false;}
 };
-document.getElementById('openResearchMonitor').onclick=()=>location.href='./#v9';
 document.getElementById('collectionViewLink').onclick=()=>location.href='./collection.html';
 document.getElementById('collectionManageLink').onclick=()=>navigateAdmin('collectors');
 let collectionOptionsFetched=false;
@@ -1375,7 +1171,7 @@ setInterval(()=>{
   if(document.getElementById("trade").classList.contains("active"))refreshTrade();
   if(document.getElementById("paper").classList.contains("active"))refreshPaper();
   if(document.getElementById("backtest").classList.contains("active"))refreshSimpleBacktest();
-  if(document.getElementById("ai").classList.contains("active"))refreshAI();
+
   if(document.getElementById("collectors").classList.contains("active"))refreshCollectors();
 },5000);
 </script>
