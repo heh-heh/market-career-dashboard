@@ -35,13 +35,14 @@ def verify_capacity(path,plan,config,seed):
         if raw.is_symlink() or not run.is_relative_to(path.resolve().parent) or run in seen or file_sha256(run)!=entry['sha256']:
             raise ValueError('V082_CAPACITY_RUN_CHANGED')
         seen.add(run);info=json.loads(run.read_text());report=info.get('resourceReport',{})
-        if info.get('version')!='V082_INDICATOR_1' or info.get('phase')!='completed' or info.get('population')!=50 or not info.get('completedTrainGenerations') or info.get('codeHashes')!=d['codeHashes'] or info.get('sourcePlanSha256')!=d['planSha256'] or info.get('seed')!=seed or info.get('config')!=json.loads(json.dumps(Config(**json.loads(Path(config).read_text())).snapshot())) or not safe_measurement(report,d['maxSessionSeconds']):
+        if info.get('version')!='V082_INDICATOR_1' or info.get('phase')!='completed' or info.get('population')!=50 or not info.get('completedTrainGenerations') or info.get('codeHashes')!=d['codeHashes'] or info.get('sourcePlanSha256')!=d['planSha256'] or info.get('seed')!=seed or info.get('dataOrigin')!=d.get('dataOrigin') or info.get('config')!=json.loads(json.dumps(Config(**json.loads(Path(config).read_text())).snapshot())) or not safe_measurement(report,d['maxSessionSeconds']):
             raise ValueError('V082_CAPACITY_UNSAFE_OR_INVALID')
     return d
 
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--selection-plan',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--data-origin',choices=['toss','synthetic'],default='toss')
     p.add_argument('--config',type=Path,default=CONFIG);p.add_argument('--seed',type=int,default=42)
     p.add_argument('--require-ebs',action='store_true');p.add_argument('--research-mount',choices=['/mnt/research','/mnt/research-extra'],default='/mnt/research')
     p.add_argument('--max-session-seconds',type=float,default=900);a=p.parse_args(argv)
@@ -49,13 +50,13 @@ def main(argv=None):
     plan,_=verify_plan(a.selection_plan);window=smoke_window(plan,desired=5)
     resource_preflight(a.out,require_research_mount=a.require_ebs,research_mount=a.research_mount)
     out=new_output(a.out,plan['dataRoot'])
-    cert=dict(version='V082_CAPACITY_1',population=50,automaticIncrease=False,status='RUNNING',host=host_fingerprint(),createdEpoch=time.time(),
+    cert=dict(version='V082_CAPACITY_1',population=50,dataOrigin=a.data_origin,automaticIncrease=False,status='RUNNING',host=host_fingerprint(),createdEpoch=time.time(),
         planSha256=file_sha256(a.selection_plan),configSha256=file_sha256(a.config),codeHashes=code_hashes(),seed=a.seed,maxSessionSeconds=a.max_session_seconds,trials=[],finalOosGate='CLOSED')
     atomic_json(out/'capacity.json',cert)
     try:
         for label in ('warmup','measured-1','measured-2'):
             cmd=[sys.executable,str(CONFIG.with_name('run_v082.py')),'--selection-plan',str(a.selection_plan),'--config',str(a.config),'--results-dir',str(out/label),
-                '--population','50','--seed',str(a.seed),'--capacity-trial','--from-date',window['fromDate'],'--to-date',window['toDate'],
+                '--population','50','--seed',str(a.seed),'--data-origin',a.data_origin,'--capacity-trial','--from-date',window['fromDate'],'--to-date',window['toDate'],
                 '--max-session-seconds',str(a.max_session_seconds),'--research-mount',a.research_mount]
             if a.require_ebs:cmd+=['--require-ebs']
             # Retain inherited shared research lock descriptors across each child.

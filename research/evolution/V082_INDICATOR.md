@@ -115,7 +115,7 @@ stops the whole cohort; no silent shrink or culling. Checkpoint is last committe
 5-session generation, not an automatic mid-window resume promise.
 
 Certificates bind V082 version, host+boot, <24h age, seed, config, all evolution
-Python hashes, audit plan hash, and three unique completed run file hashes. Old,
+Python hashes, audit plan hash, explicit data-origin label, and three unique completed run file hashes. Old,
 mutated, unsafe or stale proof fails closed. One worker at a time through shared
 V07 research flock. CPU/thread environment fixed to one BLAS thread at CLI launch.
 
@@ -181,6 +181,8 @@ $PY "$APP/research/evolution/run_v082.py" --selection-plan "$PLAN" --population 
 Actual EC2 50-bot repeated CPU/RAM/swap measurement, real source completeness,
 latest deployed protocol, mount and reviewed service lifetime remain runtime checks.
 Synthetic local throughput does not certify `t8i.small` safety or profitability.
+Synthetic calibration fixtures must explicitly use `--data-origin synthetic`; this
+label propagates to all child trials and is checked against the certificate.
 
 ## Local validation evidence (synthetic, not EC2)
 

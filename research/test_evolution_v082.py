@@ -164,14 +164,17 @@ class EvolutionTests(unittest.TestCase):
         from research.test_evolution_v081 import measurement
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);plan=root/'plan.json';plan.write_text('{}');cert=root/'capacity.json'
-            d=dict(version='V082_CAPACITY_1',population=50,status='MEASURED_SAFE',host=host_fingerprint(),createdEpoch=time.time(),
+            d=dict(version='V082_CAPACITY_1',population=50,dataOrigin='synthetic',status='MEASURED_SAFE',host=host_fingerprint(),createdEpoch=time.time(),
                 planSha256=file_sha256(plan),configSha256=file_sha256(CONFIG),codeHashes=code_hashes(),seed=42,maxSessionSeconds=900,trials=[])
             for i in range(3):
                 run=root/str(i)/'run.json';run.parent.mkdir()
                 run.write_text(json.dumps(dict(version='V082_INDICATOR_1',phase='completed',population=50,completedTrainGenerations=1,
-                    codeHashes=d['codeHashes'],sourcePlanSha256=d['planSha256'],seed=42,config=config().snapshot(),resourceReport=measurement())))
+                    codeHashes=d['codeHashes'],sourcePlanSha256=d['planSha256'],seed=42,dataOrigin='synthetic',config=config().snapshot(),resourceReport=measurement())))
                 d['trials'].append(dict(path=str(run),sha256=file_sha256(run)))
             cert.write_text(json.dumps(d));self.assertEqual(verify_capacity(cert,plan,CONFIG,42)['population'],50)
+            d['dataOrigin']='toss';cert.write_text(json.dumps(d))
+            with self.assertRaisesRegex(ValueError,'UNSAFE_OR_INVALID'):verify_capacity(cert,plan,CONFIG,42)
+            d['dataOrigin']='synthetic'
             original=d['trials'][2]
             d['trials'][2]=d['trials'][1];cert.write_text(json.dumps(d))
             with self.assertRaisesRegex(ValueError,'RUN_CHANGED'):verify_capacity(cert,plan,CONFIG,42)
