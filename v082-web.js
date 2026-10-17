@@ -93,6 +93,8 @@ function render(d){
 }
 async function call(command){const d=await req("/api/admin/console",{method:"POST",body:JSON.stringify({command})});if(d?.ok===false||d?.exitCode)throw Error(d?.output||d?.error||"API 요청 실패");return d?.output||""}
 async function refresh(){
+  // Archived UI is hidden: historical reports are loaded on demand by Past.
+  if(get("legacyResearchRuntime")?.hidden)return;
   if(busy||active||!token())return;
   active=true;
   try{
