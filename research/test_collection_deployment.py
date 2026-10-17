@@ -156,7 +156,7 @@ class DeploymentTests(unittest.TestCase):
         workflow=(scheduler.ROOT/'.github/workflows/pages.yml').read_text()
         block=workflow.split('      - name: Assemble public UI only\n')[1].split('      - name: Upload artifact')[0]
         commands='\n'.join(line[10:] for line in block.splitlines() if line.startswith('          '))
-        assets=['index.html','admin.html','collection.html','backtest-v2.html','research-export.js','research-export.css','autonomous-research.js','v08-web.js','v081-web.js','data/dashboard.json']
+        assets=['index.html','admin.html','collection.html','backtest-v2.html','research-export.js','research-export.css','autonomous-research.js','v08-web.js','v081-web.js','v082-web.js','data/dashboard.json']
         for name in assets:
             target=self.root/name;target.parent.mkdir(exist_ok=True)
             shutil.copyfile(scheduler.ROOT/name,target)

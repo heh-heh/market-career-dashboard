@@ -1733,7 +1733,7 @@ def _evolution_workers_active():
     # Read-only flock probes survive API PID turnover; no research data writes.
     import fcntl
     for root in (Path("/mnt/research"),Path("/mnt/research-extra")):
-        for name in ("v07-web-jobs","v08-web-jobs","v081-web-jobs"):
+        for name in ("v07-web-jobs","v08-web-jobs","v081-web-jobs","v082-web-jobs"):
             lock=root/name/"research.lock"
             if lock.is_symlink(): return True
             if not lock.is_file(): continue
@@ -1745,7 +1745,7 @@ def _evolution_workers_active():
         if not item.name.isdecimal():continue
         try:tokens=(item/"cmdline").read_bytes().split(b"\0")
         except OSError:continue
-        if any(Path(t.decode("utf-8","ignore")).name in {"run_v081.py","calibrate_v081.py"} for t in tokens):return True
+        if any(Path(t.decode("utf-8","ignore")).name in {"run_v081.py","calibrate_v081.py","run_v082.py","calibrate_v082.py"} for t in tokens):return True
     return False
 
 
@@ -1937,6 +1937,9 @@ def run_admin_console(command):
         from v07_web_jobs import console as v07_console
         return v07_console(parts)
 
+    if parts and parts[0]=="v082":
+        from v082_web_jobs import console as v082_console
+        return v082_console(parts)
     if parts and parts[0]=="v081":
         from v081_web_jobs import console as v081_console
         return v081_console(parts)
@@ -2662,6 +2665,15 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/collection50/"):
             self.collection50_get(path); return
+        if path=="/api/research/v082/download":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                from v082_web_jobs import download as v082_download
+                self.send_export_file(v082_download(), "v082-research-results.zip")
+            except (ValueError,OSError) as exc:
+                self.send_json({"ok":False,"error":str(exc)},409)
+            return
         if path=="/api/research/v081/download":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return

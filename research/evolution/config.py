@@ -70,11 +70,27 @@ class Config:
         "position_fraction": [0.1, 1.0],
     })
 
+    indicator_policy_enabled: bool = True  # V082 ablation; shared risk model unchanged
+    indicator_aware: bool = False  # isolated V082; omitted from legacy snapshots
+    portfolio_max_positions: int = 3
+    portfolio_risk_budget: float = 0.02
+    portfolio_daily_loss_limit: float = 0.03
+    portfolio_min_order: float = 5.0
+    portfolio_correlation_limit: float = 0.8
+    portfolio_min_dollar_volume: float = 10000.0
+
     def __post_init__(self):
         if self.selection_policy not in {"legacy", "v08_profit_only", "v081_survival"}:
             raise ValueError("Unknown selection_policy")
         if self.selection_policy in {"v08_profit_only", "v081_survival"} and (self.evaluation_window_sessions != 5 or self.fitness_mode != "v07_regime_timing" or self.adaptive_resources):
             raise ValueError("V08 requires fixed population and existing five-session V07 fitness")
+        if self.indicator_aware and self.selection_policy not in {"v081_survival", "v08_profit_only"}:
+            raise ValueError("V082 requires survival breeding")
+        if type(self.portfolio_max_positions) is not int or not 1 <= self.portfolio_max_positions <= 30:
+            raise ValueError("Invalid portfolio cap")
+        if not (0 < self.portfolio_risk_budget < 1 and 0 < self.portfolio_daily_loss_limit < 1 and
+                0 < self.portfolio_correlation_limit <= 1 and self.portfolio_min_order > 0 and self.portfolio_min_dollar_volume >= 0):
+            raise ValueError("Invalid portfolio risk limits")
         from datetime import date
         for x in asdict(self).values():
             if isinstance(x, float) and not math.isfinite(x):
@@ -170,6 +186,9 @@ class Config:
 
     def snapshot(self):
         result = asdict(self)
+        if not self.indicator_aware:
+            for key in tuple(result):
+                if key in ("indicator_aware", "indicator_policy_enabled") or key.startswith("portfolio_"):result.pop(key)
         if self.selection_policy == "legacy":
             result.pop("selection_policy")  # preserve historical config snapshots
         return result

@@ -9,7 +9,7 @@ let data={protocol:'V081_WEB_1',initialPopulation:100,maxPopulation:1000,stages:
  await page.route('**/*',async route=>{
   const p=new URL(route.request().url()).pathname;
   if(p==='/admin.html')return route.fulfill({contentType:'text/html',body:html});
-  if(['/v08-web.js','/v081-web.js','/research-export.js','/research-export.css'].includes(p))return route.fulfill({contentType:p.endsWith('.css')?'text/css':'application/javascript',body:fs.readFileSync(root+p)});
+  if(['/v08-web.js','/v081-web.js','/v082-web.js','/research-export.js','/research-export.css'].includes(p))return route.fulfill({contentType:p.endsWith('.css')?'text/css':'application/javascript',body:fs.readFileSync(root+p)});
   if(p==='/api/admin/console'){
    const c=JSON.parse(route.request().postData()).command;calls.push(c);
    return route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,output:c==='v081 report'?JSON.stringify(data):c.endsWith(' report')?'{}':'SYNTHETIC_ONLY'})});

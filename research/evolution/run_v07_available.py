@@ -119,7 +119,7 @@ def run(args):
     last_window_summary={}
     source_population_hash=population_hash(bots)
     git=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,capture_output=True)
-    info=dict(version="V081_SURVIVAL_1" if cfg.selection_policy=="v081_survival" else "V08_PROFIT_ONLY_1" if cfg.selection_policy=="v08_profit_only" else "V07_AVAILABLE_DATA_1",runId=directory.name,pid=os.getpid(),phase="running",researchOnly=True,
+    info=dict(version="V082_INDICATOR_1" if cfg.indicator_aware else "V081_SURVIVAL_1" if cfg.selection_policy=="v081_survival" else "V08_PROFIT_ONLY_1" if cfg.selection_policy=="v08_profit_only" else "V07_AVAILABLE_DATA_1",runId=directory.name,pid=os.getpid(),phase="running",researchOnly=True,
         dataSelectionPolicy=POLICY,finalOosGate="CLOSED",dataMode="PROVISIONAL_UNREVIEWED_DATA",dataOrigin=args.data_origin,
         performanceClaim="CONDITIONAL_RESEARCH_ONLY_NOT_AN_ANNUAL_OR_FORWARD_PERFORMANCE_CLAIM",selectionBiasWarnings=BIAS,
         inputManifest=dict(symbols=plan["sourceManifest"],timestampKind="end",priceAdjustmentConfirmed=False),

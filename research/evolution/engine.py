@@ -8,6 +8,9 @@ from .features import MinuteFeatureProvider, POLICY_BASE, benchmark_for_symbol
 
 
 def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="strict", resource_guard=None):
+    if config.indicator_aware:
+        from .indicator_engine import evaluate_day as evaluate_indicators
+        return evaluate_indicators(bots, rows, opening, closing, symbols, config, data_policy=data_policy, resource_guard=resource_guard)
     if data_policy not in ("strict", "causal_available"):
         raise ValueError("Unknown data policy")
     from research.backtest_v4_strategies import MINUTE
