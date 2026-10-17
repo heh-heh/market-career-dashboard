@@ -214,8 +214,59 @@
   </section>
 
   <section id="ai" class="panel">
-    <div class="section-title">V0.7 AI 학습</div>
-    <div class="section-subtitle">가용 데이터 기반 5거래일 학습 · 2022~2023 학습 / 2024 홀드아웃 / 2025 검증 · 2026 Final OOS CLOSED</div>
+    <div class="section-title">V0.8 Profit-Only AI 연구</div>
+    <div class="section-subtitle">100개체 · 5거래일 수익 부모만 번식 · 학습 2022~2023 / 홀드아웃 2024 / 검증 2025 · 2026 Final OOS CLOSED</div>
+    <div class="card" id="v08WebPanel" aria-label="V0.8 AI 연구 관리자">
+      <style>
+        #v07ManagedPanel,#v07WebPanel{display:none!important}
+        #v08WebPanel .v08-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+        #v08WebPanel .v08-tile{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0;overflow-wrap:anywhere}
+        #v08WebPanel .v08-value{font-size:21px;font-weight:800;margin-top:6px}
+        #v08WebPanel .v08-muted{color:var(--muted);font-size:12px}
+        #v08WebPanel .v08-stages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+        #v08WebPanel .v08-status-line{white-space:pre-wrap;overflow-wrap:anywhere;background:#08111f;padding:10px;border-radius:9px;min-height:46px}
+        #v08WebPanel .v08-graphs{display:grid;gap:12px}
+        #v08WebPanel svg{width:100%;height:155px;display:block}
+        #v08WebPanel pre{max-height:300px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap;font-size:12px}
+        #v08WebPanel .actions button{min-height:44px}
+        #v08WebPanel .v08-chart{border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+        #v08WebPanel details{margin-top:12px}#v08WebPanel summary{cursor:pointer}
+        @media(min-width:720px){#v08WebPanel .v08-stats{grid-template-columns:repeat(4,minmax(0,1fr))}#v08WebPanel .v08-stages{grid-template-columns:repeat(5,minmax(0,1fr))}}
+        @media(max-width:480px){#v08WebPanel{padding:12px}#v08WebPanel .actions button{flex:1 1 130px}}
+      </style>
+      <div class="label">V0.8 · 100개체 수익 부모 번식 · 연구 전용 · 2026 OOS CLOSED</div>
+      <div class="v08-muted" style="margin-top:6px">완료된 V0.7 데이터 감사·선별 계획은 읽기 전용으로 재사용합니다. V0.7 결과는 삭제되지 않습니다.</div>
+      <div class="v08-stats" id="v08WebStats" aria-live="polite"><div class="v08-tile">V0.8 상태 조회 대기</div></div>
+      <div id="v08WebStages" class="v08-stages" aria-label="V0.8 연구 단계"></div>
+      <div id="v08WebFeedback" class="v08-status-line" role="status" aria-live="polite">학습을 시작하면 서버 승인 또는 차단 이유가 이곳에 표시됩니다.</div>
+      <div class="actions">
+        <button id="v08WebRefresh" type="button">상태·로그 새로고침</button>
+        <button data-v08="smoke" type="button" class="primary">① 100개체 시험 학습</button>
+        <button data-v08="train" type="button">② 2022~2023 전체 학습</button>
+        <button data-v08="holdout" type="button">③ 2024 동결 홀드아웃</button>
+        <button data-v08="validation" type="button">④ 2025 개발 검증</button>
+      </div>
+      <div class="v08-muted">각 단계 완료 후 다음 단계를 시작합니다. 브라우저 종료와 관계없이 서버 worker가 작업을 유지하며, 불완전한 거래일을 가짜 데이터로 채우지 않습니다.</div>
+      <div class="v08-graphs">
+        <div class="v08-chart"><div class="label">완료 세대 평균 수익률 (5거래일 누적)</div><svg id="v08ReturnChart" viewBox="0 0 600 155" role="img" aria-label="V0.8 평균 수익률 그래프"></svg><div class="v08-muted" id="v08ReturnSummary">결과 없음</div></div>
+        <div class="v08-chart"><div class="label">완료 세대 평균 MDD</div><svg id="v08MddChart" viewBox="0 0 600 155" role="img" aria-label="V0.8 평균 MDD 그래프"></svg><div class="v08-muted" id="v08MddSummary">결과 없음</div></div>
+        <div class="v08-chart"><div class="label">완료 세대 평균 fitness</div><svg id="v08FitnessChart" viewBox="0 0 600 155" role="img" aria-label="V0.8 평균 fitness 그래프"></svg><div class="v08-muted" id="v08FitnessSummary">결과 없음</div></div>
+      </div>
+      <details open><summary>부모 선발·세대교체 이력</summary><pre id="v08WebLineage">결과 없음</pre></details>
+      <details open><summary>최근 로그</summary><pre id="v08WebLog" role="log">로그 없음</pre></details>
+      <details><summary>실패·중단 단계 재실행</summary>
+        <div class="actions">
+          <button type="button" data-v08-retry="smoke">시험 재실행</button>
+          <button type="button" data-v08-retry="train">학습 재실행</button>
+          <button type="button" data-v08-retry="holdout">홀드아웃 재실행</button>
+          <button type="button" data-v08-retry="validation">검증 재실행</button>
+          <button type="button" data-v08-retry="export">ZIP 재준비</button>
+        </div>
+      </details>
+      <div class="actions"><button type="button" data-v08="export">결과 ZIP 준비</button><button type="button" id="v08WebDownload" disabled>ZIP 다운로드</button></div>
+      <details><summary>실제 상태 JSON · 데이터 경로</summary><pre id="v08WebRaw">상태 조회 대기</pre></details>
+      <div class="v08-muted">서버에는 신규 v08_web_jobs.py 및 V0.8 엔진이 별도 배포되어야 합니다. GitHub Pages 변경만으로 EC2 학습이 시작되지는 않습니다.</div>
+    </div>
     <!-- V07_MANAGED_CARD_BEGIN -->
     <div class="card" id="v07ManagedPanel">
       <style>
@@ -1262,5 +1313,6 @@ setInterval(()=>{
 },5000);
 </script>
 <script src="research-export.js"></script>
+<script src="v08-web.js"></script>
 </body>
 </html>
