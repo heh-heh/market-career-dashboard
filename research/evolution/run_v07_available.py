@@ -74,6 +74,9 @@ def run(args):
     if not plan["fromDate"]<=first<=last<=plan["toDate"]:raise ValueError("Date bounds outside audited range")
     if args.min_evaluation_trades < 1:raise ValueError("Positive evaluation trade adequacy floor required")
     rng=random.Random(args.seed)
+    v083=bool(getattr(args,"v083_mode",False))
+    if v083 and (getattr(args,"max_restarts",0)<0 or getattr(args,"max_restarts",0)>10):
+        raise ValueError("V083_MAX_RESTARTS_OUT_OF_RANGE")
     frozen=args.source_run is not None
     if frozen:
         if not (("2024-01-01"<=first<=last<="2024-12-31") or ("2025-01-01"<=first<=last<="2025-12-31")):
@@ -84,6 +87,8 @@ def run(args):
     cfg=Config(**json.loads(args.config.read_text()))
     if cfg.fitness_mode!="v07_regime_timing" or cfg.evaluation_window_sessions!=5:
         raise ValueError("Available-data driver requires the existing five-session regime/timing fitness")
+    if v083 and (cfg.selection_policy!="v081_survival" or not cfg.indicator_aware or cfg.population_size!=50 or args.population!=50):
+        raise ValueError("V083_REQUIRES_FIXED_50_INDICATOR_SURVIVAL_CONFIG")
     if args.population<1 or (args.smoke and args.population>(100 if cfg.selection_policy in {"v08_profit_only", "v081_survival"} else 32)):raise ValueError("Invalid bounded smoke population")
     if frozen:
         source=args.source_run.resolve();source_info=json.loads((source/"run.json").read_text())
@@ -114,12 +119,13 @@ def run(args):
     resource_preflight(args.results_dir,require_research_mount=args.require_ebs, research_mount=getattr(args,"research_mount","/mnt/research"))
     directory=new_output(args.results_dir/(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+"-available-"+uuid.uuid4().hex[:8]),plan["dataRoot"])
     started=time.perf_counter();gen=0;attempt=0;pending=[];pending_dates=[]
+    restarts=0;total_processed_sessions=0
     selected=[];excluded=[];evaluated=[];skipped=0;skipped_days=0;interrupted=0;trades=0;regimes={};final_evaluated=None
     selected_trades=0
     last_window_summary={}
     source_population_hash=population_hash(bots)
     git=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,capture_output=True)
-    info=dict(version="V082_INDICATOR_1" if cfg.indicator_aware else "V081_SURVIVAL_1" if cfg.selection_policy=="v081_survival" else "V08_PROFIT_ONLY_1" if cfg.selection_policy=="v08_profit_only" else "V07_AVAILABLE_DATA_1",runId=directory.name,pid=os.getpid(),phase="running",researchOnly=True,
+    info=dict(version="V083_TOP_TWO_1" if v083 else "V082_INDICATOR_1" if cfg.indicator_aware else "V081_SURVIVAL_1" if cfg.selection_policy=="v081_survival" else "V08_PROFIT_ONLY_1" if cfg.selection_policy=="v08_profit_only" else "V07_AVAILABLE_DATA_1",runId=directory.name,pid=os.getpid(),phase="running",researchOnly=True,
         dataSelectionPolicy=POLICY,finalOosGate="CLOSED",dataMode="PROVISIONAL_UNREVIEWED_DATA",dataOrigin=args.data_origin,
         performanceClaim="CONDITIONAL_RESEARCH_ONLY_NOT_AN_ANNUAL_OR_FORWARD_PERFORMANCE_CLAIM",selectionBiasWarnings=BIAS,
         inputManifest=dict(symbols=plan["sourceManifest"],timestampKind="end",priceAdjustmentConfirmed=False),
@@ -149,7 +155,14 @@ def run(args):
 
     processed_sessions=0
     try:
-        for day_index,(day,rows) in enumerate(scheduled_days(paths,{"symbols":plan["sourceManifest"]},calendar),1):
+        # V083 may restart from the first permitted TRAIN session using only the
+        # top two genomes; old versions retain the same single forward iterator.
+        day_iterator=iter(scheduled_days(paths,{"symbols":plan["sourceManifest"]},calendar))
+        day_index=0
+        while True:
+            try:day,rows=next(day_iterator)
+            except StopIteration:break
+            day_index+=1;total_processed_sessions+=1
             evidence=facts[day]
             session_started=time.perf_counter()
             if guard:
@@ -204,7 +217,15 @@ def run(args):
                         b.lifetime_equity=b.lifetime_initial_capital+b.lifetime_pnl
                     window=aggregate_window_evaluations(bots,pending,cfg,complete=True,mark_death=True)
                     final_evaluated=[b.record() for b in bots]
-                    children,selection=reproduce(bots,window,cfg,rng,gen+1,day)
+                    if v083 and not frozen:
+                        from research.evolution.v083_top_two import reproduce_top_two
+                        children,selection=reproduce_top_two(bots,window,cfg,rng,gen+1,day)
+                        selected_parent_ids=set(selection["parentIds"])
+                        for row in window:
+                            row["reproductionEligible"]=row["botId"] in selected_parent_ids
+                            row["parentSelectionReason"]="V083_TOP_TWO_NET_PNL" if row["reproductionEligible"] else "V083_NOT_SELECTED"
+                    else:
+                        children,selection=reproduce(bots,window,cfg,rng,gen+1,day)
                     best=max(window,key=lambda e:(e["fitness"],e["botId"]))
                     last_window_summary=dict(
                         alive=sum(e["survival"]=="SURVIVE" for e in window),
@@ -225,12 +246,22 @@ def run(args):
                     selected_trades+=sum(e["trades"] for batch in pending for e in batch)
                     selected.extend(pending_dates);pending=[];pending_dates=[];gen+=1;attempt+=1;bots=children
                     if cfg.selection_policy=="v081_survival":
-                        atomic_json(directory/"checkpoint.json",dict(completedGeneration=gen,throughDate=day,population=[b.record() for b in bots],rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED"))
+                        atomic_json(directory/"checkpoint.json",dict(completedGeneration=gen,throughDate=day,population=[b.record() for b in bots],rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED",**({"restarts":restarts,"restartLimit":args.max_restarts} if v083 else {})))
+                    if v083 and selection["restartRequested"]:
+                        append(directory/"v083_restarts.jsonl",dict(afterGeneration=gen,throughDate=day,nextStartDate=first,
+                            parentIds=selection["parentIds"],reason="NO_PROFITABLE_FIVE_SESSION_BOTS",
+                            restartNumber=restarts+1,limit=args.max_restarts))
+                        if restarts>=args.max_restarts:
+                            raise ValueError("V083_RESTART_LIMIT_REACHED: no profitable bots; checkpoint preserved")
+                        restarts+=1
+                        day_iterator=iter(scheduled_days(paths,{"symbols":plan["sourceManifest"]},calendar))
+                        day_index=0
             state=dict(info,**last_window_summary,date=day,currentHistoricalDate=day,completedSessions=day_index,
                 generation=gen,completedTrainGenerations=gen,windowSessionsCompleted=5 if completed_now else len(pending_dates),windowComplete=completed_now,
                 skippedGenerationAttempts=skipped,interruptedPartialWindows=interrupted,excludedDataSessions=skipped_days,selectedSessions=len(selected),
                 tradesToday=count,totalTrades=trades,latestLog=rejection or "CAUSAL_AVAILABLE_OBSERVATIONS",
-                resourceProcessRssMb=pressure["processRssMb"])
+                resourceProcessRssMb=pressure["processRssMb"],
+                **({"restarts":restarts,"totalProcessedSessions":total_processed_sessions} if v083 else {}))
             if guard:
                 guard.session(time.perf_counter()-session_started)
                 state["resourceReport"]=guard.report()
@@ -264,6 +295,7 @@ def run(args):
         info["campaignStatus"]="UNVERIFIED_PROVISIONAL_DATA"
         status="ANNUAL_MECHANICAL_COMPLETE" if annual else "PARTIAL_UNVERIFIED" if frozen else "WINDOWS_EVALUATED_RESEARCH_ONLY" if gen else "INSUFFICIENT_USABLE_WINDOWS"
         info.update(**last_window_summary,phase="completed",generation=gen,completedTrainGenerations=gen,completedSessions=len(calendar),
+            **({"restarts":restarts,"totalProcessedSessions":total_processed_sessions,"restartLimit":args.max_restarts} if v083 else {}),
             evaluationStatus=status,resultsValid=annual if frozen else gen>0,
             annualValidationComplete=annual if frozen else None,annualCoverageComplete=annual_coverage,tradeSampleAdequate=adequate,
             skippedGenerationAttempts=skipped,interruptedPartialWindows=interrupted,excludedDataSessions=skipped_days,
@@ -283,7 +315,8 @@ def run(args):
         return directory
     except BaseException as exc:
         if cfg.selection_policy=="v081_survival":
-            info.update(generation=gen,completedTrainGenerations=gen,completedSessions=processed_sessions,selectedSessionCount=len(selected),evaluatedSessionCount=len(evaluated),checkpoint="checkpoint.json")
+            info.update(generation=gen,completedTrainGenerations=gen,completedSessions=processed_sessions,selectedSessionCount=len(selected),evaluatedSessionCount=len(evaluated),checkpoint="checkpoint.json",
+                **({"restarts":restarts,"totalProcessedSessions":total_processed_sessions} if v083 else {}))
         if guard:info["resourceReport"]=guard.report()
         info.update(phase="error",error=str(exc),resultsValid=False,evaluationStatus="UNVERIFIED",finalOosGate="CLOSED")
         atomic_json(directory/"run.json",info);atomic_json(directory/"status.json",info)
