@@ -1908,7 +1908,7 @@ def run_admin_console(command):
             "  journalctl <service> [N]\n"
             "  tail collector|v2|multi [N]\n"
             "  state collector|v2|multi\n"
-            "  v07 prepare|audit|select|smoke|status|log (legacy read-only research)\n"
+            "  v07 prepare|audit|select|smoke|status|log (legacy research compatibility)\n"
             "  v08 smoke|train|holdout|validation|export|status|log|report|retry (detached V0.8 research)\n"
             "서비스: "+", ".join(sorted(ADMIN_CONSOLE_SERVICES))
         )
