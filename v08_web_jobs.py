@@ -279,9 +279,10 @@ def worker(stage, job):
                     state["childPid"] = child.pid
                     _write(statefile, state)
                     for line in iter(child.stdout.readline, b""):
-                        if log.tell() > 8 * 1024**2:
+                        if log.tell() + len(line) > 8 * 1024**2:
                             log.close()
-                            log = (job / (stage + ".previous.log")).open("wb", buffering=0)
+                            os.replace(job / state["logFile"], job / (stage + ".previous.log"))
+                            log = (job / state["logFile"]).open("ab", buffering=0)
                         log.write(line)
                         try:
                             record = json.loads(line)
