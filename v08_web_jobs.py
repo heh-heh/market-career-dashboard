@@ -18,9 +18,10 @@ import v07_web_jobs as legacy
 
 ROOT = Path("/mnt/research/v08-web-jobs")
 RESULTS = Path("/mnt/research/evolution-v08-profit-only")
-APP = Path("/home/ubuntu/market-career-dashboard")
-PYTHON = APP / ".venv/bin/python"
+APP = Path("/mnt/research/v08-source")
+PYTHON = Path("/home/ubuntu/market-career-dashboard/.venv/bin/python")
 RUNNER = APP / "research/evolution/run_v08_profit_only.py"
+PINNED_V08_SHA = "eed5a21d3bf7418daf7fc18f042eda43b586c0dc"
 STAGES = ("smoke", "train", "holdout", "validation", "export")
 PRIOR = {"smoke": None, "train": "smoke", "holdout": "train",
          "validation": "holdout", "export": "validation"}
@@ -129,14 +130,31 @@ def _other_active():
                 raise ValueError("V08_BUSY_V07: another research worker is active")
 
 
+def _verify_source():
+    if APP.is_symlink() or not APP.is_dir():
+        raise ValueError("V08_PINNED_SOURCE_MISSING")
+    try:
+        git = ["git", "-c", f"safe.directory={APP}", "-C", str(APP)]
+        sha = subprocess.check_output(git + ["rev-parse", "HEAD"], text=True, timeout=8).strip()
+        dirty = subprocess.check_output(git + ["status", "--porcelain", "--untracked-files=no"], text=True, timeout=8).strip()
+    except (OSError, subprocess.SubprocessError):
+        raise ValueError("V08_SOURCE_NOT_VERIFIABLE")
+    if sha != PINNED_V08_SHA or dirty:
+        raise ValueError("V08_SOURCE_VERSION_NOT_PINNED")
+    if not RUNNER.is_file():
+        raise ValueError("V08_RUNNER_MISSING")
+
+
 def start(stage, retry=False):
     if stage not in STAGES:
         raise ValueError("V08_COMMAND_NOT_ALLOWED")
     _storage()
     legacy._check_service_lifetime()
     _other_active()
-    if not PYTHON.is_file() or (stage != "export" and not RUNNER.is_file()):
-        raise ValueError("V08_BACKEND_NOT_DEPLOYED")
+    if not PYTHON.is_file():
+        raise ValueError("V08_PYTHON_MISSING")
+    if stage != "export":
+        _verify_source()
     _plan()
     with (ROOT / "start.lock").open("a+") as start_lock, (ROOT / "research.lock").open("a+") as run_lock:
         fcntl.flock(start_lock, fcntl.LOCK_EX)
