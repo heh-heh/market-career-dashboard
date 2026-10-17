@@ -45,7 +45,7 @@ function graph(svgId,legendId,data,key,unit,color,alwaysPercentageRange){
   const valueString=v=>pct(v);
   let svgParts=[];
   for(let step=0;step<=4;step++){
-    const v=min+(max-min)*step;
+    const v=min+(max-min)*step/4;
     const y=px(scaleY(v));
     svgParts.push('<line x1="'+left+'" y1="'+y+'" x2="'+(width-right)+'" y2="'+y+'" stroke="currentColor" opacity=".12"/>');
     svgParts.push('<text x="'+(left-9)+'" y="'+(+y+4)+'" text-anchor="end" font-size="11" fill="currentColor" opacity=".8">'+escape((v*100).toFixed(1)+'%')+'</text>');
