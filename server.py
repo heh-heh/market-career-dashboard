@@ -1908,13 +1908,17 @@ def run_admin_console(command):
             "  journalctl <service> [N]\n"
             "  tail collector|v2|multi [N]\n"
             "  state collector|v2|multi\n"
-            "  v07 prepare|audit|select|smoke|status|log (detached read-only research)\n"
+            "  v07 prepare|audit|select|smoke|status|log (legacy read-only research)\n"
+            "  v08 smoke|train|holdout|validation|export|status|log|report|retry (detached V0.8 research)\n"
             "서비스: "+", ".join(sorted(ADMIN_CONSOLE_SERVICES))
         )
 
     if parts and parts[0]=="v07":
         from v07_web_jobs import console as v07_console
         return v07_console(parts)
+    if parts and parts[0]=="v08":
+        from v08_web_jobs import console as v08_console
+        return v08_console(parts)
 
     if parts==["pwd"]:
         return 0,str(ROOT)
@@ -2633,6 +2637,15 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/collection50/"):
             self.collection50_get(path); return
+        if path=="/api/research/v08/download":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                from v08_web_jobs import download as v08_download
+                self.send_export_file(v08_download(), "v08-research-results.zip")
+            except (ValueError,OSError) as exc:
+                self.send_json({"ok":False,"error":str(exc)},409)
+            return
         if path=="/api/research/v07/download":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
