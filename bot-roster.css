@@ -1,0 +1,20 @@
+#botRosterPanel .bots-head{display:flex;gap:9px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+#botRosterPanel .bots-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0}
+#botRosterPanel .bots-stat{padding:12px;background:#0b1527;border:1px solid var(--line);border-radius:12px;min-width:0}
+#botRosterPanel .bots-stat strong{display:block;font-size:20px;margin-top:4px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#botRosterPanel .bots-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0}
+#botRosterPanel input,#botRosterPanel select{background:#07111f;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;min-width:0}
+#botRosterPanel input{flex:1 1 190px}
+#botRosterPanel select{width:auto;max-width:100%}
+#botRosterPanel button[aria-pressed="true"]{background:var(--accent);color:#fff}
+#botRosterPanel .bots-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:12px}
+#botRosterPanel .bots-tablewrap{overflow:auto;max-height:66vh;border:1px solid var(--line);border-radius:10px}
+#botRosterPanel table{border-collapse:collapse;width:100%;min-width:630px;font-size:12px}
+#botRosterPanel th,#botRosterPanel td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+#botRosterPanel th{position:sticky;top:0;background:#15233c;z-index:1}
+#botRosterPanel .bots-select{padding:5px 7px;border:0;background:transparent;color:#9dccff;font-size:12px;text-align:left}
+#botRosterPanel tr.selected{background:#1a3151}
+#botRosterPanel .bots-detail{background:#0b1527;border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+#botRosterPanel .bots-detail pre{font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:53vh;overflow:auto}
+#botRosterPanel .bots-hint{font-size:12px;line-height:1.7;color:var(--muted)}
+@media(max-width:750px){#botRosterPanel .bots-layout{grid-template-columns:minmax(0,1fr)}#botRosterPanel .bots-summary{grid-template-columns:repeat(2,minmax(0,1fr))}#botRosterPanel .bots-detail pre{max-height:40vh}}
