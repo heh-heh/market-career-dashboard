@@ -44,7 +44,7 @@ function render(){
   node("botRosterStatus").textContent="V0.8.2 · "+(snapshot.stage==="train"?"전체 학습":"50개체 시험")+" "+phase
     +" · 완료 세대 "+(snapshot.completedGenerations??"—")
     +(timestamp?" · 최근 평가 "+timestamp:"")
-    +"\n"+(snapshot.message||"연구 스냅샷")+" · 최종 OOS CLOSED";
+    +"\n"+(snapshot.message||"연구 스냅샷")+" · 2026 Final OOS CLOSED";
   node("botRosterLegend").textContent=view==="current"
     ?"현재 자식 개체군: 아직 평가되지 않은 자식의 수익률은 — 로 표시합니다. 상속된 누적 손익은 봇 상세에만 별도 표시합니다."
     :"최근 5거래일 평가 개체군: 평가 완료된 과거 개체 수익률·MDD·거래 횟수와 부모 선발 여부를 표시합니다.";
