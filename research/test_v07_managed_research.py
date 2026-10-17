@@ -226,12 +226,43 @@ class ManagedInstallerTests(unittest.TestCase):
         self.assertIn(b'v07ManagedPanel',parts['admin.html'][1])
         self.assertIn('v07_research_report.py',parts)
         self.assertEqual((self.target/'server.py').read_bytes(),b'# EC2 custom token broker kept\n'+original)
+    def test_deleted_old_web_script_and_local_admin_customizations_are_preserved(self):
+        # EC2 intentionally removed the old V0.7 JS, while changing unrelated UI.
+        # Install the requested NEW V0.7 controls without replacing EC2 changes.
+        local=(self.target/'admin.html').read_bytes().decode()
+        start=local.index('let v07WebPending=false;')
+        stop=local.index('function appendConsole(v)',start)
+        local=local[:start]+local[stop:]
+        local=local.replace('<div class="section-title">통합 운영 콘솔</div>',
+                            '<div class="section-title">EC2 맞춤 통합 운영 콘솔</div>')
+        (self.target/'admin.html').write_text(local)
+        parts,_=installer.plan()
+        result=parts['admin.html'][1].decode()
+        self.assertIn('EC2 맞춤 통합 운영 콘솔',result)
+        self.assertEqual(result.count('id="v07ManagedPanel"'),1)
+        self.assertEqual(result.count('let v07WebPending=false;'),1)
+        self.assertIn('function renderV07Managed(d)',result)
+        self.assertEqual((self.target/'admin.html').read_text(),local)
+
+    def test_missing_old_web_panel_can_be_added_with_no_loss(self):
+        local=(self.target/'admin.html').read_bytes().decode()
+        start=local.index('        <div class="card" id="v07WebPanel">')
+        stop=local.index('        <div id="consoleOut"',start)
+        local=local[:start]+local[stop:]
+        (self.target/'admin.html').write_text(local)
+        parts,_=installer.plan()
+        result=parts['admin.html'][1].decode()
+        self.assertEqual(result.count('id="v07WebPanel"'),1)
+        self.assertIn('id="v07WebStatus"',result)
+        self.assertEqual(result.count('id="v07ManagedPanel"'),1)
+        self.assertEqual((self.target/'admin.html').read_text(),local)
+
     def test_unknown_local_module_and_conflicting_ui_block_without_writes(self):
         (self.target/'v07_web_jobs.py').write_bytes(b'# local modification\n'+self.old['v07_web_jobs.py'])
         with self.assertRaisesRegex(installer.Blocked,'EXISTING_WEB_MODULE_DIFFERS'):installer.plan()
         (self.target/'v07_web_jobs.py').write_bytes(self.old['v07_web_jobs.py'])
         (self.target/'admin.html').write_bytes(self.old['admin.html'].replace(b'command:"v07 log"',b'command:"EC2 local log"'))
-        with self.assertRaisesRegex(installer.Blocked,'LOCAL_MERGE_CONFLICT'):installer.plan()
+        with self.assertRaisesRegex(installer.Blocked,'LOCAL_V07_JS_CONFLICT'):installer.plan()
 
 
 class FrozenCommandTests(ManagedJobTests):
