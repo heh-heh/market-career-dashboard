@@ -245,6 +245,7 @@
       <div id="v07RefreshMeta" class="v07-muted">데이터 없음 · 15초 자동 갱신</div>
       <div class="actions"><button id="v07ManagedRefresh" type="button">상태 갱신</button><button data-v07="analyze" type="button">시험 결과 분석</button></div>
       <div class="actions"><button data-v07="train" class="primary" type="button">2022~2023 학습</button><button data-v07="holdout" type="button">2024 홀드아웃</button><button data-v07="validation" type="button">2025 개발 검증</button></div>
+      <div id="v07ActionFeedback" class="signal" role="status" aria-live="polite" style="margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere">학습 버튼을 누르면 이곳에 서버의 실행 승인 여부나 차단 사유가 표시됩니다.</div>
       <p class="v07-muted">유효한 연속 5거래일의 완료 기록만 표시합니다. 후보 창 수는 목표 세대 수가 아니며, 예상 완료 시간을 추정하지 않습니다. PROVISIONAL 연구 결과입니다.</p>
       <div class="v07-charts">
         <div class="v07-tile"><div class="label">세대별 평균 수익률 · 5거래일 누적</div><svg id="v07ManagedGraph" viewBox="0 0 600 160" role="img" aria-label="완료 세대별 평균 수익률"></svg><div id="v07ReturnLegend" class="v07-muted">데이터 없음</div></div>
@@ -916,16 +917,36 @@ async function refreshV07Web(){
   }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message);setText('v07RefreshError','갱신 실패: '+e.message+' · 아래 값은 마지막 성공 조회 기준입니다.');setText("v07AiLog","로그 조회 실패: "+e.message)}
   finally{v07WebPending=false}
 }
+let v07ActionPending=false;
 document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>{
+  if(v07ActionPending)return;
   const cmd="v07 "+button.dataset.v07;
   if(["train","holdout","validation"].includes(button.dataset.v07)&&!confirm(cmd+" 연구를 시작할까요? 기존 원본/결과는 보존하며 2026은 사용하지 않습니다."))return;
   if(button.dataset.v07==="smoke"&&!confirm("20개체로 10거래일 연구용 시험 학습을 시작할까요? 실거래는 수행하지 않습니다."))return;
+  v07ActionPending=true;
   button.disabled=true;
+  const notice=document.getElementById("v07ActionFeedback");
+  const setNotice=(message,error=false)=>{
+    if(!notice)return;
+    notice.textContent=message;
+    notice.style.borderColor=error?"var(--bad)":"var(--line)";
+    notice.style.color=error?"var(--bad)":"var(--text)";
+  };
+  setNotice(cmd+" · 서버 응답 대기 중...");
   try{
     const response=await req("/api/admin/console",{method:"POST",body:JSON.stringify({command:cmd})});
-    appendConsole("$ "+cmd+"\\n"+(response.output||""));
-  }catch(e){appendConsole(cmd+" ERROR: "+e.message)}
-  finally{button.disabled=false;await refreshV07Web()}
+    const output=String(response.output||"서버가 응답했지만 실행 결과 메시지가 없습니다.");
+    appendConsole("$ "+cmd+"\\n"+output);
+    setNotice(cmd+" · 서버 응답:\n"+output);
+  }catch(e){
+    const reason=String(e.message||e);
+    appendConsole(cmd+" ERROR: "+reason);
+    setNotice(cmd+" · 실행 요청 차단 또는 실패:\n"+reason+"\n기존 연구 작업은 그대로 유지됩니다. 관리 → 콘솔의 v07 status / v07 log로 확인하세요.",true);
+  }finally{
+    v07ActionPending=false;
+    button.disabled=false;
+    await refreshV07Web();
+  }
 });
 // Keep this V0.7 status refresh independent of locally customized navigateAdmin().
 document.querySelectorAll('#adminSubnav [data-tab="ai"], #adminSubnav [data-tab="console"]').forEach(
