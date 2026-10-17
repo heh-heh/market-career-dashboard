@@ -25,14 +25,15 @@ function chart(svgId,summaryId,rows,key,fmt){
   write(summaryId,good.length+"개 완료 세대 · 마지막 "+fmt(good[good.length-1]));
 }
 function render(d){
-  const stages=d.stages||{},runs=d.runs||{},run=runs.train||runs.smoke||{},gens=Array.isArray(d.generations)?d.generations:[];
+  const stages=d.stages||{},runs=d.runs||{},gens=Array.isArray(d.generations)?d.generations:[];
   const activeStage=Object.entries(stages).find(([k,v])=>["running","starting"].includes(v?.phase));
+  const run=activeStage?(runs[activeStage[0]]||{}):(runs.train||runs.smoke||{});
   const stageName=activeStage?.[0]||(["validation","holdout","train","smoke"].find(k=>stages[k]?.phase==="completed")||"대기");
   const processed=numeric(run.completedSessions),requested=numeric(run.requestedSessions);
   const latest=gens.length?gens[gens.length-1]:null;
   const cells=[["현재 단계",stageName,"실행: "+(activeStage?.[1]?.phase||"대기")],
     ["진행 거래일",processed==null?"—":processed+" / "+(requested??"?"),"서버 보고 기준"],
-    ["완료 세대",number(run.completedTrainGenerations??gens.length),"연속 유효 5거래일"],
+    ["완료 세대",number(run.completedTrainGenerations),"연속 유효 5거래일"],
     ["수익 부모",number(latest?.parents),"최신 완료 창"],
     ["RANDOM_RECOVERY",latest?.recovery==null?"—":latest.recovery?"발생":"미발생","최신 완료 창"],
     ["유전자 다양성",number(latest?.uniqueGenomes),"서로 다른 유전자 수"],
@@ -86,7 +87,7 @@ async function download(){
   const response=await fetch(API+"/api/research/v08/download",{headers:{Authorization:"Bearer "+token()}});
   if(!response.ok)throw Error("다운로드 실패: HTTP "+response.status);
   const url=URL.createObjectURL(await response.blob());
-  const a=document.createElement("a");a.href=url;a.download="v08-research-results.zip";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  const a=document.createElement("a");a.href=url;a.download="v08-research-results.zip";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
  }catch(e){write("v08WebFeedback",e.message)}
  finally{await refresh()}
 }
