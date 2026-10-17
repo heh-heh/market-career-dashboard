@@ -180,7 +180,7 @@ def api_feature_requirements(path,method):
     if path in {"/api/admin/ai/start","/api/admin/ai/rebuild-baseline"}:
         return ["autonomous_ai"] + (["research_export"] if path.endswith("/start") else [])
     if path in {"/api/ticks/status","/api/ticks/view","/api/research/v4/audit/status","/api/research/v4/status",
-                "/api/research/evolution/status","/api/research/autonomous/status"}:
+                "/api/research/evolution/status","/api/research/evolution/v08/status","/api/research/autonomous/status"}:
         return ["research_monitors"]
     if path in {"/api/quotes","/api/realtime"}:
         return ["market_data"]
@@ -3082,6 +3082,14 @@ class Handler(BaseHTTPRequestHandler):
                                 "researchOnly":True,"finalOosGate":"CLOSED"})
             except (ValueError,OSError) as e:
                 self.send_json({"ok":False,"error":str(e)},400)
+            return
+        if path=="/api/research/evolution/v08/status":
+            try:
+                from research.evolution.monitor import status as evolution_status
+                root=Path(os.getenv("EVOLUTION_V08_RESULTS_DIR","/mnt/research/evolution-v08-profit-only"))
+                self.send_json({"ok":True,**evolution_status(root),"finalOosGate":"CLOSED"})
+            except (ValueError,OSError) as e:
+                self.send_json({"ok":False,"error":str(e)},503)
             return
         if path=="/api/research/evolution/status":
             try:

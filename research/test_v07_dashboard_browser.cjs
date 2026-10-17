@@ -21,6 +21,7 @@ let data={jobId:'synthetic-browser-only',stages:{train:{phase:'running',startedE
    const output=command==='v07 report'?JSON.stringify(data):command==='v07 log'?Array.from({length:40},(_,i)=>'SYNTHETIC_LOG_'+i).join('\n'):'SYNTHETIC_RESPONSE';
    return route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,output})});
   }
+  if(url.pathname==='/api/research/evolution/v08/status')return route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,available:true,phase:'running',population:100,completedSessions:5,requestedSessions:10,completedTrainGenerations:1,reproduction:{parentPoolSize:1,offspringCount:100,meanWindowReturn:.01,meanMdd:.02}})});
   if(url.pathname==='/api/admin/server-health')return route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,cpu:{usedPct:22.5},memory:{usedPct:50,swapUsedPct:0}})});
   throw new Error('Unexpected remote API request: '+url.pathname);
  });
@@ -32,6 +33,7 @@ let data={jobId:'synthetic-browser-only',stages:{train:{phase:'running',startedE
   const dims=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:innerWidth}));assert.ok(dims.scroll<=dims.inner+1,JSON.stringify({width,...dims}));
   await page.screenshot({path:'/tmp/v07-dashboard-'+width+'.png',fullPage:true});
  }
+ await page.waitForFunction(()=>document.getElementById('v08ResearchSelection').innerText.includes('부모 1 · 자식 100'));
  assert.equal((await page.locator('#v07AiLog').innerText()).split('\n').length,25);
  assert.ok(!(await page.locator('#v07Lineage').innerText()).includes('900%'));
  assert.ok(await page.locator('[data-v07-retry="train"]').isDisabled());

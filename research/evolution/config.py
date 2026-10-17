@@ -23,6 +23,7 @@ class Config:
     free_trade_count: int = 10
     # V0.4 optional generalization-oriented window fitness. The legacy V0 path
     # remains the default so prior experiments are reproducible.
+    selection_policy: str = "legacy"  # opt-in; legacy RNG/eligibility remain unchanged
     fitness_mode: str = "v0"
     losing_session_penalty: float = 0.0
     return_volatility_penalty: float = 0.0
@@ -70,6 +71,10 @@ class Config:
     })
 
     def __post_init__(self):
+        if self.selection_policy not in {"legacy", "v08_profit_only"}:
+            raise ValueError("Unknown selection_policy")
+        if self.selection_policy == "v08_profit_only" and (self.evaluation_window_sessions != 5 or self.fitness_mode != "v07_regime_timing" or self.adaptive_resources):
+            raise ValueError("V08 requires fixed population and existing five-session V07 fitness")
         from datetime import date
         for x in asdict(self).values():
             if isinstance(x, float) and not math.isfinite(x):
@@ -164,4 +169,7 @@ class Config:
         return None
 
     def snapshot(self):
-        return asdict(self)
+        result = asdict(self)
+        if self.selection_policy == "legacy":
+            result.pop("selection_policy")  # preserve historical config snapshots
+        return result

@@ -6,6 +6,7 @@ _MAX_STATUS_BYTES = 2 * 1024 * 1024
 _MAX_RECENT_RUNS = 6
 
 _PUBLIC_FIELDS = {
+    "version", "selectionPolicy", "reproduction",
     "phase", "runId", "generation", "nextPopulationGeneration", "completedTrainGenerations",
     "evaluatedPopulation",
     "population", "alive", "dead", "neutral", "invalid", "bestBot", "bestDailyReturn",
@@ -52,7 +53,7 @@ def _read_status(path):
 def _process_alive(pid):
     try:
         command = Path(f"/proc/{int(pid)}/cmdline").read_bytes()
-        return b"run_evolution_v0.py" in command or b"evaluate_population_v03.py" in command or b"run_v07_available.py" in command
+        return b"run_v08_profit_only.py" in command or b"compare_v08_profit_only.py" in command or b"run_evolution_v0.py" in command or b"evaluate_population_v03.py" in command or b"run_v07_available.py" in command
     except (OSError, ValueError, TypeError):
         return False
 
@@ -151,6 +152,21 @@ def _read_diagnostics(run_dir):
     return {k:raw.get(k) for k in allowed if k in raw}
 
 
+def _profit_only_history(run_dir):
+    history = []
+    for path in sorted(run_dir.glob("window_*.json"))[-20:]:
+        if path.stat().st_size > _MAX_STATUS_BYTES:
+            continue
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        selection = raw.get("selection", {})
+        if selection.get("selectionPolicy") != "v08_profit_only" or len(raw.get("dates", [])) != 5:
+            continue
+        history.append(dict(window=path.stem, dates=raw["dates"], **{k:selection.get(k) for k in
+            ("meanWindowReturn", "meanMdd", "meanFitness", "profitableBotRatio", "parentPoolSize",
+             "offspringCount", "eliteCount", "mutationCount", "randomRecovery", "uniqueGenomes", "maxParentContribution")}))
+    return history
+
+
 def status(root):
     root = Path(root)
     if not root.exists():
@@ -181,6 +197,8 @@ def status(root):
     latest_run=run_dirs[0]
     latest = _normalize_process_state(_read_status(latest_run / "status.json"))
     latest.update(_read_diagnostics(latest_run))
+    if latest.get("selectionPolicy") == "v08_profit_only":
+        latest["reproductionHistory"] = _profit_only_history(latest_run)
     recent = []
     for run_dir in run_dirs[:_MAX_RECENT_RUNS]:
         item = _run_summary(run_dir)

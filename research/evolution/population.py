@@ -88,6 +88,8 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
     for bot in bots:
         rows = by_bot[bot.bot_id]
         valid = len(rows) == expected and all(e["evaluationValid"] for e in rows)
+        if config.selection_policy == "v08_profit_only" and complete and expected != 5:
+            valid = False
         pnl = sum(e["dailyPnl"] for e in rows) if valid else None
         ret = pnl / config.initial_capital if valid else None
         daily_returns = [e["dailyReturn"] for e in rows] if valid else []
@@ -178,7 +180,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             date=rows[-1]["date"] if rows else None,
             survival=survival,
             reproductionEligible=bool(
-                complete and survival == "SURVIVE" and parent_consistency_ok
+                complete and survival == "SURVIVE" and (parent_consistency_ok or config.selection_policy == "v08_profit_only")
             ),
             evaluationValid=valid,
             dailyPnl=pnl,          # compatibility alias used by reproduce()
@@ -213,7 +215,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             lifetimeEquity=bot.lifetime_equity,
             failureReason=None if valid else "INVALID_SESSION_IN_EVALUATION_WINDOW",
             **{k:v for k,v in research.items() if k not in ("fitness", "fitnessComponents")},
-            **({"parentSelectionReason": "PROFITABLE_CONSISTENT_WITHIN_RISK_LIMIT" if complete and survival == "SURVIVE" and parent_consistency_ok else
+            **({"parentSelectionReason": "POSITIVE_VALID_NET_WINDOW" if config.selection_policy == "v08_profit_only" and complete and survival == "SURVIVE" else "PROFITABLE_CONSISTENT_WITHIN_RISK_LIMIT" if complete and survival == "SURVIVE" and parent_consistency_ok else
                 "INCOMPLETE_WINDOW" if not complete else "INVALID_DATA" if not valid else
                 "NONPOSITIVE_WINDOW" if survival != "SURVIVE" else "CONSISTENCY_OR_RISK_GATE"}
                if config.fitness_mode == "v07_regime_timing" else {}),
@@ -223,6 +225,9 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
 
 
 def reproduce(bots, evaluations, config, rng, generation, birth_date):
+    if config.selection_policy == "v08_profit_only":
+        from .profit_only import reproduce_profit_only
+        return reproduce_profit_only(bots, evaluations, config, rng, generation, birth_date)
     lookup = {b.bot_id: b for b in bots}
     eligible = sorted([e for e in evaluations if e["reproductionEligible"] and e["evaluationValid"] and e["dailyPnl"] > config.epsilon],
                       key=lambda e: (-e["fitness"], e["botId"]))

@@ -259,6 +259,13 @@
       <div class="actions"><button data-v07="export" type="button">결과 ZIP 준비</button><button id="v07ManagedDownload" type="button" disabled>ZIP 다운로드</button></div>
       <details><summary>실패·중단 작업 재실행</summary><div class="v07-muted">실패·중단 작업만 새 디렉터리에서 재실행합니다. 기존 결과는 보존됩니다. 실행 중에는 재실행할 수 없습니다.</div><div class="actions"><button data-v07-retry="train" type="button">학습 재실행</button><button data-v07-retry="holdout" type="button">2024 재실행</button><button data-v07-retry="validation" type="button">2025 재실행</button></div></details>
       <details><summary>원본 상태 · 감사 JSON</summary><pre id="v07ManagedSummary">집계 중</pre><pre id="v07AuditDetail">데이터 없음</pre></details>
+      <details open><summary>V0.8 Profit-Only · V0.7과 분리된 신규 실험</summary>
+        <div class="v07-muted">100개체 · 유효한 연속 5거래일 · 비용 차감 순이익 부모만 번식 · 2026 CLOSED</div>
+        <div id="v08ResearchStatus">데이터 없음 · 서버 실행 전</div>
+        <div id="v08ResearchSelection"></div>
+        <details open><summary>V0.8 완료 세대 이력 · 최근 20개</summary><pre id="v08ResearchHistory">데이터 없음</pre></details>
+        <details><summary>V0.8 실제 상태 JSON</summary><pre id="v08ResearchRaw">데이터 없음</pre></details>
+      </details>
       <div class="v07-muted">코드 준비·전체 감사·시험 학습은 관리 → 콘솔에서 진행합니다. 실거래와 별도로 동작합니다.</div>
     </div>
     <!-- V07_MANAGED_CARD_END -->
@@ -914,6 +921,7 @@ async function refreshV07Web(){
     setText("v07AiLog",results[1].output ? results[1].output.split('\n').slice(-25).join('\n') : "로그 없음");
     const view=JSON.parse(results[2].output||"{}");view.hostHealth=results[3];view.fetchedAt=new Date().toISOString();
     renderV07Managed(view);setText('v07RefreshError','');
+    if(document.getElementById("ai").classList.contains("active"))refreshV08Research();
   }catch(e){setText("v07WebStatus","조회 실패: "+e.message);setText("v07ManagedSummary","조회 실패: "+e.message);setText('v07RefreshError','갱신 실패: '+e.message+' · 아래 값은 마지막 성공 조회 기준입니다.');setText("v07AiLog","로그 조회 실패: "+e.message)}
   finally{v07WebPending=false}
 }
@@ -962,6 +970,20 @@ setInterval(()=>{if(document.getElementById("ai").classList.contains("active")||
 
 
 // V07_MANAGED_JS_BEGIN
+async function refreshV08Research(){
+  try{renderV08Research(await req('/api/research/evolution/v08/status'))}
+  catch(e){setText('v08ResearchStatus','V0.8 조회 불가: '+e.message+' · V0.7 상태와 별개');}
+}
+function renderV08Research(d){
+  if(!d?.available){setText('v08ResearchStatus','데이터 없음 · V0.8 실행 전');setText('v08ResearchSelection','');setText('v08ResearchHistory','데이터 없음');return;}
+  const value=v=>v===null||v===undefined?'집계 중':String(v);
+  const pct=v=>typeof v==='number'&&Number.isFinite(v)?(v*100).toFixed(2)+'%':'집계 중';
+  const r=d.reproduction||{};
+  setText('v08ResearchStatus','V0.8 · '+value(d.phase)+' · '+value(d.population)+'개체 · '+value(d.completedSessions)+' / '+value(d.requestedSessions)+'거래일 · 완료 '+value(d.completedTrainGenerations)+'세대 · '+value(d.currentHistoricalDate));
+  setText('v08ResearchSelection','수익 봇 '+pct(r.profitableBotRatio)+' · 부모 '+value(r.parentPoolSize)+' · 자식 '+value(r.offspringCount)+' · 엘리트 '+value(r.eliteCount)+' · 변이 유전자 '+value(r.mutationCount)+' · 평균 수익 '+pct(r.meanWindowReturn)+' · 평균 MDD '+pct(r.meanMdd)+' · RANDOM_RECOVERY '+value(r.randomRecovery));
+  setText('v08ResearchHistory',(d.reproductionHistory||[]).map(w=>w.window+' · '+w.dates.join(' ~ ')+' · 평균 '+pct(w.meanWindowReturn)+' · MDD '+pct(w.meanMdd)+' · 부모 '+value(w.parentPoolSize)+' / 자식 '+value(w.offspringCount)).join('\n')||'데이터 없음');
+  setText('v08ResearchRaw',JSON.stringify(d,null,2));
+}
 function renderV07Managed(d){
   const num=v=>typeof v==='number'&&Number.isFinite(v)?v:null;
   const fmt=(v,suffix='')=>num(v)==null?'집계 중':v.toLocaleString('ko-KR',{maximumFractionDigits:2})+suffix;

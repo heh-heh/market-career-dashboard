@@ -38,7 +38,7 @@ def parser():
     p.add_argument("--population",type=int,default=20);p.add_argument("--seed",type=int,default=42)
     p.add_argument("--timestamp-kind",choices=["end"],default="end")
     p.add_argument("--from-date");p.add_argument("--to-date")
-    p.add_argument("--smoke",action="store_true",help="Exactly ten planned consecutive TRAIN sessions, max32 bots; runtime gaps may discard windows")
+    p.add_argument("--smoke",action="store_true",help="Exactly ten planned consecutive TRAIN sessions, max32 legacy / max100 V08 bots; runtime gaps may discard windows")
     p.add_argument("--baseline-run",type=Path,help="Optional same-condition legacy run for metadata/hash comparison only")
     p.add_argument("--source-run",type=Path,help="Frozen new available-data population; 2024 internal holdout or 2025 dev validation only")
     p.add_argument("--require-ebs",action="store_true")
@@ -83,7 +83,7 @@ def run(args):
     cfg=Config(**json.loads(args.config.read_text()))
     if cfg.fitness_mode!="v07_regime_timing" or cfg.evaluation_window_sessions!=5:
         raise ValueError("Available-data driver requires the existing five-session regime/timing fitness")
-    if args.population<1 or (args.smoke and args.population>32):raise ValueError("Invalid bounded smoke population")
+    if args.population<1 or (args.smoke and args.population>(100 if cfg.selection_policy=="v08_profit_only" else 32)):raise ValueError("Invalid bounded smoke population")
     if frozen:
         source=args.source_run.resolve();source_info=json.loads((source/"run.json").read_text())
         if source_info.get("dataSelectionPolicy")!=POLICY or source_info.get("phase")!="completed" or not source_info.get("completedTrainGenerations"):
@@ -99,6 +99,17 @@ def run(args):
     else:
         cfg=replace(cfg,population_size=args.population,adaptive_resources=False)
         bots=initial_population(cfg,rng,first)
+    preflight_resources = None
+    if cfg.selection_policy == "v08_profit_only":
+        import psutil
+        psutil.cpu_percent(interval=0.2)  # prime, then measure rather than first-call zero
+        measured_cpu = psutil.cpu_percent(interval=0.5)
+        preflight_resources = sample_resources()
+        preflight_resources["cpuPct"] = measured_cpu
+        if (measured_cpu >= cfg.cpu_soft_limit_pct or
+                preflight_resources["memoryPct"] >= cfg.memory_soft_limit_pct or
+                preflight_resources["swapPct"] >= cfg.swap_soft_limit_pct):
+            raise ValueError("V08_RESOURCE_PREFLIGHT_BLOCKED: CPU/RAM/swap pressure; fixed population not reduced")
     resource_preflight(args.results_dir,require_research_mount=args.require_ebs)
     directory=new_output(args.results_dir/(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+"-available-"+uuid.uuid4().hex[:8]),plan["dataRoot"])
     started=time.perf_counter();gen=0;attempt=0;pending=[];pending_dates=[]
@@ -107,17 +118,19 @@ def run(args):
     last_window_summary={}
     source_population_hash=population_hash(bots)
     git=subprocess.run(["git","rev-parse","HEAD"],cwd=ROOT,text=True,capture_output=True)
-    info=dict(version="V07_AVAILABLE_DATA_1",runId=directory.name,pid=os.getpid(),phase="running",researchOnly=True,
+    info=dict(version="V08_PROFIT_ONLY_1" if cfg.selection_policy=="v08_profit_only" else "V07_AVAILABLE_DATA_1",runId=directory.name,pid=os.getpid(),phase="running",researchOnly=True,
         dataSelectionPolicy=POLICY,finalOosGate="CLOSED",dataMode="PROVISIONAL_UNREVIEWED_DATA",dataOrigin=args.data_origin,
         performanceClaim="CONDITIONAL_RESEARCH_ONLY_NOT_AN_ANNUAL_OR_FORWARD_PERFORMANCE_CLAIM",selectionBiasWarnings=BIAS,
         inputManifest=dict(symbols=plan["sourceManifest"],timestampKind="end",priceAdjustmentConfirmed=False),
-        generation=0,completedTrainGenerations=0,config=cfg.snapshot(),seed=args.seed,symbols=plan["symbols"],dataRoot=plan["dataRoot"],gitCommit=git.stdout.strip(),
+        initialPopulationHash=source_population_hash,generation=0,completedTrainGenerations=0,config=cfg.snapshot(),seed=args.seed,symbols=plan["symbols"],dataRoot=plan["dataRoot"],gitCommit=git.stdout.strip(),
         codeHashes={p.name:file_sha256(p) for p in sorted((ROOT/"research/evolution").glob("*.py"))},
         sourcePlan=str(args.selection_plan.resolve()),sourcePlanSha256=plan_hash,
         fromDate=first,toDate=last,timestampKind="end",requestedSessions=len(calendar),evaluationWindowSessions=5,
         fitnessMode=cfg.fitness_mode,minEvaluationTrades=args.min_evaluation_trades,evaluationMode="AVAILABLE_UNIVERSE_FROZEN_EVALUATION" if frozen else "AVAILABLE_UNIVERSE_TRAINING",
         executionModel="NEXT_COMPLETED_MINUTE_CLOSE_PROXY",population=len(bots),evaluationStatus="UNVERIFIED",
         sourceRunId=source_info["runId"] if frozen else None,sourcePopulationHash=source_population_hash if frozen else None)
+    if cfg.selection_policy == "v08_profit_only":
+        info.update(selectionPolicy=cfg.selection_policy, resourcePreflight=preflight_resources)
     atomic_json(directory/"run.json",info);atomic_json(directory/"status.json",info)
     facts={s["sessionDate"]:s for s in plan["sessions"]}
     ledger={b.bot_id:dict(pnlUsd=0.,trades=0,transactionCost=0.,validDays=0,invalidDays=0) for b in bots}
@@ -184,6 +197,8 @@ def run(args):
                         parentPoolSize=selection["parentPoolSize"],mutationCount=selection["mutationCount"],
                         eliteCount=selection["eliteCount"],crossoverCount=selection["crossoverCount"],
                         randomRecovery=selection["randomRecovery"])
+                    if cfg.selection_policy == "v08_profit_only":
+                        last_window_summary["reproduction"] = selection
                     completed_now=True
                     atomic_json(directory/f"window_{gen:04d}.json",dict(dates=pending_dates,bots=window,selection=selection))
                     append(directory/"windows.jsonl",dict(attempt=attempt,status="SELECTED",generation=gen,dates=pending_dates))

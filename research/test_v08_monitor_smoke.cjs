@@ -1,0 +1,11 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const h=fs.readFileSync(require('node:path').join(__dirname,'..','admin.html'),'utf8');
+const code=h.slice(h.indexOf('function renderV08Research(d)'),h.indexOf('function renderV07Managed(d)'));
+const text={};const c=vm.createContext({setText:(k,v)=>text[k]=v});vm.runInContext(code,c);
+const render=d=>{c.data=d;vm.runInContext('renderV08Research(data)',c)};
+render({available:false});assert.match(text.v08ResearchStatus,/데이터 없음/);assert.equal(text.v08ResearchSelection,'');
+render({available:true,phase:'running',population:100,completedSessions:5,requestedSessions:10,completedTrainGenerations:1,reproduction:{parentPoolSize:1,offspringCount:100,eliteCount:1,mutationCount:50,randomRecovery:false,profitableBotRatio:.01,meanWindowReturn:-.001,meanMdd:.02}});
+assert.match(text.v08ResearchStatus,/100개체/);assert.match(text.v08ResearchSelection,/부모 1 · 자식 100/);assert.match(text.v08ResearchSelection,/평균 수익 -0.10%/);assert.match(text.v08ResearchSelection,/RANDOM_RECOVERY false/);
+render({available:true,phase:'running'});assert.match(text.v08ResearchSelection,/평균 수익 집계 중/);
+assert.ok(h.includes('/api/research/evolution/v08/status'));assert.ok(h.includes('command:"v07 report"'));
+console.log('PASS: independent V08 actual-data monitor and unknown values; V07 controls preserved');
