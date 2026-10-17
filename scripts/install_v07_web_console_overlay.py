@@ -124,7 +124,13 @@ def merge_managed_admin(local_bytes, wanted_bytes, base_bytes):
         web = slice_between(wanted,
                             '        <div class="card" id="v07WebPanel">',
                             '        <div id="consoleOut"')
-        pos = local.index('        <div id="consoleOut"')
+        # EC2 admin.html may indent this known element differently from
+        # GitHub. Locate the unique element by ID and preserve its entire line;
+        # never depend on exactly eight leading spaces.
+        console_pos = local.index('<div id="consoleOut"')
+        pos = local.rfind("\\n", 0, console_pos) + 1
+        if local[pos:console_pos].strip() or "<section" not in local[:console_pos]:
+            raise Blocked("CONSOLE_OUTPUT_ANCHOR_UNSAFE")
         local = local[:pos] + web + local[pos:]
     for identifier in ('v07WebPanel', 'v07WebStatus', 'v07WebLog', 'v07WebRefresh',
                        'v07ManagedRefresh', 'v07ManagedDownload', 'v07ManagedSummary',
