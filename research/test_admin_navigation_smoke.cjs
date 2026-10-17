@@ -13,7 +13,7 @@ assert.deepEqual(groups,['주식','AI','관리','데이터']);
 const children=[...admin.matchAll(/data-tab="([^"]+)" data-parent="([^"]+)"[^>]*>([^<]+)</g)]
   .map(x=>[x[2],x[1],x[3]]);
 assert.deepEqual(children,[['stocks','trade','거래'],['stocks','paper','모의매매'],
- ['stocks','backtest','백테스트'],['ai','ai','연구'],
+ ['stocks','backtest','백테스트'],['ai','ai','연구'],['ai','bots','봇'],
  ['manage','console','콘솔'],['manage','status','서버 상태'],['manage','api','API 관리'],['manage','settings','설정'],
  ['data','downloads','다운로드 센터'],['data','collectors','수집 관리']]);
 assert.match(admin,/class="console-layout"/);
@@ -51,7 +51,7 @@ const ctx=vm.createContext({location:{hash:'#trade'},history:{replaceState(...ar
  refreshTrade(){},refreshPaper(){},refreshSimpleBacktest(){},refreshAI(){},refreshGit(){},
  refreshApiFeatures(){},refreshCredentials(){},refreshCollectionSymbols(){},refreshCollectors(){},refreshServerStatus(){},refreshV07Web(){}});
 new vm.Script(admin.slice(start,end)).runInContext(ctx);
-for(const target of ['console','status','downloads','collectors','settings','paper','ai']){
+for(const target of ['console','status','downloads','collectors','settings','paper','ai','bots']){
  vm.runInContext('navigateAdmin("'+target+'")',ctx);
  const group=children.find(x=>x[1]===target)[0];
  assert.equal(parent.find(x=>x.dataset.group===group).active,true);
