@@ -1,4 +1,5 @@
 name: Deploy GitHub Pages
+# Only the V0.7 research branch publishes; the legacy main branch is not a Pages source.
 on:
   push:
     branches: ["strategy-engine-v3"]
@@ -29,6 +30,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Verify V0.7 UI before publishing
+        run: |
+          test "$GITHUB_REF" = "refs/heads/strategy-engine-v3"
+          node research/test_admin_navigation_smoke.cjs
+          node research/test_v07_dashboard_smoke.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Assemble public UI only
@@ -37,6 +43,7 @@ jobs:
           cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js _site/
           cp data/dashboard.json _site/data/
           touch _site/.nojekyll
+          printf '{"branch":"%s","commit":"%s","run_id":"%s"}\n' "$GITHUB_REF_NAME" "$GITHUB_SHA" "$GITHUB_RUN_ID" > _site/deployment.json
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
