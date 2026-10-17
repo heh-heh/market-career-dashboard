@@ -105,6 +105,8 @@ def _verified_run(job, stage):
     result = _read(folder / "run.json")
     if result.get("phase") != "completed" or result.get("finalOosGate") != "CLOSED" or result.get("version") != "V08_PROFIT_ONLY_1":
         raise ValueError("V08_RUN_NOT_VERIFIED")
+    if stage == "smoke" and not result.get("completedTrainGenerations"):
+        raise ValueError("V08_SMOKE_NO_VALID_GENERATIONS")
     if stage == "train":
         if not result.get("completedTrainGenerations") or not result.get("resultsValid") or not result.get("inputHashesVerified"):
             raise ValueError("V08_TRAIN_NOT_VALID")
@@ -177,8 +179,8 @@ def start(stage, retry=False):
             _write(ROOT / "current.json", {"name": name})
         previous = PRIOR[stage]
         if previous:
-            if previous == "train":
-                _verified_run(job, "train")
+            if previous in ("train", "smoke"):
+                _verified_run(job, previous)
             elif _state(job, previous)["phase"] != "completed":
                 raise ValueError("V08_STAGE_ORDER: complete " + previous)
         old = _state(job, stage)
