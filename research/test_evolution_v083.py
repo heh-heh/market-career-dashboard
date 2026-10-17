@@ -69,12 +69,37 @@ class TopTwoV083(unittest.TestCase):
     def test_all_invalid_or_missing_bot_blocks_without_recovery(self):
         rows=evaluations(self.bots,[0]*50)
         rows[0]['evaluationValid']=False
-        with self.assertRaisesRegex(ValueError,'V083_REQUIRES_50_VALID'):
+        with self.assertRaisesRegex(ValueError,'V083_REQUIRES_ALL_VALID'):
             reproduce_top_two(self.bots,rows,self.cfg,random.Random(1),1,'2023-01-10')
         rows=evaluations(self.bots,[0]*50)
         rows[1]['botId']=rows[0]['botId']
-        with self.assertRaisesRegex(ValueError,'V083_REQUIRES_50_VALID'):
+        with self.assertRaisesRegex(ValueError,'V083_REQUIRES_ALL_VALID'):
             reproduce_top_two(self.bots,rows,self.cfg,random.Random(1),1,'2023-01-10')
+
+    def test_operator_selected_population_still_uses_two_parents(self):
+        for size in (2, 5, 10, 20, 50):
+            with self.subTest(size=size):
+                config=replace(self.cfg,population_size=size)
+                bots=initial_population(config,random.Random(11),'2023-01-03')
+                self.assertEqual(len(bots),size)
+                rows=evaluations(bots,[1.0,0.0]+[-1.0]*(size-2))
+                children,metadata=reproduce_top_two(bots,rows,config,random.Random(7),1,'2023-01-10')
+                self.assertEqual(len(children),size)
+                self.assertEqual(metadata['validEvaluations'],size)
+                self.assertEqual(metadata['offspringCount'],size)
+                self.assertEqual(metadata['parentPoolSize'],2)
+                self.assertEqual(metadata['profitableBotRatio'],1/size)
+                self.assertEqual(metadata['parentIds'],[bots[0].bot_id,bots[1].bot_id])
+                self.assertTrue(all(len(x.parent_ids)==2 for x in children))
+
+    def test_invalid_operator_population_rejected(self):
+        for size in (0,1,51):
+            with self.subTest(size=size):
+                config=replace(self.cfg,population_size=size)
+                bots=initial_population(config,random.Random(1),'2023-01-03')
+                rows=evaluations(bots,[0.0]*size)
+                with self.assertRaisesRegex(ValueError,'V083_POPULATION_OUT_OF_BOUNDS'):
+                    reproduce_top_two(bots,rows,config,random.Random(1),1,'2023-01-10')
 
     def test_pacing_never_disables_resource_guard(self):
         monitor=PacedMonitor(pacing_seconds=.005)
