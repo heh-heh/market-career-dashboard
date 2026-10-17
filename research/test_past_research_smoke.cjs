@@ -44,7 +44,7 @@ vm.runInContext(js,context);
  assert.deepEqual(requests,['v082 report']);
  assert.match(node('pastResearchStatus').textContent,/실패 기록/);
  assert.match(node('pastReturnChart').innerHTML,/-10\.0%/);
- assert.match(node('pastReturnChart').innerHTML,/3\.0%/);
+ assert.match(node('pastReturnChart').innerHTML,/3\.00%/);
  assert.match(node('pastSurvivalChart').innerHTML,/20\.00%/);
  assert.match(node('pastSurvivalChart').innerHTML,/4\.00%/);
  assert.match(node('pastSurvivalLegend').textContent,/표시 2\/3/);
