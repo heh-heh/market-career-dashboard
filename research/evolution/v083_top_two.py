@@ -12,10 +12,11 @@ from .survival_breeding import actual_mutation, valid_window
 
 
 def select_top_two(evaluations, epsilon):
-    if (len(evaluations) != 50 or
-            len({e.get("botId") for e in evaluations}) != 50 or
+    size=len(evaluations)
+    if (not 2 <= size <= 50 or
+            len({e.get("botId") for e in evaluations}) != size or
             not all(valid_window(e) for e in evaluations)):
-        raise ValueError("V083_REQUIRES_50_VALID_FIVE_SESSION_EVALUATIONS")
+        raise ValueError("V083_REQUIRES_ALL_VALID_FIVE_SESSION_EVALUATIONS")
     # Primary criterion: actual net 5-session USD P&L. Risk and fitness
     # break ties; never sort on the optimizer's fitness alone.
     ranked = sorted(evaluations,
@@ -25,18 +26,19 @@ def select_top_two(evaluations, epsilon):
 
 
 def reproduce_top_two(bots, evaluations, config, rng, generation, birth_date):
-    if len(bots) != 50 or config.population_size != 50:
-        raise ValueError("V083_FIXED_50_POPULATION")
+    size=config.population_size
+    if not 2 <= size <= 50 or len(bots) != size:
+        raise ValueError("V083_POPULATION_OUT_OF_BOUNDS")
     by_id = {b.bot_id: b for b in bots}
-    if len(by_id) != 50 or len({b.genome.digest for b in bots}) < 1:
+    if len(by_id) != size or len({b.genome.digest for b in bots}) < 1:
         raise ValueError("V083_INVALID_OR_DUPLICATE_BOTS")
     selected, has_profit = select_top_two(evaluations, config.epsilon)
     if any(e["botId"] not in by_id for e in selected):
         raise ValueError("V083_UNKNOWN_PARENT")
     first, second = (by_id[e["botId"]] for e in selected)
     children = []
-    for idx in range(50):
-        # All 50 are new children, including the first two. Parents are not
+    for idx in range(size):
+        # All children are new, including the first two. Parents are not
         # retained as runtime trading bots; only their immutable genes are used.
         parent_ids = [first.bot_id, second.bot_id]
         genes = crossover(first.genome, second.genome, rng)
@@ -60,17 +62,17 @@ def reproduce_top_two(bots, evaluations, config, rng, generation, birth_date):
             for i,e in enumerate(selected)],
         "profitEligibleCount":sum(e["windowPnl"]>config.epsilon for e in evaluations),
         "profitableBotCount":sum(e["windowPnl"]>config.epsilon for e in evaluations),
-        "profitableBotRatio":sum(e["windowPnl"]>config.epsilon for e in evaluations)/50,
+        "profitableBotRatio":sum(e["windowPnl"]>config.epsilon for e in evaluations)/size,
         "restartRequested":not has_profit,
         "preservationParents":not has_profit,
-        "validEvaluations":50, "randomRecovery":False, "eliteCount":0,
+        "validEvaluations":size, "randomRecovery":False, "eliteCount":0,
         "mutationCount":sum(c.mutation_count for c in children),
         "mutatedChildren":sum(c.mutation_count>0 for c in children),
-        "crossoverCount":50, "offspringCount":50,
+        "crossoverCount":size, "offspringCount":size,
         "uniqueGenomes":len({c.genome.digest for c in children}),
         "maxParentContribution":0.5,
         "bestWindowReturn":max(values), "worstWindowReturn":min(values),
         "meanWindowReturn":sum(values)/len(values),
-        "meanMdd":sum(e["windowMaxDrawdown"] for e in evaluations)/50,
+        "meanMdd":sum(e["windowMaxDrawdown"] for e in evaluations)/size,
         "meanFitness":sum(e["fitness"] for e in evaluations)/50,
     }
