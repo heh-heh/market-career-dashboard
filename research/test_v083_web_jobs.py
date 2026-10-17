@@ -52,7 +52,38 @@ class WebTests(unittest.TestCase):
     def test_new_campaign_requires_explicit_command_and_keeps_old_artifacts(self):
         with patch.object(jobs,'start',return_value='STARTED') as spawn:
             jobs.console(['v083','new'])
-        spawn.assert_called_once_with('smoke',new_job=True)
+        spawn.assert_called_once_with('smoke',new_job=True,population=50)
+
+    def test_console_population_is_bounded_and_preserved(self):
+        with patch.object(jobs,'start',return_value='STARTED') as start:
+            jobs.console(['v083','new','10'])
+            start.assert_called_once_with('smoke',new_job=True,population=10)
+            start.reset_mock()
+            jobs.console(['v083','smoke','2'])
+            start.assert_called_once_with('smoke',population=2)
+            start.reset_mock()
+            for bad in ('1','51','500','1.5','-2','x'):
+                with self.assertRaises(ValueError):
+                    jobs.console(['v083','new',bad])
+            start.assert_not_called()
+
+    def test_job_population_persists_and_does_not_rewrite_old_job(self):
+        with tempfile.TemporaryDirectory() as tmp,contextlib.ExitStack() as stack:
+            root=Path(tmp);legacy=root/'legacy';legacy.mkdir()
+            plan=root/'selection.json';plan.write_text('{}')
+            for name,value in [('ROOT',root),('PYTHON',Path(__file__)),('_plan',lambda:plan),('_storage',lambda:None),
+                              ('_verify_source',lambda:None),('_other_active',lambda:None)]:
+                stack.enter_context(patch.object(jobs,name,value))
+            stack.enter_context(patch.object(jobs.legacy,'ROOT',legacy))
+            stack.enter_context(patch.object(jobs.legacy,'_check_service_lifetime'))
+            stack.enter_context(patch.object(jobs.subprocess,'Popen'))
+            jobs.start('smoke',population=10)
+            job=jobs._job()
+            self.assertEqual(jobs._population(job),10)
+            self.assertEqual(json.loads((job/'population.json').read_text())['population'],10)
+            with self.assertRaisesRegex(ValueError,'V083_POPULATION_CHANGE_REQUIRES_NEW_CAMPAIGN'):
+                jobs.start('smoke',population=5)
+            self.assertEqual(jobs._population(job),10)
 
     def test_no_valid_smoke_cannot_unlock_calibration(self):
         with tempfile.TemporaryDirectory() as tmp:
