@@ -146,12 +146,11 @@ def main():
     shutil.copy2(TARGET,backup/"server.py")
     if CONTROLLER.exists():shutil.copy2(CONTROLLER,backup/"v08_web_jobs.py")
     (backup/"manifest.json").write_text(json.dumps(audit,indent=2))
-    changed=False
+    changed=True
     try:
         atomic_write(CONTROLLER,controller,CONTROLLER if CONTROLLER.exists() else None)
         if audit["serverChanged"]:
             atomic_write(TARGET,server,TARGET)
-        changed=True
         if sha(TARGET.read_bytes())!=audit["serverAfter"] or sha(CONTROLLER.read_bytes())!=audit["controllerSha"]:
             raise ValueError("POST_WRITE_HASH_MISMATCH")
         if active_workers():raise ValueError("WORKER_STARTED_DURING_INSTALL")
