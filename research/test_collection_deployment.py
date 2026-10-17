@@ -156,7 +156,7 @@ class DeploymentTests(unittest.TestCase):
         workflow=(scheduler.ROOT/'.github/workflows/pages.yml').read_text()
         block=workflow.split('      - name: Assemble public UI only\n')[1].split('      - name: Upload artifact')[0]
         commands='\n'.join(line[10:] for line in block.splitlines() if line.startswith('          '))
-        assets=['index.html','admin.html','collection.html','backtest-v2.html','research-export.js','research-export.css','autonomous-research.js','data/dashboard.json']
+        assets=['index.html','admin.html','collection.html','backtest-v2.html','research-export.js','research-export.css','autonomous-research.js','data/dashboard.json','portfolio/index.html']
         for name in assets:
             target=self.root/name;target.parent.mkdir(exist_ok=True)
             shutil.copyfile(scheduler.ROOT/name,target)
@@ -164,7 +164,7 @@ class DeploymentTests(unittest.TestCase):
         (self.root/'data/toss_1m').mkdir();(self.root/'data/toss_1m/raw.csv').write_text('private-data')
         subprocess.run(['bash','-e','-c',commands],cwd=self.root,check=True)
         files={str(p.relative_to(self.root/'_site')) for p in (self.root/'_site').rglob('*') if p.is_file()}
-        self.assertEqual(files,set(assets)|{'.nojekyll'})
+        self.assertEqual(files,set(assets)|{'.nojekyll','deployment.json'})
 
 
 class CollectionPageTests(unittest.TestCase):

@@ -33,7 +33,7 @@ PROCESS_NAMES = {'research_collection_scheduler.py', 'collect_toss_ticks.py', 'c
 AUTH = {'toss_auth.py', 'toss_token_broker.py'}
 PROTECTED = ('data/', 'research/results/', 'research/evolution/results/', '.git/', '.venv/', 'venv/')
 TESTS = ['research.test_research_collection_scheduler', 'research.test_collection_deployment', 'research.test_collect_toss_ticks', 'research.test_toss_auth_v2']
-STAGE_ONLY = ['data/dashboard.json','.github/workflows/pages.yml','research/fixtures/toss_asyncapi_1_2_2.json']
+STAGE_ONLY = ['data/dashboard.json','.github/workflows/pages.yml','research/fixtures/toss_asyncapi_1_2_2.json','portfolio/index.html']
 
 
 class Blocked(RuntimeError): pass
