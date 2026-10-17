@@ -120,7 +120,7 @@ async function action(stage,retry=false){
  if(busy)return;
  if(!supported){write("v083WebFeedback","V083_BACKEND_UNSUPPORTED: 서버 지원 확인 전 실행할 수 없습니다.");return;}
  let chosen=null;
- try{if(!retry&&(stage==="smoke"||stage==="new"))chosen=selectedPopulation()}catch(e){write("v083WebFeedback",e.message);populationInput?.focus();return;}
+ try{if(!retry&&(stage==="smoke"||stage==="new"))chosen=selectedPopulation()}catch(e){write("v083WebFeedback",e.message);populationInput?.focus?.();return;}
  if(!confirm("V0.8.3 "+(retry?"재실행: ":"실행: ")+stage+(chosen==null?"":" · "+chosen+"개 봇")+"\n연구 전용 · 기존 결과 보존 · 2026 OOS CLOSED\n서버에서 실제 작업을 시작할까요?"))return;
  busy=true;
  document.querySelectorAll("[data-v083],[data-v083-retry]").forEach(b=>b.disabled=true);
