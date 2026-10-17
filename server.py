@@ -1733,7 +1733,7 @@ def _evolution_workers_active():
     # Read-only flock probes survive API PID turnover; no research data writes.
     import fcntl
     for root in (Path("/mnt/research"),Path("/mnt/research-extra")):
-        for name in ("v07-web-jobs","v08-web-jobs","v081-web-jobs","v082-web-jobs"):
+        for name in ("v07-web-jobs","v08-web-jobs","v081-web-jobs","v082-web-jobs","v083-web-jobs"):
             lock=root/name/"research.lock"
             if lock.is_symlink(): return True
             if not lock.is_file(): continue
@@ -1745,7 +1745,7 @@ def _evolution_workers_active():
         if not item.name.isdecimal():continue
         try:tokens=(item/"cmdline").read_bytes().split(b"\0")
         except OSError:continue
-        if any(Path(t.decode("utf-8","ignore")).name in {"run_v081.py","calibrate_v081.py","run_v082.py","calibrate_v082.py"} for t in tokens):return True
+        if any(Path(t.decode("utf-8","ignore")).name in {"run_v081.py","calibrate_v081.py","run_v082.py","calibrate_v082.py","run_v083.py","calibrate_v083.py"} for t in tokens):return True
     return False
 
 
@@ -1941,6 +1941,10 @@ def run_admin_console(command):
     if parts and parts[0]=="bots":
         from v082_bot_roster import console as bots_console
         return bots_console(parts)
+
+    if parts and parts[0]=="v083":
+        from v083_web_jobs import console as v083_console
+        return v083_console(parts)
 
     if parts and parts[0]=="v082":
         from v082_web_jobs import console as v082_console
@@ -2670,6 +2674,16 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/collection50/"):
             self.collection50_get(path); return
+        if path=="/api/research/v083/download":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                from v083_web_jobs import download as v083_download
+                self.send_export_file(v083_download(), "v083-research-results.zip")
+            except (ValueError,OSError) as exc:
+                self.send_json({"ok":False,"error":str(exc)},409)
+            return
+
         if path=="/api/research/v082/download":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
