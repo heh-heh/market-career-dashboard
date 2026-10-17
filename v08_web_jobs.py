@@ -353,7 +353,10 @@ def report():
                         "meanMdd": sum(e["windowMaxDrawdown"] for e in values)/len(values) if values else None,
                         "meanFitness": sum(e["fitness"] for e in values)/len(values) if values else None,
                         "parents": sel.get("parentPoolSize"), "recovery": sel.get("randomRecovery"),
-                        "uniqueGenomes": sel.get("uniqueGenomes")})
+                        "uniqueGenomes": sel.get("uniqueGenomes"), "offspringCount": sel.get("offspringCount"),
+                        "eliteCount": sel.get("eliteCount"), "mutationCount": sel.get("mutationCount"),
+                        "profitableBotRatio": sel.get("profitableBotRatio"),
+                        "maxParentContribution": sel.get("maxParentContribution")})
     space = shutil.disk_usage(job)
     return {"researchOnly": True, "finalOosGate": "CLOSED", "jobId": job.name,
             "stages": states, "runs": runs, "generations": history,
