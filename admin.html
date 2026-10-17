@@ -252,8 +252,66 @@
   </section>
 
   <section id="ai" class="panel">
-    <div class="section-title">V0.8.2 Indicator-Aware Evolution AI 연구</div>
-    <div class="section-subtitle">50개체 시험 → 자원 산정 → 승인 후 고정 개체 수 학습 · 기술적 지표 · 최대 3종목 위험 관리 · 2026 Final OOS CLOSED</div>
+    <div class="section-title">V0.8.3 Top-Two Evolution AI 연구</div>
+    <div class="section-subtitle">50개체 · 순손익 상위 2개 유전자만 번식 · 무수익 시 첫 날짜 재시작(최대 2회) · CPU 75% 보호 유지 · 2026 OOS CLOSED</div>
+    <div class="card" id="v083WebPanel" aria-label="V0.8.3 AI 연구 관리자">
+      <style>
+        #v07ManagedPanel,#v07WebPanel{display:none!important}
+        #v083WebPanel .v083-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+        #v083WebPanel .v083-tile{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0;overflow-wrap:anywhere}
+        #v083WebPanel .v083-value{font-size:21px;font-weight:800;margin-top:6px}
+        #v083WebPanel .v083-muted{color:var(--muted);font-size:12px}
+        #v083WebPanel .v083-stages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+        #v083WebPanel .v083-status-line{white-space:pre-wrap;overflow-wrap:anywhere;background:#08111f;padding:10px;border-radius:9px;min-height:46px}
+        #v083WebPanel .v083-graphs{display:grid;gap:12px}
+        #v083WebPanel svg{width:100%;height:155px;display:block}
+        #v083WebPanel pre{max-height:300px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap;font-size:12px}
+        #v083WebPanel .actions button{min-height:44px}
+        #v083WebPanel .v083-chart{border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+        #v083WebPanel details{margin-top:12px}#v083WebPanel summary{cursor:pointer}
+        @media(min-width:720px){#v083WebPanel .v083-stats{grid-template-columns:repeat(4,minmax(0,1fr))}#v083WebPanel .v083-stages{grid-template-columns:repeat(5,minmax(0,1fr))}}
+        @media(max-width:480px){#v083WebPanel{padding:12px}#v083WebPanel .actions button{flex:1 1 130px}}
+      </style>
+      <div class="label">V0.8.3 · Indicator-Aware Trading Intelligence · 상위 2개 유전자 번식 · 무수익 첫 날짜 재시작 · 2026 OOS CLOSED</div>
+      <div class="v083-muted" style="margin-top:6px">완료된 V0.7 데이터 감사·선별 계획은 읽기 전용으로 재사용합니다. V0.7 결과는 삭제되지 않습니다.</div>
+      <div class="v083-stats" id="v083WebStats" aria-live="polite"><div class="v083-tile">V0.8.3 지원 서버 확인 전 · 실행 차단</div></div>
+      <div id="v083WebStages" class="v083-stages" aria-label="V0.8.3 연구 단계"></div>
+      <div id="v083WebFeedback" class="v083-status-line" role="status" aria-live="polite">학습을 시작하면 서버 승인 또는 차단 이유가 이곳에 표시됩니다.</div>
+      <div class="actions">
+        <button id="v083WebRefresh" type="button">상태·로그 새로고침</button>
+        <button data-v083="smoke" type="button" disabled class="primary">① 50개체 시험 학습</button>
+        <button data-v083="new" type="button" disabled>새 실험 · 기존 결과 보존</button>
+        <button data-v083="calibrate" type="button" disabled>② 50개체 반복 자원 검증</button>
+        <button data-v083="train" type="button" disabled>③ 50개체 전체 학습 승인</button>
+        <button data-v083="holdout" type="button" disabled>④ 2024 동결 홀드아웃</button>
+        <button data-v083="validation" type="button" disabled>⑤ 2025 개발 검증</button>
+      </div>
+      <div class="v083-muted">각 단계 완료 후 다음 단계를 시작합니다. 브라우저 종료와 관계없이 서버 worker가 작업을 유지하며, 불완전한 거래일을 가짜 데이터로 채우지 않습니다.</div>
+      <div class="v083-graphs">
+        <div class="v083-chart"><div class="label">완료 세대 평균 수익률 (5거래일 누적)</div><svg id="v083ReturnChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.3 평균 수익률 그래프"></svg><div class="v083-muted" id="v083ReturnSummary">결과 없음</div></div>
+        <div class="v083-chart"><div class="label">완료 세대 평균 MDD</div><svg id="v083MddChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.3 평균 MDD 그래프"></svg><div class="v083-muted" id="v083MddSummary">결과 없음</div></div>
+        <div class="v083-chart"><div class="label">완료 세대 평균 fitness</div><svg id="v083FitnessChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.3 평균 fitness 그래프"></svg><div class="v083-muted" id="v083FitnessSummary">결과 없음</div></div>
+      </div>
+      <details open><summary>부모 선발·세대교체 이력</summary><pre id="v083WebLineage">결과 없음</pre></details>
+      <details open><summary>종목별 지표 · 역사적 판단 · 포트폴리오 위험 (대표 봇)</summary><div id="v083SymbolAnalysis">실제 산출물 없음</div></details>
+      <details><summary>기존 V0.8 0세대 원인 · 참고용</summary><pre id="v083WebPriorDiagnosis">운영 자료 조회 전</pre></details>
+      <details open><summary>자원 산정 근거 · 반복 부하 시험</summary><pre id="v083WebCapacity">아직 측정하지 않음</pre></details>
+      <details open><summary>최근 로그</summary><pre id="v083WebLog" role="log">로그 없음</pre></details>
+      <details><summary>실패·중단 단계 재실행</summary>
+        <div class="actions">
+          <button type="button" disabled data-v083-retry="smoke">시험 재실행</button>
+          <button type="button" disabled data-v083-retry="calibrate">자원 산정 재실행</button>
+          <button type="button" disabled data-v083-retry="train">학습 재실행</button>
+          <button type="button" disabled data-v083-retry="holdout">홀드아웃 재실행</button>
+          <button type="button" disabled data-v083-retry="validation">검증 재실행</button>
+          <button type="button" disabled data-v083-retry="export">ZIP 재준비</button>
+        </div>
+      </details>
+      <div class="actions"><button type="button" disabled data-v083="export">결과 ZIP 준비</button><button type="button" id="v083WebDownload" disabled>ZIP 다운로드</button></div>
+      <details><summary>실제 상태 JSON · 데이터 경로</summary><pre id="v083WebRaw">상태 조회 대기</pre></details>
+      <div class="v083-muted">서버에는 신규 v083_web_jobs.py 및 V0.8.3 엔진이 별도 배포되어야 합니다. GitHub Pages 변경만으로 EC2 학습이 시작되지는 않습니다.</div>
+    </div>
+    <details style="margin:12px 0"><summary>이전 버전 V0.8.2 학습 기록과 기존 제어판 열기</summary>
     <div class="card" id="v082WebPanel" aria-label="V0.8.2 AI 연구 관리자">
       <style>
         #v07ManagedPanel,#v07WebPanel{display:none!important}
@@ -311,6 +369,7 @@
       <details><summary>실제 상태 JSON · 데이터 경로</summary><pre id="v082WebRaw">상태 조회 대기</pre></details>
       <div class="v082-muted">서버에는 신규 v082_web_jobs.py 및 V0.8.2 엔진이 별도 배포되어야 합니다. GitHub Pages 변경만으로 EC2 학습이 시작되지는 않습니다.</div>
     </div>
+    </details>
     <div class="section-subtitle">이전 버전 V0.8.1 연구 기록 · V0.8.2와 독립된 실행 및 결과</div>
     <div class="card" id="v081WebPanel" aria-label="이전 버전 V0.8.1 AI 연구 관리자">
       <style>
@@ -1471,6 +1530,7 @@ setInterval(()=>{
 <script src="v08-web.js"></script>
 <script src="v081-web.js"></script>
 <script src="v082-web.js"></script>
+<script src="v083-web.js"></script>
 <script src="bot-roster.js"></script>
 </body>
 </html>
