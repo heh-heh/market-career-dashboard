@@ -9,7 +9,7 @@ let data={protocol:'V082_WEB_1',initialPopulation:50,maxPopulation:50,stages:{sm
  await page.route('**/*',async route=>{
   const p=new URL(route.request().url()).pathname;
   if(p==='/admin.html')return route.fulfill({contentType:'text/html',body:html});
-  if(['/v08-web.js','/v081-web.js','/v082-web.js','/research-export.js','/research-export.css'].includes(p))return route.fulfill({contentType:p.endsWith('.css')?'text/css':'application/javascript',body:fs.readFileSync(root+p)});
+  if(['/v08-web.js','/v081-web.js','/v082-web.js','/v083-web.js','/research-export.js','/research-export.css','/bot-roster.js','/bot-roster.css'].includes(p))return route.fulfill({contentType:p.endsWith('.css')?'text/css':'application/javascript',body:fs.readFileSync(root+p)});
   if(p==='/api/admin/console'){
    const c=JSON.parse(route.request().postData()).command;calls.push(c);
    return route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,output:c==='v082 report'?JSON.stringify(data):c.endsWith(' report')?'{}':'SYNTHETIC_ONLY'})});
@@ -23,6 +23,7 @@ let data={protocol:'V082_WEB_1',initialPopulation:50,maxPopulation:50,stages:{sm
   await page.setViewportSize({width,height:900});const size=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,inner:innerWidth}));assert.ok(size.scroll<=size.inner+1,JSON.stringify({width,...size}));
   await page.screenshot({path:'/tmp/v082-dashboard-'+width+'.png',fullPage:true});
  }
+ await page.locator('details:has(> summary:text("이전 버전 V0.8.2"))').evaluate(el=>{el.open=true});
  assert.match(await page.locator('#v082WebLineage').innerText(),/a:-0.5/);
  await page.locator('#v082WebPanel [data-v082="train"]').click();
  await page.waitForFunction(()=>!document.querySelector('#v082WebPanel [data-v082="train"]').disabled);
