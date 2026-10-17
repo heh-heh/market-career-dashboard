@@ -14,6 +14,9 @@ on:
       - "research/test_v083_web_smoke.cjs"
       - "scripts/install_v083_admin_api_overlay.py"
       - "bot-roster.js"
+      - "past-research.js"
+      - "past-research.css"
+      - "research/test_past_research_smoke.cjs"
       - "bot-roster.css"
       - "v082_bot_roster.py"
       - "research/test_bot_roster_smoke.cjs"
@@ -55,12 +58,13 @@ jobs:
           node research/test_v082_web_smoke.cjs
           node research/test_v083_web_smoke.cjs
           node research/test_bot_roster_smoke.cjs
+          node research/test_past_research_smoke.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Assemble public UI only
         run: |
           mkdir -p _site/data
-          cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js v08-web.js v081-web.js v082-web.js v083-web.js bot-roster.js bot-roster.css _site/
+          cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js v08-web.js v081-web.js v082-web.js v083-web.js bot-roster.js bot-roster.css past-research.js past-research.css _site/
           cp data/dashboard.json _site/data/
           touch _site/.nojekyll
           printf '{"branch":"%s","commit":"%s","run_id":"%s"}\n' "$GITHUB_REF_NAME" "$GITHUB_SHA" "$GITHUB_RUN_ID" > _site/deployment.json
