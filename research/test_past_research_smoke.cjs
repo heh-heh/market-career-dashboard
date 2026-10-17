@@ -59,7 +59,8 @@ vm.runInContext(js,context);
  assert.match(node('pastSurvivalChart').innerHTML,/10\.00%/);
  node('pastResearchVersion').value='v081';
  await context.window.refreshPastResearch();
- assert.match(node('pastSurvivalChart').innerHTML,/3\.0%/);
+ assert.match(node('pastSurvivalChart').innerHTML,/3\.00%/);
+ assert.ok(!node('pastSurvivalChart').innerHTML.includes('200.0%'),'survival axis never exceeds 100 percent');
  assert.equal(requests.length,4);
  // A tab return should reuse stored results; explicit refresh re-reads from API.
  node('pastResearchVersion').value='v082';
