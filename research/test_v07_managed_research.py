@@ -257,6 +257,28 @@ class ManagedInstallerTests(unittest.TestCase):
         self.assertEqual(result.count('id="v07ManagedPanel"'),1)
         self.assertEqual((self.target/'admin.html').read_text(),local)
 
+    def test_old_ec2_admin_missing_all_v07_ui_and_custom_console_indent(self):
+        # Actual EC2 diagnostics: no V0.7 JS or card; appendConsole remains,
+        # and consoleOut can be indented differently than the GitHub example.
+        local=(self.target/'admin.html').read_bytes().decode()
+        card_start=local.index('        <div class="card" id="v07WebPanel">')
+        card_end=local.index('        <div id="consoleOut"', card_start)
+        local=local[:card_start]+local[card_end:]
+        js_start=local.index('let v07WebPending=false;')
+        js_end=local.index('function appendConsole(v)',js_start)
+        local=local[:js_start]+local[js_end:]
+        local=local.replace('        <div id="consoleOut"', '      <div id="consoleOut"',1)
+        (self.target/'admin.html').write_text(local)
+        self.assertNotIn('id="v07WebPanel"',local)
+        self.assertNotIn('let v07WebPending=false;',local)
+        parts,_=installer.plan()
+        merged=parts['admin.html'][1].decode()
+        self.assertEqual(merged.count('id="v07WebPanel"'),1)
+        self.assertEqual(merged.count('id="v07ManagedPanel"'),1)
+        self.assertEqual(merged.count('let v07WebPending=false;'),1)
+        self.assertIn('      <div id="consoleOut"',merged)
+        self.assertEqual((self.target/'admin.html').read_text(),local)
+
     def test_unknown_local_module_and_conflicting_ui_block_without_writes(self):
         (self.target/'v07_web_jobs.py').write_bytes(b'# local modification\n'+self.old['v07_web_jobs.py'])
         with self.assertRaisesRegex(installer.Blocked,'EXISTING_WEB_MODULE_DIFFERS'):installer.plan()
