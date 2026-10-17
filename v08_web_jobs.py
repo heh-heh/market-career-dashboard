@@ -157,7 +157,8 @@ def start(stage, retry=False):
         raise ValueError("V08_PYTHON_MISSING")
     if stage != "export":
         _verify_source()
-    _plan()
+    plan = _plan()
+    plan_hash = legacy._hash(plan)
     with (ROOT / "start.lock").open("a+") as start_lock, (ROOT / "research.lock").open("a+") as run_lock, (legacy.ROOT / "research.lock").open("a+") as shared_lock:
         fcntl.flock(start_lock, fcntl.LOCK_EX)
         try:
@@ -177,6 +178,12 @@ def start(stage, retry=False):
             job = ROOT / name
             job.mkdir(mode=0o700)
             _write(ROOT / "current.json", {"name": name})
+        evidence = _read(job / "source_plan.json")
+        if evidence:
+            if evidence.get("path") != str(plan.resolve()) or evidence.get("sha256") != plan_hash:
+                raise ValueError("V08_PLAN_CHANGED: preserve frozen research selection")
+        else:
+            _write(job / "source_plan.json", {"path": str(plan.resolve()), "sha256": plan_hash})
         previous = PRIOR[stage]
         if previous:
             if previous in ("train", "smoke"):
@@ -256,7 +263,11 @@ def worker(stage, job):
         if stage == "export":
             _export(job)
         else:
-            plan = _plan()
+            evidence = _read(job / "source_plan.json")
+            plan = Path(evidence.get("path") or "")
+            if (not plan.is_file() or plan.is_symlink() or
+                    legacy._hash(plan) != evidence.get("sha256")):
+                raise ValueError("V08_PLAN_CHANGED_DURING_LAUNCH")
             argv = [str(PYTHON), str(RUNNER), "--selection-plan", str(plan),
                     "--seed", "42", "--require-ebs", "--results-dir", str(RESULTS)]
             if stage == "smoke":
