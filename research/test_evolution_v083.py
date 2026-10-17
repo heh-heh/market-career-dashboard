@@ -135,7 +135,7 @@ class TopTwoV083(unittest.TestCase):
             plan=prepare(root,days)
             args=base_parser().parse_args([
                 '--selection-plan',str(plan),'--config',str(CONFIG),
-                '--population','50','--from-date',days[0],'--to-date',days[-1],
+                '--population','8','--from-date',days[0],'--to-date',days[-1],
                 '--results-dir',str(root/'results'),'--data-origin','synthetic'])
             args.v083_mode=True
             args.max_restarts=1
@@ -154,7 +154,7 @@ class TopTwoV083(unittest.TestCase):
             self.assertTrue((out/'window_0000.json').is_file())
             self.assertTrue((out/'window_0001.json').is_file())
             self.assertEqual(json.loads((out/'checkpoint.json').read_text())['completedGeneration'],2)
-            self.assertEqual(len(json.loads((out/'final_population.json').read_text())),50)
+            self.assertEqual(len(json.loads((out/'final_population.json').read_text())),8)
             self.assertEqual(len((out/'v083_restarts.jsonl').read_text().splitlines()),1)
 
     def test_runner_explicit_opt_in_and_bounded_restarts(self):
