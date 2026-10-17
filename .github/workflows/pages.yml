@@ -6,6 +6,7 @@ on:
     paths:
       - "index.html"
       - "admin.html"
+      - "v08-web.js"
       - "collection.html"
       - "backtest-v2.html"
       - "research-export.js"
@@ -36,12 +37,13 @@ jobs:
           test "$GITHUB_REF" = "refs/heads/strategy-engine-v3"
           node research/test_admin_navigation_smoke.cjs
           node research/test_v07_dashboard_smoke.cjs
+          node research/test_v08_web_smoke.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Assemble public UI only
         run: |
           mkdir -p _site/data
-          cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js _site/
+          cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js v08-web.js _site/
           cp data/dashboard.json _site/data/
           cp -R portfolio _site/
           touch _site/.nojekyll
