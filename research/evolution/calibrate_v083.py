@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""V083 fixed-50 warmup + two measured trials, no automatic scaling or training."""
+"""V083 user-selected 2-50 warmup + two trials, no automatic scaling."""
 import argparse
+from dataclasses import replace
 import json
 import math
 import os
@@ -22,9 +23,9 @@ from research.evolution.config import Config
 def code_hashes():return {p.name:file_sha256(p) for p in sorted(CONFIG.parent.glob('*.py'))}
 
 
-def verify_capacity(path,plan,config,seed):
+def verify_capacity(path,plan,config,seed,population=50):
     path=Path(path);d=json.loads(path.read_text())
-    if (d.get('version')!='V083_CAPACITY_1' or d.get('population')!=50 or d.get('status')!='MEASURED_SAFE' or
+    if (d.get('version')!='V083_CAPACITY_1' or d.get('population')!=population or d.get('status')!='MEASURED_SAFE' or
         d.get('host')!=host_fingerprint() or not 0<=time.time()-d.get('createdEpoch',0)<=86400 or
         d.get('planSha256')!=file_sha256(plan) or d.get('configSha256')!=file_sha256(config) or
         d.get('codeHashes')!=code_hashes() or d.get('seed')!=seed):raise ValueError('V083_CAPACITY_STALE_OR_MISMATCH')
@@ -35,7 +36,7 @@ def verify_capacity(path,plan,config,seed):
         if raw.is_symlink() or not run.is_relative_to(path.resolve().parent) or run in seen or file_sha256(run)!=entry['sha256']:
             raise ValueError('V083_CAPACITY_RUN_CHANGED')
         seen.add(run);info=json.loads(run.read_text());report=info.get('resourceReport',{})
-        if info.get('version')!='V083_TOP_TWO_1' or info.get('phase')!='completed' or info.get('population')!=50 or not info.get('completedTrainGenerations') or info.get('codeHashes')!=d['codeHashes'] or info.get('sourcePlanSha256')!=d['planSha256'] or info.get('seed')!=seed or info.get('dataOrigin')!=d.get('dataOrigin') or info.get('config')!=json.loads(json.dumps(Config(**json.loads(Path(config).read_text())).snapshot())) or not safe_measurement(report,d['maxSessionSeconds']):
+        if info.get('version')!='V083_TOP_TWO_1' or info.get('phase')!='completed' or info.get('population')!=population or not info.get('completedTrainGenerations') or info.get('codeHashes')!=d['codeHashes'] or info.get('sourcePlanSha256')!=d['planSha256'] or info.get('seed')!=seed or info.get('dataOrigin')!=d.get('dataOrigin') or info.get('config')!=json.loads(json.dumps(replace(Config(**json.loads(Path(config).read_text())),population_size=population,adaptive_resources=False).snapshot())) or not safe_measurement(report,d['maxSessionSeconds']):
             raise ValueError('V083_CAPACITY_UNSAFE_OR_INVALID')
     return d
 
@@ -44,19 +45,21 @@ def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--selection-plan',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
     p.add_argument('--data-origin',choices=['toss','synthetic'],default='toss')
     p.add_argument('--config',type=Path,default=CONFIG);p.add_argument('--seed',type=int,default=42)
+    p.add_argument('--population',type=int,default=50,help='Explicit count 2..50; never automatically scales')
     p.add_argument('--require-ebs',action='store_true');p.add_argument('--research-mount',choices=['/mnt/research','/mnt/research-extra'],default='/mnt/research')
     p.add_argument('--max-session-seconds',type=float,default=900);a=p.parse_args(argv)
+    if not 2<=a.population<=50:p.error('V083_POPULATION_MUST_BE_2_TO_50')
     if not math.isfinite(a.max_session_seconds) or a.max_session_seconds<=0:p.error('Positive finite session deadline required')
     plan,_=verify_plan(a.selection_plan);window=smoke_window(plan,desired=5)
     resource_preflight(a.out,require_research_mount=a.require_ebs,research_mount=a.research_mount)
     out=new_output(a.out,plan['dataRoot'])
-    cert=dict(version='V083_CAPACITY_1',population=50,dataOrigin=a.data_origin,automaticIncrease=False,status='RUNNING',host=host_fingerprint(),createdEpoch=time.time(),
+    cert=dict(version='V083_CAPACITY_1',population=a.population,dataOrigin=a.data_origin,automaticIncrease=False,status='RUNNING',host=host_fingerprint(),createdEpoch=time.time(),
         planSha256=file_sha256(a.selection_plan),configSha256=file_sha256(a.config),codeHashes=code_hashes(),seed=a.seed,maxSessionSeconds=a.max_session_seconds,trials=[],finalOosGate='CLOSED')
     atomic_json(out/'capacity.json',cert)
     try:
         for label in ('warmup','measured-1','measured-2'):
             cmd=[sys.executable,str(CONFIG.with_name('run_v083.py')),'--selection-plan',str(a.selection_plan),'--config',str(a.config),'--results-dir',str(out/label),
-                '--population','50','--seed',str(a.seed),'--data-origin',a.data_origin,'--capacity-trial','--from-date',window['fromDate'],'--to-date',window['toDate'],
+                '--population',str(a.population),'--seed',str(a.seed),'--data-origin',a.data_origin,'--capacity-trial','--from-date',window['fromDate'],'--to-date',window['toDate'],
                 '--max-session-seconds',str(a.max_session_seconds),'--research-mount',a.research_mount]
             if a.require_ebs:cmd+=['--require-ebs']
             # Retain inherited shared research lock descriptors across each child.
@@ -79,7 +82,7 @@ def main(argv=None):
         cert['status']='MEASURED_SAFE';atomic_json(out/'capacity.json',cert)
     except Exception as exc:
         cert.update(status='BLOCKED',error=str(exc));atomic_json(out/'capacity.json',cert);raise
-    print(json.dumps(dict(capacityReport=str(out/'capacity.json'),status=cert['status'],population=50)))
+    print(json.dumps(dict(capacityReport=str(out/'capacity.json'),status=cert['status'],population=a.population)))
     return out
 
 if __name__=='__main__':main()
