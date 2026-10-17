@@ -121,7 +121,6 @@ async function action(stage,retry=false){
  if(!supported){write("v083WebFeedback","V083_BACKEND_UNSUPPORTED: 서버 지원 확인 전 실행할 수 없습니다.");return;}
  let chosen=null;
  try{if(!retry&&(stage==="smoke"||stage==="new"))chosen=selectedPopulation()}catch(e){write("v083WebFeedback",e.message);populationInput?.focus();return;}
- if(!retry&&stage==="smoke"&&userEditedPopulation){write("v083WebFeedback","개체 수를 새로 설정했다면 「새 실험」을 눌러 이전 결과를 보존하며 시작하세요.");return;}
  if(!confirm("V0.8.3 "+(retry?"재실행: ":"실행: ")+stage+(chosen==null?"":" · "+chosen+"개 봇")+"\n연구 전용 · 기존 결과 보존 · 2026 OOS CLOSED\n서버에서 실제 작업을 시작할까요?"))return;
  busy=true;
  document.querySelectorAll("[data-v083],[data-v083-retry]").forEach(b=>b.disabled=true);
