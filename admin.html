@@ -38,6 +38,7 @@
 @media(max-width:850px){.console-layout{grid-template-columns:1fr}.console-side .terminal{max-height:360px}}
 @media(max-width:520px){.admin-groups{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.admin-groups button{min-width:0;padding:11px 4px;font-size:13px}.admin-subnav button{flex:1 1 auto}.console-side .terminal{min-height:250px}}
 </style>
+<link rel="stylesheet" href="bot-roster.css">
 </head>
 <body>
 <div id="gate" class="card">
@@ -64,6 +65,7 @@
     <button data-tab="paper" data-parent="stocks" type="button">모의매매</button>
     <button data-tab="backtest" data-parent="stocks" type="button">백테스트</button>
     <button data-tab="ai" data-parent="ai" type="button" hidden>연구</button>
+    <button data-tab="bots" data-parent="ai" type="button" hidden>봇</button>
     <button data-tab="console" data-parent="manage" type="button" hidden>콘솔</button>
     <button data-tab="status" data-parent="manage" type="button" hidden>서버 상태</button>
     <button data-tab="api" data-parent="manage" type="button" hidden>API 관리</button>
@@ -211,6 +213,42 @@
     <div class="card"><div class="label">연도별 결과</div><div id="simpleBtYears" class="signal">-</div></div>
     <div id="btSymbolsCard" class="card"><div class="label">종목별 결과</div><div id="btSymbols" class="signal">-</div></div>
     <div class="card"><div class="label">백테스트 로그</div><div id="simpleBtLog" class="terminal" style="min-height:120px;max-height:260px">-</div></div>
+  </section>
+
+  <section id="bots" class="panel" aria-label="V0.8.2 전체 봇 현황">
+    <div class="section-title">V0.8.2 봇 관측소</div>
+    <div class="section-subtitle">50개 진화 봇 전체 상태 · 현재 자식 개체군과 최근 5거래일 평가 결과 · 읽기 전용</div>
+    <div class="card" id="botRosterPanel">
+      <div class="bots-head">
+        <div class="label">연구 전용 · 2026 Final OOS CLOSED · 실계좌 거래 상태 아님</div>
+        <button type="button" id="botRosterRefresh">전체 새로고침</button>
+      </div>
+      <div id="botRosterStatus" class="signal" role="status" aria-live="polite">V0.8.2 봇 연구 기록을 불러오기 전입니다.</div>
+      <div class="bots-summary" id="botRosterSummary" aria-label="봇 전체 요약"></div>
+      <div class="bots-toolbar">
+        <button type="button" data-roster-view="current" aria-pressed="true">현재 개체군</button>
+        <button type="button" data-roster-view="evaluated" aria-pressed="false">최근 평가 개체군</button>
+        <input id="botRosterSearch" type="search" placeholder="봇 ID, 부모 ID 검색" aria-label="봇 또는 부모 검색">
+        <select id="botRosterSort" aria-label="봇 정렬">
+          <option value="id">봇 ID 순</option><option value="pnl">수익률 높은 순</option>
+          <option value="trades">거래 횟수 높은 순</option><option value="fitness">Fitness 높은 순</option>
+        </select>
+      </div>
+      <p class="bots-hint" id="botRosterLegend">현재 개체군의 누적 값은 유전된 과거 이력이며, 새 자식의 실현 수익률이 아닙니다.</p>
+      <div class="bots-layout">
+        <div class="bots-tablewrap">
+          <table aria-label="V0.8.2 봇 전체 목록">
+            <thead><tr><th>봇 ID</th><th>세대</th><th>상태</th><th>수익률</th><th>거래</th><th>부모/선발</th></tr></thead>
+            <tbody id="botRosterRows"><tr><td colspan="6">데이터 대기 중</td></tr></tbody>
+          </table>
+        </div>
+        <div class="bots-detail">
+          <strong id="botRosterDetailTitle">봇을 선택하세요</strong>
+          <p class="bots-hint" id="botRosterDetailHint">유전자 설정, 부모 관계, 평가 근거가 표시됩니다.</p>
+          <pre id="botRosterDetail"></pre>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section id="ai" class="panel">
@@ -672,7 +710,7 @@ async function authGate(){
 function deny(msg){document.getElementById("gateMsg").innerHTML='<span class="bad">'+esc(msg)+'</span>';}
 document.getElementById("logoutBtn").onclick=async()=>{try{await req("/api/logout",{method:"POST",body:"{}"})}catch(e){}localStorage.removeItem(TOKEN_KEY);location.href="./";};
 
-const adminGroups={stocks:['trade','paper','backtest'],ai:['ai'],manage:['console','status','api','settings'],data:['downloads','collectors']};
+const adminGroups={stocks:['trade','paper','backtest'],ai:['ai','bots'],manage:['console','status','api','settings'],data:['downloads','collectors']};
 const adminDefault={stocks:'trade',ai:'ai',manage:'console',data:'downloads'};
 let currentAdminGroup='stocks';
 function navigateAdmin(name, updateHash=true){
@@ -698,6 +736,7 @@ function navigateAdmin(name, updateHash=true){
  if(name==='paper')refreshPaper();
  if(name==='backtest')refreshSimpleBacktest();
  if(name==='ai')refreshV07Web();
+ if(name==='bots'&&typeof window.refreshBotRoster==='function')window.refreshBotRoster();
  if(name==='console'){refreshGit();refreshV07Web();}
  if(name==='status')refreshServerStatus();
  if(name==='api')refreshApiFeatures();
@@ -1432,5 +1471,6 @@ setInterval(()=>{
 <script src="v08-web.js"></script>
 <script src="v081-web.js"></script>
 <script src="v082-web.js"></script>
+<script src="bot-roster.js"></script>
 </body>
 </html>
