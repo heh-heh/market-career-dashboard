@@ -24,6 +24,7 @@ vm.runInContext(js.replace('})();','globalThis.test={refresh,action,render};})()
  assert.match(get('v083WebFeedback').textContent,/BLOCKED/);
  context.test.render({protocol:'V083_WEB_1',stages:{smoke:{phase:'running'}},runs:{smoke:{indicatorAnalysis:{AAPL:{symbol:'<img>',decision:'WAIT',reason:'INDICATOR_CONFLICT',botId:'b0',decisionTimestamp:'2023-06-01T13:00:00-04:00',indicators:{rsi14:55,spread:null},portfolio:{held:1,allowedPositions:1}}}}},generations:[]});
  assert.match(get('v083SymbolAnalysis').innerHTML,/rsi14/);
+ assert.match(get('v083SymbolAnalysis').innerHTML,/&lt;img&gt;/);assert.ok(!get('v083SymbolAnalysis').innerHTML.includes('<img>'));
  assert.match(h,/id="v083PopulationInput"[^>]*min="2" max="50"/);
  get('v083PopulationInput').value='10';
  const seen=calls.length;
@@ -35,6 +36,6 @@ vm.runInContext(js.replace('})();','globalThis.test={refresh,action,render};})()
  assert.equal(calls.length,beforeReject,'1 bot is rejected before sending API call');
  get('v083PopulationInput').value='51';
  await context.test.action('new');
- assert.equal(calls.length,beforeReject,'51 bots are rejected before sending API call');assert.match(get('v083SymbolAnalysis').innerHTML,/&lt;img&gt;/);assert.ok(!get('v083SymbolAnalysis').innerHTML.includes('<img>'));
+ assert.equal(calls.length,beforeReject,'51 bots are rejected before sending API call');
  console.log('PASS: V083 protocol gate, disabled unsupported actions, measured capacity and legacy V08 retained');
 })().catch(e=>{console.error(e);process.exit(1)});
