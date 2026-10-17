@@ -138,16 +138,10 @@ def merge_managed_admin(local_bytes, wanted_bytes, base_bytes):
         if local.count('id="' + identifier + '"') != 1:
             raise Blocked("V07_DOM_ANCHOR_INVALID: " + identifier)
 
-    for old, updated in (
-        (" if(name==='ai')refreshAI();",
-         " if(name==='ai'){refreshAI();refreshV07Web();}"),
-        (" if(name==='console')refreshGit();",
-         " if(name==='console'){refreshGit();refreshV07Web();}")
-    ):
-        if updated not in local:
-            if local.count(old) != 1:
-                raise Blocked("LOCAL_NAVIGATION_CONFLICT: " + old.strip())
-            local = local.replace(old, updated, 1)
+    # Keep EC2's existing navigateAdmin() logic intact, regardless of custom
+    # formatting, extra conditions or active callbacks. V0.7 JS registers its
+    # own tab/hash listeners and also polls visible panels. Never rewrite
+    # unrelated navigation code in the managed overlay.
 
     js_start = "let v07WebPending=false;"
     js_end = "function appendConsole(v)"
