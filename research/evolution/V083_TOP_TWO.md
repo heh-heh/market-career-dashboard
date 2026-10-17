@@ -8,11 +8,22 @@ The 2026-10-17 EC2 V0.8.2 full-train attempt was stopped by an intentional **75%
 
 The existing checkpoint and outputs are **read-only V0.8.2 historical artifacts**. V0.8.3 never imports or upgrades their populations or capacity certificate.
 
+## 관리자에서 봇 수 입력 (2026-10-17 추가)
+
+관리자 → AI → 연구에서 봇 수를 **2~50 정수**로 직접 입력하고, 첫 시험 학습 또는 **「새 실험」**을 실행합니다. 이미 존재하는 실험의 개체 수를 수정하지 않으며, 새 실험은 새로운 저장 폴더를 만들어 기존 결과를 보존합니다.
+
+- 동일한 개체 수가 시험 학습·3회 자원 검증·전체 학습·동결 평가에 적용됩니다.
+- 모든 세대에서 상위 **2개 부모**만 선발하고, 입력한 봇 수만큼 새로운 자식을 생성합니다.
+- `v083 smoke 10`, `v083 new 10` 등 관리자 콘솔 명령도 지원합니다. 1개 및 51개 이상, 소수/문자 입력은 차단합니다.
+- CPU 75%·RAM 65%·Swap 3% 제한은 그대로 유지됩니다. **봇 수를 줄여도 다른 서버 작업 때문에 CPU가 넘으면 다시 중단될 수 있습니다.**
+- 기존 50봇 실험 또는 예전 인증서는 새 개체 수의 자원 인증서로 재활용하지 않습니다.
+- 현재 EC2에 배포된 고정 50봇 학습 결과는 별도 역사적 기록으로 유지됩니다. 기존 소스와 새로운 엔진의 source commit은 구분됩니다.
+
 ## Rules
 
-1. 50 actively simulated bots and max **three concurrent portfolio positions per bot**, retaining V0.8.2 indicators, causal observation rules, slippage and accounting.
+1. Between 2 and 50 explicitly selected, actively simulated bots and max **three concurrent portfolio positions per bot**, retaining V0.8.2 indicators, causal observation rules, slippage and accounting.
 2. Every **five valid consecutive trading sessions** rank all 50 by **realized net USD P&L**; lower five-day maximum drawdown, higher fitness and bot ID break ties in that order. If the cohort is not 50 complete valid evaluations, **fail closed** rather than treating invalid data as a loss.
-3. **Only the two top-ranked bots are gene donors**, even when exactly one of 50 is profitable. Never carry old lifetime P&L, positions, trade state, or elite bots into the next generation. Generate 50 entirely new, positively mutated crossover children, starting each with a new independent daily $100 simulation account. Do not assume diversity or superior performance without testing.
+3. **Only the two top-ranked bots are gene donors**, even when exactly one of 50 is profitable. Never carry old lifetime P&L, positions, trade state, or elite bots into the next generation. Generate the selected number of entirely new, positively mutated crossover children, starting each with a new independent daily $100 simulation account. Do not assume diversity or superior performance without testing.
 4. Archive `attempt_*`, `window_*.json`, `lineage.jsonl`, prior generation metrics, selection reasons and hashes. Non-selected parent bot objects cease to be active when the in-memory population reference is replaced; disk evidence is **not deleted**.
 5. If **none** of the 50 produced more than `epsilon = 1e-6 USD` over the closed 5-day window, still choose top-two by capital preservation, breed children, and **rewind the training cursor to the first permitted 2022–2023 date**. This is an **in-sample replay** of previously seen data, **not a new forward trading period**.
 6. Rewinds are **bounded: default 2**, configurable `--max-restarts 0..10`. Once exhausted, the run stops with `V083_RESTART_LIMIT_REACHED`, while preceding day/gen snapshots and last checkpoint remain. No silent unbounded retry.
