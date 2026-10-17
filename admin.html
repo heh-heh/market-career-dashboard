@@ -929,8 +929,10 @@ document.querySelectorAll("[data-v07]").forEach(button=>button.onclick=async()=>
   const setNotice=(message,error=false)=>{
     if(!notice)return;
     notice.textContent=message;
-    notice.style.borderColor=error?"var(--bad)":"var(--line)";
-    notice.style.color=error?"var(--bad)":"var(--text)";
+    if(notice.style){
+      notice.style.borderColor=error?"var(--bad)":"var(--line)";
+      notice.style.color=error?"var(--bad)":"var(--text)";
+    }
   };
   setNotice(cmd+" · 서버 응답 대기 중...");
   try{
