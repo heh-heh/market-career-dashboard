@@ -69,6 +69,18 @@ function render(d){
   });
   write("v081WebPriorDiagnosis",JSON.stringify(d.priorZeroGeneration||{available:false,reason:"서버 제공 자료 없음"},null,2));
   write("v081WebCapacity",JSON.stringify({recommendation:d.capacity?.recommendation,currentTrial:d.capacity?.currentTrial,trials:d.capacity?.trials,resourceReport:run.resourceReport},null,2)||"아직 측정하지 않음");
+  // A stage's exit code alone hides the measured guard failure.
+  // Surface the actual failed sample; never label an unsafe trial as successful.
+  if(stages.calibrate?.phase==="failed"){
+    const trials=Array.isArray(d.capacity?.trials)?d.capacity.trials:[];
+    const readings=trials.flatMap(t=>[t.warmup,...(Array.isArray(t.measuredRuns)?t.measuredRuns:[])].filter(Boolean));
+    const failure=readings.map(t=>t.failure||t.error).filter(Boolean).at(-1);
+    const decision=d.capacity?.recommendation?.status||"NO_RECOMMENDATION";
+    write("v081WebFeedback","자원 산정 실패 · "+(failure||stages.calibrate.error||"상세 측정값 없음")+
+      "\n산정 상태: "+decision+
+      "\n허용 CPU 75% / RAM 65% / Swap 3% — 기준을 완화하지 않았습니다."+
+      "\n실패한 자원 산정만 재실행할 수 있으며, 실행 전 서버 부하를 확인하세요. 기존 결과는 보존됩니다.");
+  }
   write("v081WebRaw",JSON.stringify(d,null,2));
 }
 async function call(command){const d=await req("/api/admin/console",{method:"POST",body:JSON.stringify({command})});if(d?.ok===false||d?.exitCode)throw Error(d?.output||d?.error||"API 요청 실패");return d?.output||""}
