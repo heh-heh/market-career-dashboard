@@ -140,6 +140,19 @@ function navigateAdmin(name){window.customName=name;}</script></body></html>'''
         self.assertIn("\t\t<div class='terminal' id='consoleOut'>local</div>",merged)
         self.assertEqual(installer.unrelated_scripts(minimal),installer.unrelated_scripts(merged))
 
+    def test_prior_deployed_v07_card_and_runtime_upgrade_without_overwriting_legacy_js(self):
+        previous=subprocess.check_output(['git','show','48117be:admin.html'],cwd=ROOT)
+        (self.target/'admin.html').write_bytes(previous)
+        with self.no_node():
+            planned,_=installer.plan()
+        updated=planned['admin.html'][1].decode()
+        original=previous.decode()
+        self.assertIn('id="v07AiLog"',updated)
+        self.assertIn('id="v07ManagedPanel"',updated)
+        self.assertEqual(updated.count('id="v07ManagedPanel"'),1)
+        self.assertEqual(installer.unrelated_scripts(original),installer.unrelated_scripts(updated))
+        self.assertEqual(original,(self.target/'admin.html').read_text())
+
     def test_partial_known_installations_fill_missing_pieces_without_duplicates(self):
         for remove in ('web','managed','runtime'):
             text=self.wanted.decode();doc=installer.HtmlParts(text)
