@@ -235,7 +235,8 @@ def merge_managed_admin(local_bytes, wanted_bytes, base_bytes, manifest=None):
             approved=[parts[key]]
             old=old_doc.one(identifier,required=False)
             if old:approved.append(old_doc.raw(old))
-            if not any(card_signature(doc.raw(existing))==card_signature(a) for a in approved):
+            known_legacy=(manifest.get('legacyManagedCardHashes', []) if key=='managedCard' else [])
+            if not any(card_signature(doc.raw(existing))==card_signature(a) for a in approved) and sha(doc.raw(existing).encode()) not in known_legacy:
                 raise Blocked('LOCAL_V07_CARD_CONFLICT: '+identifier)
             # Preserve a semantically identical installed card byte-for-byte.
             if card_signature(doc.raw(existing))!=card_signature(parts[key]):
