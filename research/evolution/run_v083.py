@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V083 isolated 50-bot top-two evolution; never launches without explicit CLI."""
+"""V083 isolated bounded-population top-two evolution; opt-in CLI only."""
 import json
 import math
 import os
@@ -38,7 +38,7 @@ def main(argv=None):
     args.v083_mode=True
     cfg=json.loads(args.config.read_text())
     if not cfg.get('indicator_aware') or cfg.get('selection_policy')!='v081_survival' or cfg.get('elite_count')!=0 or cfg.get('parent_pool_size')!=2:p.error('V083 top-two configuration required')
-    if args.population!=50 or cfg.get('max_population')!=50:p.error('V083_FIXED_50: no automatic increase; new reviewed configuration required')
+    if type(args.population) is not int or not 2<=args.population<=50 or cfg.get('max_population')!=50:p.error('V083_POPULATION_MUST_BE_2_TO_50')
     if args.smoke:p.error('Use --pilot for audited discovery')
     window=None
     if args.pilot:
@@ -51,13 +51,13 @@ def main(argv=None):
             p.error('Bounded TRAIN capacity trial requires 5-10 sessions')
     elif args.source_run:
         source=json.loads((args.source_run/'run.json').read_text())
-        if source.get('version')!='V083_TOP_TWO_1' or source.get('population')!=50:p.error('Frozen V083 50-bot source required')
+        if source.get('version')!='V083_TOP_TWO_1' or source.get('population')!=args.population:p.error('Frozen V083 source population must match selected bots')
     else:
         if not args.capacity_report:p.error('New V083 repeated measurement certificate required')
         from research.evolution.calibrate_v083 import verify_capacity
-        proof=verify_capacity(args.capacity_report,args.selection_plan,args.config,args.seed)
+        proof=verify_capacity(args.capacity_report,args.selection_plan,args.config,args.seed,args.population)
         args.max_session_seconds=min(args.max_session_seconds,proof["maxSessionSeconds"])
-    args.run_purpose='PILOT_50' if args.pilot else 'CAPACITY_TRIAL_50' if args.capacity_trial else 'FROZEN_EVALUATION' if args.source_run else 'TRAIN_FROM_SCRATCH_50'
+    args.run_purpose=('PILOT_' if args.pilot else 'CAPACITY_TRIAL_' if args.capacity_trial else 'FROZEN_EVALUATION_' if args.source_run else 'TRAIN_FROM_SCRATCH_')+str(args.population)
     monitor=PacedMonitor(max_session_seconds=args.max_session_seconds,pacing_seconds=args.cpu_pacing_ms/1000)
     try:
         monitor.start();args.resource_monitor=monitor
