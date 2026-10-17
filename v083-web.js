@@ -8,7 +8,15 @@ const numeric=v=>typeof v==="number"&&Number.isFinite(v)?v:null;
 const pct=v=>numeric(v)==null?"데이터 없음":(v*100).toFixed(2)+"%";
 const number=v=>numeric(v)==null?"—":String(v);
 const phases={not_started:"대기",starting:"시작 중",running:"실행 중",completed:"완료",failed:"실패",interrupted:"중단"};
-let busy=false,active=false,supported=false;
+let busy=false,active=false,supported=false, userEditedPopulation=false;
+const populationInput=get("v083PopulationInput");
+function selectedPopulation(){
+  const raw=populationInput?.value?.trim()||"";
+  const n=Number(raw);
+  if(!/^[0-9]{1,2}$/.test(raw)||!Number.isInteger(n)||n<2||n>50)throw Error("봇 수는 2~50 사이 정수로 입력해 주세요.");
+  return n;
+}
+populationInput?.addEventListener("input",()=>{userEditedPopulation=true});
 function chart(svgId,summaryId,rows,key,fmt){
   const svg=get(svgId),values=rows.map(x=>numeric(x[key]));
   if(!svg)return;
@@ -26,6 +34,8 @@ function chart(svgId,summaryId,rows,key,fmt){
 }
 function render(d){
   const stages=d.stages||{},runs=d.runs||{},gens=Array.isArray(d.generations)?d.generations:[];
+  if(populationInput&&!userEditedPopulation)populationInput.value=String(d.selectedPopulation??50);
+  write("v083PopulationHint","현재 실험: "+(d.jobId||"없음")+" · 저장된 개체 수 "+number(d.selectedPopulation??50)+"개 · 변경한 수는 새 실험에서만 적용됩니다. CPU 75% 보호 유지.");
   const activeStage=Object.entries(stages).find(([k,v])=>["running","starting"].includes(v?.phase));
   const lastStage=Object.entries(stages).filter(([k,v])=>v?.phase&&v.phase!=="not_started").sort((a,b)=>(a[1].startedEpoch||0)-(b[1].startedEpoch||0)).at(-1);
   const stageName=activeStage?.[0]||lastStage?.[0]||"대기";
@@ -43,10 +53,10 @@ function render(d){
     ["최초 날짜 재시작",number(run.restarts),"수익 봇 0개일 때, 최대 2회"],
     ["유전자 다양성",number(latest?.uniqueGenomes),"서로 다른 유전자 수"],
     ["최신 평균 수익",latest?pct(latest.meanReturn):"—","비용 차감 기준"],
-    ["초기 시험 봇",number(d.initialPopulation),"실제 시험은 50개체"],
+    ["초기 시험 봇",number(d.initialPopulation),"캠페인별 고정 개체 수"],
     ["현재 학습 봇",number(run.population),"실행 중 조용한 증감 없음"],
     ["측정 권장 봇",number(d.capacity?.population),"통과한 반복 시험의 최대값"],
-    ["설정 최대 봇",number(d.maxPopulation),"관리자 설정 상한"],
+    ["설정 최대 봇",number(d.maxPopulation),"수동 입력 상한 · 최저 2개"],
     ["CPU / RAM / Swap",[d.resources?.cpuPct,d.resources?.memoryPct,d.resources?.swapPct].map(v=>numeric(v)==null?"—":v.toFixed(1)+"%").join(" / "),"서버 관측값 · 목표 75 / 65 / 3% 이하"],
     ["거래일 시험 추정",measuredTime==null?"—":measuredTime.toFixed(2)+"s","권장 개체 수·동일 시험 구간 기준"],
     ["거래일 실제 시간",run.resourceReport?.meanSessionSeconds==null?"—":run.resourceReport.meanSessionSeconds.toFixed(2)+"s","동일 데이터 관측 평균; 완료 시각 예측 아님"],
@@ -109,10 +119,13 @@ async function refresh(){
 async function action(stage,retry=false){
  if(busy)return;
  if(!supported){write("v083WebFeedback","V083_BACKEND_UNSUPPORTED: 서버 지원 확인 전 실행할 수 없습니다.");return;}
- if(!confirm("V0.8.3 "+(retry?"재실행: ":"실행: ")+stage+"\n연구 전용 · 기존 V0.7 데이터 보존 · 2026 OOS CLOSED\n서버에서 실제 작업을 시작할까요?"))return;
+ let chosen=null;
+ try{if(!retry&&(stage==="smoke"||stage==="new"))chosen=selectedPopulation()}catch(e){write("v083WebFeedback",e.message);populationInput?.focus();return;}
+ if(!retry&&stage==="smoke"&&userEditedPopulation){write("v083WebFeedback","개체 수를 새로 설정했다면 「새 실험」을 눌러 이전 결과를 보존하며 시작하세요.");return;}
+ if(!confirm("V0.8.3 "+(retry?"재실행: ":"실행: ")+stage+(chosen==null?"":" · "+chosen+"개 봇")+"\n연구 전용 · 기존 결과 보존 · 2026 OOS CLOSED\n서버에서 실제 작업을 시작할까요?"))return;
  busy=true;
  document.querySelectorAll("[data-v083],[data-v083-retry]").forEach(b=>b.disabled=true);
- const command="v083 "+(retry?"retry ":"")+stage;
+ const command="v083 "+(retry?"retry ":"")+stage+(chosen==null?"":" "+chosen);
  write("v083WebFeedback",command+" · 서버 응답 확인 중");
  try{const output=await call(command);write("v083WebFeedback",command+" · 서버 응답:\n"+output)}
  catch(e){write("v083WebFeedback",command+" · 실행 차단/실패:\n"+e.message+"\n기존 연구 작업과 데이터는 유지됩니다.")}
