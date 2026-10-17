@@ -18,6 +18,12 @@ on:
       - "v081_web_jobs.py"
       - "v081-web.js"
       - "v082-web.js"
+      - "bot-roster.js"
+      - "bot-roster.css"
+      - "v082_bot_roster.py"
+      - "scripts/install_v082_bots_overlay.py"
+      - "research/test_bot_roster_smoke.cjs"
+      - "research/test_v082_bot_roster.py"
       - "v082_web_jobs.py"
       - "scripts/install_v082_admin_api_overlay.py"
       - "research/test_v082*"
@@ -81,7 +87,7 @@ jobs:
         run: python -m unittest research.test_v07_install_integration.BundleCITests
       - name: Test paper engines
         run: |
-          python -m py_compile v082_web_jobs.py scripts/install_v082_admin_api_overlay.py v081_web_jobs.py scripts/install_v081_admin_api_overlay.py v07_web_jobs.py v08_web_jobs.py v07_research_report.py scripts/install_v07_web_console_overlay.py scripts/install_v08_admin_api_overlay.py
+          python -m py_compile v082_web_jobs.py v082_bot_roster.py scripts/install_v082_bots_overlay.py scripts/install_v082_admin_api_overlay.py v081_web_jobs.py scripts/install_v081_admin_api_overlay.py v07_web_jobs.py v08_web_jobs.py v07_research_report.py scripts/install_v07_web_console_overlay.py scripts/install_v08_admin_api_overlay.py
           python -m compileall -q research/autonomous research/evolution
           python -m unittest discover -s research -p 'test_*.py'
       - name: Smoke-test admin integration
