@@ -1729,8 +1729,28 @@ def deploy_status():
     parts.append("API service: "+(out or f"exit {code}"))
     return 0,"\n".join(parts)
 
+def _evolution_workers_active():
+    # Read-only flock probes survive API PID turnover; no research data writes.
+    import fcntl
+    for root in (Path("/mnt/research"),Path("/mnt/research-extra")):
+        for name in ("v07-web-jobs","v08-web-jobs","v081-web-jobs"):
+            lock=root/name/"research.lock"
+            if lock.is_symlink(): return True
+            if not lock.is_file(): continue
+            try:
+                with lock.open("rb") as f:
+                    fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            except (BlockingIOError,OSError):return True
+    for item in Path("/proc").iterdir():
+        if not item.name.isdecimal():continue
+        try:tokens=(item/"cmdline").read_bytes().split(b"\0")
+        except OSError:continue
+        if any(Path(t.decode("utf-8","ignore")).name in {"run_v081.py","calibrate_v081.py"} for t in tokens):return True
+    return False
+
+
 def deploy_apply():
-    if _autonomous_processes() or _v07_rebuild_processes():
+    if _autonomous_processes() or _v07_rebuild_processes() or _evolution_workers_active():
         return 2,"AI_RESEARCH_RUNNING: AI 연구/기준선 재생성 완료 후 배포 적용/API 재시작을 실행하세요."
     branch=_git_branch()
     if branch!="strategy-engine-v3":
@@ -1916,6 +1936,10 @@ def run_admin_console(command):
     if parts and parts[0]=="v07":
         from v07_web_jobs import console as v07_console
         return v07_console(parts)
+
+    if parts and parts[0]=="v081":
+        from v081_web_jobs import console as v081_console
+        return v081_console(parts)
 
     if parts and parts[0]=="v08":
         from v08_web_jobs import console as v08_console
@@ -2638,6 +2662,15 @@ class Handler(BaseHTTPRequestHandler):
         path=self.path.split("?")[0]
         if path.startswith("/api/research/collection50/"):
             self.collection50_get(path); return
+        if path=="/api/research/v081/download":
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                from v081_web_jobs import download as v081_download
+                self.send_export_file(v081_download(), "v081-research-results.zip")
+            except (ValueError,OSError) as exc:
+                self.send_json({"ok":False,"error":str(exc)},409)
+            return
         if path=="/api/research/v08/download":
             if not authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return

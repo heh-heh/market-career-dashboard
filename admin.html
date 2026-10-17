@@ -214,8 +214,64 @@
   </section>
 
   <section id="ai" class="panel">
-    <div class="section-title">V0.8 Profit-Only AI 연구</div>
-    <div class="section-subtitle">100개체 · 5거래일 수익 부모만 번식 · 학습 2022~2023 / 홀드아웃 2024 / 검증 2025 · 2026 Final OOS CLOSED</div>
+    <div class="section-title">V0.8.1 Adaptive Evolution AI 연구</div>
+    <div class="section-subtitle">100개체 시험 → 반복 자원 산정 → 승인한 고정 개체 수 학습 · 수익 우선 / 원금 보존 부모 · 2026 Final OOS CLOSED</div>
+    <div class="card" id="v081WebPanel" aria-label="V0.8.1 AI 연구 관리자">
+      <style>
+        #v07ManagedPanel,#v07WebPanel{display:none!important}
+        #v081WebPanel .v081-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+        #v081WebPanel .v081-tile{background:#0b1527;border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0;overflow-wrap:anywhere}
+        #v081WebPanel .v081-value{font-size:21px;font-weight:800;margin-top:6px}
+        #v081WebPanel .v081-muted{color:var(--muted);font-size:12px}
+        #v081WebPanel .v081-stages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+        #v081WebPanel .v081-status-line{white-space:pre-wrap;overflow-wrap:anywhere;background:#08111f;padding:10px;border-radius:9px;min-height:46px}
+        #v081WebPanel .v081-graphs{display:grid;gap:12px}
+        #v081WebPanel svg{width:100%;height:155px;display:block}
+        #v081WebPanel pre{max-height:300px;overflow:auto;overflow-wrap:anywhere;white-space:pre-wrap;font-size:12px}
+        #v081WebPanel .actions button{min-height:44px}
+        #v081WebPanel .v081-chart{border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+        #v081WebPanel details{margin-top:12px}#v081WebPanel summary{cursor:pointer}
+        @media(min-width:720px){#v081WebPanel .v081-stats{grid-template-columns:repeat(4,minmax(0,1fr))}#v081WebPanel .v081-stages{grid-template-columns:repeat(5,minmax(0,1fr))}}
+        @media(max-width:480px){#v081WebPanel{padding:12px}#v081WebPanel .actions button{flex:1 1 130px}}
+      </style>
+      <div class="label">V0.8.1 · Adaptive Evolution & Survival Breeding · 연구 전용 · 2026 OOS CLOSED</div>
+      <div class="v081-muted" style="margin-top:6px">완료된 V0.7 데이터 감사·선별 계획은 읽기 전용으로 재사용합니다. V0.7 결과는 삭제되지 않습니다.</div>
+      <div class="v081-stats" id="v081WebStats" aria-live="polite"><div class="v081-tile">V0.8.1 지원 서버 확인 전 · 실행 차단</div></div>
+      <div id="v081WebStages" class="v081-stages" aria-label="V0.8.1 연구 단계"></div>
+      <div id="v081WebFeedback" class="v081-status-line" role="status" aria-live="polite">학습을 시작하면 서버 승인 또는 차단 이유가 이곳에 표시됩니다.</div>
+      <div class="actions">
+        <button id="v081WebRefresh" type="button">상태·로그 새로고침</button>
+        <button data-v081="smoke" type="button" disabled class="primary">① 100개체 시험 학습</button>
+        <button data-v081="new" type="button" disabled>새 실험 · 기존 결과 보존</button>
+        <button data-v081="calibrate" type="button" disabled>② 서버 자원·개체 수 산정</button>
+        <button data-v081="train" type="button" disabled>③ 권장 개체 수로 전체 학습 승인</button>
+        <button data-v081="holdout" type="button" disabled>④ 2024 동결 홀드아웃</button>
+        <button data-v081="validation" type="button" disabled>⑤ 2025 개발 검증</button>
+      </div>
+      <div class="v081-muted">각 단계 완료 후 다음 단계를 시작합니다. 브라우저 종료와 관계없이 서버 worker가 작업을 유지하며, 불완전한 거래일을 가짜 데이터로 채우지 않습니다.</div>
+      <div class="v081-graphs">
+        <div class="v081-chart"><div class="label">완료 세대 평균 수익률 (5거래일 누적)</div><svg id="v081ReturnChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.1 평균 수익률 그래프"></svg><div class="v081-muted" id="v081ReturnSummary">결과 없음</div></div>
+        <div class="v081-chart"><div class="label">완료 세대 평균 MDD</div><svg id="v081MddChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.1 평균 MDD 그래프"></svg><div class="v081-muted" id="v081MddSummary">결과 없음</div></div>
+        <div class="v081-chart"><div class="label">완료 세대 평균 fitness</div><svg id="v081FitnessChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.1 평균 fitness 그래프"></svg><div class="v081-muted" id="v081FitnessSummary">결과 없음</div></div>
+      </div>
+      <details open><summary>부모 선발·세대교체 이력</summary><pre id="v081WebLineage">결과 없음</pre></details>
+      <details><summary>기존 V0.8 0세대 원인 · 읽기 전용</summary><pre id="v081WebPriorDiagnosis">운영 자료 조회 전</pre></details>
+      <details open><summary>자원 산정 근거 · 반복 부하 시험</summary><pre id="v081WebCapacity">아직 측정하지 않음</pre></details>
+      <details open><summary>최근 로그</summary><pre id="v081WebLog" role="log">로그 없음</pre></details>
+      <details><summary>실패·중단 단계 재실행</summary>
+        <div class="actions">
+          <button type="button" disabled data-v081-retry="smoke">시험 재실행</button>
+          <button type="button" disabled data-v081-retry="train">학습 재실행</button>
+          <button type="button" disabled data-v081-retry="holdout">홀드아웃 재실행</button>
+          <button type="button" disabled data-v081-retry="validation">검증 재실행</button>
+          <button type="button" disabled data-v081-retry="export">ZIP 재준비</button>
+        </div>
+      </details>
+      <div class="actions"><button type="button" disabled data-v081="export">결과 ZIP 준비</button><button type="button" id="v081WebDownload" disabled>ZIP 다운로드</button></div>
+      <details><summary>실제 상태 JSON · 데이터 경로</summary><pre id="v081WebRaw">상태 조회 대기</pre></details>
+      <div class="v081-muted">서버에는 신규 v081_web_jobs.py 및 V0.8.1 엔진이 별도 배포되어야 합니다. GitHub Pages 변경만으로 EC2 학습이 시작되지는 않습니다.</div>
+    </div>
+    <details><summary>기존 V0.8 연구 · 결과 보존</summary>
     <div class="card" id="v08WebPanel" aria-label="V0.8 AI 연구 관리자">
       <style>
         #v07ManagedPanel,#v07WebPanel{display:none!important}
@@ -267,6 +323,7 @@
       <details><summary>실제 상태 JSON · 데이터 경로</summary><pre id="v08WebRaw">상태 조회 대기</pre></details>
       <div class="v08-muted">서버에는 신규 v08_web_jobs.py 및 V0.8 엔진이 별도 배포되어야 합니다. GitHub Pages 변경만으로 EC2 학습이 시작되지는 않습니다.</div>
     </div>
+    </details>
     <!-- V07_MANAGED_CARD_BEGIN -->
     <div class="card" id="v07ManagedPanel">
       <style>
@@ -1314,5 +1371,6 @@ setInterval(()=>{
 </script>
 <script src="research-export.js"></script>
 <script src="v08-web.js"></script>
+<script src="v081-web.js"></script>
 </body>
 </html>

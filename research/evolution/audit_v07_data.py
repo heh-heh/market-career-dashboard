@@ -31,14 +31,17 @@ def storage_info(path):
                 diskFreeBytes=shutil.disk_usage(actual).free)
 
 
-def resource_preflight(output, *, require_research_mount=False):
+def resource_preflight(output, *, require_research_mount=False, research_mount="/mnt/research"):
     info = storage_info(output)
     root_mount = storage_info("/")["mount"]
-    research_mount = storage_info("/mnt/research")["mount"]
-    separate = research_mount["target"] == "/mnt/research" and research_mount["source"] != root_mount["source"]
+    if research_mount not in ("/mnt/research", "/mnt/research-extra"):
+        raise ValueError("UNSUPPORTED_RESEARCH_MOUNT")
+    expected_mount = research_mount
+    research_mount = storage_info(expected_mount)["mount"]
+    separate = research_mount["target"] == expected_mount and research_mount["source"] != root_mount["source"]
     info["researchMountSeparate"] = separate
-    if require_research_mount and (not separate or info["mount"]["target"] != "/mnt/research"):
-        raise ValueError("RESEARCH_MOUNT_REQUIRED: output must be on separately mounted /mnt/research")
+    if require_research_mount and (not separate or info["mount"]["target"] != expected_mount):
+        raise ValueError("RESEARCH_MOUNT_REQUIRED: output must be on separately mounted "+expected_mount)
     existing = Path(output).resolve()
     while not existing.exists():
         existing = existing.parent

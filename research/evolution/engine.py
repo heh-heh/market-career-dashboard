@@ -7,7 +7,7 @@ from .account import Account, ExecutionCostModel
 from .features import MinuteFeatureProvider, POLICY_BASE, benchmark_for_symbol
 
 
-def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="strict"):
+def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="strict", resource_guard=None):
     if data_policy not in ("strict", "causal_available"):
         raise ValueError("Unknown data policy")
     from research.backtest_v4_strategies import MINUTE
@@ -15,6 +15,7 @@ def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="
     candidate = config.fitness_mode == MODE
     if data_policy == "causal_available" and not candidate:
         raise ValueError("causal_available is isolated to V07-R1 research fitness")
+    if resource_guard: resource_guard()
     provider = MinuteFeatureProvider(config).prepare(rows, opening, closing, symbols)
     accounts = [Account(config.initial_capital, ExecutionCostModel(config.slippage_bps, config.half_spread_bps)) for _ in bots]
     if candidate:
@@ -32,6 +33,7 @@ def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="
     cutoff = closing-config.cutoff_minutes*MINUTE
     decisions = Counter()
     for ti, t in enumerate(provider.times):
+        if resource_guard: resource_guard()
         # Shared market computation once per minute, not once per bot/file.
         base_scores = provider.matrix[ti] @ weights[:, :len(POLICY_BASE)].T
         if candidate and provider.market[t]["valid"]:
@@ -70,6 +72,10 @@ def evaluate_day(bots, rows, opening, closing, symbols, config, *, data_policy="
                 if bar is None:
                     if data_policy == "causal_available":
                         account.research_data_complete = False  # sticky even after recovery/exit
+                        if config.selection_policy == "v081_survival":
+                            samples=getattr(account,"data_gap_samples",[])
+                            if len(samples)<5:samples.append(dict(symbol=symbol,missingObservableTime=t.isoformat(),entryTimestamp=account.position["entryTimestamp"]))
+                            account.data_gap_samples=samples
                         account.cancellations["HELD_SYMBOL_OBSERVATION_GAP"] = account.cancellations.get("HELD_SYMBOL_OBSERVATION_GAP", 0)+1
                     continue  # no stale/fabricated execution or price-forward-fill
                 account.mark(bar.c, t)

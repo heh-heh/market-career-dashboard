@@ -71,9 +71,9 @@ class Config:
     })
 
     def __post_init__(self):
-        if self.selection_policy not in {"legacy", "v08_profit_only"}:
+        if self.selection_policy not in {"legacy", "v08_profit_only", "v081_survival"}:
             raise ValueError("Unknown selection_policy")
-        if self.selection_policy == "v08_profit_only" and (self.evaluation_window_sessions != 5 or self.fitness_mode != "v07_regime_timing" or self.adaptive_resources):
+        if self.selection_policy in {"v08_profit_only", "v081_survival"} and (self.evaluation_window_sessions != 5 or self.fitness_mode != "v07_regime_timing" or self.adaptive_resources):
             raise ValueError("V08 requires fixed population and existing five-session V07 fitness")
         from datetime import date
         for x in asdict(self).values():

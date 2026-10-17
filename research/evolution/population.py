@@ -88,7 +88,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
     for bot in bots:
         rows = by_bot[bot.bot_id]
         valid = len(rows) == expected and all(e["evaluationValid"] for e in rows)
-        if config.selection_policy == "v08_profit_only" and complete and expected != 5:
+        if config.selection_policy in {"v08_profit_only", "v081_survival"} and complete and expected != 5:
             valid = False
         pnl = sum(e["dailyPnl"] for e in rows) if valid else None
         ret = pnl / config.initial_capital if valid else None
@@ -180,7 +180,7 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             date=rows[-1]["date"] if rows else None,
             survival=survival,
             reproductionEligible=bool(
-                complete and survival == "SURVIVE" and (parent_consistency_ok or config.selection_policy == "v08_profit_only")
+                complete and survival == "SURVIVE" and (parent_consistency_ok or config.selection_policy in {"v08_profit_only", "v081_survival"})
             ),
             evaluationValid=valid,
             dailyPnl=pnl,          # compatibility alias used by reproduce()
@@ -215,16 +215,29 @@ def aggregate_window_evaluations(bots, daily_batches, config, *, complete, mark_
             lifetimeEquity=bot.lifetime_equity,
             failureReason=None if valid else "INVALID_SESSION_IN_EVALUATION_WINDOW",
             **{k:v for k,v in research.items() if k not in ("fitness", "fitnessComponents")},
-            **({"parentSelectionReason": "POSITIVE_VALID_NET_WINDOW" if config.selection_policy == "v08_profit_only" and complete and survival == "SURVIVE" else "PROFITABLE_CONSISTENT_WITHIN_RISK_LIMIT" if complete and survival == "SURVIVE" and parent_consistency_ok else
+            **({"parentSelectionReason": "POSITIVE_VALID_NET_WINDOW" if config.selection_policy in {"v08_profit_only", "v081_survival"} and complete and survival == "SURVIVE" else "PROFITABLE_CONSISTENT_WITHIN_RISK_LIMIT" if complete and survival == "SURVIVE" and parent_consistency_ok else
                 "INCOMPLETE_WINDOW" if not complete else "INVALID_DATA" if not valid else
                 "NONPOSITIVE_WINDOW" if survival != "SURVIVE" else "CONSISTENCY_OR_RISK_GATE"}
                if config.fitness_mode == "v07_regime_timing" else {}),
 
         ))
+    if config.selection_policy == "v081_survival":
+        from .survival_breeding import parent_candidates
+        valid,profitable,chosen=parent_candidates(result,config.epsilon)
+        selected={e["botId"] for e in chosen}
+        for row in result:
+            row["profitReproductionEligible"]=row["reproductionEligible"]
+            row["reproductionEligible"]=row["botId"] in selected
+            row["breedingMode"]="PROFIT_ONLY" if profitable else "CAPITAL_PRESERVATION" if valid else "INVALID_DATA"
+            if row["reproductionEligible"]:
+                row["parentSelectionReason"]="POSITIVE_VALID_NET_WINDOW" if profitable else "CAPITAL_PRESERVATION_RANK"
     return result
 
 
 def reproduce(bots, evaluations, config, rng, generation, birth_date):
+    if config.selection_policy == "v081_survival":
+        from .survival_breeding import reproduce_survival
+        return reproduce_survival(bots, evaluations, config, rng, generation, birth_date)
     if config.selection_policy == "v08_profit_only":
         from .profit_only import reproduce_profit_only
         return reproduce_profit_only(bots, evaluations, config, rng, generation, birth_date)

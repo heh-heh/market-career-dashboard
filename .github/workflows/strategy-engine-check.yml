@@ -15,6 +15,10 @@ on:
       - "research/test_research_export*"
       - "v07_web_jobs.py"
       - "v08_web_jobs.py"
+      - "v081_web_jobs.py"
+      - "v081-web.js"
+      - "scripts/install_v081_admin_api_overlay.py"
+      - "research/test_v081*"
       - "v08-web.js"
       - "scripts/install_v08_admin_api_overlay.py"
       - "research/test_v08_web_jobs.py"
@@ -73,7 +77,7 @@ jobs:
         run: python -m unittest research.test_v07_install_integration.BundleCITests
       - name: Test paper engines
         run: |
-          python -m py_compile v07_web_jobs.py v08_web_jobs.py v07_research_report.py scripts/install_v07_web_console_overlay.py scripts/install_v08_admin_api_overlay.py
+          python -m py_compile v081_web_jobs.py scripts/install_v081_admin_api_overlay.py v07_web_jobs.py v08_web_jobs.py v07_research_report.py scripts/install_v07_web_console_overlay.py scripts/install_v08_admin_api_overlay.py
           python -m compileall -q research/autonomous research/evolution
           python -m unittest discover -s research -p 'test_*.py'
       - name: Smoke-test admin integration
