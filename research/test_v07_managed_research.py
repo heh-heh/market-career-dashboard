@@ -279,6 +279,31 @@ class ManagedInstallerTests(unittest.TestCase):
         self.assertIn('      <div id="consoleOut"',merged)
         self.assertEqual((self.target/'admin.html').read_text(),local)
 
+    def test_locally_customized_ai_navigation_is_not_rewritten(self):
+        # The real EC2 overlay was blocked by a strict text match for
+        # if(name==='ai')refreshAI(); despite having no V0.7 code.
+        original=(self.target/'admin.html').read_bytes().decode()
+        start=original.index('let v07WebPending=false;')
+        stop=original.index('function appendConsole(v)', start)
+        original=original[:start]+original[stop:]
+        start=original.index('        <div class="card" id="v07WebPanel">')
+        stop=original.index('        <div id="consoleOut"',start)
+        original=original[:start]+original[stop:]
+        old=" if(name==='ai')refreshAI();"
+        custom=" if(name==='ai'){refreshAI();window.dispatchEvent(new Event('ec2-ai-tab'));}"
+        self.assertIn(old,original)
+        original=original.replace(old,custom,1)
+        self.assertNotIn('id="v07ManagedPanel"',original)
+        (self.target/'admin.html').write_text(original)
+        parts,_=installer.plan()
+        merged=parts['admin.html'][1].decode()
+        self.assertIn(custom,merged)
+        self.assertIn("button.addEventListener('click',()=>refreshV07Web())",merged)
+        self.assertIn("location.hash==='#ai'",merged)
+        self.assertEqual(merged.count('id="v07ManagedPanel"'),1)
+        self.assertEqual(merged.count('id="v07WebPanel"'),1)
+        self.assertEqual((self.target/'admin.html').read_text(),original)
+
     def test_unknown_local_module_and_conflicting_ui_block_without_writes(self):
         (self.target/'v07_web_jobs.py').write_bytes(b'# local modification\n'+self.old['v07_web_jobs.py'])
         with self.assertRaisesRegex(installer.Blocked,'EXISTING_WEB_MODULE_DIFFERS'):installer.plan()
