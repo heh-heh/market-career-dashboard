@@ -87,8 +87,8 @@ def run(args):
     cfg=Config(**json.loads(args.config.read_text()))
     if cfg.fitness_mode!="v07_regime_timing" or cfg.evaluation_window_sessions!=5:
         raise ValueError("Available-data driver requires the existing five-session regime/timing fitness")
-    if v083 and (cfg.selection_policy!="v081_survival" or not cfg.indicator_aware or cfg.population_size!=50 or args.population!=50):
-        raise ValueError("V083_REQUIRES_FIXED_50_INDICATOR_SURVIVAL_CONFIG")
+    if v083 and (cfg.selection_policy!="v081_survival" or not cfg.indicator_aware or not 2<=args.population<=50 or cfg.parent_pool_size!=2 or cfg.elite_count!=0):
+        raise ValueError("V083_REQUIRES_BOUNDED_TOP_TWO_INDICATOR_CONFIG")
     if args.population<1 or (args.smoke and args.population>(100 if cfg.selection_policy in {"v08_profit_only", "v081_survival"} else 32)):raise ValueError("Invalid bounded smoke population")
     if frozen:
         source=args.source_run.resolve();source_info=json.loads((source/"run.json").read_text())
