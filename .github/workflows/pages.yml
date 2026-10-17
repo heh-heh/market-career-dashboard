@@ -13,7 +13,6 @@ on:
       - "research-export.css"
       - "autonomous-research.js"
       - "data/dashboard.json"
-      - "portfolio/**"
       - ".github/workflows/pages.yml"
 concurrency:
   group: deploy-github-pages
@@ -45,7 +44,6 @@ jobs:
           mkdir -p _site/data
           cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js v08-web.js _site/
           cp data/dashboard.json _site/data/
-          cp -R portfolio _site/
           touch _site/.nojekyll
           printf '{"branch":"%s","commit":"%s","run_id":"%s"}\n' "$GITHUB_REF_NAME" "$GITHUB_SHA" "$GITHUB_RUN_ID" > _site/deployment.json
       - name: Upload artifact
