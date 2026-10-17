@@ -1,5 +1,5 @@
 name: Deploy GitHub Pages
-# Only the V0.7 research branch publishes; the legacy main branch is not a Pages source.
+# Only strategy-engine-v3 publishes the current V0.8 UI; legacy main cannot overwrite it.
 on:
   push:
     branches: ["strategy-engine-v3"]
