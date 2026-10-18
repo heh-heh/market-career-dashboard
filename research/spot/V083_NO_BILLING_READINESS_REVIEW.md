@@ -54,3 +54,28 @@ The report accepts an **optional** local `--private-config /path/to/file.json` f
 ## Safety boundaries
 
 No main-branch changes, GitHub Pages deployment, AWS SSM installation, `systemctl` action, S3 requests, EC2 provisioning, IAM edits, broker API, real order, Final OOS opening, or study execution are part of this review. The separate audit branch must remain unmerged until reviewed.
+
+
+## Follow-up: actual account resources, 2026-10-19 (read-only)
+
+> **This section supersedes the earlier assumption that ALL infrastructure was absent.** The 2026-10-18 review only tested the *instance* tag filter. New account-wide read-only checks observed existing infrastructure. Nothing was created, changed, merged, installed, launched or billed by this follow-up. Resource creation provenance beyond AWS stack timestamps was not investigated.
+
+| Gate / evidence | Live observed state | Release decision |
+| --- | --- | --- |
+| Tokyo EC2 | Dashboard \`t8i.small\` running, SSM online; separate shorts \`t3.micro\` stopped | Preserve both |
+| Spot workers | Zero Spot requests and zero Spot instances account-wide at time checked | No live verification |
+| Spot vCPU quota | Standard Spot 32 vCPU | Quota OK; capacity not guaranteed |
+| Private S3 | Dedicated V083 research bucket exists; versioning Enabled, AES256 encryption, all four public access block settings enabled, bucket policy exists | Storage **container** exists; version-pinned TRAIN bundle/checkpoints and permissions still unverified |
+| Dedicated worker IAM/network | \`v083-spot-worker-infra\` CloudFormation stack \`CREATE_COMPLETE\`; worker EC2 role/profile and security group (0 ingress rules) exist | Verify the exact per-job role/bundle/SG/subnet contracts and security tests before use |
+| AMI | No account-owned AMIs reported in Tokyo | **Block paid launch** until reviewed x86_64 worker image/bootstrap proof |
+| Controller attached instance profile | Running dashboard instance currently uses \`youtube-shorts-ssm-role\` with \`AmazonSSMManagedInstanceCore\` only. A separate dormant \`market-dashboard-ec2\` role exists with SSM+CloudWatch policies but is **not attached to the dashboard**. | **Block paid launch**; a reviewed controller authorization / profile association is still required. Do not silently repurpose shared roles |
+| Independent TTL reaper | Host timer installation/activity not verified by AWS resource metadata | **Block paid launch**; separately inspect on host, stage reviewed installation later |
+| AWS Budget | No account budgets returned | Optional guardrail not configured; a budget is an alert, not a hard stop |
+| Main/Pages deployment | Spot source is on \`strategy-engine-v3\`, not repository default \`main\`; host overlay/restart not verified | UI/backend production availability **not proven** |
+| Cost sample | 2026-10-18 UTC Spot history for \`c6i.2xlarge\` Tokyo 1a ~$0.1977/hr, 1d ~$0.2050/hr | Approximately $1.58–$1.64 **compute-only** at 8h at those samples; re-quote before any future paid approval |
+
+AWS CloudFormation stack creation time was 2026-10-18 04:59 UTC. Its only listed resources were a worker role, worker profile and security group. No reviewed worker image was observed. Existing research bucket exists separately; this read did not inspect object contents or issue S3 uploads.
+
+**Critical no-billing next steps** (do these on separate review branches, not in a production checkout): review the current CF template/actual worker IAM and bucket policy for exact job scoping; check source/AMI/bootstrap contracts statically; reconcile controller/worker role isolation; confirm backend/UI deployment commands without running them; complete offline \`python -m research.spot.offline_readiness --repo .\` and CI. S3 object inventory, IAM changes, AMI creation, server install, reaper activation, any paid API/data movement, Spot creation, long training and production deployment remain separate approvals.
+
+**Updated verdict:** \`PARTIAL_INFRA_EXISTS / CODE_CI_GREEN / CONTROLLER_UNPREPARED / IMAGE_UNVERIFIED / REAPER_UNVERIFIED / PAID_LAUNCH_BLOCKED\`.
