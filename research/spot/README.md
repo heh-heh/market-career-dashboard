@@ -30,7 +30,7 @@ Spot은 시스템 시작, 웹 페이지 접근, 리포트 조회, 일반 데이�
 | 경로 | 기능 |
 |---|---|
 | `research/spot/v083_spot_lifecycle.py` | `plan/status/launch/stop/reap`. 일회성 Spot 1대, 비용/시간/인스턴스 종류 제한, IMDSv2, 암호화 gp3, 종료 시 삭제, 사용 중 중복 실행 차단 |
-| `research/spot/prepare_v083_spot_bundle.py` | **로컬 준비 전용**: 기존 audit/selection 검증 후 소스·데이터를 새 경로로 재기록, 해시 계산, 번들 생성. 2026 행과 64GiB 초과 파일 입력 거부 |
+| `research/spot/prepare_v083_spot_bundle.py` | **로컬 준비 전용**: 기존 audit/selection 검증 후 소스·데이터를 새 경로로 재기록, 해시 계산, 번들 생성. 2026 행과 24GiB 초과 파일 입력 거부 |
 | `research/spot/v083_spot_worker.py` | 워커에서 **반복 자원 검증 → 통과 시 TRAIN**, 결과/로그 생성. 모의 단계와 독립 저장 |
 | `research/spot/systemd/v083-spot-reaper.service` + `.timer` | 기존 AWS가 **5분 간격으로 만료된 Spot만 강제 종료**. 아직 설치/활성화하지 않은 템플릿 |
 | `v083_web_jobs.py` | 기존 관리자 인증을 통한 `v083 spot plan/status/train/stop`, 현재 봇 수/기존 작업/source pin 검증 |
