@@ -14,6 +14,15 @@ class SpotHourlyApprovalTests(unittest.TestCase):
         self.assertEqual(result["max_approved_spot_bid_usd_hour"], 0.20)
         self.assertFalse(result["hard_invoice_cap"])
 
+    def test_free_plan_spot_instance_passes_without_relaxing_limits(self):
+        cfg = sample()
+        cfg["instance_type"] = "m7i-flex.large"
+        cfg["max_spot_price_usd_hour"] = 0.08
+        cfg["max_compute_usd"] = 0.64
+        loaded = spot.validate_config(cfg)
+        self.assertEqual(spot.ALLOWED_TYPES["m7i-flex.large"], 2)
+        self.assertLessEqual(spot.cost_breakdown(loaded)["estimated_total_usd"], 2.0)
+
     def test_spot_bid_over_020_fails_even_if_below_025(self):
         cfg = sample()
         cfg["max_spot_price_usd_hour"] = 0.21
