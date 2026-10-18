@@ -43,7 +43,7 @@ def load_config(path):
     required = {
         "enabled", "region", "instance_type", "ami_id", "subnet_id",
         "security_group_id", "instance_profile_arn", "bucket", "bundle_key",
-        "bundle_sha256", "bundle_version_id", "job_id", "source_commit",
+        "bundle_sha256", "bundle_version_id", "job_id", "campaign_job", "source_commit",
         "population", "max_hours", "max_spot_price_usd_hour", "max_compute_usd",
         "final_oos_gate"
     }
@@ -70,6 +70,8 @@ def load_config(path):
         raise ValueError("SPOT_SOURCE_COMMIT_REQUIRED")
     if not JOB_RE.fullmatch(str(cfg["job_id"])):
         raise ValueError("SPOT_JOB_ID_INVALID")
+    if not re.fullmatch(r"job-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{12}",str(cfg["campaign_job"])):
+        raise ValueError("SPOT_CAMPAIGN_JOB_INVALID")
     if type(cfg["population"]) is not int or not 2 <= cfg["population"] <= 50:
         raise ValueError("SPOT_POPULATION_MUST_BE_2_TO_50")
     if type(cfg["max_hours"]) not in (int, float) or not 0 < cfg["max_hours"] <= 8:
