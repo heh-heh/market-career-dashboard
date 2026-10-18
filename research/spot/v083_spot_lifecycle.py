@@ -18,6 +18,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 REGION = "ap-northeast-1"
@@ -186,6 +187,10 @@ def launch(cfg, *, ec2=None, s3=None, approval=False):
         raise ValueError("SPOT_OPERATOR_ENABLE_SWITCH_REQUIRED")
     if os.environ.get("V083_SPOT_REAPER_READY") != "YES":
         raise ValueError("SPOT_INDEPENDENT_TTL_REAPER_REQUIRED")
+    timer = subprocess.run(["/bin/systemctl","is-active","--quiet","v083-spot-reaper.timer"],
+                           stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=False)
+    if timer.returncode != 0:
+        raise ValueError("SPOT_REAPER_TIMER_NOT_ACTIVE")
     ec2 = _api(ec2)
     s3 = _api(s3, "s3")
     current = matching_instances(ec2, cfg)
