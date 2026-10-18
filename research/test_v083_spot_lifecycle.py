@@ -29,6 +29,7 @@ def sample():
         "bundle_version_id": "reviewedversion01",
         "source_commit": "b"*40,
         "job_id": "v083-0123456789abcdef",
+        "campaign_job": "job-20261018T120000Z-0123456789ab",
         "population": 10,
         "max_hours": 8,
         "max_spot_price_usd_hour": 0.25,
@@ -83,6 +84,9 @@ class SpotLifecycleTests(unittest.TestCase):
                 spot.launch(cfg,approval=False)
             with self.assertRaisesRegex(ValueError,"SPOT_OPERATOR_ENABLE"):
                 spot.launch(cfg,approval=True)
+        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES"}),patch.object(spot,"_api",side_effect=AssertionError("not authorized")):
+            with self.assertRaisesRegex(ValueError,"SPOT_INDEPENDENT_TTL_REAPER_REQUIRED"):
+                spot.launch(cfg,approval=True)
 
     def test_launch_provisions_exactly_one_terminate_only(self):
         cfg=self.load()
@@ -92,7 +96,7 @@ class SpotLifecycleTests(unittest.TestCase):
         ec2.run_instances.return_value={"Instances":[{"InstanceId":"i-0123456789abcdef0"}]}
         s3.head_object.return_value={"Metadata":{"sha256":"a"*64,"source-commit":"b"*40},
                                      "ContentLength":12000}
-        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES"}):
+        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES","V083_SPOT_REAPER_READY":"YES"}):
             result=spot.launch(cfg,ec2=ec2,s3=s3,approval=True)
         self.assertEqual(result["status"],"REQUESTED_ONE_TIME_SPOT")
         params=ec2.run_instances.call_args.kwargs
@@ -139,6 +143,28 @@ class SpotLifecycleTests(unittest.TestCase):
         ec2.terminate_instances.assert_called_once_with(InstanceIds=["i-one","i-two"])
         keys=ec2.describe_instances.call_args.kwargs["Filters"]
         self.assertTrue(any(f["Name"]=="tag:V083ResearchJob" and f["Values"]==[cfg["job_id"]] for f in keys))
+
+    def test_independent_ttl_reaper_terminates_only_expired_matching_tags(self):
+        cfg=self.load()
+        ec2=MagicMock()
+        ec2.describe_instances.return_value={"Reservations":[{"Instances":[
+            {"InstanceId":"i-old","State":{"Name":"running"},
+             "Tags":[{"Key":"V083ResearchJob","Value":cfg["job_id"]},
+                     {"Key":"TTL_UTC","Value":"2026-10-18T00:00:00+00:00"}]},
+            {"InstanceId":"i-new","State":{"Name":"running"},
+             "Tags":[{"Key":"V083ResearchJob","Value":cfg["job_id"]},
+                     {"Key":"TTL_UTC","Value":"2026-10-20T00:00:00+00:00"}]},
+            {"InstanceId":"i-other","State":{"Name":"running"},
+             "Tags":[{"Key":"V083ResearchJob","Value":"v083-ffffffffffffffff"},
+                     {"Key":"TTL_UTC","Value":"2026-10-18T00:00:00+00:00"}]}
+        ]}]}
+        with self.assertRaisesRegex(ValueError,"SPOT_REAPER_SWITCH_REQUIRED"):
+            spot.reap(cfg,ec2=ec2)
+        from datetime import datetime,timezone
+        with patch.dict("os.environ",{"V083_SPOT_REAPER_ENABLED":"YES"}):
+            d=spot.reap(cfg,ec2=ec2,current_time=datetime(2026,10,19,tzinfo=timezone.utc))
+        self.assertEqual(d["expired_terminated"],["i-old"])
+        ec2.terminate_instances.assert_called_once_with(InstanceIds=["i-old"])
 
     def test_s3_bundle_source_is_pinned_and_has_safe_extraction(self):
         cfg=self.load()
