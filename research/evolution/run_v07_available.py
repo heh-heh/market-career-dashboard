@@ -75,8 +75,6 @@ def run(args):
     if args.min_evaluation_trades < 1:raise ValueError("Positive evaluation trade adequacy floor required")
     rng=random.Random(args.seed)
     v083=bool(getattr(args,"v083_mode",False))
-    if v083 and (getattr(args,"max_restarts",0)<0 or getattr(args,"max_restarts",0)>10):
-        raise ValueError("V083_MAX_RESTARTS_OUT_OF_RANGE")
     frozen=args.source_run is not None
     if frozen:
         if not (("2024-01-01"<=first<=last<="2024-12-31") or ("2025-01-01"<=first<=last<="2025-12-31")):
@@ -119,7 +117,7 @@ def run(args):
     resource_preflight(args.results_dir,require_research_mount=args.require_ebs, research_mount=getattr(args,"research_mount","/mnt/research"))
     directory=new_output(args.results_dir/(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+"-available-"+uuid.uuid4().hex[:8]),plan["dataRoot"])
     started=time.perf_counter();gen=0;attempt=0;pending=[];pending_dates=[]
-    restarts=0;total_processed_sessions=0
+    restarts=0;total_processed_sessions=0;no_profit_generations=0
     selected=[];excluded=[];evaluated=[];skipped=0;skipped_days=0;interrupted=0;trades=0;regimes={};final_evaluated=None
     selected_trades=0
     last_window_summary={}
@@ -138,6 +136,8 @@ def run(args):
         sourceRunId=source_info["runId"] if frozen else None,sourcePopulationHash=source_population_hash if frozen else None)
     if cfg.selection_policy in {"v08_profit_only", "v081_survival"}:
         info.update(selectionPolicy=cfg.selection_policy, resourcePreflight=preflight_resources)
+    if v083:
+        info.update(evolutionPolicy="V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO",noProfitGenerations=0,restarts=0)
     if cfg.selection_policy=="v081_survival":
         info.update(runPurpose=getattr(args,"run_purpose","EXPLICIT_BOUNDED_RESEARCH"),fixedPopulation=len(bots),
             capacityReportSha256=file_sha256(args.capacity_report) if getattr(args,"capacity_report",None) else None)
@@ -155,8 +155,8 @@ def run(args):
 
     processed_sessions=0
     try:
-        # V083 may restart from the first permitted TRAIN session using only the
-        # top two genomes; old versions retain the same single forward iterator.
+        # All versions traverse selected sessions chronologically. V083 zero-profit
+        # five-session generations still breed the top two without replay.
         day_iterator=iter(scheduled_days(paths,{"symbols":plan["sourceManifest"]},calendar))
         day_index=0
         while True:
@@ -220,6 +220,10 @@ def run(args):
                     if v083 and not frozen:
                         from research.evolution.v083_top_two import reproduce_top_two
                         children,selection=reproduce_top_two(bots,window,cfg,rng,gen+1,day)
+                        if selection.get("restartRequested"):
+                            raise ValueError("V083_REWIND_DISABLED: policy must be FORWARD_ONLY")
+                        if selection.get("zeroProfitGeneration"):
+                            no_profit_generations+=1
                         selected_parent_ids=set(selection["parentIds"])
                         for row in window:
                             row["reproductionEligible"]=row["botId"] in selected_parent_ids
@@ -246,22 +250,13 @@ def run(args):
                     selected_trades+=sum(e["trades"] for batch in pending for e in batch)
                     selected.extend(pending_dates);pending=[];pending_dates=[];gen+=1;attempt+=1;bots=children
                     if cfg.selection_policy=="v081_survival":
-                        atomic_json(directory/"checkpoint.json",dict(completedGeneration=gen,throughDate=day,population=[b.record() for b in bots],rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED",**({"restarts":restarts,"restartLimit":args.max_restarts} if v083 else {})))
-                    if v083 and selection["restartRequested"]:
-                        append(directory/"v083_restarts.jsonl",dict(afterGeneration=gen,throughDate=day,nextStartDate=first,
-                            parentIds=selection["parentIds"],reason="NO_PROFITABLE_FIVE_SESSION_BOTS",
-                            restartNumber=restarts+1,limit=args.max_restarts))
-                        if restarts>=args.max_restarts:
-                            raise ValueError("V083_RESTART_LIMIT_REACHED: no profitable bots; checkpoint preserved")
-                        restarts+=1
-                        day_iterator=iter(scheduled_days(paths,{"symbols":plan["sourceManifest"]},calendar))
-                        day_index=0
+                        atomic_json(directory/"checkpoint.json",dict(completedGeneration=gen,throughDate=day,population=[b.record() for b in bots],rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED",**({"restarts":0,"noProfitGenerations":no_profit_generations,"evolutionPolicy":"V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO"} if v083 else {})))
             state=dict(info,**last_window_summary,date=day,currentHistoricalDate=day,completedSessions=day_index,
                 generation=gen,completedTrainGenerations=gen,windowSessionsCompleted=5 if completed_now else len(pending_dates),windowComplete=completed_now,
                 skippedGenerationAttempts=skipped,interruptedPartialWindows=interrupted,excludedDataSessions=skipped_days,selectedSessions=len(selected),
                 tradesToday=count,totalTrades=trades,latestLog=rejection or "CAUSAL_AVAILABLE_OBSERVATIONS",
                 resourceProcessRssMb=pressure["processRssMb"],
-                **({"restarts":restarts,"totalProcessedSessions":total_processed_sessions} if v083 else {}))
+                **({"restarts":0,"noProfitGenerations":no_profit_generations,"totalProcessedSessions":total_processed_sessions} if v083 else {}))
             if guard:
                 guard.session(time.perf_counter()-session_started)
                 state["resourceReport"]=guard.report()
@@ -295,7 +290,7 @@ def run(args):
         info["campaignStatus"]="UNVERIFIED_PROVISIONAL_DATA"
         status="ANNUAL_MECHANICAL_COMPLETE" if annual else "PARTIAL_UNVERIFIED" if frozen else "WINDOWS_EVALUATED_RESEARCH_ONLY" if gen else "INSUFFICIENT_USABLE_WINDOWS"
         info.update(**last_window_summary,phase="completed",generation=gen,completedTrainGenerations=gen,completedSessions=len(calendar),
-            **({"restarts":restarts,"totalProcessedSessions":total_processed_sessions,"restartLimit":args.max_restarts} if v083 else {}),
+            **({"restarts":0,"noProfitGenerations":no_profit_generations,"totalProcessedSessions":total_processed_sessions} if v083 else {}),
             evaluationStatus=status,resultsValid=annual if frozen else gen>0,
             annualValidationComplete=annual if frozen else None,annualCoverageComplete=annual_coverage,tradeSampleAdequate=adequate,
             skippedGenerationAttempts=skipped,interruptedPartialWindows=interrupted,excludedDataSessions=skipped_days,
@@ -316,7 +311,7 @@ def run(args):
     except BaseException as exc:
         if cfg.selection_policy=="v081_survival":
             info.update(generation=gen,completedTrainGenerations=gen,completedSessions=processed_sessions,selectedSessionCount=len(selected),evaluatedSessionCount=len(evaluated),checkpoint="checkpoint.json",
-                **({"restarts":restarts,"totalProcessedSessions":total_processed_sessions} if v083 else {}))
+                **({"restarts":0,"noProfitGenerations":no_profit_generations,"totalProcessedSessions":total_processed_sessions} if v083 else {}))
         if guard:info["resourceReport"]=guard.report()
         info.update(phase="error",error=str(exc),resultsValid=False,evaluationStatus="UNVERIFIED",finalOosGate="CLOSED")
         atomic_json(directory/"run.json",info);atomic_json(directory/"status.json",info)
