@@ -5,22 +5,67 @@
   "researchOnly": true,
   "finalOosGate": "CLOSED",
   "localChecks": {
-    "baselineSelectedPython": {"tests": 32, "result": "PASS"},
-    "finalFullPythonDiscovery": {"tests": 849, "seconds": 192.203, "result": "PASS"},
-    "spotAndResumeSubset": {"tests": 63, "includedInFullDiscovery": true, "result": "PASS"},
-    "javascriptSmokeFiles": {"files": 25, "result": "PASS"},
-    "spotBrowser": {"widths": [320,390,768,1280], "pageErrors": 0, "horizontalOverflow": false, "result": "PASS"},
-    "legacyV082Browser": {"widths": [320,390,768,1280], "pageErrors": 0, "fixtureUpdatedForArchivedRuntime": true, "result": "PASS"},
+    "baselineSelectedPython": {
+      "tests": 32,
+      "result": "PASS"
+    },
+    "finalFullPythonDiscovery": {
+      "tests": 850,
+      "seconds": 188.29,
+      "result": "PASS"
+    },
+    "spotAndResumeSubset": {
+      "tests": 64,
+      "includedInFullDiscovery": true,
+      "result": "PASS"
+    },
+    "javascriptSmokeFiles": {
+      "files": 25,
+      "result": "PASS"
+    },
+    "spotBrowser": {
+      "widths": [
+        320,
+        390,
+        768,
+        1280
+      ],
+      "pageErrors": 0,
+      "horizontalOverflow": false,
+      "result": "PASS"
+    },
+    "legacyV082Browser": {
+      "widths": [
+        320,
+        390,
+        768,
+        1280
+      ],
+      "pageErrors": 0,
+      "fixtureUpdatedForArchivedRuntime": true,
+      "result": "PASS"
+    },
     "pythonCompile": "PASS",
     "javascriptSyntax": "PASS",
     "workerBundleLifecycleRunHelp": "PASS",
     "installerSimulation": "PASS"
   },
   "faultsCovered": [
-    "completion and durable upload", "training error", "interruption and committed-prefix restore",
-    "runtime expiry", "simultaneous starts", "ambiguous allocation blocks retry", "budget overflow",
-    "unreviewed IAM", "missing S3 versioning", "bundle hash or source mismatch", "unauthenticated requests",
-    "config change invalidates consent", "stopped instance without durable final result", "installation rollback"
+    "completion and durable upload",
+    "training error",
+    "interruption and committed-prefix restore",
+    "runtime expiry",
+    "simultaneous starts",
+    "ambiguous allocation blocks retry",
+    "budget overflow",
+    "unreviewed IAM",
+    "missing S3 versioning",
+    "bundle hash or source mismatch",
+    "unauthenticated requests",
+    "config change invalidates consent",
+    "stopped instance without durable final result",
+    "installation rollback",
+    "expiry reaper independent of missing or disabled launch config"
   ],
   "resumeEvidence": "Two synthetic bots over ten sessions: interrupt during second generation; resumed population, evaluated records, windows and lineage match uninterrupted run. Original partial artifacts preserved.",
   "awsChecks": {
@@ -38,5 +83,6 @@
     "rebuild and review V2 train-only bundle and private job configuration",
     "paid pilot for bootstrap, genuine interruption, durable resume and final termination",
     "each successor requires new job-specific config/profile/bundle review and cost/creation consent; no automatic replacement"
-  ]
+  ],
+  "testedCodeCommit": "966afef7ed335421eb8d112b8b7502bb3e382bc0"
 }

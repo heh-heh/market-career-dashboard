@@ -128,3 +128,8 @@ raw data, paper history and 2026 CLOSED boundary are preserved.
 
 The optional legacy V082 browser fixture now explicitly opens its archived/inert
 runtime and serves past-research.js; production archive visibility is unchanged.
+
+Release local checks: full Python discovery **850 passed** (188.290s), including
+64 Spot/resume subset tests; 25 JavaScript smoke files and both 4-width browser
+fixtures passed. The expiry CLI does not depend on a present/enabled launch config.
+See `V083_SPOT_VALIDATION.json`; remote CI has a separate GitHub run record.
