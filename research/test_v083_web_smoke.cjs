@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
 const root=path.join(__dirname,'..'),h=fs.readFileSync(root+'/admin.html','utf8'),js=fs.readFileSync(root+'/v083-web.js','utf8');
-for(const id of ['v083WebPanel','v083WebCapacity','v083WebStats','v083WebLineage'])assert.ok(h.includes('id="'+id+'"'));
+for(const id of ['v083WebPanel','v083WebCapacity','v083WebStats','v083WebLineage','v083SpotStatus','v083SpotLaunch','v083SpotStop'])assert.ok(h.includes('id="'+id+'"'));
 assert.ok(h.includes('id="v08WebPanel"'),'V08 retained');
 assert.match(h,/data-v083="smoke" type="button" disabled/);
 assert.match(h,/data-v083-retry="calibrate">자원 산정 재실행<\/button>/);
@@ -12,6 +12,8 @@ let calls=[];let answer={protocol:'OLD'};
 const context=vm.createContext({document:{getElementById:get,querySelectorAll:q=>q==='[data-v083]'?buttons:[]},location:{hash:''},token:()=>true,req:async(url,opts)=>{calls.push(JSON.parse(opts.body).command);return {ok:true,output:JSON.stringify(answer)}},confirm:()=>true,setInterval(){},Promise,API:'',console});
 vm.runInContext(js.replace('})();','globalThis.test={refresh,action,render};})();'),context);
 (async()=>{
+ assert.equal(calls.length,0,'Spot control never calls AWS or console on initial page load');
+ assert.equal(get('v083SpotLaunch').disabled,true,'Spot disabled until private infrastructure is configured');
  await context.test.action('train');assert.equal(calls.length,0,'Unsupported backend never receives start');
  await context.test.refresh();assert.ok(buttons.every(b=>b.disabled));
  answer={protocol:'V083_WEB_1',stages:{},runs:{},initialPopulation:50,maxPopulation:50};
