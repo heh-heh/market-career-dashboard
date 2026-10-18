@@ -1,69 +1,60 @@
-# V0.8.3 — Two-Parent Restartable Indicator Evolution (Research-Only)
+# V0.8.3 — Forward-Only Two-Parent Evolution (Research-only)
 
-**Status:** implementation on `strategy-engine-v3`; **not deployed to EC2**, not trained, no profitability claim. Existing V0.8.2 campaigns and bot roster remain intact.
+**Policy revision:** 2026-10-18 · `strategy-engine-v3`. The engine must never send broker orders or open 2026 Final OOS. The 75% host CPU / 65% RAM / 3% swap limits remain hard stop conditions.
 
-## Why
+## Why the forward-only change
 
-The 2026-10-17 EC2 V0.8.2 full-train attempt was stopped by an intentional **75% host CPU hard guard** after 376 sessions and 51 completed 5-day generations: sampled CPU peak **87.3%**, average **52.57%**, RAM peak **47%** and swap ~**0.2%**. Two subsequent 50-bot pilots hit **87.0%** and **96.1%** peak host CPU. This was not a GitHub Actions failure and was not evidence of an improved trading policy. The 51 completed-generation windows contained 21 with **zero bots net-profitable for their respective 5 sessions**; some other generations did have positive P&L. No annual return or genuine out-of-sample result is established.
+The archived 45-bot V0.8.3 campaign `job-20261018T003934Z-e0670ea61647` completed its 10-day smoke test and 45-bot capacity trial; its full 2022–2023 training stopped after **7 generations and 43 total processed trading days**, because it reached **2/2 allowed no-profit date rewinds**. The *actual measured train CPU peak was 55.8%*, so this specific failure **was not** resource pressure. The old artifacts and checkpoint remain unchanged, including the historical `V083_RESTART_LIMIT_REACHED` failure.
 
-The existing checkpoint and outputs are **read-only V0.8.2 historical artifacts**. V0.8.3 never imports or upgrades their populations or capacity certificate.
+The user requested that **no-profit generations no longer rewind the historical training date**. This new source policy applies to **new campaigns only**, not by rewriting or silently resuming the old failed 45-bot campaign.
 
-## 관리자에서 봇 수 입력 (2026-10-17 추가)
+## New generation policy
 
-관리자 → AI → 연구에서 봇 수를 **2~50 정수**로 직접 입력하고, 첫 시험 학습 또는 **「새 실험」**을 실행합니다. 이미 존재하는 실험의 개체 수를 수정하지 않으며, 새 실험은 새로운 저장 폴더를 만들어 기존 결과를 보존합니다.
+1. User selects **2–50 bots** in the admin UI. The chosen count remains fixed from smoke through calibration, train and later frozen evaluation. Existing job records are never overwritten when selecting a new count.
+2. Each complete consecutive **five valid 2022–2023 trading sessions** yields one cohort evaluation. **All** selected bots must have valid complete windows; missing/invalid results block reproduction instead of manufacturing losses.
+3. Rank bots by **net 5-day USD P&L**, then by lower MDD, higher fitness, then deterministic bot ID. **Only the best two** are genetic parents. A single profitable bot does not prevent selecting two gene donors.
+4. Even when **no bot** has net P&L greater than `epsilon`, select the **least unprofitable** two bots, record `zeroProfitGeneration=true` and `preservationParents=true`, and create the next generation.
+5. Breed exactly the *selected number* of **new mutated crossover children**, resetting account and cumulative trade state; only the parent gene material is inherited. Prior bots are excluded from the active population. Original bot metrics, parent selection, `window_*.json`, `lineage.jsonl` and generated checkpoints are preserved on disk.
+6. **Advance to the next chronological trading session.** Never re-open a previously visited five-day window, even if the cohort was entirely unprofitable. No `v083_restarts.jsonl` file will be produced by the new forward-only engine. Any unexpected legacy `restartRequested=true` flag aborts the run as a policy violation.
+7. **One pass through the selected calendar**, followed by an incomplete-tail exclusion if applicable. New runs record `evolutionPolicy=V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO`, `noProfitGenerations`, `restarts=0`, `totalProcessedSessions`. Older campaigns retain their historical evidence and metadata rather than being backfilled.
+8. This procedure **does not make an unprofitable strategy profitable**. Repeated no-profit windows might still select poor parents; independent 2024 holdout and 2025 development validation are required, under the existing gates. **2026 Final OOS CLOSED** always.
 
-- 동일한 개체 수가 시험 학습·3회 자원 검증·전체 학습·동결 평가에 적용됩니다.
-- 모든 세대에서 상위 **2개 부모**만 선발하고, 입력한 봇 수만큼 새로운 자식을 생성합니다.
-- `v083 smoke 10`, `v083 new 10` 등 관리자 콘솔 명령도 지원합니다. 1개 및 51개 이상, 소수/문자 입력은 차단합니다.
-- CPU 75%·RAM 65%·Swap 3% 제한은 그대로 유지됩니다. **봇 수를 줄여도 다른 서버 작업 때문에 CPU가 넘으면 다시 중단될 수 있습니다.**
-- 기존 50봇 실험 또는 예전 인증서는 새 개체 수의 자원 인증서로 재활용하지 않습니다.
-- 현재 EC2에 배포된 고정 50봇 학습 결과는 별도 역사적 기록으로 유지됩니다. 기존 소스와 새로운 엔진의 source commit은 구분됩니다.
+## Source and safety boundary
 
-## Rules
+| File | Responsibility |
+|---|---|
+| `v083_top_two.py` | Two actual net-P&L gene donors, `zeroProfitGeneration` and `nextWindowPolicy=FORWARD_ONLY`, no rewind flag |
+| `run_v07_available.py` | Strict chronological iteration for every version; only `args.v083_mode` enables new V0.8.3 breeding; fail-closed for an unexpected rewind request |
+| `run_v083.py` | 2–50-population opt-in CLI, dedicated results and mandatory capacity certificate for full training; obsolete `--max-restarts` argument removed |
+| `v083_pacing.py` | Cooperative pauses with existing host-resource guards untouched |
+| `calibrate_v083.py` | Three separately measured capacity trials; population and code/config hashes must match full run |
+| `v083_web_jobs.py` | Authenticated web controller; new job gets pinned source and separate storage; no unattended retry |
+| `v083-web.js` | Clear difference between historical restart-limit failures and new forward-only policy |
 
-1. Between 2 and 50 explicitly selected, actively simulated bots and max **three concurrent portfolio positions per bot**, retaining V0.8.2 indicators, causal observation rules, slippage and accounting.
-2. Every **five valid consecutive trading sessions** rank all 50 by **realized net USD P&L**; lower five-day maximum drawdown, higher fitness and bot ID break ties in that order. If the cohort is not 50 complete valid evaluations, **fail closed** rather than treating invalid data as a loss.
-3. **Only the two top-ranked bots are gene donors**, even when exactly one of 50 is profitable. Never carry old lifetime P&L, positions, trade state, or elite bots into the next generation. Generate the selected number of entirely new, positively mutated crossover children, starting each with a new independent daily $100 simulation account. Do not assume diversity or superior performance without testing.
-4. Archive `attempt_*`, `window_*.json`, `lineage.jsonl`, prior generation metrics, selection reasons and hashes. Non-selected parent bot objects cease to be active when the in-memory population reference is replaced; disk evidence is **not deleted**.
-5. If **none** of the 50 produced more than `epsilon = 1e-6 USD` over the closed 5-day window, still choose top-two by capital preservation, breed children, and **rewind the training cursor to the first permitted 2022–2023 date**. This is an **in-sample replay** of previously seen data, **not a new forward trading period**.
-6. Rewinds are **bounded: default 2**, configurable `--max-restarts 0..10`. Once exhausted, the run stops with `V083_RESTART_LIMIT_REACHED`, while preceding day/gen snapshots and last checkpoint remain. No silent unbounded retry.
-7. Same historic data rewound with newly selected genes is an overt form of repeated in-sample exposure; do **not** use those results to claim generalization or statistical significance. Fresh untouched holdout validation remains mandatory. Final 2026 OOS **CLOSED**.
-8. Optional CPU pacing (`--cpu-pacing-ms`, default 25ms per completed trading minute) reduces attempted CPU duty cycle by voluntarily waiting between safe checks. **It never changes the 75% CPU / 65% RAM / 3% swap sampled upper bounds.** Host CPU includes concurrent workloads, so spikes may still abort. Resource calibration is required before EC2 training.
+**Older versions V0.7, V0.8, V0.8.1 and V0.8.2 stay unchanged in behavior.** The source is shared via a gated V0.8.3 branch, and existing runs use pinned source trees.
 
-## Separation and code
+## Experiment prerequisites
 
-- `run_v083.py`: explicit opt-in front end, validates population/config, bounded restarts, source/capacity before training, keeps V0.8.2 runner unchanged.
-- `v083_top_two.py`: top-two gene-only parent selection, fresh mutating children, no old live parents.
-- `v083_pacing.py`: cooperative pacing **without relaxing** existing `ResourceMonitor` stop conditions.
-- `v083_top_two_config.json`: V0.8.3 copy of V0.8.2 indicator/portfolio settings, but `elite_count=0` and `parent_pool_size=2`. Default evolutionary mutation/crossover probabilities are **not** otherwise changed.
-- `calibrate_v083.py`: separate warmup + two measured host runs, and separate V083 capacity hash/type checks. Never accepts V082 certificates.
-- `run_v07_available.py`: **gated by `args.v083_mode` only** for restart/reproduction; every older version continues its existing one-pass logic. This is a shared-file code change, so unit/CI regression is mandatory.
-- `research/test_evolution_v083.py`: determinism, two parents only, no-profit restart, invalid data and hard guard tests.
-
-## Example isolated CLI (for a **reviewed** local machine)
+Before launching a full new campaign, first perform an explicit new smoke test and calibration **against the updated pinned source**. The previously successful 45-bot calibration is historical and **cannot certify changed source code** (the code hash has changed). Verify fresh peak CPU <75%, memory <65%, swap <3%, uninterrupted data windows, and source hashes. Only then manually approve the full 2022–2023 training.
 
 ```bash
-# Explicit user-driven 50-bot pilot only, using your already audited selection plan:
-python research/evolution/run_v083.py --selection-plan /path/to/selection_plan.json \
-  --pilot --population 50 --seed 42 --max-restarts 2 \
-  --results-dir /separate/research/evolution-v083 --data-origin toss
-
-# Before approving long training, after a pilot, explicitly calibrate current machine:
-python research/evolution/calibrate_v083.py --selection-plan /path/to/selection_plan.json \
-  --out /separate/research/v083-capacity-UNIQUE --seed 42
-
-# Full 2022–2023 research ONLY after a fresh three-run V083 capacity certificate,
-# confirmed host headroom, reviewed source and explicit human approval:
-python research/evolution/run_v083.py --selection-plan /path/to/selection_plan.json \
-  --from-date 2022-01-01 --to-date 2023-12-31 --population 50 \
-  --capacity-report /separate/research/v083-capacity-UNIQUE/capacity.json \
-  --max-restarts 2 --seed 42 --results-dir /separate/research/evolution-v083
+# Admin GUI: AI -> 연구 -> 봇 개체 수 [2..50] -> 새 실험
+# Equivalent authenticated admin console command (NOT a shell/broker command):
+v083 new 10
+# On completion: manually calibrate, then (if certified) manually train
+v083 calibrate
+v083 train
 ```
 
-The example assumes local Python dependencies, dataset mounts and audit plan have already been prepared. The **EC2 instance is not certified for V0.8.3 yet**. No AWS restart, capacity upgrade, real broker integration, production deployment, or unattended full training is part of this implementation.
+No new experimental study, smoke run, capacity calibration, cloud instance upgrade or live-market order should occur merely from merging or deploying this code.
 
-## Open engineering questions
+## Acceptance tests
 
-- Should repeated failure over 2 restarts lead to a manual strategy diversity intervention rather than replaying identical historical windows? Under the present rule it **pauses**, by design.
-- Should parent selection be based on net P&L alone or risk-adjusted P&L subject to risk caps? The current design follows the requested net P&L ranking with risk tie-break only.
-- Should the model use previously finalized 51-generation V0.8.2 checkpoint? **No**: reproducing a different selection policy from that checkpoint invalidates a clean V0.8.3 baseline. New 0.8.3 experiments require a separate initial population.
+- Zero-profit 5-day population selects top two, generates a distinct full population, and **continues forward**.
+- Deterministic ten-session synthetic run visits each session **once**, produces exactly two completed generations, no rewind artifacts, preserves checkpoint lineage and chronological dates.
+- Invalid/partial evaluation never triggers fallback breeding or calendar replay.
+- Unexpected `restartRequested` signal fails closed instead of looping.
+- Old V0.8.2 engine integration, source pins and Final OOS gates remain intact.
+- New source requires a matching **fresh** measured capacity certificate for full training.
+
+**Research risks:** raw P&L ranking incentivizes risk; generational selection is not statistical profitability proof. Record MDD, risk, and longitudinal generalization separately.
