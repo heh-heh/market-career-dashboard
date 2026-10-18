@@ -35,7 +35,7 @@ function chart(svgId,summaryId,rows,key,fmt){
 function render(d){
   const stages=d.stages||{},runs=d.runs||{},gens=Array.isArray(d.generations)?d.generations:[];
   if(populationInput&&!userEditedPopulation)populationInput.value=String(d.selectedPopulation??50);
-  write("v083PopulationHint","현재 실험: "+(d.jobId||"없음")+" · 저장된 개체 수 "+number(d.selectedPopulation??50)+"개 · 변경한 수는 새 실험에서만 적용됩니다. CPU 75% 보호 유지.");
+  write("v083PopulationHint","현재 실험: "+(d.jobId||"없음")+" · 저장된 개체 수 "+number(d.selectedPopulation??50)+"개 · 변경한 수는 새 실험에서만 적용됩니다. 신규 실험은 무수익 세대에서도 순방향 진행합니다. CPU 75% 보호 유지.");
   const activeStage=Object.entries(stages).find(([k,v])=>["running","starting"].includes(v?.phase));
   const lastStage=Object.entries(stages).filter(([k,v])=>v?.phase&&v.phase!=="not_started").sort((a,b)=>(a[1].startedEpoch||0)-(b[1].startedEpoch||0)).at(-1);
   const stageName=activeStage?.[0]||lastStage?.[0]||"대기";
@@ -51,7 +51,8 @@ function render(d){
     ["선발 부모",number(latest?.parents),"항상 상위 2개 · 유효 5거래일"],
     ["수익 봇 비율",latest?pct(latest.profitableBotRatio):"—","최신 5거래일 평가 창"],
     ["자식 생성",number(latest?.offspringCount),"최신 완료 창"],
-    ["최초 날짜 재시작",number(run.restarts),"수익 봇 0개일 때, 최대 2회"],
+    ["무수익 세대",number(run.noProfitGenerations),run.evolutionPolicy==="V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO"?"상위 2개 번식 후 다음 거래일 진행":"과거 실험은 재시작 정책 사용"],
+    ["학습 날짜 정책",run.evolutionPolicy==="V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO"?"순방향 진행":"과거 실험 / 초기 날짜 재시작 기록","새 실험에서는 처리한 거래일을 되돌리지 않음"],
     ["유전자 다양성",number(latest?.uniqueGenomes),"서로 다른 유전자 수"],
     ["최신 평균 수익",latest?pct(latest.meanReturn):"—","비용 차감 기준"],
     ["초기 시험 봇",number(d.initialPopulation),"캠페인별 고정 개체 수"],
