@@ -45,7 +45,7 @@ class TopTwoV083(unittest.TestCase):
         self.assertEqual([x.record() for x in children],[x.record() for x in children2])
         self.assertEqual(meta,meta2)
 
-    def test_zero_profit_rewinds_and_selects_best_preservation(self):
+    def test_zero_profit_breeds_best_preservation_without_rewind(self):
         rows=evaluations(self.bots,[-5]*50)
         rows[12]['windowPnl']=0
         rows[13]['windowPnl']=-.01
@@ -53,7 +53,9 @@ class TopTwoV083(unittest.TestCase):
         self.assertFalse(profitable)
         self.assertEqual([r['botId'] for r in chosen],[self.bots[12].bot_id,self.bots[13].bot_id])
         _,meta=reproduce_top_two(self.bots,rows,self.cfg,random.Random(7),1,'2023-01-10')
-        self.assertTrue(meta['restartRequested'])
+        self.assertFalse(meta['restartRequested'])
+        self.assertTrue(meta['zeroProfitGeneration'])
+        self.assertEqual(meta['nextWindowPolicy'],'FORWARD_ONLY')
         self.assertEqual(meta['profitableBotCount'],0)
         self.assertEqual(meta['parentIds'],[self.bots[12].bot_id,self.bots[13].bot_id])
 
@@ -64,6 +66,7 @@ class TopTwoV083(unittest.TestCase):
         _,meta=reproduce_top_two(self.bots,rows,self.cfg,random.Random(1),1,'2023-01-10')
         self.assertEqual(meta['profitableBotCount'],1)
         self.assertFalse(meta['restartRequested'])
+        self.assertFalse(meta['zeroProfitGeneration'])
         self.assertEqual(meta['parentIds'],[self.bots[1].bot_id,self.bots[3].bot_id])
 
     def test_all_invalid_or_missing_bot_blocks_without_recovery(self):
@@ -108,9 +111,10 @@ class TopTwoV083(unittest.TestCase):
                 monitor.check()
             sleeper.assert_not_called()
 
-    def test_synthetic_rewind_replays_first_date_with_new_child_population(self):
-        # Five valid synthetic XNYS sessions, no AWS, no broker, no CPU pacing
-        # in this unit test. Force the restart signal to exercise control flow.
+    def test_synthetic_no_profit_forward_only_ten_unique_sessions(self):
+        # A synthetic 10-trading-day, 8-bot campaign. Simulate a zero-profit
+        # classification at generation 1, verify all sessions are traversed
+        # ONCE in order and both windows retain their separate gene-only parents.
         import contextlib
         import io
         import tempfile
@@ -120,14 +124,66 @@ class TopTwoV083(unittest.TestCase):
         from research.evolution.run_v07_available import parser as base_parser, run
         import research.evolution.v083_top_two as policy
         original = policy.reproduce_top_two
-        calls = []
-        def forced(bots, rows, cfg, rng, generation, birth_date):
+        seen = []
+        def instrument(bots, rows, cfg, rng, generation, birth_date):
             children, meta = original(bots, rows, cfg, rng, generation, birth_date)
-            calls.append(generation)
+            seen.append(generation)
             if generation == 1:
-                meta['restartRequested'] = True
-            else:
-                meta['restartRequested'] = False
+                meta['profitableBotCount'] = 0
+                meta['profitableBotRatio'] = 0
+                meta['zeroProfitGeneration'] = True
+                meta['preservationParents'] = True
+            return children, meta
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            days=list(exchange_sessions('2023-06-01','2023-06-14'))
+            self.assertEqual(len(days),10)
+            plan=prepare(root,days)
+            args=base_parser().parse_args([
+                '--selection-plan',str(plan),'--config',str(CONFIG),
+                '--population','8','--from-date',days[0],'--to-date',days[-1],
+                '--results-dir',str(root/'results'),'--data-origin','synthetic'])
+            args.v083_mode=True
+            with patch('research.evolution.run_v07_available.resource_preflight',return_value={}), \
+                 patch('research.evolution.v083_top_two.reproduce_top_two',side_effect=instrument), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                out=run(args)
+            info=json.loads((out/'run.json').read_text())
+            self.assertEqual(info['version'],'V083_TOP_TWO_1')
+            self.assertEqual(info['evolutionPolicy'],'V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO')
+            self.assertEqual(info['restarts'],0)
+            self.assertEqual(info['noProfitGenerations'],1)
+            self.assertEqual(info['completedTrainGenerations'],2)
+            self.assertEqual(info['completedSessions'],10)
+            self.assertEqual(info['totalProcessedSessions'],10)
+            self.assertEqual(seen,[1,2])
+            day_rows=[json.loads(x) for x in (out/'generations.jsonl').read_text().splitlines()]
+            self.assertEqual([x['date'] for x in day_rows],days)
+            self.assertEqual(len(set(x['date'] for x in day_rows)),10)
+            self.assertTrue((out/'window_0000.json').is_file())
+            self.assertTrue((out/'window_0001.json').is_file())
+            first_window=json.loads((out/'window_0000.json').read_text())
+            self.assertTrue(first_window['selection']['zeroProfitGeneration'])
+            self.assertEqual(first_window['selection']['parentPoolSize'],2)
+            self.assertEqual(len(first_window['selection']['parentIds']),2)
+            self.assertEqual(json.loads((out/'checkpoint.json').read_text())['completedGeneration'],2)
+            self.assertEqual(json.loads((out/'checkpoint.json').read_text())['throughDate'],days[-1])
+            self.assertEqual(len(json.loads((out/'final_population.json').read_text())),8)
+            self.assertFalse((out/'v083_restarts.jsonl').exists())
+
+    def test_forward_policy_rejects_any_spurious_rewind_signal(self):
+        import contextlib
+        import io
+        import tempfile
+        from pathlib import Path
+        from research.backtest_v4_strategies import exchange_sessions
+        from research.test_evolution_available_data import prepare
+        from research.evolution.run_v07_available import parser as base_parser, run
+        import research.evolution.v083_top_two as policy
+        original = policy.reproduce_top_two
+        def unexpected(bots, rows, cfg, rng, generation, birth_date):
+            children, meta = original(bots, rows, cfg, rng, generation, birth_date)
+            meta['restartRequested'] = True
             return children, meta
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)
@@ -138,29 +194,22 @@ class TopTwoV083(unittest.TestCase):
                 '--population','8','--from-date',days[0],'--to-date',days[-1],
                 '--results-dir',str(root/'results'),'--data-origin','synthetic'])
             args.v083_mode=True
-            args.max_restarts=1
             with patch('research.evolution.run_v07_available.resource_preflight',return_value={}), \
-                 patch('research.evolution.v083_top_two.reproduce_top_two',side_effect=forced), \
+                 patch('research.evolution.v083_top_two.reproduce_top_two',side_effect=unexpected), \
                  contextlib.redirect_stdout(io.StringIO()):
-                out=run(args)
-            info=json.loads((out/'run.json').read_text())
-            self.assertEqual(info['version'],'V083_TOP_TWO_1')
-            self.assertEqual(info['restarts'],1)
-            self.assertEqual(info['completedTrainGenerations'],2)
-            self.assertEqual(info['totalProcessedSessions'],10)
-            self.assertEqual(calls,[1,2])
-            day_rows=[json.loads(x) for x in (out/'generations.jsonl').read_text().splitlines()]
-            self.assertEqual([x['date'] for x in day_rows],[*days,*days])
-            self.assertTrue((out/'window_0000.json').is_file())
-            self.assertTrue((out/'window_0001.json').is_file())
-            self.assertEqual(json.loads((out/'checkpoint.json').read_text())['completedGeneration'],2)
-            self.assertEqual(len(json.loads((out/'final_population.json').read_text())),8)
-            self.assertEqual(len((out/'v083_restarts.jsonl').read_text().splitlines()),1)
+                with self.assertRaisesRegex(ValueError,'V083_REWIND_DISABLED'):
+                    run(args)
+            runs=list((root/'results').glob('*/run.json'))
+            self.assertEqual(len(runs),1)
+            record=json.loads(runs[0].read_text())
+            self.assertEqual(record['phase'],'error')
+            self.assertFalse(record['resultsValid'])
+            self.assertEqual(record['finalOosGate'],'CLOSED')
 
-    def test_runner_explicit_opt_in_and_bounded_restarts(self):
+    def test_runner_forward_only_no_restart_flag(self):
         p=parser()
         a=p.parse_args(['--selection-plan','dummy.json'])
-        self.assertEqual(a.max_restarts,2)
+        self.assertFalse(hasattr(a,'max_restarts'))
         self.assertEqual(a.population,50)
         self.assertEqual(a.cpu_pacing_ms,25)
         self.assertEqual(a.results_dir.name,'evolution-v083')
