@@ -47,3 +47,15 @@ AWS Spot price history at 2026-10-18 20:00 UTC showed `c6i.2xlarge` Tokyo 1a at 
 7. Verify tests/CI, then obtain explicit per-job paid launch confirmation using existing web `prepare → approve → start` gates. Confirm instance actually terminates and result checkpoint is durable.
 
 **State: code review prepared, AWS launch NOT authorized by code changes alone.** No IAM, AMI, S3 uploads, EC2 launch, reaper installation, `main` merge or production deployment occurred in this branch.
+
+## 2026-10-19 actual Free-plan Spot provisioning smoke (completed)
+
+Read-only AWS `freetier:GetAccountPlanState` returned `accountPlanType=FREE`, `accountPlanStatus=ACTIVE`, remaining credits **USD $51.67** at check time; expiration reported April 2027. These credits are account-level and include existing services, NOT reserved for research.
+
+The original `c6i.2xlarge` Spot launch was **rejected** by EC2 with `InvalidParameterCombination: instance type not eligible for Free Tier`; no instance was created. AWS Free-plan-eligible `m7i-flex.large` (2 vCPU, 8 GiB) was actually created in Tokyo 1a at max bid **$0.08/hour**, AL2023 x86_64 official image, private network (no public IPv4), zero security-group ingress, encrypted 16 GiB root with delete-on-termination. Its initial state `pending` then was observed `running`; subsequently **explicit TerminateInstances was called** and EC2 verified state `terminated`, with **no remaining tagged volume**.
+
+Probe worker ID `i-02ae88a3964a13b5c`. This **did not execute training**, upload a data bundle, or verify bootstrap dependencies. It is evidence of **instance provisioning** only, not a production-ready train runner. A self-stop user-data safety fallback was included; external TerminateInstances was also performed. No running research Spot workers remain from this smoke.
+
+Next blocked requirements: the private S3 research bucket has no versioned `v083/` bundle objects; the existing worker IAM CloudFormation parameters are scoped to a placeholder bundle/job; running EC2 control server lacks reviewed controller EC2/PassRole IAM; a private launch config is absent, reaper inactive and disabled; the pinned campaign source revision differs from the existing train-job sourcePlan and train failed. Fix all gates before enabling web paid start. No AWS account plan upgrade was performed.
+
+The new `m7i-flex.large` source allowlist/UI choice is a **lower-capacity compatibility option** (2 vCPU), not a replacement for the originally intended 8-vCPU research host. A 50-bot run may be slow or fail resource calibration. Full `c6i.2xlarge` access requires a separately authorized AWS Paid plan conversion, which changes payment exposure for ALL account resources; no such conversion is authorized by a per-hour Spot budget alone.
