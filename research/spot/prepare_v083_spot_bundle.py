@@ -22,7 +22,7 @@ from research.evolution.available_data import verify_plan
 from research.backtest_v4_strategies import file_sha256
 
 DEST = Path("/opt/v083-one-shot/bundle")
-MAX_RAW_GIB = 64
+MAX_RAW_GIB = 24
 MAX_BOTS = 50
 
 
@@ -90,7 +90,7 @@ def build(*, repo, selection_plan, job_id, population, output):
         raise ValueError("SPOT_PROVIDER_SOURCE_INVALID")
     total=sum(f.stat().st_size for f in paths.values())
     if total > MAX_RAW_GIB*1024**3:
-        raise ValueError("SPOT_DATA_EXCEEDS_STAGING_LIMIT_64_GIB")
+        raise ValueError("SPOT_DATA_EXCEEDS_STAGING_LIMIT_24_GIB")
     for f in paths.values():
         scan_before_oos(f)
     commit=subprocess.run(["git","rev-parse","HEAD"],cwd=str(repo),
