@@ -22,6 +22,18 @@ vm.runInContext(js.replace('})();','globalThis.test={refresh,action,render};})()
  context.test.render({protocol:'V083_WEB_1',stages:{smoke:{phase:'completed'},calibrate:{phase:'failed',error:'V083_RUN_EXIT_2'}},capacity:{trials:[{label:'measured-1',resourceReport:{guardPassed:false,failure:'RESOURCE_TARGET_EXCEEDED:cpuPct:75.5>75.0'}}],status:'BLOCKED'},runs:{},generations:[]});
  assert.match(get('v083WebFeedback').textContent,/RESOURCE_TARGET_EXCEEDED:cpuPct:75\.5>75\.0/);
  assert.match(get('v083WebFeedback').textContent,/BLOCKED/);
+ context.test.render({protocol:'V083_WEB_1',
+  stages:{smoke:{phase:'completed'},calibrate:{phase:'completed'},train:{phase:'failed',error:'ValueError: V083_RUN_EXIT_2'}},
+  runs:{train:{error:'V083_RESTART_LIMIT_REACHED: no profitable bots; checkpoint preserved',
+    restarts:2,restartLimit:2,totalProcessedSessions:43,completedSessions:4,requestedSessions:501,
+    completedTrainGenerations:7,population:45,
+    resourceReport:{peak:{cpuPct:55.8}}}},generations:[]});
+ assert.match(get('v083WebFeedback').textContent,/수익 봇이 없는/);
+ assert.match(get('v083WebFeedback').textContent,/재시작 2 \/ 2회/);
+ assert.match(get('v083WebFeedback').textContent,/CPU 최고 55\.8%/);
+ assert.match(get('v083WebFeedback').textContent,/CPU 초과가 아닙니다/);
+ assert.match(get('v083WebStats').innerHTML,/실제 처리 거래일/);
+ assert.match(get('v083WebStats').innerHTML,/43/);
  context.test.render({protocol:'V083_WEB_1',stages:{smoke:{phase:'running'}},runs:{smoke:{indicatorAnalysis:{AAPL:{symbol:'<img>',decision:'WAIT',reason:'INDICATOR_CONFLICT',botId:'b0',decisionTimestamp:'2023-06-01T13:00:00-04:00',indicators:{rsi14:55,spread:null},portfolio:{held:1,allowedPositions:1}}}}},generations:[]});
  assert.match(get('v083SymbolAnalysis').innerHTML,/rsi14/);
  assert.match(get('v083SymbolAnalysis').innerHTML,/&lt;img&gt;/);assert.ok(!get('v083SymbolAnalysis').innerHTML.includes('<img>'));
