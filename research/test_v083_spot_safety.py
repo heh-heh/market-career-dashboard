@@ -94,6 +94,8 @@ class SpotSafetyTests(unittest.TestCase):
     def test_userdata_deadline_exists_before_bundle_fetch_and_worker_paths_match(self):
         data=spot.make_user_data(self.cfg)
         self.assertLess(data.index("shutdown -h +480"),data.index("aws s3api get-object"))
+        self.assertLess(data.index("trap finish EXIT"),data.index("shutdown -h +480"))
+        self.assertNotIn("aws s3 sync",data)
         self.assertIn("bundle/source/research/spot/v083_spot_worker.py",data)
         self.assertIn("--max-seconds 28500",data)
         self.assertIn("--bucket v083-research-bucket",data)
@@ -134,6 +136,9 @@ class SpotSafetyTests(unittest.TestCase):
         cfg,_=self.configured_preflight()
         self.assertEqual(REAL_PREFLIGHT(self.ec2,self.s3,self.iam,cfg)["root_device"],"/dev/sda1")
         self.ec2.run_instances.assert_not_called()
+        self.s3.head_object.return_value['ContentLength']=24*1024**3+1
+        with self.assertRaisesRegex(ValueError,'BUNDLE_HASH_OR_SIZE'):
+            REAL_PREFLIGHT(self.ec2,self.s3,self.iam,cfg)
 
     def test_real_preflight_rejects_inbound_and_wildcard_policy_even_if_hash_reviewed(self):
         cfg,policy=self.configured_preflight()
@@ -158,6 +163,10 @@ class SpotSafetyTests(unittest.TestCase):
     def test_resume_userdata_pins_reference_and_never_uses_same_job(self):
         cfg=self.resume_config();spot.validate_config(cfg)
         userdata=spot.make_user_data(cfg)
+        cfg['bundle_version_id']='3/L4kqtJlcpXroDTDmJ+rmSpXd3dIbrHY='
+        cfg['resume_reference']['versionId']=cfg['bundle_version_id']
+        spot.validate_config(cfg);userdata=spot.make_user_data(cfg)
+        self.assertIn('--version-id='+cfg['bundle_version_id'],userdata)
         self.assertIn('--resume-reference "$JOB/resume-reference.json"',userdata)
         self.assertIn('--resume-prefix '+cfg['resume_prefix'],userdata)
         self.assertIn(json.dumps(cfg['resume_reference'],sort_keys=True),userdata)

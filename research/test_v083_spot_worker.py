@@ -133,6 +133,7 @@ class SpotWorkerTests(unittest.TestCase):
                 (path/'capacity.json').write_text('{"status":"MEASURED_SAFE"}')
             else:
                 path=self.root/'output/train/run-0001';path.mkdir(parents=True)
+                (path/'status.json').write_text(json.dumps({'completedTrainGenerations':2,'meanWindowReturn':.01}))
                 (path/'checkpoint.json').write_text(json.dumps({'resumeVersion':'V083_RESUME_1',
                     'commitState':'COMMITTED','artifacts':[]}))
             kw['observe']()
@@ -147,6 +148,8 @@ class SpotWorkerTests(unittest.TestCase):
         latest=[json.loads(raw) for (key,v),(raw,_) in self.store.client.objects.items() if key.endswith('/live_status.json')][-1]
         self.assertEqual(latest['phase'],'completed');self.assertEqual(latest['job_id'],self.job)
         self.assertIsNotNone(latest['checkpoint']);self.assertIn('versionId',ref)
+        self.assertEqual(latest['training']['completedTrainGenerations'],2)
+        self.assertEqual(latest['training']['meanWindowReturn'],.01)
 
     def test_workflow_error_preserves_local_and_uploads_failure(self):
         with patch.object(worker,'validate_bundle',return_value={}), \

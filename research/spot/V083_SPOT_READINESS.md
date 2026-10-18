@@ -133,3 +133,11 @@ Release local checks: full Python discovery **850 passed** (188.290s), including
 64 Spot/resume subset tests; 25 JavaScript smoke files and both 4-width browser
 fixtures passed. The expiry CLI does not depend on a present/enabled launch config.
 See `V083_SPOT_VALIDATION.json`; remote CI has a separate GitHub run record.
+
+PR CI follow-up: the existing Autonomous fixture now explicitly supplies its mocked
+approved branch under detached checkouts, with a negative wrong-branch assertion.
+The production branch gate is unchanged. Affected offline subset: **96 passed**.
+Final training metrics survive durable completion; opaque S3 version IDs allow
+plus/slash/equal characters. Shutdown never recursively uploads around transport
+quotas; only one tiny best-effort exit-code diagnostic is outside worker uploads.
+Cleanup is installed before deadline setup and bundle size is checked pre-launch.

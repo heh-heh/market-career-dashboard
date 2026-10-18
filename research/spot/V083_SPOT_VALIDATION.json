@@ -84,5 +84,19 @@
     "paid pilot for bootstrap, genuine interruption, durable resume and final termination",
     "each successor requires new job-specific config/profile/bundle review and cost/creation consent; no automatic replacement"
   ],
-  "testedCodeCommit": "966afef7ed335421eb8d112b8b7502bb3e382bc0"
+  "testedCodeCommit": "966afef7ed335421eb8d112b8b7502bb3e382bc0",
+  "ciFollowup": {
+    "initialRemoteFailure": "Existing offline Autonomous fixture depended on a real strategy-engine-v3 checkout; PR CI uses a detached merge commit.",
+    "fix": "Supply approved branch only inside the fixture; assert an unapproved branch is rejected. Production branch gate unchanged.",
+    "targetedTests": 96,
+    "targetedResult": "PASS",
+    "targetedSeconds": 14.613,
+    "additionalChecks": [
+      "final training metrics preserved after durable completion",
+      "valid opaque S3 VersionId plus/slash/equal characters",
+      "no unbounded recursive shutdown uploads",
+      "cleanup trap installed before deadline setup",
+      "oversized bundle rejected before allocation"
+    ]
+  }
 }

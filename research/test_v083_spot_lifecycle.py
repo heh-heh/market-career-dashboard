@@ -173,7 +173,7 @@ class SpotLifecycleTests(unittest.TestCase):
     def test_s3_bundle_source_is_pinned_and_has_safe_extraction(self):
         cfg=self.load()
         user_data=spot.make_user_data(cfg)
-        self.assertIn("--version-id reviewedversion01",user_data)
+        self.assertIn("--version-id=reviewedversion01",user_data)
         self.assertIn("sha256sum -c -",user_data)
         self.assertIn("SPOT_UNSAFE_ARCHIVE",user_data)
         self.assertEqual(spot.ALLOWED_TYPES["c6i.2xlarge"],8)

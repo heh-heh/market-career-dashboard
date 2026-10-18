@@ -36,6 +36,7 @@ ALLOWED_TYPES = {
 DEFAULT_CONFIG = Path("/mnt/research/spot-control/v083-spot-config.json")
 JOB_RE = re.compile(r"v083-[a-f0-9]{16}")
 SHA_RE = re.compile(r"[a-f0-9]{64}")
+VERSION_RE = re.compile(r"[A-Za-z0-9._+/=-]{1,1024}")
 ID_RE = re.compile(r"[a-z0-9._/-]+")
 AWS_ID_RE = re.compile(r"(ami-[a-f0-9]{8,17}|subnet-[a-f0-9]{8,17}|sg-[a-f0-9]{8,17})")
 PROJECT = "V083-Research-Only"
@@ -74,7 +75,7 @@ def validate_config(cfg):
     key = cfg["bundle_key"]
     if not isinstance(key, str) or not ID_RE.fullmatch(key) or not key.startswith("v083/bundles/") or ".." in key.split("/") or not key.endswith(".tar.gz"):
         raise ValueError("SPOT_BUNDLE_KEY_INVALID")
-    if not isinstance(cfg["bundle_version_id"], str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", cfg["bundle_version_id"]):
+    if not isinstance(cfg["bundle_version_id"], str) or not VERSION_RE.fullmatch(cfg["bundle_version_id"]):
         raise ValueError("SPOT_IMMUTABLE_BUNDLE_VERSION_REQUIRED")
     if not SHA_RE.fullmatch(str(cfg["bundle_sha256"])):
         raise ValueError("SPOT_BUNDLE_SHA256_REQUIRED")
@@ -105,7 +106,7 @@ def validate_config(cfg):
         key = resume_ref["key"]
         if not isinstance(key, str) or not key.startswith(resume_prefix + "/commits/") or not ID_RE.fullmatch(key) or ".." in key.split("/") or not key.endswith(".json"):
             raise ValueError("SPOT_RESUME_COMMIT_KEY_INVALID")
-        if not isinstance(resume_ref["versionId"], str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,100}", resume_ref["versionId"]) or not SHA_RE.fullmatch(str(resume_ref["sha256"])):
+        if not isinstance(resume_ref["versionId"], str) or not VERSION_RE.fullmatch(resume_ref["versionId"]) or not SHA_RE.fullmatch(str(resume_ref["sha256"])):
             raise ValueError("SPOT_RESUME_VERSION_AND_HASH_REQUIRED")
     # Optional in an offline legacy plan, mandatory before any paid action.
     if "cost_estimate" in cfg:
@@ -232,20 +233,18 @@ export AWS_DEFAULT_REGION={REGION}
 umask 077
 JOB=/opt/v083-one-shot
 mkdir -p "$JOB"
-# Independent local deadline covers bootstrap/download failures and a wedged worker.
-shutdown -h +{max(1, int(cfg["max_hours"] * 60))}
 finish() {{
   rc=$?
   printf '%s\\n' "$rc" > "$JOB/exit-code.txt"
   timeout 45 aws s3 cp "$JOB/exit-code.txt" "s3://{bucket}/{prefix}/exit-code.txt" --region {REGION} || true
-  if ! timeout 90 aws s3 sync "$JOB/output/" "s3://{bucket}/{prefix}/output/" --region {REGION} --no-progress; then
-    echo "SPOT_FINAL_DIAGNOSTIC_UPLOAD_FAILED: committed checkpoints remain authoritative" >&2
-  fi
+  # Artifact uploads belong only to the bounded, versioned worker transport.
   sync || true
   shutdown -h now
 }}
 trap finish EXIT
-aws s3api get-object --bucket {bucket} --key {bundle} --version-id {version} "$JOB/bundle.tar.gz" --region {REGION} >/dev/null
+# Set the deadline after installing cleanup, including deadline setup failures.
+shutdown -h +{max(1, int(cfg["max_hours"] * 60))}
+aws s3api get-object --bucket {bucket} --key {bundle} --version-id={version} "$JOB/bundle.tar.gz" --region {REGION} >/dev/null
 echo "{sha}  $JOB/bundle.tar.gz" | sha256sum -c -
 python3 - "$JOB/bundle.tar.gz" "$JOB" <<'PY_SAFE_ARCHIVE'
 import pathlib,sys,tarfile,shutil
@@ -396,7 +395,7 @@ def preflight_readonly(ec2, s3, iam, cfg):
 
 def verify_bundle(s3, cfg):
     head = s3.head_object(Bucket=cfg["bucket"], Key=cfg["bundle_key"], VersionId=cfg["bundle_version_id"])
-    if head.get("Metadata", {}).get("sha256") != cfg["bundle_sha256"] or head.get("ContentLength", 0) <= 0:
+    if head.get("Metadata", {}).get("sha256") != cfg["bundle_sha256"] or not 0 < head.get("ContentLength", 0) <= 24 * 1024**3:
         raise ValueError("SPOT_BUNDLE_HASH_OR_SIZE_MISMATCH")
     # Do not accept a version with an unreviewed / unpinned source.
     if head.get("Metadata", {}).get("source-commit") != cfg["source_commit"]:

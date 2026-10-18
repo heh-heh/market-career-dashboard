@@ -440,7 +440,16 @@ class AutonomousTests(unittest.TestCase):
             write_json(evaluation/'run.json', {'sourcePopulationFileHash': sha256(folder/'shortlist-v08/final_population.json'),
                        'sourcePopulationVerified': True, 'inputHashesVerified': True, 'timestampKind': 'end', 'symbols': ['TQQQ']})
             return evaluation
-        with patch('research.autonomous.runner.resource_gate'), patch('research.autonomous.runner.candidate_git'), patch('research.autonomous.runner.run_tests'), patch('research.autonomous.runner.run_validation', side_effect=evaluation_stub):
+        # PR CI checks out a detached merge commit. Supply the approved branch
+        # only in this offline fixture; leave the production safety gate intact.
+        from research.autonomous import runner as research_runner
+        original_git = research_runner.git
+        def fixture_git(*args):
+            return 'strategy-engine-v3' if args == ('branch', '--show-current') else original_git(*args)
+        with patch('research.autonomous.runner.git', return_value='unapproved-branch'):
+            with self.assertRaisesRegex(ValueError, 'RESEARCH_BRANCH_REQUIRED'):
+                execute_iteration(r, folder, self.config)
+        with patch('research.autonomous.runner.git', side_effect=fixture_git), patch('research.autonomous.runner.resource_gate'), patch('research.autonomous.runner.candidate_git'), patch('research.autonomous.runner.run_tests'), patch('research.autonomous.runner.run_validation', side_effect=evaluation_stub):
             result = execute_iteration(r, folder, self.config)
         self.assertEqual(result['state'], 'completed'); self.assertFalse(result['dryRun'])
         for name in ('training_run.json','holdout_run.json','diagnostics.json','comparison.json','decision.json','report.json'):

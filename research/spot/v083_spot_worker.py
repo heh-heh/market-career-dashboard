@@ -174,6 +174,10 @@ def run(*, workspace, job_id, population, source_commit, bucket=None, prefix=Non
         final = {'job_id':job_id, 'jobId':job_id, 'phase':'completed', 'at':now(),
                  'finalOosGate':'CLOSED', 'checkpoint':latest_commit[0],
                  'resultCommit':{k:v for k,v in committed.items() if k != 'manifest'}}
+        # Child has exited: publish the actual final training summary even if
+        # the last 15-second heartbeat preceded the final generation.
+        for path in sorted((output / 'train').rglob('status.json')):
+            final['training'] = json.loads(path.read_text())
         raw = json.dumps(final).encode()
         store._put(store.prefix + '/output/live_status.json', raw, hashlib.sha256(raw).hexdigest())
         return final['resultCommit']

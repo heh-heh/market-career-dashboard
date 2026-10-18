@@ -181,7 +181,7 @@ function renderSpot(d){
  const costs=spotRequest?.costBreakdown||d.costBreakdown;
  write("v083SpotEstimate",costs?"검토 추정: compute $"+costs.compute_usd+" / EBS $"+costs.ebs_usd+" / S3 $"+costs.s3_usd+" / 네트워크 $"+costs.network_usd+" / IPv4 $"+costs.ipv4_usd+" / 기타 $"+costs.other_usd+" · 합계 $"+costs.estimated_total_usd+" · 승인 예산 $"+costs.budget_usd+"\n청구액 하드캡이 아닙니다. 종료 지연·저장·요청·세금 등으로 초과 가능":"검토된 비용 추정 없음 · 유료 시작 비활성");
  const remote=d.remote?.data,train=remote?.training||{};
- write("v083SpotProgress",remote?"상태 "+(remote.phase||"—")+" · 단계 "+(remote.stage||"—")+" · 거래일 "+number(train.completedSessions)+" / "+number(train.requestedSessions)+" · 세대 "+number(train.completedTrainGenerations)+" · 평균 수익 "+pct(train.meanWindowReturn)+" · CPU "+number(train.resourceReport?.peak?.cpuPct)+"% · 체크포인트 "+(remote.checkpoint?.manifestKey||remote.checkpoint?.key||"아직 없음")+"\n"+(remote.error||""):(d.remote?.reason||"실제 원격 결과 없음"));
+ write("v083SpotProgress",remote?"상태 "+(remote.phase||"—")+" · 단계 "+(remote.stage||"—")+" · 거래일 "+number(train.completedSessions)+" / "+number(train.requestedSessions)+" · 세대 "+number(train.completedTrainGenerations)+" · 평균 수익 "+pct(train.meanWindowReturn)+" · CPU 최고 "+number(train.resourceReport?.peak?.cpuPct)+"% · RAM 최고 "+number(train.resourceReport?.peak?.memoryPct)+"% · Swap 최고 "+number(train.resourceReport?.peak?.swapPct)+"% · 체크포인트 "+(remote.checkpoint?.manifestKey||remote.checkpoint?.key||"아직 없음")+"\n"+(remote.error||remote.errorType||""):(d.remote?.reason||"실제 원격 결과 없음"));
  spotButtons();
 }
 async function spotInspect(){
