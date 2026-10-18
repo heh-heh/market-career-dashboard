@@ -294,6 +294,16 @@
         <button data-v083="validation" type="button" disabled>⑤ 2025 개발 검증</button>
       </div>
       <div class="v083-muted">각 단계 완료 후 다음 단계를 시작합니다. 브라우저 종료와 관계없이 서버 worker가 작업을 유지하며, 불완전한 거래일을 가짜 데이터로 채우지 않습니다.</div>
+      <div class="v083-tile" style="margin:14px 0" aria-label="학습할 때만 켜지는 AWS Spot">
+        <strong>학습 전용 AWS Spot · 필요할 때만 작동</strong>
+        <div class="v083-muted" style="margin:6px 0">기존 AWS는 계속 운영하고, 별도 Spot은 명시적으로 학습을 승인한 경우에만 1대 실행합니다. 학습 완료·실패 시 종료하며 무한 재시작하지 않습니다. 전용 데이터·IAM·종료 감시가 미설정이면 시작이 차단됩니다.</div>
+        <div class="v083-status-line" id="v083SpotStatus" role="status" aria-live="polite">Spot 설정 미확인 · 자동 시작 없음 · 추가 과금 없음</div>
+        <div class="actions" style="margin-top:9px">
+          <button id="v083SpotRefresh" type="button">Spot 설정 확인</button>
+          <button id="v083SpotLaunch" type="button" disabled>Spot으로 학습 시작 (요금 승인 필요)</button>
+          <button id="v083SpotStop" type="button" disabled>Spot 워커 중지</button>
+        </div>
+      </div>
       <div class="v083-graphs">
         <div class="v083-chart"><div class="label">완료 세대 평균 수익률 (5거래일 누적)</div><svg id="v083ReturnChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.3 평균 수익률 그래프"></svg><div class="v083-muted" id="v083ReturnSummary">결과 없음</div></div>
         <div class="v083-chart"><div class="label">완료 세대 평균 MDD</div><svg id="v083MddChart" viewBox="0 0 600 155" role="img" aria-label="V0.8.3 평균 MDD 그래프"></svg><div class="v083-muted" id="v083MddSummary">결과 없음</div></div>
