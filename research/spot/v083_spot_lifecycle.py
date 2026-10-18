@@ -567,7 +567,7 @@ def main(argv=None):
     p.add_argument("--approval-file", type=Path, help="Private server-side per-job cost consent receipt")
     a = p.parse_args(argv)
     try:
-        cfg = load_config(a.config)
+        cfg = None if a.command == "reap" else load_config(a.config)
         if a.command == "plan": result = display_plan(cfg)
         elif a.command == "status": result = status(cfg)
         elif a.command == "launch": result = launch(cfg, approval=a.approve_launch, approval_record=json.loads(a.approval_file.read_text()) if a.approval_file else None)

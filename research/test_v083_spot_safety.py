@@ -85,6 +85,12 @@ class SpotSafetyTests(unittest.TestCase):
         with patch.dict("os.environ",{"V083_SPOT_REAPER_ENABLED":"YES"}):
             self.assertEqual(spot.reap(self.cfg,ec2=self.ec2)["expired_terminated"],["i-managed"])
 
+    def test_reaper_cli_survives_missing_or_disabled_launch_config(self):
+        # Cleanup must not depend on the latest mutable job's launch switch.
+        with patch.object(spot,'load_config',side_effect=AssertionError('reaper must be independent')),patch.object(spot,'reap',return_value={'expired_terminated':[]}) as cleanup:
+            spot.main(['reap','--config','/nonexistent/disabled-launch.json'])
+        cleanup.assert_called_once_with(None)
+
     def test_userdata_deadline_exists_before_bundle_fetch_and_worker_paths_match(self):
         data=spot.make_user_data(self.cfg)
         self.assertLess(data.index("shutdown -h +480"),data.index("aws s3api get-object"))
