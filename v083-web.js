@@ -173,9 +173,12 @@ async function spotInspect(){
       write("v083SpotStatus","Spot 미설정 · 현재 학습 서버 추가 요금 없음. S3 데이터 번들·IAM·독립 종료 감시 설정 후 사용할 수 있습니다.");
       return;
     }
+    const state=JSON.parse(await call("v083 spot status"));
+    const instances=Array.isArray(state.instances)?state.instances:[];
+    const description=instances.length?instances.map(i=>i.id+" ("+i.state+")").join(", "):"대기 중 · 실행 중인 Spot 없음";
     write("v083SpotStatus","Spot 구성됨 · "+spotPlan.instance_type+" / "+spotPlan.vcpus+" vCPU · 봇 "+spotPlan.population+
-      "개 · 최대 "+spotPlan.max_wall_hours+"시간 · 컴퓨팅 상한 $"+spotPlan.max_compute_usd+
-      " (EBS·S3 등 별도) · 평소 서버 꺼짐 · 수동 승인 필요");
+      "개 · 최대 "+spotPlan.max_wall_hours+"시간 · 컴퓨팅 한도 목표 $"+spotPlan.max_compute_usd+
+      " (EBS·S3 등 별도) · "+description+" · 실행은 수동 승인 시에만");
     if(launch)launch.disabled=!supported||busy;
     if(stop)stop.disabled=false;
   }catch(e){
