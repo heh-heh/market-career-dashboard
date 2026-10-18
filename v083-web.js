@@ -159,6 +159,56 @@ async function download(){
  }catch(e){write("v083WebFeedback",e.message)}
  finally{await refresh()}
 }
+let spotPlan=null;
+async function spotInspect(){
+  write("v083SpotStatus","Spot 구성과 실행 상태 확인 중 · 인스턴스는 시작하지 않습니다.");
+  try{
+    const raw=await call("v083 spot plan");
+    const plan=JSON.parse(raw);
+    spotPlan=plan.configured&&plan.enabled?plan:null;
+    const launch=get("v083SpotLaunch"),stop=get("v083SpotStop");
+    if(!spotPlan){
+      if(launch)launch.disabled=true;
+      if(stop)stop.disabled=true;
+      write("v083SpotStatus","Spot 미설정 · 현재 학습 서버 추가 요금 없음. S3 데이터 번들·IAM·독립 종료 감시 설정 후 사용할 수 있습니다.");
+      return;
+    }
+    write("v083SpotStatus","Spot 구성됨 · "+spotPlan.instance_type+" / "+spotPlan.vcpus+" vCPU · 봇 "+spotPlan.population+
+      "개 · 최대 "+spotPlan.max_wall_hours+"시간 · 컴퓨팅 상한 $"+spotPlan.max_compute_usd+
+      " (EBS·S3 등 별도) · 평소 서버 꺼짐 · 수동 승인 필요");
+    if(launch)launch.disabled=!supported||busy;
+    if(stop)stop.disabled=false;
+  }catch(e){
+    spotPlan=null;
+    if(get("v083SpotLaunch"))get("v083SpotLaunch").disabled=true;
+    if(get("v083SpotStop"))get("v083SpotStop").disabled=true;
+    write("v083SpotStatus","Spot 상태 조회 실패/차단: "+e.message);
+  }
+}
+async function spotAction(verb){
+  if(!spotPlan||busy)return;
+  const launch=verb==="train";
+  const question=launch?
+    ("EC2 Spot 인스턴스 1대를 실제 생성하고 비용이 발생할 수 있습니다.\n"+
+      spotPlan.instance_type+" · 봇 "+spotPlan.population+"개 · 최대 "+spotPlan.max_wall_hours+"시간 / Spot 컴퓨팅 상한 $"+spotPlan.max_compute_usd+
+      "\nEBS·S3·네트워크 요금은 별도입니다. Spot 회수 시 실행 중 작업이 손실될 수 있습니다."+
+      "\n기존 AWS는 유지되고, 학습 성공·실패 시 Spot이 종료됩니다.\n학습을 승인할까요?"):
+    "이 작업에 속한 Spot 워커를 종료할까요? 진행 중 학습은 중단될 수 있습니다.";
+  if(!confirm(question))return;
+  busy=true;
+  if(get("v083SpotLaunch"))get("v083SpotLaunch").disabled=true;
+  if(get("v083SpotStop"))get("v083SpotStop").disabled=true;
+  try{
+    const command=launch?"v083 spot train APPROVE-8H-SPOT":"v083 spot stop CONFIRM";
+    const response=JSON.parse(await call(command));
+    write("v083SpotStatus",launch?"Spot 작업 요청됨 · "+esc(response.instance_id||"")+" · 완료 시 인스턴스 자동 종료":
+      "Spot 종료 요청됨 · "+JSON.stringify(response.terminated||[]));
+  }catch(e){write("v083SpotStatus","Spot 작업 차단/실패: "+e.message)}
+  finally{busy=false;await spotInspect()}
+}
+get("v083SpotRefresh")?.addEventListener("click",spotInspect);
+get("v083SpotLaunch")?.addEventListener("click",()=>spotAction("train"));
+get("v083SpotStop")?.addEventListener("click",()=>spotAction("stop"));
 get("v083WebRefresh")?.addEventListener("click",refresh);
 get("v083WebDownload")?.addEventListener("click",download);
 document.querySelectorAll("[data-v083]").forEach(b=>b.addEventListener("click",()=>action(b.dataset.v083)));
