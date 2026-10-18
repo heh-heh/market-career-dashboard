@@ -1,5 +1,25 @@
 # V083 infrastructure — NOT DEPLOYED
 
+## Private S3 storage template (not deployed)
+
+`storage.json` is an **optional review-only** CloudFormation template for a
+**new, globally unique** private S3 bucket. It sets bucket versioning to
+`Enabled`, AES256 default encryption, all four public-access blocks, bucket-owner
+enforced ownership, TLS-only access, and **Retain** on deletion/replacement.
+It does **not** create a bucket merely by existing in GitHub; applying a stack
+requires separate AWS resource and cost approval. A reviewed existing bucket
+meeting the same constraints may be reused instead.
+
+Versioning retains old data and can grow storage cost. This template intentionally
+has **no automatic object deletion, replication, access-logging bucket or lifecycle
+expiration**: a retention policy must be reviewed together with checkpoint
+restoration and cost before activation. A stack delete will not delete the bucket
+or its versioned contents; explicit owner cleanup is a separate paid/sensitive action.
+
+`research/test_v083_spot_infra.py` checks these safety invariants offline and
+verifies `worker.json` reuses (rather than recreates) the bucket. Neither
+CloudFormation template is deployed in the present task.
+
 These are review-only templates. No resource has been created by this change.
 Deploying IAM/security-group changes needs security approval; bucket/EBS/AMI,
 network, EventBridge/Lambda and compute may incur charges and require separate
