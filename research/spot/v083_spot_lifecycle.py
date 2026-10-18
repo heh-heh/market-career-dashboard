@@ -27,6 +27,10 @@ import subprocess
 import sys
 
 REGION = "ap-northeast-1"
+# Operator-approved planning ceiling: $0.25/h TOTAL, not an AWS invoice hard cap.
+# Reserve >= $0.05/h for EBS, S3, network, IPv4 and incidental fees.
+APPROVED_PLANNING_USD_HOUR = 0.25
+APPROVED_MAX_SPOT_BID_USD_HOUR = 0.20
 ALLOWED_TYPES = {
     "c6i.2xlarge": 8,
     "c7i.2xlarge": 8,
@@ -92,6 +96,8 @@ def validate_config(cfg):
     for attr in ("max_spot_price_usd_hour", "max_compute_usd"):
         if type(cfg[attr]) not in (int, float) or not math.isfinite(cfg[attr]) or not 0 < cfg[attr] <= 5:
             raise ValueError("SPOT_INVALID_COST_LIMIT_" + attr)
+    if cfg["max_spot_price_usd_hour"] > APPROVED_MAX_SPOT_BID_USD_HOUR + 1e-9:
+        raise ValueError("SPOT_BID_EXCEEDS_APPROVED_HOURLY_RESERVE")
     if cfg["max_spot_price_usd_hour"] * cfg["max_hours"] > cfg["max_compute_usd"]:
         raise ValueError("SPOT_COST_CAP_INCOMPATIBLE")
     if cfg["final_oos_gate"] != "CLOSED":
@@ -126,12 +132,22 @@ def cost_breakdown(cfg):
     cap = cfg.get("max_total_usd")
     if type(cap) not in (int, float) or not math.isfinite(cap) or cap <= 0:
         raise ValueError("SPOT_TOTAL_COST_BUDGET_REQUIRED")
-    total = cfg["max_spot_price_usd_hour"] * cfg["max_hours"] + sum(estimate[k] for k in keys)
-    if total > cap:
+    compute = cfg["max_spot_price_usd_hour"] * cfg["max_hours"]
+    total = compute + sum(estimate[k] for k in keys)
+    approved_envelope = APPROVED_PLANNING_USD_HOUR * cfg["max_hours"]
+    if cap > approved_envelope + 1e-9:
+        raise ValueError("SPOT_BUDGET_EXCEEDS_APPROVED_HOURLY_TOTAL")
+    if total > approved_envelope + 1e-9:
+        raise ValueError("SPOT_HOURLY_TOTAL_ESTIMATE_EXCEEDS_APPROVAL")
+    if total > cap + 1e-9:
         raise ValueError("SPOT_TOTAL_ESTIMATE_OVER_BUDGET")
-    return {"compute_usd": cfg["max_spot_price_usd_hour"] * cfg["max_hours"], **{k: estimate[k] for k in keys},
+    return {"compute_usd": compute, **{k: estimate[k] for k in keys},
             "estimated_total_usd": total, "budget_usd": cap,
-            "hard_invoice_cap": False, "warning": "Estimate only; AWS billing can exceed estimates including termination delays."}
+            "approved_hourly_target_usd": APPROVED_PLANNING_USD_HOUR,
+            "max_approved_spot_bid_usd_hour": APPROVED_MAX_SPOT_BID_USD_HOUR,
+            "approved_envelope_total_usd": approved_envelope,
+            "hard_invoice_cap": False,
+            "warning": "Approval is a planning target, NOT an AWS invoice limit; actual storage, S3 requests, tax and termination delays can exceed it."}
 
 
 def issue_approval(cfg, *, expires_at=None):
@@ -199,6 +215,8 @@ def display_plan(cfg):
         "spot_only": True, "spot_behavior": "one-time / terminate",
         "max_wall_hours": cfg["max_hours"],
         "max_spot_usd_hour": cfg["max_spot_price_usd_hour"],
+        "hourly_total_planning_target_usd": APPROVED_PLANNING_USD_HOUR,
+        "hourly_spot_bid_ceiling_usd": APPROVED_MAX_SPOT_BID_USD_HOUR,
         "max_compute_usd": cfg["max_compute_usd"],
         "maximum_compute_spend_at_bid": round(cfg["max_spot_price_usd_hour"] * cfg["max_hours"], 4),
         "other_charges": "EBS/S3/network/IPv4/tax are additional",
