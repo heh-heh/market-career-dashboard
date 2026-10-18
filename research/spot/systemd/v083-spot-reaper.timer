@@ -1,0 +1,12 @@
+[Unit]
+Description=Check V0.8.3 Spot training deadline every five minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=v083-spot-reaper.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target
