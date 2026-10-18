@@ -297,10 +297,18 @@
       <div class="v083-tile" style="margin:14px 0" aria-label="학습할 때만 켜지는 AWS Spot">
         <strong>학습 전용 AWS Spot · 필요할 때만 작동</strong>
         <div class="v083-muted" style="margin:6px 0">기존 AWS는 계속 운영하고, 별도 Spot은 명시적으로 학습을 승인한 경우에만 1대 실행합니다. 학습 완료·실패 시 종료하며 무한 재시작하지 않습니다. 전용 데이터·IAM·종료 감시가 미설정이면 시작이 차단됩니다.</div>
+        <div class="grid" style="margin:10px 0">
+          <label>Spot 종류<select id="v083SpotInstance"><option>c6i.2xlarge</option><option>c7i.2xlarge</option><option>m7i.2xlarge</option><option>c6i.4xlarge</option></select></label>
+          <label>최대 실행시간 (시간)<input id="v083SpotHours" type="number" min="0.1" max="8" step="0.1" value="8"></label>
+        </div>
+        <div id="v083SpotEstimate" class="v083-status-line">미측정 · 승인된 비용 추정 없음</div>
+        <div id="v083SpotProgress" class="v083-status-line">아직 Spot 학습 결과 없음</div>
         <div class="v083-status-line" id="v083SpotStatus" role="status" aria-live="polite">Spot 설정 미확인 · 자동 시작 없음 · 추가 과금 없음</div>
         <div class="actions" style="margin-top:9px">
           <button id="v083SpotRefresh" type="button">Spot 설정 확인</button>
-          <button id="v083SpotLaunch" type="button" disabled>Spot으로 학습 시작 (요금 승인 필요)</button>
+          <button id="v083SpotPrepare" type="button" disabled>① 비용·조건 확인</button>
+          <button id="v083SpotApprove" type="button" disabled>② 실제 과금 승인</button>
+          <button id="v083SpotLaunch" type="button" disabled>③ Spot 생성·학습 (별도 승인)</button>
           <button id="v083SpotStop" type="button" disabled>Spot 워커 중지</button>
         </div>
       </div>

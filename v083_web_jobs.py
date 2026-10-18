@@ -581,7 +581,7 @@ def spot_console(parts):
     if evidence.get("sourceCommit")!=proof.get("commit"):
         raise ValueError("V083_SPOT_OLD_CAMPAIGN_SOURCE_REJECTED_NEW_JOB_REQUIRED")
     _verified_run(job,"smoke")
-    return 0,json.dumps(spot.launch(settings,approval=True),ensure_ascii=False)
+    raise ValueError("SPOT_PER_JOB_COST_APPROVAL_HTTP_REQUIRED: use prepare / approve / start")
 
 
 def console(parts):

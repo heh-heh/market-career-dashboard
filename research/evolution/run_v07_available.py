@@ -103,6 +103,20 @@ def run(args):
     else:
         cfg=replace(cfg,population_size=args.population,adaptive_resources=False)
         bots=initial_population(cfg,rng,first)
+    resume = None
+    if getattr(args,"resume_from",None):
+        if not v083 or frozen:raise ValueError("RESUME_ONLY_V083_TRAINING")
+        from research.evolution import v083_resume
+        resume_source,resume=v083_resume.verify(args.resume_from,
+            code_hashes={p.name:file_sha256(p) for p in sorted((ROOT/"research/evolution").glob("*.py"))},
+            config=cfg.snapshot(),plan_hash=plan_hash,first=first,last=last,seed=args.seed,population=args.population)
+        bots=load_population_records(resume["population"],cfg)
+        # Loader validates legacy artifacts but coerces JSON integers to floats.
+        # Keep committed numeric representation for byte-reproducible ledgers.
+        for bot,record in zip(bots,resume["population"]):
+            for key in ("lifetime_equity","lifetime_initial_capital","lifetime_pnl"):
+                if key in record:setattr(bot,key,record[key])
+        rng.setstate(v083_resume.tuples(resume["rngState"]))
     preflight_resources = None
     if cfg.selection_policy in {"v08_profit_only", "v081_survival"}:
         import psutil
@@ -142,10 +156,22 @@ def run(args):
         info.update(runPurpose=getattr(args,"run_purpose","EXPLICIT_BOUNDED_RESEARCH"),fixedPopulation=len(bots),
             capacityReportSha256=file_sha256(args.capacity_report) if getattr(args,"capacity_report",None) else None)
     atomic_json(directory/"run.json",info);atomic_json(directory/"status.json",info)
+    if resume:
+        from research.evolution.v083_resume import restore_artifacts
+        restore_artifacts(resume_source,resume,directory)
+        snapshot=resume["state"]
+        gen=resume["completedGeneration"];attempt=snapshot["attempt"]
+        selected=list(snapshot["selected"]);excluded=list(snapshot["excluded"]);evaluated=list(snapshot["evaluated"])
+        skipped=snapshot["skipped"];skipped_days=snapshot["skipped_days"];interrupted=snapshot["interrupted"]
+        trades=snapshot["trades"];selected_trades=snapshot["selected_trades"];regimes=dict(snapshot["regimes"])
+        no_profit_generations=snapshot["no_profit_generations"];total_processed_sessions=snapshot["total_processed_sessions"]
+        last_window_summary=snapshot["last_window_summary"];final_evaluated=snapshot["final_evaluated"]
+        info.update(initialPopulationHash=resume["runInfo"]["initialPopulationHash"],resumedFrom=str(resume_source),
+            resumedThroughDate=resume["throughDate"],resumedGeneration=gen)
     guard=getattr(args,"resource_monitor",None)
     if guard:guard.output=directory
     facts={s["sessionDate"]:s for s in plan["sessions"]}
-    if cfg.selection_policy=="v081_survival":
+    if cfg.selection_policy=="v081_survival" and not v083:
         atomic_json(directory/"checkpoint.json",dict(completedGeneration=0,throughDate=None,population=[b.record() for b in bots],rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED"))
     ledger={b.bot_id:dict(pnlUsd=0.,trades=0,transactionCost=0.,validDays=0,invalidDays=0) for b in bots}
 
@@ -153,12 +179,24 @@ def run(args):
         for d in days:
             excluded.append(d);append(directory/"excluded_sessions.jsonl",dict(date=d,reason=reason,causedBy=caused_by,attempt=attempt))
 
-    processed_sessions=0
+    def commit_v083(through):
+        from research.evolution.v083_resume import commit
+        commit(directory,dict(completedGeneration=gen,throughDate=through,population=[b.record() for b in bots],
+            rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED",runInfo=info,
+            restarts=0,noProfitGenerations=no_profit_generations,evolutionPolicy="V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO",
+            state=dict(attempt=attempt,selected=selected,excluded=excluded,evaluated=evaluated,skipped=skipped,
+                skipped_days=skipped_days,interrupted=interrupted,trades=trades,selected_trades=selected_trades,
+                regimes=regimes,no_profit_generations=no_profit_generations,total_processed_sessions=total_processed_sessions,
+                last_window_summary=last_window_summary,final_evaluated=final_evaluated)))
+    if v083 and not frozen:
+        commit_v083(resume["throughDate"] if resume else None)
+    processed_sessions=total_processed_sessions
     try:
         # All versions traverse selected sessions chronologically. V083 zero-profit
         # five-session generations still breed the top two without replay.
-        day_iterator=iter(scheduled_days(paths,{"symbols":plan["sourceManifest"]},calendar))
-        day_index=0
+        remaining_calendar={d:v for d,v in calendar.items() if not resume or not resume["throughDate"] or d>resume["throughDate"]}
+        day_iterator=iter(scheduled_days(paths,{"symbols":plan["sourceManifest"]},remaining_calendar))
+        day_index=total_processed_sessions
         while True:
             try:day,rows=next(day_iterator)
             except StopIteration:break
@@ -249,7 +287,7 @@ def run(args):
                     append(directory/"lineage.jsonl",dict(generation=gen+1,date=day,population=[b.record() for b in children]))
                     selected_trades+=sum(e["trades"] for batch in pending for e in batch)
                     selected.extend(pending_dates);pending=[];pending_dates=[];gen+=1;attempt+=1;bots=children
-                    if cfg.selection_policy=="v081_survival":
+                    if cfg.selection_policy=="v081_survival" and not v083:
                         atomic_json(directory/"checkpoint.json",dict(completedGeneration=gen,throughDate=day,population=[b.record() for b in bots],rngState=rng.getstate(),sourcePlanSha256=plan_hash,finalOosGate="CLOSED",**({"restarts":0,"noProfitGenerations":no_profit_generations,"evolutionPolicy":"V083_FORWARD_ONLY_NO_PROFIT_TOP_TWO"} if v083 else {})))
             state=dict(info,**last_window_summary,date=day,currentHistoricalDate=day,completedSessions=day_index,
                 generation=gen,completedTrainGenerations=gen,windowSessionsCompleted=5 if completed_now else len(pending_dates),windowComplete=completed_now,
@@ -264,6 +302,9 @@ def run(args):
             append(directory/"generations.jsonl",state);atomic_json(directory/"status.json",state)
             processed_sessions=day_index
             for r,n in evidence["regimeMinutes"].items():regimes[r]=regimes.get(r,0)+n
+            if v083 and not frozen and completed_now:
+                # Commit only after all generation/lineage/day records are durable.
+                commit_v083(day)
         if pending_dates:
             discard(pending_dates,"TRAILING_INCOMPLETE_WINDOW",pending_dates[-1])
             append(directory/"windows.jsonl",dict(attempt=attempt,status="PARTIAL_NOT_SELECTED",generation=gen,dates=pending_dates))

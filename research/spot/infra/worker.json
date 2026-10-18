@@ -1,0 +1,136 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "REVIEW ONLY V083 isolated worker identity and no-ingress network; no EC2 launch",
+  "Parameters": {
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "Bucket": {
+      "Type": "String",
+      "AllowedPattern": "[a-z0-9][a-z0-9.-]{2,62}"
+    },
+    "BundleKey": {
+      "Type": "String",
+      "AllowedPattern": "v083/bundles/[A-Za-z0-9._/-]+[.]tar[.]gz"
+    },
+    "JobId": {
+      "Type": "String",
+      "AllowedPattern": "v083-[a-f0-9]{16}"
+    }
+  },
+  "Resources": {
+    "WorkerRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "V083JobOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:GetObjectVersion"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:s3:::${Bucket}/${BundleKey}"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:GetObjectVersion",
+                    "s3:PutObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:s3:::${Bucket}/v083/runs/${JobId}/*"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketVersioning",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:s3:::${Bucket}"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:s3:::${Bucket}"
+                  },
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": {
+                        "Fn::Sub": "v083/runs/${JobId}/*"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "WorkerProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "WorkerRole"
+          }
+        ]
+      }
+    },
+    "WorkerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "V083 research-only no ingress; HTTPS egress",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "WorkerProfileArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "WorkerProfile",
+          "Arn"
+        ]
+      }
+    },
+    "WorkerSecurityGroupId": {
+      "Value": {
+        "Ref": "WorkerSecurityGroup"
+      }
+    }
+  }
+}

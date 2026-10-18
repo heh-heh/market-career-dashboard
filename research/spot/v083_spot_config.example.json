@@ -17,5 +17,20 @@
   "max_hours": 8,
   "max_spot_price_usd_hour": 0.25,
   "max_compute_usd": 2,
-  "final_oos_gate": "CLOSED"
+  "final_oos_gate": "CLOSED",
+  "max_total_usd": 3,
+  "cost_estimate": {
+    "ebs_usd": 0.1,
+    "s3_usd": 0.1,
+    "network_usd": 0.1,
+    "ipv4_usd": 0.1,
+    "other_usd": 0.1
+  },
+  "security_review": {
+    "iam_policy_sha256": "REPLACE_REVIEWED_INLINE_POLICY_SHA256",
+    "reviewed_profile_arn": "arn:aws:iam::ACCOUNT_ID:instance-profile/V083SpotTrainOnly",
+    "no_broker_secrets": false,
+    "least_privilege_confirmed": false
+  },
+  "monitor_reads_approved": false
 }
