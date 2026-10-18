@@ -1,7 +1,9 @@
 """V0.8.3: top-two genome-only breeding. No parent trading state survives.
 
-Called only from explicitly opted-in V083 research. Requires 50 complete,
+Called only from explicitly opted-in V083 research. Requires 2-50 complete,
 valid five-session evaluations. No fallback to arbitrary or invalid bots.
+Zero-profit generations select the capital-preservation top two and proceed
+FORWARD to the next trading date, never rewinding the historical clock.
 """
 from collections import Counter
 import math
@@ -63,7 +65,8 @@ def reproduce_top_two(bots, evaluations, config, rng, generation, birth_date):
         "profitEligibleCount":sum(e["windowPnl"]>config.epsilon for e in evaluations),
         "profitableBotCount":sum(e["windowPnl"]>config.epsilon for e in evaluations),
         "profitableBotRatio":sum(e["windowPnl"]>config.epsilon for e in evaluations)/size,
-        "restartRequested":not has_profit,
+        "restartRequested":False, "zeroProfitGeneration":not has_profit,
+        "nextWindowPolicy":"FORWARD_ONLY",
         "preservationParents":not has_profit,
         "validEvaluations":size, "randomRecovery":False, "eliteCount":0,
         "mutationCount":sum(c.mutation_count for c in children),
@@ -74,5 +77,5 @@ def reproduce_top_two(bots, evaluations, config, rng, generation, birth_date):
         "bestWindowReturn":max(values), "worstWindowReturn":min(values),
         "meanWindowReturn":sum(values)/len(values),
         "meanMdd":sum(e["windowMaxDrawdown"] for e in evaluations)/size,
-        "meanFitness":sum(e["fitness"] for e in evaluations)/50,
+        "meanFitness":sum(e["fitness"] for e in evaluations)/size,
     }
