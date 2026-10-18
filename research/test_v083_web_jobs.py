@@ -86,6 +86,31 @@ class WebTests(unittest.TestCase):
                     jobs.start('smoke',population=5)
             self.assertEqual(jobs._population(job),10)
 
+    def test_spot_is_disabled_by_default_and_requires_approval(self):
+        from research.spot import v083_spot_lifecycle as spot
+        with patch.object(spot,"DEFAULT_CONFIG",Path("/nonexistent/not-created-spot-config.json")):
+            result=jobs.console(["v083","spot","plan"])
+        self.assertEqual(result[0],0)
+        plan=json.loads(result[1])
+        self.assertFalse(plan["enabled"])
+        self.assertEqual(plan["mode"],"TRAIN_ONLY")
+        for cmd in (["v083","spot","train"],["v083","spot","train","YES"],
+                    ["v083","spot","stop"],["v083","spot","delete"],
+                    ["v083","spot","plan","APPROVE"]):
+            with self.subTest(cmd=cmd),self.assertRaisesRegex(ValueError,"COMMAND_NOT_ALLOWED"):
+                jobs.console(cmd)
+
+    def test_spot_train_is_bound_to_existing_campaign_and_not_implicitly_started(self):
+        from research.spot import v083_spot_lifecycle as spot
+        cfg={"population":10,"source_commit":"a"*40,"campaign_job":"job-20261018T120000Z-0123456789ab"}
+        with patch.object(spot,"load_config",return_value=cfg), \
+             patch.object(jobs,"_storage"),patch.object(jobs.legacy,"_check_service_lifetime"), \
+             patch.object(jobs,"_other_active"),patch.object(jobs,"_verify_source"), \
+             patch.object(jobs,"_job",return_value=None), \
+             patch.object(spot,"launch",side_effect=AssertionError("must not launch")):
+            with self.assertRaisesRegex(ValueError,"CAMPAIGN_OR_POPULATION_MISMATCH"):
+                jobs.console(["v083","spot","train","APPROVE-8H-SPOT"])
+
     def test_no_valid_smoke_cannot_unlock_calibration(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);run=root/'run';run.mkdir();job=root/'job';job.mkdir()
