@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V083 isolated bounded-population top-two evolution; opt-in CLI only."""
+"""V083 forward-only 2-50 bot top-two evolution; opt-in CLI only."""
 import json
 import math
 import os
@@ -23,7 +23,6 @@ def parser():
     p.add_argument('--capacity-trial',action='store_true')
     p.add_argument('--capacity-report',type=Path)
     p.add_argument('--max-session-seconds',type=float,default=900)
-    p.add_argument('--max-restarts',type=int,default=2,help='At most 2 default zero-profit rewinds; never infinite')
     p.add_argument('--cpu-pacing-ms',type=float,default=25,help='Per completed minute cooperative pacing; CPU 75%% hard guard unchanged')
     return p
 
@@ -33,7 +32,6 @@ def main(argv=None):
     if args.from_date and args.to_date:check_dates(args.from_date,args.to_date)
     if args.config.is_symlink():p.error('Configuration symlinks are not accepted')
     if not math.isfinite(args.max_session_seconds) or args.max_session_seconds<=0:p.error("Positive finite session deadline required")
-    if not isinstance(args.max_restarts,int) or not 0<=args.max_restarts<=10:p.error('max-restarts must be 0..10')
     if not math.isfinite(args.cpu_pacing_ms) or not 5<=args.cpu_pacing_ms<=100:p.error('cpu-pacing-ms must be 5..100')
     args.v083_mode=True
     cfg=json.loads(args.config.read_text())
