@@ -20,6 +20,8 @@ class SpotHourlyApprovalTests(unittest.TestCase):
         cfg["max_compute_usd"] = 1.68
         with self.assertRaisesRegex(ValueError, "BID_EXCEEDS_APPROVED"):
             spot.validate_config(cfg)
+        with self.assertRaisesRegex(ValueError, "BID_EXCEEDS_APPROVED"):
+            spot.issue_approval(cfg)
 
     def test_noncompute_estimate_exceeds_hourly_allowance(self):
         cfg = sample()
