@@ -1,0 +1,2 @@
+# Optional only for privately enabled Spot controller/worker; not the normal dashboard runtime.
+boto3>=1.34,<2
