@@ -149,13 +149,15 @@ def guard():
     compile(text,"server.py","exec")
     previous=json.loads(PROOF.read_text()) if PROOF.is_file() and not PROOF.is_symlink() else {}
     spot={}
-    for name,body in spot_payloads().items():
+    # Do not shadow `body`: it contains v083_web_jobs.py, not the Spot
+    # module. Shadowing silently replaced the authenticated research controller.
+    for name,spot_body in spot_payloads().items():
         target=SPOT_TARGETS[name]
         before=sha(target.read_bytes()) if target.is_file() else None
         prior=previous.get("spotModules",{}).get(name,{}).get("sha256")
-        if before is not None and before!=sha(body) and before!=prior and before not in LEGACY_SPOT_HASHES.get(name,set()):
+        if before is not None and before!=sha(spot_body) and before!=prior and before not in LEGACY_SPOT_HASHES.get(name,set()):
             raise ValueError("LOCAL_V083_SPOT_MODULE_CONFLICT:"+name)
-        spot[name]=dict(sha256=sha(body),beforeSha256=before,changed=before!=sha(body))
+        spot[name]=dict(sha256=sha(spot_body),beforeSha256=before,changed=before!=sha(spot_body))
     # KillMode review is required before a web-launched child is allowed to outlive API.
     mode=subprocess.check_output(["systemctl","show","market-career-dashboard.service",
         "--property=KillMode","--value"],text=True,timeout=10).strip()
