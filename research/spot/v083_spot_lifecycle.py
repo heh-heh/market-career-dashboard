@@ -125,6 +125,9 @@ def config_digest(cfg):
 
 
 def cost_breakdown(cfg):
+    # Also validate direct receipt issuance, not only parsed private configs.
+    if cfg["max_spot_price_usd_hour"] > APPROVED_MAX_SPOT_BID_USD_HOUR + 1e-9:
+        raise ValueError("SPOT_BID_EXCEEDS_APPROVED_HOURLY_RESERVE")
     estimate = cfg.get("cost_estimate", {})
     keys = ("ebs_usd", "s3_usd", "network_usd", "ipv4_usd", "other_usd")
     if not all(type(estimate.get(k)) in (int, float) and math.isfinite(estimate[k]) and estimate[k] >= 0 for k in keys):
