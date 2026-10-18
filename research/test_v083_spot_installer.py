@@ -21,6 +21,23 @@ class Weekend:
 
 
 class SpotInstallerTests(unittest.TestCase):
+    def test_guard_must_not_shadow_the_web_controller_with_spot_module(self):
+        # Regression for a live deploy where `for name,body in spot_payloads()`
+        # accidentally changed the guard's returned web-controller payload.
+        import ast
+        import inspect
+        m=module()
+        source=inspect.getsource(m.guard)
+        tree=ast.parse(source)
+        loop_vars=[]
+        for node in ast.walk(tree):
+            if isinstance(node,ast.For):
+                loop_vars.extend(n.id for n in ast.walk(node.target) if isinstance(n,ast.Name))
+        self.assertNotIn('body',loop_vars,
+            'Never shadow the audited v083_web_jobs.py bytes inside guard()')
+        self.assertIn('controllerSha=sha(body)',source)
+        self.assertIn('),text.encode(),body',source.replace('\\n',''))
+
     def test_surgical_routes_preserve_custom_admin_and_idempotent(self):
         m=module()
         server='''# local Token Broker settings retained
