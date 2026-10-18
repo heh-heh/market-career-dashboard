@@ -159,59 +159,59 @@ async function download(){
  }catch(e){write("v083WebFeedback",e.message)}
  finally{await refresh()}
 }
-let spotPlan=null;
+let spotPlan=null,spotRequest=null,spotBusy=false;
+async function spotApi(action,body){
+ const d=await req("/api/research/v083/spot/"+action,body?{method:"POST",body:JSON.stringify(body)}:undefined);
+ if(d?.ok===false)throw Error(d.error||"Spot 요청 차단");
+ if(d?.protocol&&d.protocol!=="V083_SPOT_CONTROL_2")throw Error("SPOT_BACKEND_UNSUPPORTED");
+ return d;
+}
+function spotButtons(){
+ const ready=Boolean(spotPlan?.runnable&&supported&&!busy&&!spotBusy);
+ const blocked=["STARTING","REQUESTED_ONE_TIME_SPOT","CREATE_UNKNOWN","RUNNING","STOP_REQUESTED"].includes(spotRequest?.phase);
+ if(get("v083SpotPrepare"))get("v083SpotPrepare").disabled=!ready||blocked;
+ if(get("v083SpotApprove"))get("v083SpotApprove").disabled=!ready||spotRequest?.phase!=="PREPARED";
+ if(get("v083SpotLaunch"))get("v083SpotLaunch").disabled=!ready||spotRequest?.phase!=="APPROVED";
+ if(get("v083SpotStop"))get("v083SpotStop").disabled=spotBusy||!blocked;
+}
+function renderSpot(d){
+ spotPlan=d;if(Object.prototype.hasOwnProperty.call(d,"request"))spotRequest=d.request;
+ const reasons=d.blockedReasons||[];
+ write("v083SpotStatus",d.configured?("Spot "+(d.runnable?"로컬 설정 확인":"차단")+" · "+(spotRequest?.phase||"대기")+" · "+(d.instances||[]).map(x=>x.id+" "+x.state).join(", ")+" · "+reasons.join(" / ")):("Spot 미설정 · 시작 차단 · "+reasons.join(" / ")));
+ const costs=spotRequest?.costBreakdown||d.costBreakdown;
+ write("v083SpotEstimate",costs?"검토 추정: compute $"+costs.compute_usd+" / EBS $"+costs.ebs_usd+" / S3 $"+costs.s3_usd+" / 네트워크 $"+costs.network_usd+" / IPv4 $"+costs.ipv4_usd+" / 기타 $"+costs.other_usd+" · 합계 $"+costs.estimated_total_usd+" · 승인 예산 $"+costs.budget_usd+"\n청구액 하드캡이 아닙니다. 종료 지연·저장·요청·세금 등으로 초과 가능":"검토된 비용 추정 없음 · 유료 시작 비활성");
+ const remote=d.remote?.data,train=remote?.training||{};
+ write("v083SpotProgress",remote?"상태 "+(remote.phase||"—")+" · 단계 "+(remote.stage||"—")+" · 거래일 "+number(train.completedSessions)+" / "+number(train.requestedSessions)+" · 세대 "+number(train.completedTrainGenerations)+" · 평균 수익 "+pct(train.meanWindowReturn)+" · CPU "+number(train.resourceReport?.peak?.cpuPct)+"% · 체크포인트 "+(remote.checkpoint?.manifestKey||remote.checkpoint?.key||"아직 없음")+"\n"+(remote.error||""):(d.remote?.reason||"실제 원격 결과 없음"));
+ spotButtons();
+}
 async function spotInspect(){
-  write("v083SpotStatus","Spot 구성과 실행 상태 확인 중 · 인스턴스는 시작하지 않습니다.");
-  try{
-    const raw=await call("v083 spot plan");
-    const plan=JSON.parse(raw);
-    spotPlan=plan.configured&&plan.enabled?plan:null;
-    const launch=get("v083SpotLaunch"),stop=get("v083SpotStop");
-    if(!spotPlan){
-      if(launch)launch.disabled=true;
-      if(stop)stop.disabled=true;
-      write("v083SpotStatus","Spot 미설정 · 현재 학습 서버 추가 요금 없음. S3 데이터 번들·IAM·독립 종료 감시 설정 후 사용할 수 있습니다.");
-      return;
-    }
-    const state=JSON.parse(await call("v083 spot status"));
-    const instances=Array.isArray(state.instances)?state.instances:[];
-    const description=instances.length?instances.map(i=>i.id+" ("+i.state+")").join(", "):"대기 중 · 실행 중인 Spot 없음";
-    write("v083SpotStatus","Spot 구성됨 · "+spotPlan.instance_type+" / "+spotPlan.vcpus+" vCPU · 봇 "+spotPlan.population+
-      "개 · 최대 "+spotPlan.max_wall_hours+"시간 · 컴퓨팅 한도 목표 $"+spotPlan.max_compute_usd+
-      " (EBS·S3 등 별도) · "+description+" · 실행은 수동 승인 시에만");
-    if(launch)launch.disabled=!supported||busy;
-    if(stop)stop.disabled=false;
-  }catch(e){
-    spotPlan=null;
-    if(get("v083SpotLaunch"))get("v083SpotLaunch").disabled=true;
-    if(get("v083SpotStop"))get("v083SpotStop").disabled=true;
-    write("v083SpotStatus","Spot 상태 조회 실패/차단: "+e.message);
-  }
+ if(spotBusy||!token())return;
+ try{const d=await spotApi("status");if(d.protocol!=="V083_SPOT_CONTROL_2")throw Error("SPOT_BACKEND_UNSUPPORTED");renderSpot(d)}
+ catch(e){spotPlan=null;spotRequest=null;spotButtons();write("v083SpotStatus","Spot 조회 실패/차단: "+e.message)}
 }
 async function spotAction(verb){
-  if(!spotPlan||busy)return;
-  const launch=verb==="train";
-  const question=launch?
-    ("EC2 Spot 인스턴스 1대를 실제 생성하고 비용이 발생할 수 있습니다.\n"+
-      spotPlan.instance_type+" · 봇 "+spotPlan.population+"개 · 최대 "+spotPlan.max_wall_hours+"시간 / Spot 컴퓨팅 상한 $"+spotPlan.max_compute_usd+
-      "\nEBS·S3·네트워크 요금은 별도입니다. Spot 회수 시 실행 중 작업이 손실될 수 있습니다."+
-      "\n기존 AWS는 유지되고, 학습 성공·실패 시 Spot이 종료됩니다.\n학습을 승인할까요?"):
-    "이 작업에 속한 Spot 워커를 종료할까요? 진행 중 학습은 중단될 수 있습니다.";
-  if(!confirm(question))return;
-  busy=true;
-  if(get("v083SpotLaunch"))get("v083SpotLaunch").disabled=true;
-  if(get("v083SpotStop"))get("v083SpotStop").disabled=true;
-  try{
-    const command=launch?"v083 spot train APPROVE-8H-SPOT":"v083 spot stop CONFIRM";
-    const response=JSON.parse(await call(command));
-    write("v083SpotStatus",launch?"Spot 작업 요청됨 · "+esc(response.instance_id||"")+" · 완료 시 인스턴스 자동 종료":
-      "Spot 종료 요청됨 · "+JSON.stringify(response.terminated||[]));
-  }catch(e){write("v083SpotStatus","Spot 작업 차단/실패: "+e.message)}
-  finally{busy=false;await spotInspect()}
+ if(spotBusy||busy)return;
+ if(!spotPlan?.runnable&&verb!=="stop")return;
+ if(verb==="approve"&&!confirm("검토된 비용 추정과 초과 가능성을 확인했으며 실제 AWS 과금을 승인합니까?\n이 단계는 서버를 생성하지 않습니다."))return;
+ if(verb==="start"&&!confirm("별도 EC2 Spot 1대를 지금 생성하고 학습할까요? 실제 과금됩니다. 기존 서버는 유지됩니다."))return;
+ if(verb==="stop"&&!confirm("이 승인 작업의 Spot만 종료할까요? 마지막 완료 체크포인트 이후 진행분은 재평가됩니다."))return;
+ spotBusy=true;spotButtons();
+ try{
+  let body;
+  if(verb==="prepare")body={population:selectedPopulation(),instanceType:get("v083SpotInstance")?.value,maxHours:Number(get("v083SpotHours")?.value)};
+  else if(verb==="approve")body={requestId:spotRequest.requestId,configHash:spotRequest.configHash,acknowledgeCost:true,confirmation:"APPROVE_PAID_SPOT"};
+  else body={requestId:spotRequest.requestId,confirmation:verb==="start"?"CREATE_ONE_PAID_SPOT":"STOP_OWN_SPOT"};
+  const response=await spotApi(verb,body);spotRequest=response;
+  write("v083SpotStatus","Spot 요청 상태: "+response.phase);
+ }catch(e){write("v083SpotStatus","Spot 요청 차단/실패: "+e.message)}
+ finally{spotBusy=false;spotButtons();await spotInspect()}
 }
 get("v083SpotRefresh")?.addEventListener("click",spotInspect);
-get("v083SpotLaunch")?.addEventListener("click",()=>spotAction("train"));
+get("v083SpotPrepare")?.addEventListener("click",()=>spotAction("prepare"));
+get("v083SpotApprove")?.addEventListener("click",()=>spotAction("approve"));
+get("v083SpotLaunch")?.addEventListener("click",()=>spotAction("start"));
 get("v083SpotStop")?.addEventListener("click",()=>spotAction("stop"));
+setInterval(()=>{if(["STARTING","REQUESTED_ONE_TIME_SPOT","CREATE_UNKNOWN","RUNNING","STOP_REQUESTED"].includes(spotRequest?.phase)&&get("ai")?.classList.contains("active"))spotInspect()},15000);
 get("v083WebRefresh")?.addEventListener("click",refresh);
 get("v083WebDownload")?.addEventListener("click",download);
 document.querySelectorAll("[data-v083]").forEach(b=>b.addEventListener("click",()=>action(b.dataset.v083)));

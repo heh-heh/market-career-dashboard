@@ -2672,6 +2672,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path=self.path.split("?")[0]
+        if path in ("/api/research/v083/spot/plan", "/api/research/v083/spot/status"):
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                import v083_spot_control
+                self.send_json({"ok":True,**v083_spot_control.dispatch(path.rsplit("/",1)[1])})
+            except Exception as exc:
+                self.send_json({"ok":False,"error":v083_spot_control.safe_error(exc) if "v083_spot_control" in locals() else "SPOT_CONTROL_UNAVAILABLE"},409)
+            return
         if path.startswith("/api/research/collection50/"):
             self.collection50_get(path); return
         if path=="/api/research/v083/download":
@@ -3236,6 +3245,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if path in tuple("/api/research/v083/spot/"+a for a in ("prepare","approve","start","stop")):
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                import v083_spot_control
+                body=self.read_json()
+                self.send_json({"ok":True,**v083_spot_control.dispatch(path.rsplit("/",1)[1],body)})
+            except Exception as exc:
+                self.send_json({"ok":False,"error":v083_spot_control.safe_error(exc) if "v083_spot_control" in locals() else "SPOT_CONTROL_UNAVAILABLE"},409)
+            return
         if path == "/api/research/collection50/control":
             if not authorized(self):
                 self.send_json({"ok": False, "error": "unauthorized"}, 401); return

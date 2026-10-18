@@ -1,0 +1,157 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadOnlyEC2Inventory",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeImages",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      }
+    },
+    {
+      "Sid": "UseOnlyReviewedExistingInfrastructure",
+      "Effect": "Allow",
+      "Action": "ec2:RunInstances",
+      "Resource": [
+        "arn:aws:ec2:ap-northeast-1::image/REPLACE_AMI_ID",
+        "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:subnet/REPLACE_SUBNET_ID",
+        "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:security-group/REPLACE_SECURITY_GROUP_ID",
+        "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:network-interface/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-1"
+        }
+      }
+    },
+    {
+      "Sid": "CreateOnlyTaggedApprovedInstance",
+      "Effect": "Allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/Project": "V083-Research-Only",
+          "aws:RequestTag/V083ResearchJob": "v083-REPLACE_16_HEX",
+          "aws:RequestTag/OOS": "CLOSED",
+          "aws:RequestTag/AutoReplace": "DISABLED",
+          "ec2:InstanceType": "c6i.2xlarge",
+          "ec2:MetadataHttpTokens": "required"
+        }
+      }
+    },
+    {
+      "Sid": "CreateOnlyEncryptedTaggedRootVolume",
+      "Effect": "Allow",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:volume/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/Project": "V083-Research-Only",
+          "aws:RequestTag/V083ResearchJob": "v083-REPLACE_16_HEX",
+          "aws:RequestTag/OOS": "CLOSED",
+          "aws:RequestTag/AutoReplace": "DISABLED"
+        },
+        "Bool": {
+          "ec2:Encrypted": "true"
+        }
+      }
+    },
+    {
+      "Sid": "TagOnlyDuringApprovedRunInstances",
+      "Effect": "Allow",
+      "Action": "ec2:CreateTags",
+      "Resource": [
+        "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:instance/*",
+        "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:volume/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/Project": "V083-Research-Only",
+          "aws:RequestTag/V083ResearchJob": "v083-REPLACE_16_HEX",
+          "aws:RequestTag/OOS": "CLOSED",
+          "aws:RequestTag/AutoReplace": "DISABLED",
+          "ec2:CreateAction": "RunInstances"
+        }
+      }
+    },
+    {
+      "Sid": "TerminateResearchOnlyNeverExistingHost",
+      "Effect": "Allow",
+      "Action": "ec2:TerminateInstances",
+      "Resource": "arn:aws:ec2:ap-northeast-1:REPLACE_ACCOUNT_ID:instance/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/Project": "V083-Research-Only",
+          "aws:ResourceTag/OOS": "CLOSED",
+          "aws:ResourceTag/AutoReplace": "DISABLED"
+        },
+        "StringLike": {
+          "aws:ResourceTag/V083ResearchJob": "v083-*"
+        }
+      }
+    },
+    {
+      "Sid": "PassOnlyReviewedWorkerRoleToEC2",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::REPLACE_ACCOUNT_ID:role/REPLACE_WORKER_ROLE",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ec2.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "InspectOnlyReviewedProfile",
+      "Effect": "Allow",
+      "Action": "iam:GetInstanceProfile",
+      "Resource": "arn:aws:iam::REPLACE_ACCOUNT_ID:instance-profile/REPLACE_WORKER_PROFILE"
+    },
+    {
+      "Sid": "InspectOnlyReviewedRolePolicy",
+      "Effect": "Allow",
+      "Action": [
+        "iam:ListAttachedRolePolicies",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::REPLACE_ACCOUNT_ID:role/REPLACE_WORKER_ROLE"
+    },
+    {
+      "Sid": "ReadOnlyPinnedResearchBundleVersion",
+      "Effect": "Allow",
+      "Action": "s3:GetObjectVersion",
+      "Resource": "arn:aws:s3:::REPLACE_PRIVATE_BUCKET/v083/bundles/REPLACE_BUNDLE.tar.gz",
+      "Condition": {
+        "StringEquals": {
+          "s3:VersionId": "REPLACE_BUNDLE_VERSION_ID"
+        }
+      }
+    },
+    {
+      "Sid": "ReadPrivateVersionedBucketConfiguration",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketVersioning",
+        "s3:GetBucketPublicAccessBlock"
+      ],
+      "Resource": "arn:aws:s3:::REPLACE_PRIVATE_BUCKET"
+    },
+    {
+      "Sid": "ReadOnlyExplicitlyApprovedJobStatus",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::REPLACE_PRIVATE_BUCKET/v083/runs/v083-REPLACE_16_HEX/output/live_status.json"
+    }
+  ]
+}

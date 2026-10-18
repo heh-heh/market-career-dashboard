@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "dateUtc": "2026-10-18",
+  "baseCommit": "42a07ce1ad9cd392b1eba1b9feacd9ae2155c95c",
+  "researchOnly": true,
+  "finalOosGate": "CLOSED",
+  "localChecks": {
+    "baselineSelectedPython": {"tests": 32, "result": "PASS"},
+    "finalFullPythonDiscovery": {"tests": 849, "seconds": 192.203, "result": "PASS"},
+    "spotAndResumeSubset": {"tests": 63, "includedInFullDiscovery": true, "result": "PASS"},
+    "javascriptSmokeFiles": {"files": 25, "result": "PASS"},
+    "spotBrowser": {"widths": [320,390,768,1280], "pageErrors": 0, "horizontalOverflow": false, "result": "PASS"},
+    "legacyV082Browser": {"widths": [320,390,768,1280], "pageErrors": 0, "fixtureUpdatedForArchivedRuntime": true, "result": "PASS"},
+    "pythonCompile": "PASS",
+    "javascriptSyntax": "PASS",
+    "workerBundleLifecycleRunHelp": "PASS",
+    "installerSimulation": "PASS"
+  },
+  "faultsCovered": [
+    "completion and durable upload", "training error", "interruption and committed-prefix restore",
+    "runtime expiry", "simultaneous starts", "ambiguous allocation blocks retry", "budget overflow",
+    "unreviewed IAM", "missing S3 versioning", "bundle hash or source mismatch", "unauthenticated requests",
+    "config change invalidates consent", "stopped instance without durable final result", "installation rollback"
+  ],
+  "resumeEvidence": "Two synthetic bots over ten sessions: interrupt during second generation; resumed population, evaluated records, windows and lineage match uninterrupted run. Original partial artifacts preserved.",
+  "awsChecks": {
+    "credentials": "BLOCKED_PROFILE_NOT_FOUND",
+    "liveApiRequests": 0,
+    "appliedChanges": [],
+    "instancesLaunched": 0,
+    "uploadsPerformed": 0,
+    "longTrainingRuns": 0
+  },
+  "githubCiPolicy": "Only standard GitHub-hosted runners on verified public repository are free and authorized. Actual remote CI conclusion is reported with the submitted PR, not inferred from this local report.",
+  "remaining": [
+    "review and approve dedicated IAM/network/AMI/versioned S3 costs",
+    "install and verify independent reaper with approved operator access",
+    "rebuild and review V2 train-only bundle and private job configuration",
+    "paid pilot for bootstrap, genuine interruption, durable resume and final termination",
+    "each successor requires new job-specific config/profile/bundle review and cost/creation consent; no automatic replacement"
+  ]
+}

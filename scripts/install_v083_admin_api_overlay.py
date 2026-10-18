@@ -38,6 +38,68 @@ DOWNLOAD_ADD='''        if path=="/api/research/v083/download":
                 self.send_json({"ok":False,"error":str(exc)},409)
             return
 '''
+SPOT_TARGETS={
+    'v083_spot_control.py':APP/'v083_spot_control.py',
+    'research/spot/v083_spot_lifecycle.py':APP/'research/spot/v083_spot_lifecycle.py',
+}
+SPOT_GET_ADD='''        if path in ("/api/research/v083/spot/plan", "/api/research/v083/spot/status"):
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                import v083_spot_control
+                self.send_json({"ok":True,**v083_spot_control.dispatch(path.rsplit("/",1)[1])})
+            except Exception as exc:
+                self.send_json({"ok":False,"error":v083_spot_control.safe_error(exc) if "v083_spot_control" in locals() else "SPOT_CONTROL_UNAVAILABLE"},409)
+            return
+'''
+SPOT_POST_ADD='''        if path in tuple("/api/research/v083/spot/"+a for a in ("prepare","approve","start","stop")):
+            if not authorized(self):
+                self.send_json({"ok":False,"error":"unauthorized"},401); return
+            try:
+                import v083_spot_control
+                body=self.read_json()
+                self.send_json({"ok":True,**v083_spot_control.dispatch(path.rsplit("/",1)[1],body)})
+            except Exception as exc:
+                self.send_json({"ok":False,"error":v083_spot_control.safe_error(exc) if "v083_spot_control" in locals() else "SPOT_CONTROL_UNAVAILABLE"},409)
+            return
+'''
+
+
+def add_spot_routes(text):
+    """Add authenticated routes at method-local path anchor, preserve all else."""
+    for method,addition in (('GET',SPOT_GET_ADD),('POST',SPOT_POST_ADD)):
+        start=re.search(r'(?m)^    def do_'+method+r'\(self\):\s*$',text)
+        if not start:raise ValueError('LOCAL_V083_SPOT_'+method+'_METHOD_MISSING')
+        remainder=text[start.end():]
+        end=re.search(r'(?m)^    def ',remainder)
+        body=remainder[:end.start()] if end else remainder
+        if addition in body:
+            if body.count(addition)!=1:raise ValueError('LOCAL_V083_SPOT_'+method+'_DUPLICATE')
+            continue
+        if '/api/research/v083/spot/' in body:
+            raise ValueError('LOCAL_V083_SPOT_'+method+'_CONFLICT')
+        anchor=re.search(r'(?m)^        path\s*=\s*self\.path\.split\([\'"]\?[\'"]\)\[0\]\s*\n',body)
+        if not anchor:raise ValueError('LOCAL_V083_SPOT_'+method+'_PATH_ANCHOR_MISSING')
+        at=start.end()+anchor.end()
+        text=text[:at]+addition+text[at:]
+    return text
+
+
+# Published baseline 42a07ce; only this exact prior module may upgrade without
+# an installer proof. Any locally edited lifecycle remains blocked.
+LEGACY_SPOT_HASHES={'research/spot/v083_spot_lifecycle.py':{
+    '9c10587cd17e54d87c79f2bede0c83110d51f0f40d4963720da606feed679d8d'}}
+
+def spot_payloads():
+    bodies={}
+    for name,target in SPOT_TARGETS.items():
+        if any(p.is_symlink() for p in [target,*target.parents] if p!=APP.parent):
+            raise ValueError('UNSAFE_V083_SPOT_INSTALL_PATH')
+        body=subprocess.check_output(['git','-c',f'safe.directory={TOOLS}','-C',str(TOOLS),
+                                      'show',PIN+':'+name],timeout=15)
+        compile(body,name,'exec');bodies[name]=body
+    return bodies
+
 def git(*args):
     return subprocess.check_output(["git","-c",f"safe.directory={TOOLS}","-C",str(TOOLS),*args],
                                    text=True,timeout=30).strip()
@@ -83,12 +145,22 @@ def guard():
     if DOWNLOAD_ADD not in text:
         if text.count(DOWNLOAD_ANCHOR)!=1:raise ValueError("LOCAL_V083_DOWNLOAD_CONFLICT")
         text=text.replace(DOWNLOAD_ANCHOR,DOWNLOAD_ADD+DOWNLOAD_ANCHOR)
+    text=add_spot_routes(text)
     compile(text,"server.py","exec")
+    previous=json.loads(PROOF.read_text()) if PROOF.is_file() and not PROOF.is_symlink() else {}
+    spot={}
+    for name,body in spot_payloads().items():
+        target=SPOT_TARGETS[name]
+        before=sha(target.read_bytes()) if target.is_file() else None
+        prior=previous.get("spotModules",{}).get(name,{}).get("sha256")
+        if before is not None and before!=sha(body) and before!=prior and before not in LEGACY_SPOT_HASHES.get(name,set()):
+            raise ValueError("LOCAL_V083_SPOT_MODULE_CONFLICT:"+name)
+        spot[name]=dict(sha256=sha(body),beforeSha256=before,changed=before!=sha(body))
     # KillMode review is required before a web-launched child is allowed to outlive API.
     mode=subprocess.check_output(["systemctl","show","market-career-dashboard.service",
         "--property=KillMode","--value"],text=True,timeout=10).strip()
     if mode!="process":raise ValueError("API_CGROUP_WOULD_KILL_RESEARCH: set reviewed KillMode=process first")
-    return dict(sourcePath=str(SOURCE),proofChanged=not PROOF.is_file() or json.loads(PROOF.read_text()).get("commit")!=rev,serverBefore=sha(raw),serverAfter=sha(text.encode()),controllerSha=sha(body),
+    return dict(spotModules=spot,sourcePath=str(SOURCE),proofChanged=not PROOF.is_file() or previous.get("commit")!=rev or previous.get("spotModules")!={k:{"sha256":v["sha256"]} for k,v in spot.items()},serverBefore=sha(raw),serverAfter=sha(text.encode()),controllerSha=sha(body),
                 branchCommit=rev,serverChanged=raw!=text.encode(),controllerNeeded=not CONTROLLER.exists(),controllerChanged=not CONTROLLER.exists() or CONTROLLER.read_bytes()!=body,
                 sourceNeeded=not SOURCE.exists()),text.encode(),body
 
@@ -141,7 +213,7 @@ def _main():
     exclusive.add_argument("--apply",action="store_true")
     a=p.parse_args()
     audit,server,controller=guard()
-    print(json.dumps({"status":"READY" if any((audit["serverChanged"],audit["controllerChanged"],audit["sourceNeeded"],audit["proofChanged"])) else "ALREADY_INSTALLED",**audit},indent=2))
+    print(json.dumps({"status":"READY" if any((audit["serverChanged"],audit["controllerChanged"],audit["sourceNeeded"],audit["proofChanged"],any(v["changed"] for v in audit.get("spotModules",{}).values()))) else "ALREADY_INSTALLED",**audit},indent=2))
     if a.check:return
     from zoneinfo import ZoneInfo
     now=datetime.now(ZoneInfo("America/New_York"))
@@ -154,7 +226,7 @@ def _main():
     if audit["sourceNeeded"]:
         subprocess.run(["git","-c",f"safe.directory={TOOLS}","-C",str(TOOLS),"worktree","add","--detach",
                         str(SOURCE),PIN],check=True,timeout=90)
-    if not audit["serverChanged"] and not audit["controllerChanged"] and not audit["proofChanged"]:
+    if not audit["serverChanged"] and not audit["controllerChanged"] and not audit["proofChanged"] and not any(v["changed"] for v in audit.get("spotModules",{}).values()):
         print("ALREADY_INSTALLED");return
     BACKUPS.mkdir(mode=0o700,parents=True,exist_ok=True)
     backup=BACKUPS/(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"-"+os.urandom(4).hex())
@@ -163,12 +235,24 @@ def _main():
     if CONTROLLER.exists():shutil.copy2(CONTROLLER,backup/"v083_web_jobs.py")
     (backup/"manifest.json").write_text(json.dumps(audit,indent=2))
     if PROOF.exists():shutil.copy2(PROOF,backup/"source_revision.json")
+    payloads=spot_payloads() if audit.get("spotModules") else {}
+    for name,body in payloads.items():
+        if sha(body)!=audit["spotModules"][name]["sha256"]:raise ValueError("SPOT_SOURCE_CHANGED_DURING_PREFLIGHT")
+        target=SPOT_TARGETS[name]
+        if target.exists():
+            copy=backup/name;copy.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(target,copy)
     changed=True
     try:
         PROOF.parent.mkdir(mode=0o700,parents=True,exist_ok=True)
-        proof=json.dumps(dict(commit=PIN,sourcePath=str(SOURCE),controllerSha=sha(controller))).encode()
+        proof=json.dumps(dict(commit=PIN,sourcePath=str(SOURCE),controllerSha=sha(controller),
+            spotModules={k:{"sha256":v["sha256"]} for k,v in audit.get("spotModules",{}).items()})).encode()
         atomic_write(PROOF,proof,PROOF if PROOF.exists() else None)
         atomic_write(CONTROLLER,controller,CONTROLLER if CONTROLLER.exists() else None)
+        for name,body in payloads.items():
+            target=SPOT_TARGETS[name]
+            if not target.parent.is_dir():raise ValueError("SPOT_OPERATING_PACKAGE_MISSING:"+name)
+            atomic_write(target,body,target if target.exists() else None)
+            if sha(target.read_bytes())!=audit["spotModules"][name]["sha256"]:raise ValueError("SPOT_POST_WRITE_HASH_MISMATCH")
         if audit["serverChanged"]:
             atomic_write(TARGET,server,TARGET)
         if sha(TARGET.read_bytes())!=audit["serverAfter"] or sha(CONTROLLER.read_bytes())!=audit["controllerSha"]:
@@ -178,6 +262,10 @@ def _main():
         if not health():raise ValueError("API_HEALTH_CHECK_FAILED")
     except BaseException:
         if changed:
+            for name in payloads:
+                target=SPOT_TARGETS[name];old=backup/name
+                if old.exists():atomic_write(target,old.read_bytes(),old)
+                else:target.unlink(missing_ok=True)
             if (backup/"source_revision.json").exists():atomic_write(PROOF,(backup/"source_revision.json").read_bytes(),backup/"source_revision.json")
             else:PROOF.unlink(missing_ok=True)
             atomic_write(TARGET,(backup/"server.py").read_bytes(),backup/"server.py")

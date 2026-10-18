@@ -19,6 +19,7 @@ CONFIG=Path(__file__).with_name('v083_top_two_config.json')
 
 def parser():
     p=base_parser();p.description=__doc__;p.set_defaults(config=CONFIG,population=50,results_dir=Path('/mnt/research/evolution-v083'))
+    p.add_argument('--resume-from',type=Path,help='Read-only prior V083 run; resume its last committed generation into a new run')
     p.add_argument('--pilot',action='store_true')
     p.add_argument('--capacity-trial',action='store_true')
     p.add_argument('--capacity-report',type=Path)
@@ -38,6 +39,7 @@ def main(argv=None):
     if not cfg.get('indicator_aware') or cfg.get('selection_policy')!='v081_survival' or cfg.get('elite_count')!=0 or cfg.get('parent_pool_size')!=2:p.error('V083 top-two configuration required')
     if type(args.population) is not int or not 2<=args.population<=50 or cfg.get('max_population')!=50:p.error('V083_POPULATION_MUST_BE_2_TO_50')
     if args.smoke:p.error('Use --pilot for audited discovery')
+    if args.resume_from and (args.pilot or args.capacity_trial or args.source_run):p.error('Resume is TRAIN only, not pilot/trial/frozen evaluation')
     window=None
     if args.pilot:
         if args.source_run or args.from_date or args.to_date:p.error('Pilot chooses audited TRAIN window')

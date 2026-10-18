@@ -23,7 +23,7 @@
     Spot 꺼짐, 기존 AWS 관리자 서비스는 계속 켜짐
 ```
 
-Spot은 시스템 시작, 웹 페이지 접근, 리포트 조회, 일반 데이터 수집, 과거 결과 열람으로 **절대로 자동 생성되지 않습니다**. 관리자 인증된 `v083 spot train APPROVE-8H-SPOT`과 운영 환경의 **`V083_SPOT_LAUNCH_ENABLED=YES`**, 독립 종료 타이머 활성 조건이 모두 충족되어야 합니다.
+Spot은 시스템 시작, 웹 페이지 접근, 리포트 조회, 일반 데이터 수집, 과거 결과 열람으로 **절대로 자동 생성되지 않습니다**. 관리자 인증된 별도 HTTP `prepare → approve → start`와 운영 환경의 **`V083_SPOT_LAUNCH_ENABLED=YES`**, 독립 종료 타이머 활성 조건이 모두 충족되어야 합니다.
 
 ## 구현된 코드
 
@@ -33,7 +33,7 @@ Spot은 시스템 시작, 웹 페이지 접근, 리포트 조회, 일반 데이�
 | `research/spot/prepare_v083_spot_bundle.py` | **로컬 준비 전용**: 기존 audit/selection 검증 후 소스·데이터를 새 경로로 재기록, 해시 계산, 번들 생성. 2026 행과 24GiB 초과 파일 입력 거부 |
 | `research/spot/v083_spot_worker.py` | 워커에서 **반복 자원 검증 → 통과 시 TRAIN**, 결과/로그 생성. 모의 단계와 독립 저장 |
 | `research/spot/systemd/v083-spot-reaper.service` + `.timer` | 기존 AWS가 **5분 간격으로 만료된 Spot만 강제 종료**. 아직 설치/활성화하지 않은 템플릿 |
-| `v083_web_jobs.py` | 기존 관리자 인증을 통한 `v083 spot plan/status/train/stop`, 현재 봇 수/기존 작업/source pin 검증 |
+| `v083_web_jobs.py` | 기존 관리자 인증을 통한 plan/status/stop 및 새 `v083_spot_control.py`의 비용·생성 분리 승인, 현재 봇 수/기존 작업/source pin 검증 |
 | `admin.html`, `v083-web.js` | Spot 수동 상태 확인·유료 시작 승인·중지 버튼. 미구성 시 시작 불가 |
 | `research/test_v083_spot_lifecycle.py` | AWS 호출이 없는 모의 시작/중단/중복 실행/최대 시간/비용/아카이브 무결성/타이머 테스트 |
 
@@ -52,8 +52,8 @@ Spot은 시스템 시작, 웹 페이지 접근, 리포트 조회, 일반 데이�
 2. **검증된 x86_64 Spot AMI**. AWS CLI, Python 3.11+ (tar filter 지원 여부 확인), `/opt/v083/venv/bin/python`, 연구 의존성이 미리 설치되어야 함. 부팅 userdata 다운로드 가능하도록 네트워크와 IAM 준비. 이 AMI 자체는 아직 생성하지 않았음.
 3. **전용 IAM 인스턴스 프로필, 보안 그룹, 서브넷**. 브로커 비밀번호/실거래 권한 없음. 외부에서 SSH/웹 인바운드 차단, S3 버전드 번들 읽기 및 해당 job prefix 결과 쓰기만 허용. 기존 서비스 IAM 권한과 분리. AWS API 자원 조회/생성/종료를 위해 기존 관리자 인스턴스 역할에도 **태그 조건을 가진 최소 권한**이 필요하며, 이는 아직 허용하지 않았음.
 4. **독립 타이머 설치 및 테스트**. `systemd v083-spot-reaper.timer`가 `active`인지 확인; 운영 환경 변수 `V083_SPOT_REAPER_READY=YES`과 `V083_SPOT_LAUNCH_ENABLED=YES`는 모든 검토와 실제 유료 실행을 승인받은 다음에만 설정.
-5. **체크포인트 복구**. 현재 V0.8.3은 세대별 checkpoint **저장만 지원**, 검증된 `--resume-from` 없음. Spot 회수나 8시간 제한으로 중간 종료되면 S3에 기록된 마지막 세대 정보는 남지만 아직 곧바로 재개할 수 없음. 따라서 장기 학습을 실제 Spot에 맡기기 전 P1 재개/중복실행 방지 기능 개발과 강제 중단 재현 시험이 필수.
-6. **대시보드 결과 연동**. Spot 결과는 우선 S3 job prefix에 업로드되며 현재 V0.8.3의 로컬 세대 그래프에 자동 편입되지는 않음. 검증된 수익/체크포인트/데이터 계약 이후 별도 읽기 전용 import를 개발해야 함.
+5. **체크포인트 복구**. `--resume-from`은 완료 세대의 RNG·유전자·확정 원장만 새 실행으로 복원한다. Spot은 불변 S3 commit reference로 복구하며 새 job ID, 이전 prefix 읽기 IAM 검토, 신규 비용·생성 승인이 필요하다. 자동 재생성은 하지 않는다. 실제 회수 검증은 별도 승인된 pilot에서 필요하다.
+6. **대시보드 결과 연동**. 실제 `output/live_status.json`의 학습·체크포인트 상태를 전용 Spot 영역에 표시한다. S3 조회 비용은 `monitor_reads_approved=true` 별도 검토가 필요하다. 기존 로컬 세대 그래프·원본 결과에는 자동 병합하지 않는다.
 
 ## 현재 비활성 설정
 
@@ -72,8 +72,10 @@ python -m unittest research.test_v083_spot_lifecycle -v
 
 - P0 설계 + launch/worker/bundle/reaper **코드 작성**.
 - 모의 AWS 단위 테스트 통과 전에는 EC2 백엔드 배포 금지.
-- P1 중단 후 재개 기능 구현 + 무결성·OOS/장부 테스트 통과 전에는 **실제 장기 학습 승인 금지**.
+- P1 중단 후 재개 기능 구현 + 무결성·OOS/장부 테스트 통과 전에는 **실제 장기 학습 승인 금지**. 오프라인 중단 복구 테스트는 추가됐으며 실제 인프라 검증은 남아 있다.
 - 이후 AMI, S3, IAM, 네트워크, 종료 타이머를 실제로 생성하는 행위는 사용자가 명시적으로 허락해야 함.
 - 첫 유료 시험은 최대 1대, 시간·비용 상한 재확인, 실제 시간/비용/안전성 기록, 종료 및 정리 여부 수동 재검증.
 
 GitHub의 이 설계/코드가 곧바로 Spot 사용 가능하다는 의미는 아니며, AWS 관련 서비스 또는 유료 구성은 현재까지 **변경 없음**.
+
+현재 구현·검증·비용 및 남은 운영 절차는 [V083_SPOT_READINESS.md](V083_SPOT_READINESS.md)를 우선 참고한다. 과거 가격 표본은 이번 개발 세션에서 재조회한 값이 아니다.

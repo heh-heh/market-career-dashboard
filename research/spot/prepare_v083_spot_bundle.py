@@ -17,6 +17,7 @@ from pathlib import Path
 import re
 import subprocess
 import tarfile
+import os
 
 from research.evolution.available_data import verify_plan
 from research.backtest_v4_strategies import file_sha256
@@ -62,7 +63,8 @@ def files_for_worker(repo):
     ]
     files += list((repo/"research/evolution").glob("*.py"))
     files += list((repo/"research/evolution").glob("*.json"))
-    files += [repo/"research/spot/v083_spot_worker.py"]
+    files += [repo/"research/spot/v083_spot_worker.py", repo/"research/spot/worker_storage.py"]
+    if (repo/"research/spot/__init__.py").is_file(): files.append(repo/"research/spot/__init__.py")
     valid=[]
     for f in files:
         if f.is_symlink() or not f.is_file():
@@ -107,13 +109,28 @@ def build(*, repo, selection_plan, job_id, population, output):
     rebased_plan={**plan,"dataRoot":str(DEST/"data"),"auditDir":str(DEST/"audit")}
     audit_bytes=json_bytes(rebased_audit)
     rebased_plan["auditSha256"]=hashlib.sha256(audit_bytes).hexdigest()
-    manifest={"job_id":job_id,"source_commit":commit,"population":population,
+    evidence_files={}
+    for name in ("sessions.jsonl", "symbol_sessions.jsonl"):
+        artifact=audit_dir/name
+        if artifact.is_symlink() or file_sha256(artifact)!=source_json["files"][name]["sha256"]:
+            raise ValueError("SPOT_AUDIT_EVIDENCE_CHANGED")
+        evidence_files["audit/"+name]=file_sha256(artifact)
+    payload={"source/"+name:sha for name,sha in source_hashes.items()}
+    payload.update({"data/"+p.name:file_sha256(p) for p in paths.values()})
+    if len({p.name for p in paths.values()})!=len(paths):
+        raise ValueError("SPOT_PROVIDER_BASENAME_COLLISION")
+    payload.update(evidence_files)
+    payload["audit/audit.json"]=hashlib.sha256(audit_bytes).hexdigest()
+    payload["selection/selection_plan.json"]=hashlib.sha256(json_bytes(rebased_plan)).hexdigest()
+    manifest={"version":2,"population_bounds":[2,50],"payload_files":payload,"job_id":job_id,"source_commit":commit,"population":population,
               "finalOosGate":"CLOSED","train_dates":["2022-01-01","2023-12-31"],
               "source_files":source_hashes,
               "selected_provider_files":{p.name:file_sha256(p) for p in paths.values()},
               "selection_plan_sha256":hashlib.sha256(json_bytes(rebased_plan)).hexdigest()}
     output.parent.mkdir(parents=True,exist_ok=True)
-    with tarfile.open(output,mode="w:gz") as t:
+    temporary=output.with_name(output.name+".partial")
+    if temporary.exists(): raise ValueError("SPOT_ARCHIVE_PARTIAL_ALREADY_EXISTS")
+    with tarfile.open(temporary,mode="x:gz") as t:
         for f in source_files:
             t.add(f,arcname="bundle/source/"+str(f.relative_to(repo)),recursive=False)
         for f in paths.values():
@@ -130,6 +147,15 @@ def build(*, repo, selection_plan, job_id, population, output):
         ):
             info=tarfile.TarInfo(archive_name);info.size=len(byte_content);info.mode=0o600;info.mtime=0
             t.addfile(info,io.BytesIO(byte_content))
+    # Detect a collector or source editor changing a file during archive creation.
+    for f in source_files:
+        if file_sha256(f)!=source_hashes[str(f.relative_to(repo))]:
+            raise ValueError("SPOT_SOURCE_CHANGED_DURING_PACKAGING")
+    for f in paths.values():
+        if file_sha256(f)!=payload["data/"+f.name]:
+            raise ValueError("SPOT_DATA_CHANGED_DURING_PACKAGING")
+    os.link(temporary,output)  # fail if another creator already owns destination
+    temporary.unlink()
     return {"archive":str(output),"bytes":output.stat().st_size,
             "sha256":file_sha256(output),"source_commit":commit,
             "population":population,"provider_files":len(paths),
