@@ -577,6 +577,9 @@ def spot_console(parts):
         raise ValueError("V083_SPOT_SOURCE_REVISION_MISMATCH")
     if settings.get("campaign_job") != job.name:
         raise ValueError("V083_SPOT_CAMPAIGN_JOB_MISMATCH")
+    evidence=_read(job/"source_plan.json")
+    if evidence.get("sourceCommit")!=proof.get("commit"):
+        raise ValueError("V083_SPOT_OLD_CAMPAIGN_SOURCE_REJECTED_NEW_JOB_REQUIRED")
     _verified_run(job,"smoke")
     return 0,json.dumps(spot.launch(settings,approval=True),ensure_ascii=False)
 
