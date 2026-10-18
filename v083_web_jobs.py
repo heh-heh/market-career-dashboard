@@ -529,9 +529,50 @@ def download():
     return p
 
 
+def spot_console(parts):
+    """Admin-authenticated, dedicated Spot controls. Never auto-launch on read."""
+    from research.spot import v083_spot_lifecycle as spot
+    config = spot.DEFAULT_CONFIG
+    if parts == ["v083", "spot", "plan"]:
+        if not config.is_file():
+            return 0,json.dumps({"configured":False,"mode":"TRAIN_ONLY","enabled":False,
+                "reason":"SPOT_NOT_CONFIGURED","finalOosGate":"CLOSED"},ensure_ascii=False)
+        settings=spot.load_config(config)
+        return 0,json.dumps({"configured":True,"enabled":True,"mode":"TRAIN_ONLY",
+                            **spot.display_plan(settings)},ensure_ascii=False)
+    if parts not in (["v083","spot","status"],["v083","spot","train","APPROVE-8H-SPOT"],
+                     ["v083","spot","stop","CONFIRM"]):
+        raise ValueError("V083_SPOT_COMMAND_NOT_ALLOWED")
+    settings=spot.load_config(config)
+    if parts[2]=="status":
+        return 0,json.dumps(spot.status(settings),ensure_ascii=False)
+    if parts[2]=="stop":
+        return 0,json.dumps(spot.terminate(settings,approval=True),ensure_ascii=False)
+    # Separate remote worker re-calibrates on its own host; local 2-vCPU
+    # certificates must never be reused to certify a Spot instance.
+    _storage()
+    legacy._check_service_lifetime()
+    _other_active()
+    _verify_source()
+    job=_job()
+    if job is None or settings["population"] != _population(job):
+        raise ValueError("V083_SPOT_CAMPAIGN_OR_POPULATION_MISMATCH")
+    if any(_state(job,stage)["phase"] in ("starting","running") for stage in STAGES):
+        raise ValueError("V083_SPOT_LOCAL_WORKER_BUSY")
+    proof=_read(ROOT/"source_revision.json")
+    if settings["source_commit"] != proof.get("commit"):
+        raise ValueError("V083_SPOT_SOURCE_REVISION_MISMATCH")
+    if settings.get("campaign_job") != job.name:
+        raise ValueError("V083_SPOT_CAMPAIGN_JOB_MISMATCH")
+    _verified_run(job,"smoke")
+    return 0,json.dumps(spot.launch(settings,approval=True),ensure_ascii=False)
+
+
 def console(parts):
+    if len(parts)>=3 and parts[:2]==["v083","spot"]:
+        return spot_console(parts)
     if parts in (["v083"], ["v083", "help"]):
-        return 0, "v083 smoke [2..50] | new [2..50] | calibrate | train | holdout | validation | export | status | log | report | retry <stage>. Current campaign population is immutable. 2026 OOS CLOSED."
+        return 0, "v083 smoke [2..50] | new [2..50] | calibrate | train | holdout | validation | export | status | log | report | retry <stage> | spot plan/status/train APPROVE-8H-SPOT/stop CONFIRM. Current campaign population is immutable. 2026 OOS CLOSED."
     if len(parts) in (2,3) and parts[:2] == ["v083", "new"]:
         if len(parts)==3 and not re.fullmatch(r"[0-9]{1,2}",parts[2]): raise ValueError("V083_INVALID_POPULATION")
         return 0,start("smoke",new_job=True,population=_validate_population(int(parts[2]) if len(parts)==3 else 50))
