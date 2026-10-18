@@ -531,7 +531,20 @@ def download():
 
 def spot_console(parts):
     """Admin-authenticated, dedicated Spot controls. Never auto-launch on read."""
-    from research.spot import v083_spot_lifecycle as spot
+    # Controller overlay may run in the persistent server worktree while the
+    # approved research source lives in a separate pinned EBS checkout.
+    try:
+        from research.spot import v083_spot_lifecycle as spot
+    except ModuleNotFoundError:
+        import importlib.util
+        module_path=_source_app()/"research/spot/v083_spot_lifecycle.py"
+        if not module_path.is_file() or module_path.is_symlink():
+            raise ValueError("SPOT_PINNED_CONTROL_MODULE_MISSING")
+        spec=importlib.util.spec_from_file_location("v083_spot_pinned",module_path)
+        if spec is None or spec.loader is None:
+            raise ValueError("SPOT_CONTROL_MODULE_LOAD_FAILED")
+        spot=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(spot)
     config = spot.DEFAULT_CONFIG
     if parts == ["v083", "spot", "plan"]:
         if not config.is_file():
