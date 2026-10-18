@@ -32,6 +32,8 @@ REGION = "ap-northeast-1"
 APPROVED_PLANNING_USD_HOUR = 0.25
 APPROVED_MAX_SPOT_BID_USD_HOUR = 0.20
 ALLOWED_TYPES = {
+    # AWS Free plan can launch this type; only 2 vCPU, so calibrate before TRAIN.
+    "m7i-flex.large": 2,
     "c6i.2xlarge": 8,
     "c7i.2xlarge": 8,
     "m7i.2xlarge": 8,
