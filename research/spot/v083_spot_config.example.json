@@ -1,7 +1,7 @@
 {
   "enabled": false,
   "region": "ap-northeast-1",
-  "instance_type": "c6i.2xlarge",
+  "instance_type": "m7i-flex.large",
   "ami_id": "ami-REPLACE_WITH_AUDITED_X86_64_AMI",
   "subnet_id": "subnet-REPLACE",
   "security_group_id": "sg-REPLACE",
@@ -15,8 +15,8 @@
   "job_id": "v083-0123456789abcdef",
   "population": 10,
   "max_hours": 8,
-  "max_spot_price_usd_hour": 0.2,
-  "max_compute_usd": 1.6,
+  "max_spot_price_usd_hour": 0.08,
+  "max_compute_usd": 0.64,
   "final_oos_gate": "CLOSED",
   "max_total_usd": 2,
   "cost_estimate": {
