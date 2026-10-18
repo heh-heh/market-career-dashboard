@@ -45,7 +45,8 @@ function render(d){
   const processed=numeric(run.completedSessions),requested=numeric(run.requestedSessions);
   const latest=gens.length?gens[gens.length-1]:null;
   const cells=[["현재 단계",stageName,"실행: "+(activeStage?.[1]?.phase||lastStage?.[1]?.phase||"대기")],
-    ["진행 거래일",processed==null?"—":processed+" / "+(requested??"?"),"서버 보고 기준"],
+    ["진행 거래일",processed==null?"—":processed+" / "+(requested??"?"),"현재 역사적 날짜의 진행도 · 재시작 시 다시 1일부터"],
+    ["실제 처리 거래일",number(run.totalProcessedSessions),"최초 날짜 재탐색으로 다시 처리한 거래일 포함"],
     ["완료 세대",number(run.completedTrainGenerations),"연속 유효 5거래일"],
     ["선발 부모",number(latest?.parents),"항상 상위 2개 · 유효 5거래일"],
     ["수익 봇 비율",latest?pct(latest.profitableBotRatio):"—","최신 5거래일 평가 창"],
@@ -90,6 +91,22 @@ function render(d){
       "\n산정 상태: "+decision+
       "\n허용 CPU 75% / RAM 65% / Swap 3% — 기준을 완화하지 않았습니다."+
       "\n실패한 자원 산정만 재실행할 수 있으며, 실행 전 서버 부하를 확인하세요. 기존 결과는 보존됩니다.");
+  }
+  // V083_RUN_EXIT_2 is a wrapper from the worker. The research run's
+  // recorded error explains whether the guard or the restart policy stopped it.
+  if(stages.train?.phase==="failed"||stages.train?.phase==="interrupted"){
+    const failed=runs.train||{}, reason=String(failed.error||stages.train.error||"상세 원인 미확인");
+    const cpu=numeric(failed.resourceReport?.peak?.cpuPct);
+    const observedCpu=cpu==null?"CPU 최고값 확인 불가":"학습 CPU 최고 "+cpu.toFixed(1)+"% / 제한 75%";
+    if(reason.includes("V083_RESTART_LIMIT_REACHED")){
+      write("v083WebFeedback","학습 중단: 수익 봇이 없는 5거래일 평가 구간이 반복되어 최초 날짜 재시작 한도에 도달했습니다."+
+        "\\n재시작 "+number(failed.restarts)+" / "+number(failed.restartLimit??2)+"회 · 실제 처리 "+number(failed.totalProcessedSessions)+"거래일 · 완료 "+number(failed.completedTrainGenerations)+"세대."+
+        "\\n"+observedCpu+" · 이번 중단 원인은 CPU 초과가 아닙니다."+
+        "\\n기존 체크포인트와 평가 기록은 보존됐습니다. 반복 학습을 자동 실행하지 않으며 진화 정책을 검토해야 합니다.");
+    }else{
+      write("v083WebFeedback","V0.8.3 학습 중단 · "+reason+"\\n"+observedCpu+
+        "\\n출구 코드 "+String(stages.train.error||"없음")+" · 체크포인트/기록은 보존됩니다. 상세 로그에서 원인을 확인하세요.");
+    }
   }
   const analysis=run.indicatorAnalysis||{};
   const items=Object.values(analysis);
