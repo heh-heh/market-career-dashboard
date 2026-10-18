@@ -96,7 +96,8 @@ class SpotLifecycleTests(unittest.TestCase):
         ec2.run_instances.return_value={"Instances":[{"InstanceId":"i-0123456789abcdef0"}]}
         s3.head_object.return_value={"Metadata":{"sha256":"a"*64,"source-commit":"b"*40},
                                      "ContentLength":12000}
-        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES","V083_SPOT_REAPER_READY":"YES"}):
+        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES","V083_SPOT_REAPER_READY":"YES"}), \
+             patch.object(spot.subprocess,"run",return_value=type("R",(),{"returncode":0})()):
             result=spot.launch(cfg,ec2=ec2,s3=s3,approval=True)
         self.assertEqual(result["status"],"REQUESTED_ONE_TIME_SPOT")
         params=ec2.run_instances.call_args.kwargs
@@ -121,7 +122,8 @@ class SpotLifecycleTests(unittest.TestCase):
         s3=MagicMock()
         ec2.describe_instances.return_value={"Reservations":[{"Instances":[{"InstanceId":"i-x",
                                          "State":{"Name":"running"}}]}]}
-        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES"}):
+        with patch.dict("os.environ",{"V083_SPOT_LAUNCH_ENABLED":"YES","V083_SPOT_REAPER_READY":"YES"}), \
+             patch.object(spot.subprocess,"run",return_value=type("R",(),{"returncode":0})()):
             with self.assertRaisesRegex(ValueError,"DUPLICATE"):
                 spot.launch(cfg,ec2=ec2,s3=s3,approval=True)
             ec2.describe_instances.return_value={"Reservations":[]}
