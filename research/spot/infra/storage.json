@@ -1,0 +1,104 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "REVIEW ONLY — V083 private, versioned research checkpoint bucket. This template is NOT deployed or automatically applied.",
+  "Parameters": {
+    "ResearchBucketName": {
+      "Type": "String",
+      "Description": "Globally unique lowercase S3 name, selected and reviewed before any billable deployment",
+      "MinLength": 3,
+      "MaxLength": 63,
+      "AllowedPattern": "[a-z0-9][a-z0-9.-]*[a-z0-9]"
+    }
+  },
+  "Resources": {
+    "ResearchBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketName": {
+          "Ref": "ResearchBucketName"
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "V083-Research-Only"
+          },
+          {
+            "Key": "OOS",
+            "Value": "CLOSED"
+          },
+          {
+            "Key": "AutoProvision",
+            "Value": "DISABLED"
+          }
+        ]
+      }
+    },
+    "TLSOnlyBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ResearchBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyInsecureTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::${ResearchBucketName}"
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:s3:::${ResearchBucketName}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ResearchBucketName": {
+      "Description": "Use as Bucket input to separate, job-scoped worker role template, after human authorization",
+      "Value": {
+        "Ref": "ResearchBucket"
+      }
+    }
+  }
+}
