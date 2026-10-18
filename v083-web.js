@@ -100,12 +100,12 @@ function render(d){
     const observedCpu=cpu==null?"CPU 최고값 확인 불가":"학습 CPU 최고 "+cpu.toFixed(1)+"% / 제한 75%";
     if(reason.includes("V083_RESTART_LIMIT_REACHED")){
       write("v083WebFeedback","학습 중단: 수익 봇이 없는 5거래일 평가 구간이 반복되어 최초 날짜 재시작 한도에 도달했습니다."+
-        "\\n재시작 "+number(failed.restarts)+" / "+number(failed.restartLimit??2)+"회 · 실제 처리 "+number(failed.totalProcessedSessions)+"거래일 · 완료 "+number(failed.completedTrainGenerations)+"세대."+
-        "\\n"+observedCpu+" · 이번 중단 원인은 CPU 초과가 아닙니다."+
-        "\\n기존 체크포인트와 평가 기록은 보존됐습니다. 반복 학습을 자동 실행하지 않으며 진화 정책을 검토해야 합니다.");
+        "\n재시작 "+number(failed.restarts)+" / "+number(failed.restartLimit??2)+"회 · 실제 처리 "+number(failed.totalProcessedSessions)+"거래일 · 완료 "+number(failed.completedTrainGenerations)+"세대."+
+        "\n"+observedCpu+" · 이번 중단 원인은 CPU 초과가 아닙니다."+
+        "\n기존 체크포인트와 평가 기록은 보존됐습니다. 반복 학습을 자동 실행하지 않으며 진화 정책을 검토해야 합니다.");
     }else{
-      write("v083WebFeedback","V0.8.3 학습 중단 · "+reason+"\\n"+observedCpu+
-        "\\n출구 코드 "+String(stages.train.error||"없음")+" · 체크포인트/기록은 보존됩니다. 상세 로그에서 원인을 확인하세요.");
+      write("v083WebFeedback","V0.8.3 학습 중단 · "+reason+"\n"+observedCpu+
+        "\n출구 코드 "+String(stages.train.error||"없음")+" · 체크포인트/기록은 보존됩니다. 상세 로그에서 원인을 확인하세요.");
     }
   }
   const analysis=run.indicatorAnalysis||{};
