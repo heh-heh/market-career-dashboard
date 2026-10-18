@@ -172,7 +172,7 @@ class SpotLifecycleTests(unittest.TestCase):
         self.assertIn("--version-id reviewedversion01",user_data)
         self.assertIn("sha256sum -c -",user_data)
         self.assertIn("SPOT_UNSAFE_ARCHIVE",user_data)
-        self.assertIn("max",str(spot.ALLOWED_TYPES))
+        self.assertEqual(spot.ALLOWED_TYPES["c6i.2xlarge"],8)
         self.assertNotIn("run_instances",user_data)
 
 
