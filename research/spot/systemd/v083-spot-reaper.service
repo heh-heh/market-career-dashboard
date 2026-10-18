@@ -1,0 +1,19 @@
+[Unit]
+Description=Terminate expired V0.8.3 one-time Spot training workers (no launch)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+Environment=V083_SPOT_REAPER_ENABLED=YES
+ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python /home/ubuntu/market-career-dashboard/research/spot/v083_spot_lifecycle.py reap --config /mnt/research/spot-control/v083-spot-config.json
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=read-only
+ProtectSystem=strict
+ReadOnlyPaths=/mnt/research/spot-control
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=90
