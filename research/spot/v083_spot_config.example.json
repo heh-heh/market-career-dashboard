@@ -1,0 +1,21 @@
+{
+  "enabled": false,
+  "region": "ap-northeast-1",
+  "instance_type": "c6i.2xlarge",
+  "ami_id": "ami-REPLACE_WITH_AUDITED_X86_64_AMI",
+  "subnet_id": "subnet-REPLACE",
+  "security_group_id": "sg-REPLACE",
+  "instance_profile_arn": "arn:aws:iam::ACCOUNT_ID:instance-profile/V083SpotTrainOnly",
+  "bucket": "REPLACE-with-private-versioned-bucket",
+  "bundle_key": "v083/bundles/REVIEWED-TAR.tar.gz",
+  "bundle_sha256": "REPLACE_SHA256",
+  "bundle_version_id": "REPLACE_IMMUTABLE_VERSION_ID",
+  "source_commit": "REPLACE_40_CHAR_GIT_COMMIT",
+  "campaign_job": "job-20261018T120000Z-0123456789ab",
+  "job_id": "v083-0123456789abcdef",
+  "population": 10,
+  "max_hours": 8,
+  "max_spot_price_usd_hour": 0.25,
+  "max_compute_usd": 2,
+  "final_oos_gate": "CLOSED"
+}
