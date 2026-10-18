@@ -15,16 +15,16 @@
   "job_id": "v083-0123456789abcdef",
   "population": 10,
   "max_hours": 8,
-  "max_spot_price_usd_hour": 0.25,
-  "max_compute_usd": 2,
+  "max_spot_price_usd_hour": 0.2,
+  "max_compute_usd": 1.6,
   "final_oos_gate": "CLOSED",
-  "max_total_usd": 3,
+  "max_total_usd": 2,
   "cost_estimate": {
-    "ebs_usd": 0.1,
-    "s3_usd": 0.1,
+    "ebs_usd": 0.12,
+    "s3_usd": 0.08,
     "network_usd": 0.1,
-    "ipv4_usd": 0.1,
-    "other_usd": 0.1
+    "ipv4_usd": 0.04,
+    "other_usd": 0.06
   },
   "security_review": {
     "iam_policy_sha256": "REPLACE_REVIEWED_INLINE_POLICY_SHA256",
