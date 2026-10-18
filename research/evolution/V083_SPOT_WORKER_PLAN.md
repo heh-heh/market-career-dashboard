@@ -15,6 +15,7 @@ Keep the existing `t8i.small` control/web/data host running as-is, and allow a *
 - Existing EC2 `t8i.small`, `ap-northeast-1a`, state `running`, instance profile attached.
 - Three attached gp3 EBS volumes: root **60 GiB**, other **256 GiB**, other **2,048 GiB**. Root and 2,048-GiB disk are not marked encrypted; 256 GiB disk is encrypted. This is existing configuration only; this project will not alter it.
 - **Do not create or snapshot a second 2-TiB EBS** merely to provide the worker with source data. gp3 at an indicative Tokyo $0.096/GiB-month would be ~**$196.61/month** for a full 2,048-GiB duplicate, without snapshot overhead.
+- **AWS Service Quotas check (read-only):** Tokyo Standard Spot request quota **32 vCPUs** (`L-34B43A08`) as of 2026-10-18; enough quota headroom for one 8- or 16-vCPU target when no other Spot requests are in use, but **not** a promise of Spot capacity or automatic launch permission. No quota increase was requested.
 - V0.8.3 operator range **2–50 bots** and exactly **2 genetic parents**. The latest engine advances forward even through zero-profit generations. Existing 45-bot failed job and checkpoint must not be silently resumed under changed evolution semantics.
 - Engine uses Python minute/day-based research simulation and host CPU/RAM/swap guard, not a GPU-trained giant neural network. **More vCPUs alone do not ensure proportional speedup.** First measure 8-vCPU utilization and per-day wall time; parallelism requires an independent deterministic refactor.
 
