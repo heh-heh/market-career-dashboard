@@ -182,6 +182,8 @@ def launch(cfg, *, ec2=None, s3=None, approval=False):
         raise ValueError("SPOT_EXPLICIT_LAUNCH_APPROVAL_REQUIRED")
     if os.environ.get("V083_SPOT_LAUNCH_ENABLED") != "YES":
         raise ValueError("SPOT_OPERATOR_ENABLE_SWITCH_REQUIRED")
+    if os.environ.get("V083_SPOT_REAPER_READY") != "YES":
+        raise ValueError("SPOT_INDEPENDENT_TTL_REAPER_REQUIRED")
     ec2 = _api(ec2)
     s3 = _api(s3, "s3")
     current = matching_instances(ec2, cfg)
@@ -251,9 +253,40 @@ def terminate(cfg, *, ec2=None, approval=False):
     return {"terminated": ids}
 
 
+def reap(cfg, *, ec2=None, current_time=None):
+    """Independently scheduled 5-minute TTL termination. No launch capability.
+
+    Must be installed as a separate systemd timer or cron on the existing host.
+    Reads only tagged instances for the fixed job ID in the private config.
+    """
+    if os.environ.get("V083_SPOT_REAPER_ENABLED") != "YES":
+        raise ValueError("SPOT_REAPER_SWITCH_REQUIRED")
+    client = _api(ec2)
+    current_time = current_time or datetime.now(timezone.utc)
+    expired = []
+    for i in matching_instances(client, cfg):
+        if i["State"]["Name"] not in ("pending", "running", "stopping"):
+            continue
+        tags = {t["Key"]: t["Value"] for t in i.get("Tags", [])}
+        if tags.get("V083ResearchJob") != cfg["job_id"]:
+            continue
+        try:
+            deadline = datetime.fromisoformat(tags["TTL_UTC"])
+        except (ValueError, KeyError):
+            # Fail closed on a tag that has been removed or corrupted:
+            # instances without a valid budget clock require intervention.
+            expired.append(i["InstanceId"])
+            continue
+        if deadline.tzinfo is None or deadline <= current_time:
+            expired.append(i["InstanceId"])
+    if expired:
+        client.terminate_instances(InstanceIds=expired)
+    return {"expired_terminated": expired, "checked_at": current_time.isoformat()}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("command", choices=("plan", "status", "launch", "stop"))
+    p.add_argument("command", choices=("plan", "status", "launch", "stop", "reap"))
     p.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     p.add_argument("--approve-launch", action="store_true")
     p.add_argument("--approve-stop", action="store_true")
@@ -263,7 +296,8 @@ def main(argv=None):
         if a.command == "plan": result = display_plan(cfg)
         elif a.command == "status": result = status(cfg)
         elif a.command == "launch": result = launch(cfg, approval=a.approve_launch)
-        else: result = terminate(cfg, approval=a.approve_stop)
+        elif a.command == "stop": result = terminate(cfg, approval=a.approve_stop)
+        else: result = reap(cfg)
         print(json.dumps(result, indent=2, ensure_ascii=False))
     except (ValueError, OSError, KeyError, RuntimeError) as error:
         p.exit(2, "SPOT BLOCKED: " + str(error) + "\n")
