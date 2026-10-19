@@ -68,6 +68,14 @@ def _campaign_guard(cfg):
     # may be the reason the operator selected Spot in the first place.
     # Never fabricate a completed smoke; independently reverify frozen
     # selection/audit/provider bytes and the pinned job/source above.
+    # The API runs in APP, while the locked research tree is an independent
+    # source worktree. Resolve audit modules only from that already pinned tree.
+    import research
+    source_research = jobs._source_app() / 'research'
+    if not source_research.is_dir() or source_research.is_symlink():
+        raise ValueError('V083_SPOT_PINNED_AUDIT_SOURCE_MISSING')
+    if str(source_research) not in research.__path__:
+        research.__path__.append(str(source_research))
     from research.evolution.available_data import verify_plan
     audited, files = verify_plan(jobs._plan())
     if audited.get('finalOosGate') != 'CLOSED' or not files:
