@@ -14,6 +14,9 @@ import v083_spot_control as control
 from research.test_v083_spot_lifecycle import sample
 
 
+REAL_CAMPAIGN_GUARD = control._campaign_guard
+
+
 class ControlTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
@@ -42,9 +45,10 @@ class ControlTests(unittest.TestCase):
              patch.object(jobs,"_state",return_value={"phase":"failed"}), \
              patch.object(jobs,"_read",side_effect=evidence), \
              patch.object(jobs,"_plan",return_value=Path(self.temp.name)/"plan.json"), \
+             patch.object(jobs,"_source_app",return_value=Path(__file__).resolve().parents[1]), \
              patch.object(jobs,"_verified_run",side_effect=AssertionError("local smoke must not gate Spot")), \
              patch.object(available_data,"verify_plan",return_value=({"finalOosGate":"CLOSED"},{"AAPL":object()})):
-            control._campaign_guard(cfg)
+            REAL_CAMPAIGN_GUARD(cfg)
         with patch.object(jobs,"_storage"),patch.object(jobs,"_other_active"),patch.object(jobs,"_verify_source"), \
              patch.object(jobs,"_job",return_value=Path(self.temp.name)/cfg["campaign_job"]), \
              patch.object(jobs,"_population",return_value=cfg["population"]), \
@@ -53,7 +57,7 @@ class ControlTests(unittest.TestCase):
              patch.object(jobs,"_plan",return_value=Path(self.temp.name)/"plan.json"), \
              patch.object(available_data,"verify_plan",return_value=({"finalOosGate":"OPEN"},{})):
             with self.assertRaisesRegex(ValueError,"AUDITED_SELECTION_REQUIRED"):
-                control._campaign_guard(cfg)
+                REAL_CAMPAIGN_GUARD(cfg)
 
     def test_plan_and_prepare_never_contact_aws(self):
         with patch.object(control.lifecycle,'_api',side_effect=AssertionError('no AWS')):
