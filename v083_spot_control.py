@@ -76,6 +76,12 @@ def _campaign_guard(cfg):
         raise ValueError('V083_SPOT_PINNED_AUDIT_SOURCE_MISSING')
     if str(source_research) not in research.__path__:
         research.__path__.append(str(source_research))
+    from research import evolution
+    source_evolution = source_research / 'evolution'
+    if not source_evolution.is_dir() or source_evolution.is_symlink():
+        raise ValueError('V083_SPOT_PINNED_EVOLUTION_SOURCE_MISSING')
+    if str(source_evolution) not in evolution.__path__:
+        evolution.__path__.append(str(source_evolution))
     from research.evolution.available_data import verify_plan
     audited, files = verify_plan(jobs._plan())
     if audited.get('finalOosGate') != 'CLOSED' or not files:
