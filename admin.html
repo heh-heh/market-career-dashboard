@@ -177,6 +177,22 @@
   </section>
 
   <section id="ai" class="panel">
+    <div class="card" id="spotBridgePanel">
+      <div class="label">V0.8.3 연구 전용 AWS Spot · 학습할 때만 자동 생성</div>
+      <div class="mini">기존 EC2·실거래와 완전히 분리됩니다. Free 플랜에서 지원되는 2 vCPU / 8 GiB Spot을 사용하며, 시간당 $0.25는 예상 총비용 목표(실제 AWS 청구 하드캡 아님)입니다.</div>
+      <div class="grid" style="margin-top:12px">
+        <label class="mini">봇 수 (현재 캠페인과 같아야 함)<input id="spotBridgeBots" type="number" min="2" max="50" step="1" value="10"></label>
+        <label class="mini">최대 실행시간 (시간)<input id="spotBridgeHours" type="number" min="0.5" max="8" step="0.5" value="8"></label>
+      </div>
+      <div class="signal" id="spotBridgeStatus" role="status" aria-live="polite" style="margin-top:10px">서버 Spot 설정을 확인하세요. 미준비 상태에서는 학습이 시작되지 않습니다.</div>
+      <div id="spotBridgeCost" class="mini" style="margin-top:8px">비용 검토 전 · 실제 서버 생성 없음</div>
+      <div class="actions">
+        <button class="primary" id="spotBridgeStart" disabled>학습 시작 · Spot 자동 연결</button>
+        <button id="spotBridgeRefresh">Spot 상태 확인</button>
+        <button id="spotBridgeStop" class="danger" disabled>Spot 학습 중지</button>
+      </div>
+      <div class="mini" style="margin-top:8px">학습 시작을 누르면 계획 검증 뒤 요금 승인과 서버 생성 승인을 각각 확인합니다. 작업 완료 또는 실패 시 서버가 종료되며, 결과는 전용 S3 체크포인트로 보관됩니다.</div>
+    </div>
     <div class="section-title">Autonomous AI Research</div>
     <div class="section-subtitle">RESEARCH ONLY · 2026 Final OOS 자동 접근 차단 · 실거래 주문 없음</div>
     <div class="card">
@@ -978,6 +994,87 @@ document.getElementById("gitMergeRefBtn").onclick=()=>{
   if(!confirm(ref+" 를 현재 브랜치에 merge할까요?"))return;
   gitAction("merge-ref",ref);
 };
+
+
+/* Research-only V083 Spot bridge. No allocation from polling or page loading. */
+let spotBridgeSnapshot=null,spotBridgeBusy=false;
+const spotBridgeId=id=>document.getElementById(id);
+function spotBridgeRender(d){
+ spotBridgeSnapshot=d;
+ const phase=d.request?.phase||"대기";
+ const blockers=Array.isArray(d.blockedReasons)?d.blockedReasons:[];
+ const instances=Array.isArray(d.instances)?d.instances.map(x=>x.id+" "+x.state).join(" / "):"";
+ spotBridgeId("spotBridgeStatus").textContent="Spot "+(d.configured?(d.runnable?"사용 준비됨":"안전 점검 차단"):"미설정")+" · "+phase+
+  (instances?" · "+instances:"")+(blockers.length?" · "+blockers.join(" / "):"");
+ const c=d.request?.costBreakdown||d.costBreakdown;
+ spotBridgeId("spotBridgeCost").textContent=c?
+  "검토된 총 예상비용 $"+c.estimated_total_usd+" / 승인 예산 $"+c.budget_usd+
+  " (EC2 $"+c.compute_usd+", EBS $"+c.ebs_usd+", S3 $"+c.s3_usd+", 네트워크 $"+c.network_usd+
+  ", IPv4 $"+c.ipv4_usd+", 기타 $"+c.other_usd+"). 실제 청구액 상한은 아닙니다.":
+  "비용 추정 미검토 · 실제 시작 불가";
+ if(Number.isInteger(d.population)&&d.population>=2&&d.population<=50&&!spotBridgeId("spotBridgeBots").dataset.edited)
+  spotBridgeId("spotBridgeBots").value=String(d.population);
+ const active=["STARTING","REQUESTED_ONE_TIME_SPOT","CREATE_UNKNOWN","RUNNING","STOP_REQUESTED"].includes(phase);
+ spotBridgeId("spotBridgeStart").disabled=spotBridgeBusy||!d.runnable||active;
+ spotBridgeId("spotBridgeStop").disabled=spotBridgeBusy||!active;
+}
+async function spotBridgeRefresh(){
+ if(spotBridgeBusy||!token())return;
+ try{
+  const d=await req("/api/research/v083/spot/status");
+  if(d.protocol!=="V083_SPOT_CONTROL_2")throw Error("Spot 백엔드 버전이 올바르지 않습니다");
+  spotBridgeRender(d);
+  const remote=d.remote?.data||{};
+  if(remote.training){
+   spotBridgeId("spotBridgeStatus").textContent+=" · 완료 "+String(remote.training.completedTrainGenerations??0)+"세대";
+  }
+ }catch(e){
+  spotBridgeSnapshot=null;spotBridgeId("spotBridgeStart").disabled=true;spotBridgeId("spotBridgeStop").disabled=true;
+  spotBridgeId("spotBridgeStatus").textContent="Spot 연동 안 됨: "+e.message;
+ }
+}
+spotBridgeId("spotBridgeBots").addEventListener("input",()=>spotBridgeId("spotBridgeBots").dataset.edited="1");
+spotBridgeId("spotBridgeRefresh").addEventListener("click",spotBridgeRefresh);
+spotBridgeId("spotBridgeStart").addEventListener("click",async()=>{
+ if(spotBridgeBusy)return;
+ const population=Number(spotBridgeId("spotBridgeBots").value),maxHours=Number(spotBridgeId("spotBridgeHours").value);
+ if(!Number.isInteger(population)||population<2||population>50||!Number.isFinite(maxHours)||maxHours<0.5||maxHours>8){
+  spotBridgeId("spotBridgeStatus").textContent="봇은 2~50 정수, 시간은 0.5~8시간으로 입력하세요.";return;
+ }
+ spotBridgeBusy=true;spotBridgeId("spotBridgeStart").disabled=true;
+ try{
+  const state=await req("/api/research/v083/spot/status");
+  if(!state.runnable)throw Error("학습 사전 준비 미완료: "+(state.blockedReasons||[]).join(" / "));
+  const prepared=await req("/api/research/v083/spot/prepare",{method:"POST",body:JSON.stringify({
+   instanceType:"m7i-flex.large",population,maxHours})});
+  const cost=prepared.costBreakdown;
+  if(!cost)throw Error("비용 예상치가 없는 작업은 시작할 수 없습니다");
+  spotBridgeId("spotBridgeCost").textContent="이 작업의 예상 총액 $"+cost.estimated_total_usd+" / 예산 $"+cost.budget_usd;
+  if(!confirm("학습 요금 승인: "+population+"봇 / "+maxHours+"시간 이내 / m7i-flex.large Spot\n"+
+   "예상 총액 $"+cost.estimated_total_usd+" / 예산 $"+cost.budget_usd+"\n"+
+   "시간당 $0.25는 예산 목표일 뿐 AWS 청구 하드캡이 아닙니다. 승인합니까?"))return;
+  const approved=await req("/api/research/v083/spot/approve",{method:"POST",body:JSON.stringify({
+   requestId:prepared.requestId,configHash:prepared.configHash,acknowledgeCost:true,confirmation:"APPROVE_PAID_SPOT"})});
+  if(!confirm("지금 AWS Spot 인스턴스 한 대를 생성해 학습을 시작할까요?\n생성 즉시 AWS 크레딧이 사용되며, 완료·실패 시 종료됩니다."))return;
+  const started=await req("/api/research/v083/spot/start",{method:"POST",body:JSON.stringify({
+   requestId:approved.requestId,confirmation:"CREATE_ONE_PAID_SPOT"})});
+  spotBridgeId("spotBridgeStatus").textContent="Spot 인스턴스 생성 요청됨 · "+started.phase;
+ }catch(e){spotBridgeId("spotBridgeStatus").textContent="Spot 학습 시작 실패/차단: "+e.message}
+ finally{spotBridgeBusy=false;await spotBridgeRefresh()}
+});
+spotBridgeId("spotBridgeStop").addEventListener("click",async()=>{
+ const reqId=spotBridgeSnapshot?.request?.requestId;
+ if(!reqId||!confirm("이 연구 작업의 Spot 인스턴스만 종료합니까?"))return;
+ spotBridgeBusy=true;spotBridgeId("spotBridgeStop").disabled=true;
+ try{await req("/api/research/v083/spot/stop",{method:"POST",body:JSON.stringify({
+  requestId:reqId,confirmation:"STOP_OWN_SPOT"})});}
+ catch(e){spotBridgeId("spotBridgeStatus").textContent="Spot 중지 요청 오류: "+e.message}
+ finally{spotBridgeBusy=false;await spotBridgeRefresh()}
+});
+setInterval(()=>{
+ if(spotBridgeSnapshot?.request&&["STARTING","REQUESTED_ONE_TIME_SPOT","CREATE_UNKNOWN","RUNNING","STOP_REQUESTED"].includes(spotBridgeSnapshot.request.phase))
+  spotBridgeRefresh();
+},15000);
 
 authGate();
 setInterval(()=>{
