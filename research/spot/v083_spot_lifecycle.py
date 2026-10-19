@@ -267,6 +267,15 @@ finish() {{
 trap finish EXIT
 # Set the deadline after installing cleanup, including deadline setup failures.
 shutdown -h +{max(1, int(cfg["max_hours"] * 60))}
+# Official Amazon Linux 2023 x86_64 AMI; installs a bounded isolated runtime.
+# No private AMI or permanent launch server is needed. Any failed command
+# triggers the shutdown trap, not a silent On-Demand fallback.
+command -v aws >/dev/null 2>&1 || timeout 240 dnf -y install awscli-2
+timeout 600 dnf -y install python3.11 python3.11-pip
+python3.11 -m venv /opt/v083/venv
+timeout 720 /opt/v083/venv/bin/python -m pip install --disable-pip-version-check --no-input --no-cache-dir \
+  'boto3>=1.34,<2' 'numpy>=1.26,<3' 'psutil>=5.9,<8' 'exchange_calendars>=4.5,<5'
+/opt/v083/venv/bin/python -c "import boto3,numpy,psutil,exchange_calendars"
 aws s3api get-object --bucket {bucket} --key {bundle} --version-id={version} "$JOB/bundle.tar.gz" --region {REGION} >/dev/null
 echo "{sha}  $JOB/bundle.tar.gz" | sha256sum -c -
 python3 - "$JOB/bundle.tar.gz" "$JOB" <<'PY_SAFE_ARCHIVE'
