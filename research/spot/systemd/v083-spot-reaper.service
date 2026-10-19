@@ -8,7 +8,7 @@ Type=oneshot
 User=ubuntu
 Group=ubuntu
 Environment=V083_SPOT_REAPER_ENABLED=YES
-ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python /mnt/research/v083-source/research/spot/v083_spot_lifecycle.py reap --config /mnt/research/spot-control/v083-spot-config.json
+ExecStart=/home/ubuntu/market-career-dashboard/.venv/bin/python /home/ubuntu/market-career-dashboard/research/spot/v083_spot_lifecycle.py reap --config /mnt/research/spot-control/v083-spot-config.json
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=read-only
