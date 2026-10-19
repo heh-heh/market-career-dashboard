@@ -63,7 +63,16 @@ def _campaign_guard(cfg):
     proof=jobs._read(jobs.ROOT/'source_revision.json');evidence=jobs._read(job/'source_plan.json')
     if cfg['source_commit']!=proof.get('commit') or evidence.get('sourceCommit')!=cfg['source_commit']:
         raise ValueError('V083_SPOT_SOURCE_REVISION_MISMATCH')
-    jobs._verified_run(job,'smoke')
+    # Spot TRAIN runs its own repeated capacity checks on its own instance.
+    # A successful LOCAL smoke is not a dependency: a local CPU/RAM guard
+    # may be the reason the operator selected Spot in the first place.
+    # Never fabricate a completed smoke; independently reverify frozen
+    # selection/audit/provider bytes and the pinned job/source above.
+    from research.evolution.available_data import verify_plan
+    audited, files = verify_plan(jobs._plan())
+    if audited.get('finalOosGate') != 'CLOSED' or not files:
+        raise ValueError('V083_SPOT_AUDITED_SELECTION_REQUIRED')
+
 
 
 def _local_blockers(cfg):
