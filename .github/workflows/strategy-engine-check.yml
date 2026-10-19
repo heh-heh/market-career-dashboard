@@ -81,7 +81,7 @@ jobs:
         with:
           python-version: "3.x"
       - name: Install research dependencies
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt -r research/spot/requirements.txt
       - name: Compile strategy sources
         run: |
           python -m py_compile research_collection_scheduler.py scripts/collect_research_1m.py research/collection_download.py toss_token_broker.py toss_rate_limit.py

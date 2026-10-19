@@ -38,7 +38,7 @@
     "S3 monitoring request-cost opt-in",
     "required worker version-read permissions checked before allocation"
   ],
-  "remoteCi": "See final PR check for this commit; do not infer remote success from local tests.",
+  "remoteCi": "Initial PR run 39205629600 failed two tests because CI omitted the optional Spot SDK dependencies (botocore). CI now installs the existing research/spot/requirements.txt; no tests skipped. See latest PR check for final result.",
   "remaining": [
     "obtain real console/cloud-init/exit-code evidence",
     "review and deploy code without overwriting operating modifications",
