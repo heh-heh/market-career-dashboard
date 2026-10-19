@@ -55,6 +55,7 @@ class ControlTests(unittest.TestCase):
              patch.object(jobs,"_state",return_value={"phase":"failed"}), \
              patch.object(jobs,"_read",side_effect=evidence), \
              patch.object(jobs,"_plan",return_value=Path(self.temp.name)/"plan.json"), \
+             patch.object(jobs,"_source_app",return_value=Path(__file__).resolve().parents[1]), \
              patch.object(available_data,"verify_plan",return_value=({"finalOosGate":"OPEN"},{})):
             with self.assertRaisesRegex(ValueError,"AUDITED_SELECTION_REQUIRED"):
                 REAL_CAMPAIGN_GUARD(cfg)
