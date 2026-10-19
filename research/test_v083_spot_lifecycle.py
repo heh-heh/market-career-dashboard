@@ -176,6 +176,8 @@ class SpotLifecycleTests(unittest.TestCase):
         user_data=spot.make_user_data(cfg)
         self.assertIn("--version-id=reviewedversion01",user_data)
         self.assertIn("sha256sum -c -",user_data)
+        self.assertIn("python3.11 -m venv /opt/v083/venv",user_data)
+        self.assertIn("timeout 720 /opt/v083/venv/bin/python -m pip install",user_data)
         self.assertIn("SPOT_UNSAFE_ARCHIVE",user_data)
         self.assertEqual(spot.ALLOWED_TYPES["c6i.2xlarge"],8)
         self.assertNotIn("run_instances",user_data)
