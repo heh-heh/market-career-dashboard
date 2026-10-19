@@ -40,7 +40,7 @@ class SpotSafetyTests(unittest.TestCase):
     def test_cost_breakdown_includes_noncompute_and_is_not_invoice_cap(self):
         self.assertFalse(spot.cost_breakdown(self.cfg)["hard_invoice_cap"])
         with self.assertRaisesRegex(ValueError,"OVER_BUDGET"):
-            spot.issue_approval({**self.cfg,"max_total_usd":2.1})
+            spot.issue_approval({**self.cfg,"max_total_usd":1.9})
         with self.assertRaisesRegex(ValueError,"ADDITIONAL_COST"):
             spot.issue_approval({**self.cfg,"cost_estimate":{}})
 

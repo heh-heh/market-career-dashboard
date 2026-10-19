@@ -206,6 +206,31 @@ async function spotAction(verb){
  }catch(e){write("v083SpotStatus","Spot 요청 차단/실패: "+e.message)}
  finally{spotBusy=false;spotButtons();await spotInspect()}
 }
+async function spotStartOneClick(){
+ if(spotBusy||busy)return;
+ spotBusy=true;spotButtons();
+ try{
+  const previous=await spotApi("status");
+  renderSpot(previous);
+  if(!previous.configured||!previous.runnable)throw Error("서버의 전용 IAM/데이터/자동 종료 점검을 먼저 통과해야 합니다: "+(previous.blockedReasons||[]).join(", "));
+  const instanceType=get("v083SpotInstance")?.value;
+  const population=selectedPopulation();
+  const maxHours=Number(get("v083SpotHours")?.value);
+  const ready=await spotApi("prepare",{population,instanceType,maxHours});
+  spotRequest=ready;
+  const cost=ready.costBreakdown||{};
+  write("v083SpotEstimate","작업 추정 총액 $"+cost.estimated_total_usd+" / 최대 허용 $"+cost.budget_usd+" · AWS 청구 하드캡 아님");
+  if(!confirm("Spot 연구 학습 요금 승인\n봇 "+population+"개 · "+instanceType+" · "+maxHours+"시간 이내\n예상 총액 $"+cost.estimated_total_usd+" / 목표 최대 $"+cost.budget_usd+"\nAWS 청구액은 예상과 다를 수 있습니다. 계속할까요?"))return;
+  const approved=await spotApi("approve",{requestId:ready.requestId,configHash:ready.configHash,acknowledgeCost:true,confirmation:"APPROVE_PAID_SPOT"});
+  spotRequest=approved;
+  if(!confirm("AWS Spot 서버를 한 대 생성하고 지금 학습할까요? 생성 즉시 과금되며 완료/실패 시 자동 종료됩니다."))return;
+  const started=await spotApi("start",{requestId:approved.requestId,confirmation:"CREATE_ONE_PAID_SPOT"});
+  spotRequest=started;
+  write("v083SpotStatus","Spot 서버 생성 요청: "+started.phase);
+ }catch(e){write("v083SpotStatus","Spot 학습 시작 실패/차단: "+e.message)}
+ finally{spotBusy=false;spotButtons();await spotInspect()}
+}
+get("v083SpotStartAll")?.addEventListener("click",spotStartOneClick);
 get("v083SpotRefresh")?.addEventListener("click",spotInspect);
 get("v083SpotPrepare")?.addEventListener("click",()=>spotAction("prepare"));
 get("v083SpotApprove")?.addEventListener("click",()=>spotAction("approve"));

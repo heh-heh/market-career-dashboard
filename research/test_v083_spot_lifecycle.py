@@ -32,10 +32,10 @@ def sample():
         "campaign_job": "job-20261018T120000Z-0123456789ab",
         "population": 10,
         "max_hours": 8,
-        "max_spot_price_usd_hour": 0.25,
-        "max_compute_usd": 2,
+        "max_spot_price_usd_hour": 0.20,
+        "max_compute_usd": 1.6,
         "final_oos_gate": "CLOSED",
-        "max_total_usd":3, "cost_estimate":dict(ebs_usd=.1,s3_usd=.1,network_usd=.1,ipv4_usd=.1,other_usd=.1),
+        "max_total_usd":2, "cost_estimate":dict(ebs_usd=.12,s3_usd=.08,network_usd=.1,ipv4_usd=.04,other_usd=.06),
     }
 
 
@@ -63,7 +63,8 @@ class SpotLifecycleTests(unittest.TestCase):
             plan=spot.display_plan(cfg)
         self.assertEqual(plan["spot_behavior"],"one-time / terminate")
         self.assertFalse(plan["automatic_replacement"])
-        self.assertEqual(plan["maximum_compute_spend_at_bid"],2)
+        self.assertEqual(plan["maximum_compute_spend_at_bid"],1.6)
+        self.assertEqual(plan["hourly_total_planning_target_usd"],0.25)
 
     def test_fail_closed_when_config_missing_or_disabled(self):
         with self.assertRaisesRegex(ValueError,"SPOT_CONFIG_REQUIRED"):
@@ -175,6 +176,8 @@ class SpotLifecycleTests(unittest.TestCase):
         user_data=spot.make_user_data(cfg)
         self.assertIn("--version-id=reviewedversion01",user_data)
         self.assertIn("sha256sum -c -",user_data)
+        self.assertIn("python3.11 -m venv /opt/v083/venv",user_data)
+        self.assertIn("timeout 720 /opt/v083/venv/bin/python -m pip install",user_data)
         self.assertIn("SPOT_UNSAFE_ARCHIVE",user_data)
         self.assertEqual(spot.ALLOWED_TYPES["c6i.2xlarge"],8)
         self.assertNotIn("run_instances",user_data)

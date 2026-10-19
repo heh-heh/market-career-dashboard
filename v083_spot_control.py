@@ -108,6 +108,8 @@ def prepare(body):
         value=body['maxHours']
         if type(value) not in (int,float) or not 0<value<=cfg['max_hours']:raise ValueError('SPOT_MAX_HOURS_EXCEEDS_REVIEWED_LIMIT')
         cfg['max_hours']=value
+        # A shorter runtime cannot carry the old eight-hour approval ceiling.
+        cfg['max_total_usd']=min(cfg['max_total_usd'],round(lifecycle.APPROVED_PLANNING_USD_HOUR*value,6))
     if 'maxTotalUsd' in body:
         value=body['maxTotalUsd']
         if type(value) not in (int,float) or not 0<value<=cfg['max_total_usd']:raise ValueError('SPOT_BUDGET_EXCEEDS_REVIEWED_LIMIT')
