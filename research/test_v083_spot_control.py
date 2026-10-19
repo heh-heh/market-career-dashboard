@@ -29,6 +29,32 @@ class ControlTests(unittest.TestCase):
     def approve(self,r):return control.approve(dict(requestId=r['requestId'],configHash=r['configHash'],acknowledgeCost=True,confirmation='APPROVE_PAID_SPOT'))
     def start(self,r):return control.start(dict(requestId=r['requestId'],confirmation='CREATE_ONE_PAID_SPOT'))
 
+    def test_spot_guard_allows_local_cpu_smoke_failure_with_frozen_verified_input(self):
+        import v083_web_jobs as jobs
+        from research.evolution import available_data
+        cfg = self.cfg
+        def evidence(path):
+            return ({"commit":cfg["source_commit"]} if path.name=="source_revision.json"
+                    else {"sourceCommit":cfg["source_commit"]} if path.name=="source_plan.json" else {})
+        with patch.object(jobs,"_storage"),patch.object(jobs,"_other_active"),patch.object(jobs,"_verify_source"), \
+             patch.object(jobs,"_job",return_value=Path(self.temp.name)/cfg["campaign_job"]), \
+             patch.object(jobs,"_population",return_value=cfg["population"]), \
+             patch.object(jobs,"_state",return_value={"phase":"failed"}), \
+             patch.object(jobs,"_read",side_effect=evidence), \
+             patch.object(jobs,"_plan",return_value=Path(self.temp.name)/"plan.json"), \
+             patch.object(jobs,"_verified_run",side_effect=AssertionError("local smoke must not gate Spot")), \
+             patch.object(available_data,"verify_plan",return_value=({"finalOosGate":"CLOSED"},{"AAPL":object()})):
+            control._campaign_guard(cfg)
+        with patch.object(jobs,"_storage"),patch.object(jobs,"_other_active"),patch.object(jobs,"_verify_source"), \
+             patch.object(jobs,"_job",return_value=Path(self.temp.name)/cfg["campaign_job"]), \
+             patch.object(jobs,"_population",return_value=cfg["population"]), \
+             patch.object(jobs,"_state",return_value={"phase":"failed"}), \
+             patch.object(jobs,"_read",side_effect=evidence), \
+             patch.object(jobs,"_plan",return_value=Path(self.temp.name)/"plan.json"), \
+             patch.object(available_data,"verify_plan",return_value=({"finalOosGate":"OPEN"},{})):
+            with self.assertRaisesRegex(ValueError,"AUDITED_SELECTION_REQUIRED"):
+                control._campaign_guard(cfg)
+
     def test_plan_and_prepare_never_contact_aws(self):
         with patch.object(control.lifecycle,'_api',side_effect=AssertionError('no AWS')):
             self.assertTrue(control.plan()['runnable']);self.prepare()
