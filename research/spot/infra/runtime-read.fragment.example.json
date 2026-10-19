@@ -1,0 +1,7 @@
+{
+  "Sid": "ReadOnlyApprovedCodeRuntimeVersion",
+  "Effect": "Allow",
+  "Action": ["s3:GetObjectVersion"],
+  "Resource": ["arn:aws:s3:::REPLACE_PRIVATE_BUCKET/v083/runtime/REPLACE_RUNTIME.tar.gz"],
+  "Condition": {"StringEquals": {"s3:VersionId": "REPLACE_IMMUTABLE_RUNTIME_VERSION"}}
+}

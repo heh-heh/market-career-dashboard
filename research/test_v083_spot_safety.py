@@ -94,7 +94,7 @@ class SpotSafetyTests(unittest.TestCase):
     def test_userdata_deadline_exists_before_bundle_fetch_and_worker_paths_match(self):
         data=spot.make_user_data(self.cfg)
         self.assertLess(data.index("shutdown -h +480"),data.index("aws s3api get-object"))
-        self.assertLess(data.index("trap finish EXIT"),data.index("shutdown -h +480"))
+        self.assertLess(data.index("trap 'finish $?' EXIT"),data.index("shutdown -h +480"))
         self.assertNotIn("aws s3 sync",data)
         self.assertIn("bundle/source/research/spot/v083_spot_worker.py",data)
         self.assertIn("--max-seconds 28500",data)
@@ -117,7 +117,7 @@ class SpotSafetyTests(unittest.TestCase):
         cfg=dict(self.cfg)
         policy={"Version":"2012-10-17","Statement":[
             {"Effect":"Allow","Action":["s3:GetObjectVersion"],"Resource":[f"arn:aws:s3:::{cfg['bucket']}/{cfg['bundle_key']}"]},
-            {"Effect":"Allow","Action":["s3:PutObject"],"Resource":[f"arn:aws:s3:::{cfg['bucket']}/{spot.job_prefix(cfg)}/*"]}]}
+            {"Effect":"Allow","Action":["s3:PutObject","s3:GetObjectVersion"],"Resource":[f"arn:aws:s3:::{cfg['bucket']}/{spot.job_prefix(cfg)}/*"]}]}
         cfg["security_review"]={"reviewed_profile_arn":cfg["instance_profile_arn"],"no_broker_secrets":True,
             "least_privilege_confirmed":True,"iam_policy_sha256":hashlib.sha256(json.dumps(policy,sort_keys=True,separators=(",",":")).encode()).hexdigest()}
         self.ec2.describe_security_groups.return_value={"SecurityGroups":[{"VpcId":"vpc1","IpPermissions":[]}]}
@@ -133,9 +133,16 @@ class SpotSafetyTests(unittest.TestCase):
         return cfg,policy
 
     def test_real_preflight_valid_restricted_infrastructure(self):
-        cfg,_=self.configured_preflight()
+        cfg,policy=self.configured_preflight()
         self.assertEqual(REAL_PREFLIGHT(self.ec2,self.s3,self.iam,cfg)["root_device"],"/dev/sda1")
         self.ec2.run_instances.assert_not_called()
+        original=policy['Statement'][1]['Action']
+        policy['Statement'][1]['Action']=['s3:PutObject']
+        cfg['security_review']['iam_policy_sha256']=hashlib.sha256(json.dumps(policy,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        with self.assertRaisesRegex(ValueError,'REQUIRED_PERMISSION_MISSING'):
+            REAL_PREFLIGHT(self.ec2,self.s3,self.iam,cfg)
+        policy['Statement'][1]['Action']=original
+        cfg['security_review']['iam_policy_sha256']=hashlib.sha256(json.dumps(policy,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         self.s3.head_object.return_value['ContentLength']=24*1024**3+1
         with self.assertRaisesRegex(ValueError,'BUNDLE_HASH_OR_SIZE'):
             REAL_PREFLIGHT(self.ec2,self.s3,self.iam,cfg)

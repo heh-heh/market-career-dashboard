@@ -40,6 +40,7 @@ DOWNLOAD_ADD='''        if path=="/api/research/v083/download":
 '''
 SPOT_TARGETS={
     'v083_spot_control.py':APP/'v083_spot_control.py',
+    'research/spot/bootstrap.py':APP/'research/spot/bootstrap.py',
     'research/spot/v083_spot_lifecycle.py':APP/'research/spot/v083_spot_lifecycle.py',
 }
 SPOT_GET_ADD='''        if path in ("/api/research/v083/spot/plan", "/api/research/v083/spot/status"):

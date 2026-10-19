@@ -129,9 +129,10 @@ class SpotWorkerTests(unittest.TestCase):
     def test_one_shot_workflow_uploads_checkpoint_then_completion(self):
         def fake_execute(cmd, **kw):
             if kw['stage'] == 'calibrate':
-                path=self.root/'output/capacity';path.mkdir(parents=True)
+                path=self.root/'output/capacity/measured-run';path.mkdir(parents=True)
                 (path/'capacity.json').write_text('{"status":"MEASURED_SAFE"}')
             else:
+                self.assertEqual(Path(cmd[cmd.index('--capacity-report')+1]),self.root/'output/capacity/measured-run/capacity.json')
                 path=self.root/'output/train/run-0001';path.mkdir(parents=True)
                 (path/'status.json').write_text(json.dumps({'completedTrainGenerations':2,'meanWindowReturn':.01}))
                 (path/'checkpoint.json').write_text(json.dumps({'resumeVersion':'V083_RESUME_1',

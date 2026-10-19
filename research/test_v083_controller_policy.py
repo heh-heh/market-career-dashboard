@@ -12,7 +12,7 @@ class ControllerPolicyTests(unittest.TestCase):
         for statement in policy['Statement']:
             value=statement['Action'];actions.extend(value if isinstance(value,list) else [value])
         self.assertFalse(any(a in actions for a in ('iam:CreateRole','iam:PutRolePolicy','s3:PutObject','ec2:StartInstances','ec2:StopInstances','ec2:RequestSpotInstances')))
-        self.assertEqual(statements['CreateOnlyTaggedApprovedInstance']['Condition']['StringEquals']['ec2:InstanceType'],'c6i.2xlarge')
+        self.assertEqual(statements['CreateOnlyTaggedApprovedInstance']['Condition']['StringEquals']['ec2:InstanceType'],'m7i-flex.large')
         self.assertEqual(statements['CreateOnlyEncryptedTaggedRootVolume']['Condition']['Bool']['ec2:Encrypted'],'true')
         self.assertEqual(statements['TagOnlyDuringApprovedRunInstances']['Condition']['StringEquals']['ec2:CreateAction'],'RunInstances')
         self.assertNotIn('ec2:InstanceMarketType',json.dumps(policy))

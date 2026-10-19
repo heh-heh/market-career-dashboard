@@ -44,7 +44,7 @@
           "aws:RequestTag/V083ResearchJob": "v083-REPLACE_16_HEX",
           "aws:RequestTag/OOS": "CLOSED",
           "aws:RequestTag/AutoReplace": "DISABLED",
-          "ec2:InstanceType": "c6i.2xlarge",
+          "ec2:InstanceType": "m7i-flex.large",
           "ec2:MetadataHttpTokens": "required"
         }
       }
@@ -152,6 +152,23 @@
       "Effect": "Allow",
       "Action": "s3:GetObject",
       "Resource": "arn:aws:s3:::REPLACE_PRIVATE_BUCKET/v083/runs/v083-REPLACE_16_HEX/output/live_status.json"
+    },
+    {
+      "Sid": "ReadOnlyApprovedBootstrapStatus",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::REPLACE_PRIVATE_BUCKET/v083/runs/v083-REPLACE_16_HEX/bootstrap/status.json"
+    },
+    {
+      "Sid": "ReadOnlyPinnedRuntimeVersion",
+      "Effect": "Allow",
+      "Action": "s3:GetObjectVersion",
+      "Resource": "arn:aws:s3:::REPLACE_PRIVATE_BUCKET/v083/runtime/REPLACE_RUNTIME.tar.gz",
+      "Condition": {
+        "StringEquals": {
+          "s3:VersionId": "REPLACE_RUNTIME_VERSION_ID"
+        }
+      }
     }
   ]
 }
