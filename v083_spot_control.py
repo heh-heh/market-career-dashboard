@@ -63,7 +63,30 @@ def _campaign_guard(cfg):
     proof=jobs._read(jobs.ROOT/'source_revision.json');evidence=jobs._read(job/'source_plan.json')
     if cfg['source_commit']!=proof.get('commit') or evidence.get('sourceCommit')!=cfg['source_commit']:
         raise ValueError('V083_SPOT_SOURCE_REVISION_MISMATCH')
-    jobs._verified_run(job,'smoke')
+    # Spot TRAIN runs its own repeated capacity checks on its own instance.
+    # A successful LOCAL smoke is not a dependency: a local CPU/RAM guard
+    # may be the reason the operator selected Spot in the first place.
+    # Never fabricate a completed smoke; independently reverify frozen
+    # selection/audit/provider bytes and the pinned job/source above.
+    # The API runs in APP, while the locked research tree is an independent
+    # source worktree. Resolve audit modules only from that already pinned tree.
+    import research
+    source_research = jobs._source_app() / 'research'
+    if not source_research.is_dir() or source_research.is_symlink():
+        raise ValueError('V083_SPOT_PINNED_AUDIT_SOURCE_MISSING')
+    if str(source_research) not in research.__path__:
+        research.__path__.append(str(source_research))
+    from research import evolution
+    source_evolution = source_research / 'evolution'
+    if not source_evolution.is_dir() or source_evolution.is_symlink():
+        raise ValueError('V083_SPOT_PINNED_EVOLUTION_SOURCE_MISSING')
+    if str(source_evolution) not in evolution.__path__:
+        evolution.__path__.append(str(source_evolution))
+    from research.evolution.available_data import verify_plan
+    audited, files = verify_plan(jobs._plan())
+    if audited.get('finalOosGate') != 'CLOSED' or not files:
+        raise ValueError('V083_SPOT_AUDITED_SELECTION_REQUIRED')
+
 
 
 def _local_blockers(cfg):
