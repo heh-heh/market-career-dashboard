@@ -137,6 +137,8 @@ def prepare(body):
         value=body['maxTotalUsd']
         if type(value) not in (int,float) or not 0<value<=cfg['max_total_usd']:raise ValueError('SPOT_BUDGET_EXCEEDS_REVIEWED_LIMIT')
         cfg['max_total_usd']=value
+    prior=lifecycle.allocation_record()
+    if prior.get('job_id')==cfg['job_id'] or lifecycle.job_attempted(cfg['job_id']):raise ValueError('SPOT_JOB_ALREADY_ATTEMPTED_NEW_APPROVAL_AND_JOB_REQUIRED')
     costs=lifecycle.cost_breakdown(cfg);blockers=_local_blockers(cfg)
     if blockers:raise ValueError(blockers[0])
     _campaign_guard(cfg)
@@ -172,19 +174,28 @@ def start(body):
     with _lock() as root:
         r=_load_request(root,body['requestId']);_check_binding(r)
         if r['phase']!='APPROVED':raise ValueError('SPOT_JOB_NOT_APPROVED_OR_ALREADY_USED')
-        _campaign_guard(r['config']);r['phase']='STARTING';_write(root/(r['requestId']+'.json'),r)
+        _campaign_guard(r['config']);r.update(phase='STARTING',startedAt=time.time());_write(root/(r['requestId']+'.json'),r)
         try:
             result=lifecycle.launch(r['config'],approval=True,approval_record=r['approval'])
             r.update(phase=result['status'],launch=result)
         except Exception as e:
-            # Conservatively assume allocation uncertainty; never auto-retry.
-            r.update(phase='CREATE_UNKNOWN',lastError=safe_error(e));_write(root/(r['requestId']+'.json'),r);raise
+            journal=lifecycle.allocation_record()
+            rejected=journal.get('job_id')==r['config']['job_id'] and journal.get('allocationRejected') is True
+            uncertain=not rejected and (not isinstance(e,ValueError) or (journal.get('job_id')==r['config']['job_id'] and journal.get('phase') in ('CREATING','CREATE_UNKNOWN')))
+            # Validation/duplicate rejection is not a new allocation attempt.
+            r.update(phase='CREATE_UNKNOWN' if uncertain else 'FAILED',allocationAttempted=None if uncertain else False,awsErrorCode=journal.get('errorCode') if rejected else None,lastError=safe_error(e))
+            _write(root/(r['requestId']+'.json'),r);raise
         _write(root/(r['requestId']+'.json'),r)
     return _public(r)
 
 
 def _public(r):
-    return {k:r[k] for k in ('requestId','phase','createdAt','expiresAt','configHash','costBreakdown','launch','lastError') if k in r}
+    result={k:r[k] for k in ('requestId','phase','createdAt','expiresAt','configHash','costBreakdown','launch','lastError','allocationAttempted','reconciliation','finishedAt','startedAt','instanceObservation','awsErrorCode') if k in r}
+    cfg=r.get('config',{});final=r.get('remoteFinal',{})
+    result.update(jobId=cfg.get('job_id'),population=cfg.get('population'),instanceType=cfg.get('instance_type'),maxHours=cfg.get('max_hours'),
+        resultStored=bool(final.get('resultCommit')),diagnosticStored=bool(final))
+    if r.get('startedAt') is not None:result['elapsedSeconds']=max(0,(r.get('finishedAt') or time.time())-r['startedAt'])
+    return result
 
 
 def _remote_status(cfg,*,s3=None):
@@ -192,7 +203,11 @@ def _remote_status(cfg,*,s3=None):
     if cfg.get('monitor_reads_approved') is not True:return dict(available=False,reason='SPOT_S3_MONITOR_REQUEST_COST_NOT_APPROVED')
     s3=lifecycle._api(s3,'s3')
     try:
-        response=s3.get_object(Bucket=cfg['bucket'],Key=lifecycle.job_prefix(cfg)+'/output/live_status.json')
+        try:
+            response=s3.get_object(Bucket=cfg['bucket'],Key=lifecycle.job_prefix(cfg)+'/output/live_status.json')
+        except Exception as error:
+            if getattr(error,'response',{}).get('Error',{}).get('Code') not in ('NoSuchKey','404','AccessDenied','403'):raise
+            response=s3.get_object(Bucket=cfg['bucket'],Key=lifecycle.job_prefix(cfg)+'/bootstrap/status.json')
         body=response['Body']
         try:raw=body.read(1024*1024+1)
         finally:body.close()
@@ -200,7 +215,10 @@ def _remote_status(cfg,*,s3=None):
         d=json.loads(raw)
         if d.get('job_id')!=cfg['job_id'] or d.get('finalOosGate')!='CLOSED':raise ValueError('SPOT_REMOTE_STATUS_IDENTITY_MISMATCH')
         return dict(available=True,data=d)
-    except Exception as e:return dict(available=False,reason=type(e).__name__)
+    except Exception as e:
+        code=getattr(e,'response',{}).get('Error',{}).get('Code')
+        reason='SPOT_STATUS_READ_ACCESS_DENIED' if code in ('AccessDenied','403') else ('SPOT_STATUS_NOT_YET_WRITTEN' if code in ('NoSuchKey','404') else safe_error(e))
+        return dict(available=False,reason=reason)
 
 
 def status():
@@ -209,12 +227,32 @@ def status():
     r=_load_request(root,latest);instances=[];remote=dict(available=True,data=r['remoteFinal'],cached=True) if r.get('remoteFinal') else None;error=None
     if r.get('phase') in ACTIVE:
         try:
-            observation=lifecycle.status(r['config']);instances=observation.get('instances',[])
+            observation=lifecycle.status(r['config'],force_reconcile=r['phase']=='CREATE_UNKNOWN');instances=observation.get('instances',[])
             remote=_remote_status(r['config'])
             data=(remote or {}).get('data',{})
+            reconciliation=observation.get('reconciliation') or {}
+            instance_observation=observation.get('lastInstance') or next(iter(reconciliation.get('instances',[])),None)
+            if instance_observation:
+                with _lock() as locked:
+                    current=_load_request(locked,r['requestId'])
+                    if current['phase']==r['phase']:
+                        current['instanceObservation']=instance_observation
+                        _write(locked/(r['requestId']+'.json'),current);r=current
+            if r['phase']=='CREATE_UNKNOWN' and reconciliation.get('allocationKnown'):
+                with _lock() as locked:
+                    current=_load_request(locked,r['requestId'])
+                    if current['phase']=='CREATE_UNKNOWN':
+                        current.update(phase=reconciliation['phase'],reconciliation=reconciliation)
+                        if reconciliation.get('allInstancesTerminated'):
+                            current.update(finishedAt=time.time(),lastError=reconciliation['reason'])
+                        _write(locked/(r['requestId']+'.json'),current);r=current
             # A durable final commit is required. Neither a missing instance nor
             # a stale live heartbeat alone establishes success or safe retry.
-            if data.get('phase') in ('completed','failed') and data.get('resultCommit') and not instances and r['phase']!='CREATE_UNKNOWN':
+            if data.get('schema')=='V083_BOOTSTRAP_1' and data.get('phase')=='FAILED' and type(data.get('exitCode')) is int and data['exitCode']!=0 and not instances and (reconciliation.get('allInstancesTerminated') or (observation.get('lastInstance') or {}).get('state')=='terminated'):
+                with _lock() as locked:
+                    current=_load_request(locked,r['requestId']);current.update(phase='FAILED',remoteFinal=data,finishedAt=time.time(),lastError='SPOT_BOOTSTRAP_'+str(data.get('errorCode','FAILED')))
+                    _write(locked/(r['requestId']+'.json'),current);r=current
+            elif data.get('phase') in ('completed','failed') and data.get('resultCommit') and not instances and r['phase']!='CREATE_UNKNOWN':
                 with _lock() as locked:
                     current=_load_request(locked,r['requestId'])
                     if current['phase']==r['phase']:

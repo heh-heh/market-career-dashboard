@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "dateUtc": "2026-10-19",
+  "basePr": 6,
+  "baseCommit": "bcea1d858bc7c932cbd52906c6ac6608f3f17c18",
+  "researchOnly": true,
+  "finalOosGate": "CLOSED",
+  "overallStatus": "ACTUAL_TRAINING_VERIFICATION_PENDING",
+  "actualFirstFailureCause": "UNCONFIRMED_NO_REMOTE_LOG_ACCESS",
+  "awsAccess": "ProfileNotFound",
+  "awsRequestsExecuted": 0,
+  "awsResourcesCreated": 0,
+  "operatingServicesChanged": false,
+  "originalBundleModified": false,
+  "localChecks": {
+    "pythonFull": {"tests": 881, "seconds": 202.977, "result": "PASS"},
+    "focusedSpotRuntimeBootstrap": {"tests": 80, "result": "PASS"},
+    "finalIamPermissionAssertions": {"tests": 16, "result": "PASS"},
+    "javascriptSmokeFiles": {"files": 25, "result": "PASS"},
+    "mobileBrowserWidths": [320,390,768,1280],
+    "spotBrowser": "PASS",
+    "legacyV082Browser": "PASS",
+    "pythonAndJavascriptSyntax": "PASS",
+    "runtimeAndDiagnosticHelp": "PASS"
+  },
+  "covered": [
+    "unknown allocation without positive evidence stays blocked",
+    "positive tag and ClientToken termination evidence reconciles legacy requested journal",
+    "one live matching instance prevents terminal state",
+    "explicit service rejection differs from transport uncertainty",
+    "pre-allocation duplicate rejection does not become CREATE_UNKNOWN",
+    "old job remains consumed after a newer job",
+    "bootstrap package failure exports fixed code and original exit code, no secrets",
+    "shutdown after failure with mocked commands only",
+    "unchanged old data archive reused with separately pinned code runtime",
+    "actual nested calibration certificate layout",
+    "bounded secret-free read-only console diagnostics",
+    "S3 monitoring request-cost opt-in",
+    "required worker version-read permissions checked before allocation"
+  ],
+  "remoteCi": "See final PR check for this commit; do not infer remote success from local tests.",
+  "remaining": [
+    "obtain real console/cloud-init/exit-code evidence",
+    "review and deploy code without overwriting operating modifications",
+    "approve optional runtime upload request/storage costs",
+    "review new job ID, campaign source, exact IAM prefixes, pinned object versions and TTL",
+    "separately approve and execute one bounded paid Spot pilot",
+    "verify actual boot/calibration/training/checkpoint/termination end to end"
+  ]
+}

@@ -104,6 +104,20 @@ def validate_config(cfg):
         raise ValueError("SPOT_COST_CAP_INCOMPATIBLE")
     if cfg["final_oos_gate"] != "CLOSED":
         raise ValueError("SPOT_FINAL_OOS_MUST_BE_CLOSED")
+    if 'bundle_job_id' in cfg and not JOB_RE.fullmatch(str(cfg['bundle_job_id'])):
+        raise ValueError('SPOT_BUNDLE_JOB_ID_INVALID')
+    if 'bundle_source_commit' in cfg and not re.fullmatch(r'[a-f0-9]{40}',str(cfg['bundle_source_commit'])):
+        raise ValueError('SPOT_BUNDLE_SOURCE_COMMIT_INVALID')
+    runtime_fields={'runtime_key','runtime_version_id','runtime_sha256'}
+    if runtime_fields.intersection(cfg):
+        if not runtime_fields.issubset(cfg):raise ValueError('SPOT_RUNTIME_REFERENCE_INCOMPLETE')
+        key=cfg['runtime_key']
+        if not isinstance(key,str) or not ID_RE.fullmatch(key) or not key.startswith('v083/runtime/') or '..' in key.split('/') or not key.endswith('.tar.gz'):
+            raise ValueError('SPOT_RUNTIME_KEY_INVALID')
+        if not isinstance(cfg['runtime_version_id'],str) or not VERSION_RE.fullmatch(cfg['runtime_version_id']) or not SHA_RE.fullmatch(str(cfg['runtime_sha256'])):
+            raise ValueError('SPOT_RUNTIME_HASH_OR_VERSION_REQUIRED')
+    elif cfg.get('bundle_job_id',cfg['job_id'])!=cfg['job_id'] or cfg.get('bundle_source_commit',cfg['source_commit'])!=cfg['source_commit']:
+        raise ValueError('SPOT_REUSED_BUNDLE_REQUIRES_PINNED_RUNTIME')
     resume_prefix = cfg.get("resume_prefix")
     resume_ref = cfg.get("resume_reference")
     if resume_prefix is not None or resume_ref is not None:
@@ -236,77 +250,52 @@ def display_plan(cfg):
 
 
 def make_user_data(cfg):
-    # No shell snippets or commands accepted from config. All values validated
-    # by load_config. The archive must be trusted and pinned by S3 version + SHA.
-    bucket = cfg["bucket"]
-    version = cfg["bundle_version_id"]
-    bundle = cfg["bundle_key"]
-    prefix = job_prefix(cfg)
-    sha = cfg["bundle_sha256"]
-    seconds = max(1, int(cfg["max_hours"] * 3600) - 300)
-    resume_setup = ""
-    resume_args = ""
-    if cfg.get("resume_reference"):
-        validate_config(cfg)
-        resume_setup = "cat > \"$JOB/resume-reference.json\" <<'V083_RESUME_REFERENCE'\n" + json.dumps(cfg["resume_reference"], sort_keys=True) + "\nV083_RESUME_REFERENCE\n"
-        resume_args = f" --resume-reference \"$JOB/resume-reference.json\" --resume-prefix {cfg['resume_prefix']}"
-    return f"""#!/bin/bash
+    from research.spot.bootstrap import telemetry_shell, extraction_python
+    validate_config(cfg)
+    bucket=cfg['bucket'];prefix=job_prefix(cfg);seconds=max(1,int(cfg['max_hours']*3600)-300)
+    resume_setup='';resume_args=''
+    if cfg.get('resume_reference'):
+        resume_setup="cat > \"$JOB/resume-reference.json\" <<'V083_RESUME_REFERENCE'\n"+json.dumps(cfg['resume_reference'],sort_keys=True)+"\nV083_RESUME_REFERENCE\n"
+        resume_args=f' --resume-reference "$JOB/resume-reference.json" --resume-prefix {cfg["resume_prefix"]}'
+    runtime_setup='';worker_path='$JOB/bundle/source/research/spot/v083_spot_worker.py';runtime_args=''
+    if cfg.get('runtime_key'):
+        runtime_setup=f'''run_stage runtime_download aws s3api get-object --bucket {bucket} --key {cfg['runtime_key']} --version-id={cfg['runtime_version_id']} "$JOB/runtime.tar.gz" --region {REGION}
+verify_runtime_hash() {{ echo "{cfg['runtime_sha256']}  $JOB/runtime.tar.gz" | sha256sum -c -; }}
+run_stage runtime_hash verify_runtime_hash
+run_stage runtime_extract /opt/v083/venv/bin/python - "$JOB/runtime.tar.gz" "$JOB" runtime <<'PY_RUNTIME_EXTRACT'
+{extraction_python()}
+PY_RUNTIME_EXTRACT
+'''
+        worker_path='$JOB/runtime/source/research/spot/v083_spot_worker.py'
+        runtime_args=f' --runtime-dir "$JOB/runtime" --bundle-job-id {cfg.get("bundle_job_id",cfg["job_id"])} --bundle-source-commit {cfg.get("bundle_source_commit",cfg["source_commit"])}'
+    return f'''#!/bin/bash
 set -Eeuo pipefail
 export AWS_DEFAULT_REGION={REGION}
+export AWS_MAX_ATTEMPTS=2
 umask 077
 JOB=/opt/v083-one-shot
+JOB_ID={cfg['job_id']}
+OUTPUT_URI=s3://{bucket}/{prefix}
 mkdir -p "$JOB"
-finish() {{
-  rc=$?
-  printf '%s\\n' "$rc" > "$JOB/exit-code.txt"
-  timeout 45 aws s3 cp "$JOB/exit-code.txt" "s3://{bucket}/{prefix}/exit-code.txt" --region {REGION} || true
-  # Artifact uploads belong only to the bounded, versioned worker transport.
-  sync || true
-  shutdown -h now
-}}
-trap finish EXIT
-# Set the deadline after installing cleanup, including deadline setup failures.
-shutdown -h +{max(1, int(cfg["max_hours"] * 60))}
-# Official Amazon Linux 2023 x86_64 AMI; installs a bounded isolated runtime.
-# No private AMI or permanent launch server is needed. Any failed command
-# triggers the shutdown trap, not a silent On-Demand fallback.
-command -v aws >/dev/null 2>&1 || timeout 240 dnf -y install awscli-2
-timeout 600 dnf -y install python3.11 python3.11-pip
-python3.11 -m venv /opt/v083/venv
-timeout 720 /opt/v083/venv/bin/python -m pip install --disable-pip-version-check --no-input --no-cache-dir \
-  'boto3>=1.34,<2' 'numpy>=1.26,<3' 'psutil>=5.9,<8' 'exchange_calendars>=4.5,<5'
-/opt/v083/venv/bin/python -c "import boto3,numpy,psutil,exchange_calendars"
-aws s3api get-object --bucket {bucket} --key {bundle} --version-id={version} "$JOB/bundle.tar.gz" --region {REGION} >/dev/null
-echo "{sha}  $JOB/bundle.tar.gz" | sha256sum -c -
-python3 - "$JOB/bundle.tar.gz" "$JOB" <<'PY_SAFE_ARCHIVE'
-import pathlib,sys,tarfile,shutil
-archive=pathlib.Path(sys.argv[1]);dest=pathlib.Path(sys.argv[2]).resolve()
-if archive.stat().st_size > 24 * 1024**3:
-    raise SystemExit('SPOT_BUNDLE_ARCHIVE_TOO_LARGE')
-with tarfile.open(archive,'r:gz') as tar:
-    members=[];names=set();total=0
-    for m in tar:
-        name=pathlib.PurePosixPath(m.name)
-        if name.is_absolute() or '..' in name.parts or m.issym() or m.islnk() or m.isdev() or m.isfifo():
-            raise SystemExit('SPOT_UNSAFE_ARCHIVE')
-        if not (m.isdir() or m.isfile()) or not name.parts or name.parts[0] != 'bundle':
-            raise SystemExit('SPOT_INVALID_ARCHIVE_ENTRY')
-        canonical=str(name)
-        if canonical in names or (dest/name).exists():
-            raise SystemExit('SPOT_DUPLICATE_OR_EXISTING_ARCHIVE_ENTRY')
-        names.add(canonical);members.append(m);total+=m.size
-        if len(members)>200000 or total>30*1024**3:
-            raise SystemExit('SPOT_ARCHIVE_EXPANSION_LIMIT')
-    disk=shutil.disk_usage(dest)
-    if disk.free-total<max(10*1024**3,disk.total//10):
-        raise SystemExit('SPOT_ARCHIVE_DISK_RESERVE_REQUIRED')
-    tar.extractall(dest,members=members,filter='data')
+{telemetry_shell(cfg)}
+run_stage deadline shutdown -h +{max(1,int(cfg['max_hours']*60))}
+if ! command -v aws >/dev/null 2>&1; then run_stage aws_packages timeout 240 dnf -y install awscli-2; fi
+run_stage python_packages timeout 600 dnf -y install python3.11 python3.11-pip
+run_stage virtualenv python3.11 -m venv /opt/v083/venv
+run_stage dependencies timeout 720 /opt/v083/venv/bin/python -m pip install --disable-pip-version-check --no-input --no-cache-dir 'boto3>=1.34,<2' 'numpy>=1.26,<3' 'psutil>=5.9,<8' 'exchange_calendars>=4.5,<5'
+run_stage import_check /opt/v083/venv/bin/python -c "import boto3,numpy,psutil,exchange_calendars; print('DEPENDENCIES_OK')"
+run_stage bundle_download aws s3api get-object --bucket {bucket} --key {cfg['bundle_key']} --version-id={cfg['bundle_version_id']} "$JOB/bundle.tar.gz" --region {REGION}
+verify_data_hash() {{ echo "{cfg['bundle_sha256']}  $JOB/bundle.tar.gz" | sha256sum -c -; }}
+run_stage bundle_hash verify_data_hash
+run_stage bundle_extract /opt/v083/venv/bin/python - "$JOB/bundle.tar.gz" "$JOB" bundle <<'PY_SAFE_ARCHIVE'
+{extraction_python()}
 PY_SAFE_ARCHIVE
+{runtime_setup}
 cd "$JOB"
 mkdir -p output
 {resume_setup}
-timeout --signal=TERM --kill-after=45s {seconds} /opt/v083/venv/bin/python "$JOB/bundle/source/research/spot/v083_spot_worker.py" --workspace "$JOB" --job-id {cfg["job_id"]} --population {cfg["population"]} --source-commit {cfg["source_commit"]} --bucket {bucket} --prefix {prefix} --max-seconds {seconds}{resume_args}
-"""
+run_stage worker timeout --signal=TERM --kill-after=45s {seconds} /opt/v083/venv/bin/python "{worker_path}" --workspace "$JOB" --job-id {cfg['job_id']} --population {cfg['population']} --source-commit {cfg['source_commit']} --bucket {bucket} --prefix {prefix} --max-seconds {seconds}{runtime_args}{resume_args}
+'''
 
 
 def _api(client=None, service="ec2"):
@@ -399,6 +388,7 @@ def preflight_readonly(ec2, s3, iam, cfg):
         if statement.get("Effect") != "Allow" or statement.get("NotAction") or statement.get("NotResource") or not actions or not set(actions) <= allowed:
             raise ValueError("SPOT_IAM_ACTION_SCOPE_UNSAFE")
         allowed_resources = {f"arn:aws:s3:::{cfg['bucket']}/{cfg['bundle_key']}", f"arn:aws:s3:::{cfg['bucket']}/{job_prefix(cfg)}/*"}
+        if cfg.get("runtime_key"):allowed_resources.add(f"arn:aws:s3:::{cfg['bucket']}/{cfg['runtime_key']}")
         if resume_read and any(r == resume_read for r in resources):
             if actions != ["s3:GetObjectVersion"] or resources != [resume_read]:
                 raise ValueError("SPOT_RESUME_READ_VERSION_ONLY_REQUIRED")
@@ -414,6 +404,14 @@ def preflight_readonly(ec2, s3, iam, cfg):
             raise ValueError("SPOT_IAM_RESOURCE_SCOPE_UNSAFE")
         if any(a in ("s3:PutObject", "s3:AbortMultipartUpload") for a in actions) and resources != [f"arn:aws:s3:::{cfg['bucket']}/{job_prefix(cfg)}/*"]:
             raise ValueError("SPOT_IAM_WRITE_SCOPE_UNSAFE")
+    requirements=[('s3:GetObjectVersion',f"arn:aws:s3:::{cfg['bucket']}/{cfg['bundle_key']}"),
+        ('s3:PutObject',f"arn:aws:s3:::{cfg['bucket']}/{job_prefix(cfg)}/*"),
+        ('s3:GetObjectVersion',f"arn:aws:s3:::{cfg['bucket']}/{job_prefix(cfg)}/*")]
+    if cfg.get('runtime_key'):requirements.append(('s3:GetObjectVersion',f"arn:aws:s3:::{cfg['bucket']}/{cfg['runtime_key']}"))
+    if cfg.get('resume_prefix'):requirements.append(('s3:GetObjectVersion',resume_read))
+    for action,resource in requirements:
+        if not any(action in ([st['Action']] if isinstance(st['Action'],str) else st['Action']) and resource in ([st['Resource']] if isinstance(st['Resource'],str) else st['Resource']) for st in statements):
+            raise ValueError('SPOT_IAM_REQUIRED_PERMISSION_MISSING')
     if digest != review["iam_policy_sha256"]:
         raise ValueError("SPOT_IAM_POLICY_CHANGED")
     if s3.get_bucket_versioning(Bucket=cfg["bucket"]).get("Status") != "Enabled":
@@ -430,8 +428,12 @@ def verify_bundle(s3, cfg):
     if head.get("Metadata", {}).get("sha256") != cfg["bundle_sha256"] or not 0 < head.get("ContentLength", 0) <= 24 * 1024**3:
         raise ValueError("SPOT_BUNDLE_HASH_OR_SIZE_MISMATCH")
     # Do not accept a version with an unreviewed / unpinned source.
-    if head.get("Metadata", {}).get("source-commit") != cfg["source_commit"]:
+    if head.get("Metadata", {}).get("source-commit") != cfg.get("bundle_source_commit",cfg["source_commit"]):
         raise ValueError("SPOT_BUNDLE_SOURCE_MISMATCH")
+    if cfg.get("runtime_key"):
+        head=s3.head_object(Bucket=cfg["bucket"],Key=cfg["runtime_key"],VersionId=cfg["runtime_version_id"])
+        if not 0<head.get("ContentLength",0)<=128*1024**2 or head.get("Metadata",{}).get("sha256")!=cfg["runtime_sha256"] or head.get("Metadata",{}).get("source-commit")!=cfg["source_commit"]:
+            raise ValueError("SPOT_RUNTIME_METADATA_MISMATCH")
 
 
 def launch(cfg, *, ec2=None, s3=None, iam=None, approval=False, approval_record=None, control_dir=None):
@@ -457,6 +459,26 @@ def launch(cfg, *, ec2=None, s3=None, iam=None, approval=False, approval_record=
         return _launch_locked(cfg, ec2, s3, iam, root)
 
 
+def job_attempted(job_id,control_dir=None):
+    if not JOB_RE.fullmatch(str(job_id)):raise ValueError('SPOT_JOB_ID_INVALID')
+    path=Path(control_dir or CONTROL_DIR)/'attempts'/(job_id+'.json')
+    if path.is_symlink() or path.parent.is_symlink():raise ValueError('SPOT_CONTROL_SYMLINK_BLOCKED')
+    return path.exists()
+
+
+def _remember_attempt(root,record):
+    job_id=record.get('job_id')
+    if not JOB_RE.fullmatch(str(job_id)):return
+    folder=root/'attempts'
+    if folder.is_symlink():raise ValueError('SPOT_CONTROL_SYMLINK_BLOCKED')
+    folder.mkdir(mode=0o700,exist_ok=True)
+    path=folder/(job_id+'.json')
+    if path.is_symlink():raise ValueError('SPOT_CONTROL_SYMLINK_BLOCKED')
+    if not path.exists():
+        with path.open('x') as file:
+            json.dump(record,file,sort_keys=True);file.flush();os.fsync(file.fileno())
+
+
 def _launch_locked(cfg, ec2, s3, iam, root):
     registry_path = root / "launch-registry.json"
     if registry_path.exists():
@@ -466,6 +488,8 @@ def _launch_locked(cfg, ec2, s3, iam, root):
             raise ValueError("SPOT_UNRESOLVED_CREATE_REQUIRES_RECONCILIATION")
         if registry.get("job_id") == cfg["job_id"]:
             raise ValueError("SPOT_JOB_ALREADY_ATTEMPTED_NEW_APPROVAL_AND_JOB_REQUIRED")
+        _remember_attempt(root,registry)
+    if job_attempted(cfg["job_id"],root):raise ValueError("SPOT_JOB_ALREADY_ATTEMPTED_NEW_APPROVAL_AND_JOB_REQUIRED")
     current = matching_instances(ec2, cfg, project_wide=True)
     if current:
         raise ValueError("SPOT_DUPLICATE_OR_EXISTING_JOB_BLOCKED")
@@ -502,12 +526,21 @@ def _launch_locked(cfg, ec2, s3, iam, root):
     params["TagSpecifications"].append({"ResourceType": "volume", "Tags": list(params["TagSpecifications"][0]["Tags"])})
     record = {"job_id": cfg["job_id"], "config_sha256": config_digest(cfg), "phase": "CREATING", "deadline_utc": deadline.isoformat()}
     _write_registry(root, record)
+    _remember_attempt(root,record)
     try:
         response = ec2.run_instances(**params)
-    except Exception:
-        _write_registry(root, {**record, "phase": "CREATE_UNKNOWN"})
-        # A timed-out create can still have succeeded; the idempotency token
-        # prevents second allocation. Never attempt automatic repeat.
+    except Exception as error:
+        code=getattr(error,'response',{}).get('Error',{}).get('Code')
+        rejected={'UnauthorizedOperation','AuthFailure','InvalidAMIID.NotFound',
+            'InvalidSubnetID.NotFound','InvalidGroup.NotFound','InvalidParameterValue',
+            'InvalidParameterCombination','InsufficientInstanceCapacity','SpotMaxPriceTooLow',
+            'MaxSpotInstanceCountExceeded','VcpuLimitExceeded','Unsupported',
+            'InsufficientFreeAddressesInSubnet'}
+        # Only explicit service rejections prove no new allocation. Timeout,
+        # idempotency mismatch and unclassified responses remain uncertain.
+        definite=code in rejected
+        _write_registry(root, {**record, "phase": "FAILED" if definite else "CREATE_UNKNOWN",
+            "allocationRejected":definite,"errorCode":code if definite else None})
         raise
     ids = [i["InstanceId"] for i in response["Instances"]]
     if len(ids) != 1:
@@ -519,7 +552,59 @@ def _launch_locked(cfg, ec2, s3, iam, root):
             "automatic_relaunch": False}
 
 
-def status(cfg, *, ec2=None, control_dir=None):
+def allocation_record(control_dir=None):
+    path=Path(control_dir or CONTROL_DIR)/'launch-registry.json'
+    if path.is_symlink():raise ValueError('SPOT_CONTROL_SYMLINK_BLOCKED')
+    return json.loads(path.read_text()) if path.is_file() else {}
+
+
+def reconcile_job(cfg, *, ec2=None, control_dir=None):
+    """Positive EC2 ownership/token evidence only; absence never authorizes retry."""
+    ec2=_api(ec2);filters=[{'Name':'tag:Project','Values':[PROJECT]},
+        {'Name':'tag:V083ResearchJob','Values':[cfg['job_id']]},
+        {'Name':'client-token','Values':[cfg['job_id']]}]
+    found=[];token=None;seen=set()
+    while True:
+        args={'Filters':filters}
+        if token:args['NextToken']=token
+        response=ec2.describe_instances(**args)
+        found.extend(i for r in response.get('Reservations',[]) for i in r.get('Instances',[]))
+        token=response.get('NextToken')
+        if not token:break
+        if token in seen:raise ValueError('SPOT_PAGINATION_INVALID')
+        seen.add(token)
+    registry=allocation_record(control_dir)
+    owned=[i for i in found if managed_spot(i,cfg['job_id']) and i.get('ClientToken')==cfg['job_id']]
+    known=registry.get('instance_id') if registry.get('job_id')==cfg['job_id'] else None
+    identities={i['InstanceId'] for i in owned}
+    if not owned or len(owned)!=len(found) or (known and known not in identities):
+        return {'allocationKnown':False,'allInstancesTerminated':False,'instances':[],
+                'reason':'SPOT_ALLOCATION_NOT_PROVEN','phase':'CREATE_UNKNOWN'}
+    instances=[{'id':i['InstanceId'],'state':i['State']['Name'],
+        'stateReasonCode':i.get('StateReason',{}).get('Code'),
+        'launchTime':i['LaunchTime'].isoformat() if hasattr(i.get('LaunchTime'),'isoformat') else None} for i in owned]
+    terminal=all(i['state']=='terminated' for i in instances)
+    phase='INTERRUPTED' if terminal else ('RUNNING' if any(i['state']=='running' for i in instances) else 'STARTING')
+    evidence={'job_id':cfg['job_id'],'phase':phase,'allocationKnown':True,
+        'allInstancesTerminated':terminal,'instances':instances,'automatic_relaunch':False,
+        'reason':'SPOT_TERMINATED_WITHOUT_DURABLE_FINAL_RESULT' if terminal else 'SPOT_INSTANCE_CONFIRMED',
+        'observedAt':datetime.now(timezone.utc).isoformat()}
+    with controller_lock(control_dir) as root:
+        current=allocation_record(control_dir)
+        # Never overwrite a different job's allocation journal.
+        if current.get('job_id')==cfg['job_id']:
+            _write_registry(root,{**current,'phase':phase,'reconciliation':evidence})
+        history=root/'reconciliations';history.mkdir(mode=0o700,exist_ok=True)
+        target=history/(cfg['job_id']+'.json')
+        if target.is_symlink():raise ValueError('SPOT_CONTROL_SYMLINK_BLOCKED')
+        previous=json.loads(target.read_text()) if target.is_file() else []
+        # Bounded observations; original per-request records remain intact.
+        data=json.dumps((previous+[evidence])[-32:],sort_keys=True).encode()
+        temporary=target.with_suffix('.tmp');temporary.write_bytes(data);os.replace(temporary,target)
+    return evidence
+
+
+def status(cfg, *, ec2=None, control_dir=None, force_reconcile=False):
     """Read-only observation, never clears ambiguous creation or launches a job."""
     ec2 = _api(ec2)
     active = matching_instances(ec2, cfg)
@@ -537,10 +622,11 @@ def status(cfg, *, ec2=None, control_dir=None):
         response = ec2.describe_instances(InstanceIds=[identifier])
         previous = [i for reservation in response.get("Reservations",[]) for i in reservation.get("Instances",[])]
         if len(previous)==1 and previous[0].get("InstanceId")==identifier and managed_spot(previous[0],cfg["job_id"]):
-            last_instance = {"id":identifier,"state":previous[0]["State"]["Name"]}
+            last_instance = {"id":identifier,"state":previous[0]["State"]["Name"],"stateReasonCode":previous[0].get("StateReason",{}).get("Code")}
+    reconciliation=reconcile_job(cfg,ec2=ec2,control_dir=control_dir) if pending_unknown or force_reconcile else None
     return {"job_id": cfg["job_id"], "instances": [
         {"id": i["InstanceId"], "state": i["State"]["Name"], "verified_managed_spot": managed_spot(i,cfg["job_id"])} for i in active
-    ], "launchRegistry": registry, "lastInstance": last_instance, "reconciliationRequired": pending_unknown,
+    ], "launchRegistry": registry, "lastInstance": last_instance, "reconciliation": reconciliation, "reconciliationRequired": pending_unknown and not (reconciliation or {}).get("allocationKnown"),
         "automatic_relaunch": False,
         "note": "No visible active instance is not proof that a timed-out creation failed. Unknown creates require operator reconciliation."}
 
