@@ -1,0 +1,40 @@
+name: Kaggle API connection check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kaggle-connection-check
+  cancel-in-progress: false
+
+jobs:
+  verify-kaggle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    steps:
+      - name: Ensure Kaggle secret is configured
+        shell: bash
+        run: |
+          if [ -z "$KAGGLE_API_TOKEN" ]; then
+            echo "::error::KAGGLE_API_TOKEN is missing. Add it in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "Kaggle token secret is present (value not printed)."
+
+      - name: Install official Kaggle CLI
+        run: python -m pip install --disable-pip-version-check 'kaggle>=1.7,<3'
+
+      - name: Verify Kaggle API credentials without launching compute
+        shell: bash
+        run: |
+          kaggle kernels list --mine --page-size 3 > /tmp/kaggle-connection-result.txt
+          echo "Kaggle authenticated successfully. Notebook listing returned:"
+          sed -n '1,5p' /tmp/kaggle-connection-result.txt
+          echo "No Kaggle notebook was submitted or executed."
