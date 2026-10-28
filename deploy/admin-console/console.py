@@ -152,7 +152,19 @@ def overview() -> dict:
         api = {"ok": False, "error": "API 연결 실패"}
     collect = _json_file(DATA / "collector_status.json")
     collection = {k: collect.get(k) for k in ("phase", "startedAt", "finishedAt", "lastSuccessAt", "counts")}
-    history_dir = Path("/srv/ai-data/datasets")
+    history_dir = Path("/srv/ai-data/stock-collection/historical-smoke")
+    history_progress = _json_file(history_dir / "_collection_progress.json")
+    history_summary = {}
+    for symbol in ("NVDA", "SOXL", "SOXS", "SPY"):
+        item = history_progress.get(symbol)
+        if isinstance(item, dict):
+            history_summary[symbol] = {
+                "status": str(item.get("status", "unknown"))[:70],
+                "storedRows": item.get("stored"),
+                "oldestTimestamp": item.get("oldestTimestamp"),
+                "latestTimestamp": item.get("latestTimestamp"),
+                "completedPages": item.get("page"),
+            }
     ai_dir = Path("/srv/ai-data/ai-research")
     # AI engine has not been migrated. Do not treat archived files as running bots.
     return {
@@ -162,7 +174,10 @@ def overview() -> dict:
         "bots": {"status": "NOT_DEPLOYED", "count": None, "note": "현재 운영 중인 학습 봇이 없습니다."},
         "historical": {"storageExists": history_dir.is_dir(),
                        "storagePath": str(history_dir),
-                       "collectorStatus": "NOT_DEPLOYED"},
+                       "collectorStatus": "SMOKE_DATA_ONLY" if history_summary else "NOT_DEPLOYED",
+                       "verification": "UNVERIFIED",
+                       "automaticCollection": False,
+                       "symbols": history_summary},
         "ticks": {"service": "collect-toss-ticks.service",
                   "state": service_state("collect-toss-ticks.service"),
                   "mode": "NOT_MIGRATED", "note": "AWS의 1틱 수집기를 홈서버에 아직 이전하지 않았습니다."},
