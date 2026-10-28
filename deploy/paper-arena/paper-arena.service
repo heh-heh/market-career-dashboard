@@ -1,0 +1,30 @@
+[Unit]
+Description=V0.9-lite 20-agent read-only paper market pilot
+After=market-stock-collection.service
+Wants=market-stock-collection.service
+
+[Service]
+Type=simple
+User=heh-heh
+Group=heh-heh
+WorkingDirectory=/srv/apps/_deploy/paper-arena/current
+ExecStart=/usr/bin/python3 /srv/apps/_deploy/paper-arena/current/paper_arena.py
+Restart=on-failure
+RestartSec=10
+UMask=0077
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/srv/ai-data/paper-arena
+ReadOnlyPaths=/srv/ai-data/stock-collection/ticks
+ProtectHome=true
+PrivateDevices=true
+PrivateTmp=true
+MemoryMax=256M
+CPUQuota=65%
+TasksMax=24
+LimitNOFILE=512
+
+[Install]
+WantedBy=multi-user.target
