@@ -43,6 +43,17 @@ bash /tmp/paper-arena-control.sh pause
 
 The service starts after reboot and respects the persisted `paused` setting. It never asks for Toss keys and must not be publicly exposed via Funnel.
 
+## Operator views
+
+The private administrator has two independent pages under **AI**:
+
+- **V0.9 가상시장 관제** — combined 20-account virtual equity, cash, realized/unrealized P&L, instrument exposures, latest hypothetical fills and global pause/resume.
+- **봇별 상태** — one **status card for each A01–A20** with its rule variant (momentum or mean-reversion), current state, individual virtual cash/equity/P&L/return, held ticker and quantity, entry/observed mark, last virtual trade, and watched symbols. Can filter holdings/cash/profit/loss and sort by return/equity.
+
+Both pages refresh roughly every seven seconds while visible. **State is not streaming fills**: an older/stale mark is labeled, and a card still reflects the last saved read model. The per-agent and aggregate values come from the same persistent SQLite ledger; offline regression tests check that they reconcile.
+
+All agent names are virtual ledger identities. There is no one-to-one mapping to autonomous AI processes or separate API sessions.
+
 ## Operational diagnostics
 
 ```bash
