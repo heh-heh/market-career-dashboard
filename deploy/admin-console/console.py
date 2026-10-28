@@ -188,11 +188,38 @@ def overview() -> dict:
         }
         if len(live_summary) >= 50:
             break
+    paper_dir = Path("/srv/ai-data/paper-arena")
+    paper_raw = _json_file(paper_dir / "status.json")
+    paper_ctl = _json_file(paper_dir / "control.json")
+    paper_keys = (
+        "mode", "version", "researchOnly", "realOrdersEnabled",
+        "executionAssumption", "updatedAt", "state", "feedReason", "sessionDate",
+        "bots", "botsWithPositions", "initialCapitalUsd", "cashUsd", "investedUsd",
+        "equityUsd", "pnlUsd", "returnPct", "realizedPnlUsd",
+        "positionsCount", "uniqueHoldings", "tradeCount", "ticksProcessedThisPoll",
+    )
+    paper = {key: paper_raw.get(key) for key in paper_keys}
+    paper["service"] = service_state("market-paper-arena.service")
+    paper["paused"] = paper_ctl.get("paused") is not False
+    # Never propagate untrusted/huge data to the authenticated browser.
+    paper["holdings"] = [
+        {k: item.get(k) for k in ("symbol", "shares", "accounts", "marketValueUsd", "unrealizedPnlUsd", "quoteTime")}
+        for item in paper_raw.get("holdings", [])[:6] if isinstance(item, dict)
+    ] if isinstance(paper_raw.get("holdings"), list) else []
+    paper["quotes"] = [
+        {k: item.get(k) for k in ("symbol", "priceUsd", "receivedAt")}
+        for item in paper_raw.get("quotes", [])[:6] if isinstance(item, dict)
+    ] if isinstance(paper_raw.get("quotes"), list) else []
+    paper["recentTrades"] = [
+        {k: item.get(k) for k in ("at", "bot", "side", "symbol", "qty", "fillUsd", "feeUsd")}
+        for item in paper_raw.get("recentTrades", [])[:10] if isinstance(item, dict)
+    ] if isinstance(paper_raw.get("recentTrades"), list) else []
     ai_dir = Path("/srv/ai-data/ai-research")
     # AI engine has not been migrated. Do not treat archived files as running bots.
     return {
         "api": api,
         "collection": collection,
+        "paper": paper,
         "research": {"status": "NOT_DEPLOYED", "running": False, "note": "AI V0.8.3 학습 엔진은 별도 이전 예정입니다."},
         "bots": {"status": "NOT_DEPLOYED", "count": None, "note": "현재 운영 중인 학습 봇이 없습니다."},
         "historical": {"storageExists": history_dir.is_dir(),
@@ -339,6 +366,42 @@ class Handler(BaseHTTPRequestHandler):
                 SESSIONS.pop(session[0], None)
             self.reply(200, {"ok": True},
                        {"Set-Cookie": f"{SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"})
+            return
+        if path == "/api/paper/control":
+            paused = body.get("paused")
+            if type(paused) is not bool:
+                self.reply(400, {"error": "INVALID_CONTROL_VALUE"})
+                return
+            if paused is False and service_state("market-paper-arena.service") != "running":
+                self.reply(409, {"error": "PAPER_SERVICE_NOT_RUNNING"})
+                return
+            control_dir = Path("/srv/ai-data/paper-arena")
+            control_file = control_dir / "control.json"
+            if not control_dir.is_dir() or control_dir.is_symlink() or control_file.is_symlink():
+                self.reply(409, {"error": "PAPER_NOT_INSTALLED"})
+                return
+            command = {
+                "paused": paused,
+                "reason": "ADMIN_UI_PAUSE" if paused else "ADMIN_UI_RESUME",
+                "updatedAt": datetime.now(timezone.utc).isoformat(),
+            }
+            temp = control_dir / ("control." + secrets.token_hex(12) + ".tmp")
+            try:
+                fd = os.open(str(temp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                with os.fdopen(fd, "w", encoding="utf-8") as output:
+                    json.dump(command, output)
+                    output.flush()
+                    os.fsync(output.fileno())
+                os.replace(temp, control_file)
+            except OSError:
+                self.reply(500, {"error": "PAPER_CONTROL_WRITE_FAILED"})
+                return
+            finally:
+                try:
+                    temp.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            self.reply(200, {"ok": True, "paused": paused, "status": "REQUESTED"})
             return
         if path == "/api/collection/control":
             desired = body.get("paused")
