@@ -16,6 +16,7 @@ RestartSec=3
 Environment=PYTHONUNBUFFERED=1
 NoNewPrivileges=true
 ProtectSystem=strict
+ReadWritePaths=/srv/apps/_deploy/dashboard/admin-console/private
 ProtectHome=true
 PrivateTmp=true
 PrivateDevices=true
