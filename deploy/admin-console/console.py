@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
-"""Private, read-only home-server and Git console. Never expose using Funnel."""
+"""SSH-only authenticated operator portal. No arbitrary shell or broker execution."""
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
 import json
 import os
+import re
+import secrets
 import subprocess
+import threading
+import time
+import urllib.request
 from datetime import datetime, timezone
+from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -13,9 +22,18 @@ from urllib.parse import urlsplit, parse_qs
 HERE = Path(__file__).resolve().parent
 REPO = Path("/srv/apps/market-career-dashboard")
 DATA = Path("/srv/ai-data/market-dashboard")
+PRIVATE = Path("/srv/apps/_deploy/dashboard/admin-console/private")
 BIND = "127.0.0.1"
 PORT = 18085
-MAX_OUTPUT = 24_000
+MAX_OUTPUT = 24000
+MAX_BODY = 8192
+MAX_AGE = 8 * 3600
+SESSION_COOKIE = "market_home_admin"
+SESSIONS = {}
+FAILED_LOGINS = {}
+LOCK = threading.Lock()
+VALID_KEYS = ("OPENAI_API_KEY", "TOSS_CLIENT_ID", "TOSS_CLIENT_SECRET",
+              "TOSS_ACCOUNT_SEQ", "NEWS_API_KEY", "ALPHA_VANTAGE_API_KEY")
 COMMANDS = {
     "server.containers": (["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}\t{{.Ports}}"], None),
     "server.resources": (["free", "-h"], None),
@@ -35,87 +53,267 @@ COMMANDS = {
 ALLOWED_HOSTS = {"127.0.0.1:18085", "localhost:18085"}
 
 
+def _json_file(path: Path) -> dict:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return raw if isinstance(raw, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _atomic_private(path: Path, obj: dict) -> None:
+    PRIVATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    temp = PRIVATE / (path.name + "." + secrets.token_hex(8) + ".tmp")
+    fd = os.open(str(temp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp, path)
+    finally:
+        try:
+            temp.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def verify_password(password: str) -> bool:
+    record = _json_file(PRIVATE / "credentials.json")
+    try:
+        salt = base64.b64decode(record["salt"], validate=True)
+        expected = base64.b64decode(record["digest"], validate=True)
+        rounds = int(record["iterations"])
+        if not 250000 <= rounds <= 1000000:
+            return False
+        actual = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, rounds)
+        return hmac.compare_digest(actual, expected)
+    except (ValueError, KeyError, TypeError):
+        return False
+
+
+def active_session(request: BaseHTTPRequestHandler) -> tuple[str, str] | None:
+    jar = cookies.SimpleCookie()
+    try:
+        jar.load(request.headers.get("Cookie", ""))
+        token = jar[SESSION_COOKIE].value
+    except (KeyError, cookies.CookieError, ValueError):
+        return None
+    with LOCK:
+        state = SESSIONS.get(token)
+        if state is not None and state["expires"] > time.time():
+            return token, state["csrf"]
+        SESSIONS.pop(token, None)
+        return None
+
+
 def run_known(action: str) -> dict:
     if action == "server.collector-status":
-        path = DATA / "collector_status.json"
-        if not path.exists():
-            return {"ok": False, "text": "수집 상태 파일이 없습니다."}
-        try:
-            obj = json.loads(path.read_text(encoding="utf-8")[:65536])
-            safe = {k: obj.get(k) for k in ("phase", "startedAt", "finishedAt", "lastSuccessAt", "counts", "errorCode", "lastError") if k in obj}
-            return {"ok": True, "text": json.dumps(safe, indent=2, ensure_ascii=False)}
-        except (OSError, ValueError) as exc:
-            return {"ok": False, "text": "수집 상태 읽기 실패: " + type(exc).__name__}
+        status = _json_file(DATA / "collector_status.json")
+        safe = {k: status[k] for k in
+                ("phase", "startedAt", "finishedAt", "lastSuccessAt", "counts", "errorCode", "lastError")
+                if k in status}
+        return {"ok": bool(safe), "text": json.dumps(safe, ensure_ascii=False, indent=2) if safe else "수집 상태가 없습니다."}
     spec = COMMANDS.get(action)
     if spec is None:
-        return {"ok": False, "text": "허용되지 않은 조회 항목입니다."}
+        return {"ok": False, "text": "허용되지 않은 명령입니다."}
     command, cwd = spec
     try:
         env = os.environ.copy()
         env["GIT_TERMINAL_PROMPT"] = "0"
         env["GIT_OPTIONAL_LOCKS"] = "0"
-        result = subprocess.run(
-            command, cwd=cwd, env=env, capture_output=True, text=True,
-            encoding="utf-8", errors="replace", timeout=12, check=False,
-        )
-        output = (result.stdout + result.stderr)[:MAX_OUTPUT]
-        return {"ok": result.returncode == 0, "text": output or "(출력 없음)", "exitCode": result.returncode}
+        result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True,
+                                encoding="utf-8", errors="replace", timeout=12, check=False)
+        return {"ok": result.returncode == 0,
+                "text": (result.stdout + result.stderr)[:MAX_OUTPUT] or "(출력 없음)",
+                "exitCode": result.returncode}
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {"ok": False, "text": "실행 실패: " + type(exc).__name__}
 
 
-class ConsoleHandler(BaseHTTPRequestHandler):
-    server_version = "LocalAdminConsole/1.0"
+def service_state(service: str) -> str:
+    try:
+        r = subprocess.run(["systemctl", "is-active", service], capture_output=True,
+                           text=True, timeout=4, check=False)
+        value = r.stdout.strip()
+        return "running" if value == "active" else "not-running"
+    except (OSError, subprocess.TimeoutExpired):
+        return "unknown"
 
-    def _send(self, status: int, data: bytes, mime: str):
+
+def overview() -> dict:
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:18084/api/health", timeout=3) as response:
+            health = json.load(response)
+        # Explicit allowlist so future API fields or secrets are not relayed.
+        api = {key: health.get(key) for key in
+               ("ok", "service", "mode", "dataReady", "dataUpdatedAt", "tradingEnabled", "researchEnabled")}
+    except (OSError, ValueError):
+        api = {"ok": False, "error": "API 연결 실패"}
+    collect = _json_file(DATA / "collector_status.json")
+    collection = {k: collect.get(k) for k in ("phase", "startedAt", "finishedAt", "lastSuccessAt", "counts")}
+    history_dir = Path("/srv/ai-data/datasets")
+    ai_dir = Path("/srv/ai-data/ai-research")
+    # AI engine has not been migrated. Do not treat archived files as running bots.
+    return {
+        "api": api,
+        "collection": collection,
+        "research": {"status": "NOT_DEPLOYED", "running": False, "note": "AI V0.8.3 학습 엔진은 별도 이전 예정입니다."},
+        "bots": {"status": "NOT_DEPLOYED", "count": None, "note": "현재 운영 중인 학습 봇이 없습니다."},
+        "historical": {"storageExists": history_dir.is_dir(),
+                       "storagePath": str(history_dir),
+                       "collectorStatus": "NOT_DEPLOYED"},
+        "ticks": {"service": "collect-toss-ticks.service",
+                  "state": service_state("collect-toss-ticks.service"),
+                  "mode": "NOT_MIGRATED", "note": "AWS의 1틱 수집기를 홈서버에 아직 이전하지 않았습니다."},
+        "keys": {name: bool(_json_file(PRIVATE / "api_keys.json").get(name)) for name in VALID_KEYS},
+        "meta": {"adminAccess": "SSH tunnel only", "serverPath": str(REPO),
+                 "aiStorageReady": ai_dir.is_dir(), "publicAdmin": False}
+    }
+
+
+class Handler(BaseHTTPRequestHandler):
+    server_version = "PrivateDashboardAdmin/2.0"
+
+    def send_bytes(self, status: int, raw: bytes, mime: str, extra: dict | None = None):
         self.send_response(status)
+        for name, value in (extra or {}).items():
+            self.send_header(name, value)
         self.send_header("Content-Type", mime)
-        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Content-Length", str(len(raw)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy",
-                         "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'")
+                         "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
         self.end_headers()
-        self.wfile.write(data)
+        self.wfile.write(raw)
+
+    def reply(self, status: int, obj: dict, extra: dict | None = None):
+        self.send_bytes(status, json.dumps(obj, ensure_ascii=False).encode(),
+                        "application/json; charset=utf-8", extra)
+
+    def allowed_host(self) -> bool:
+        return self.headers.get("Host", "") in ALLOWED_HOSTS and self.client_address[0] in ("127.0.0.1", "::1")
+
+    def origin_valid(self) -> bool:
+        return self.headers.get("Origin", "") == "http://" + self.headers.get("Host", "")
+
+    def json_body(self):
+        try:
+            n = int(self.headers.get("Content-Length", "0"))
+            if not 0 < n <= MAX_BODY or self.headers.get("Content-Type", "").split(";")[0] != "application/json":
+                return None
+            data = json.loads(self.rfile.read(n))
+            return data if isinstance(data, dict) else None
+        except (ValueError, OSError):
+            return None
 
     def do_GET(self):
-        if self.headers.get("Host", "") not in ALLOWED_HOSTS:
-            self._send(403, b"Forbidden host", "text/plain; charset=utf-8")
+        if not self.allowed_host():
+            self.reply(403, {"error": "Forbidden"})
             return
-        request = urlsplit(self.path)
-        if request.path == "/api/run":
-            qs = parse_qs(request.query)
-            actions = qs.get("action", [])
-            action = actions[0] if len(actions) == 1 else ""
-            obj = run_known(action)
-            obj["action"] = action
-            obj["at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
-            self._send(200, json.dumps(obj, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+        path = urlsplit(self.path)
+        if path.path == "/api/health":
+            self.reply(200, {"ok": True, "scope": "localhost-only", "mode": "authenticated-admin"})
             return
-        if request.path in ("/", "/app.js"):
-            filename = "index.html" if request.path == "/" else "app.js"
-            mime = "text/html; charset=utf-8" if filename.endswith(".html") else "text/javascript; charset=utf-8"
+        if path.path in ("/", "/app.js"):
+            if path.path == "/app.js":
+                filename, mime = "app.js", "text/javascript; charset=utf-8"
+            else:
+                filename, mime = "index.html", "text/html; charset=utf-8"
             try:
-                self._send(200, (HERE / filename).read_bytes(), mime)
+                self.send_bytes(200, (HERE / filename).read_bytes(), mime)
             except OSError:
-                self._send(500, b"Asset not available", "text/plain")
+                self.send_bytes(500, b"Asset unavailable", "text/plain")
             return
-        if request.path == "/api/health":
-            self._send(200, b'{"ok":true,"scope":"localhost-only","mode":"read-only"}', "application/json")
+        session = active_session(self)
+        if not session:
+            self.reply(401, {"error": "LOGIN_REQUIRED"})
             return
-        self._send(404, b"Not found", "text/plain")
+        if path.path == "/api/me":
+            self.reply(200, {"authenticated": True, "csrf": session[1]})
+        elif path.path == "/api/overview":
+            self.reply(200, overview())
+        elif path.path == "/api/run":
+            names = parse_qs(path.query).get("action", [])
+            action = names[0] if len(names) == 1 else ""
+            self.reply(200, run_known(action))
+        else:
+            self.reply(404, {"error": "Not found"})
 
     def do_POST(self):
-        self._send(405, b"Read-only admin console", "text/plain")
+        if not self.allowed_host():
+            self.reply(403, {"error": "Forbidden"})
+            return
+        if not self.origin_valid():
+            self.reply(403, {"error": "INVALID_ORIGIN"})
+            return
+        path = urlsplit(self.path).path
+        body = self.json_body()
+        if body is None:
+            self.reply(400, {"error": "INVALID_JSON"})
+            return
+        if path == "/api/login":
+            with LOCK:
+                count, reset = FAILED_LOGINS.get("local", (0, 0))
+                if time.time() > reset:
+                    count, reset = 0, time.time() + 600
+                if count >= 8:
+                    self.reply(429, {"error": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요."})
+                    return
+            password = body.get("password", "")
+            good = isinstance(password, str) and 0 < len(password) <= 256 and verify_password(password)
+            if not good:
+                with LOCK:
+                    FAILED_LOGINS["local"] = (count + 1, reset)
+                self.reply(401, {"error": "비밀번호가 올바르지 않습니다."})
+                return
+            token, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(24)
+            with LOCK:
+                FAILED_LOGINS.pop("local", None)
+                SESSIONS[token] = {"expires": time.time() + MAX_AGE, "csrf": csrf}
+            self.reply(200, {"ok": True, "csrf": csrf},
+                       {"Set-Cookie": f"{SESSION_COOKIE}={token}; Path=/; HttpOnly; SameSite=Strict; Max-Age={MAX_AGE}"})
+            return
+        session = active_session(self)
+        if not session or not hmac.compare_digest(self.headers.get("X-CSRF-Token", ""), session[1]):
+            self.reply(403, {"error": "AUTH_OR_CSRF_REQUIRED"})
+            return
+        if path == "/api/logout":
+            with LOCK:
+                SESSIONS.pop(session[0], None)
+            self.reply(200, {"ok": True},
+                       {"Set-Cookie": f"{SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"})
+            return
+        if path == "/api/keys":
+            name = body.get("name", "")
+            value = body.get("value", "")
+            if name not in VALID_KEYS or not isinstance(value, str) or len(value) > 2048:
+                self.reply(400, {"error": "INVALID_KEY"})
+                return
+            stored = _json_file(PRIVATE / "api_keys.json")
+            if value:
+                stored[name] = value
+            else:
+                stored.pop(name, None)
+            try:
+                _atomic_private(PRIVATE / "api_keys.json", stored)
+            except OSError:
+                self.reply(500, {"error": "CREDENTIAL_WRITE_FAILED"})
+                return
+            self.reply(200, {"ok": True, "name": name, "configured": bool(value)})
+            return
+        self.reply(404, {"error": "Not found"})
 
     def log_message(self, format, *args):
-        # Do not log query strings or user-provided values.
+        # Never emit URL query strings, passwords, or credentials into logs.
         pass
 
 
 if __name__ == "__main__":
-    server = ThreadingHTTPServer((BIND, PORT), ConsoleHandler)
-    print(f"Private dashboard console listening on http://{BIND}:{PORT}", flush=True)
-    server.serve_forever()
+    if not (PRIVATE / "credentials.json").is_file():
+        raise SystemExit("ADMIN_CREDENTIALS_NOT_CONFIGURED")
+    print(f"Private authenticated portal http://{BIND}:{PORT}", flush=True)
+    ThreadingHTTPServer((BIND, PORT), Handler).serve_forever()
