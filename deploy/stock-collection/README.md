@@ -1,34 +1,63 @@
-# Toss market-data collection: home-server migration (phase 1)
+# Home stock data collection — phases 1 and 2
 
-This stage migrates only the **data collector code**, not trading APIs or order submission.
-The public dashboard API at 127.0.0.1:18084 and SSH-only admin at 127.0.0.1:18085 remain unchanged.
+This is **market-data-only**. It never accesses account balances, makes orders, enables automated trading, or opens a public admin API. All artifacts are stored on the home server under `/srv/ai-data/stock-collection`.
 
-## Provenance
+## Verified smoke test (2026-10-28)
 
-The code is taken from the pinned commit of the repository's `strategy-engine-v3` branch, extracted with `git archive` into `/srv/apps/_deploy/stock-collection/releases/<commit>`. The `main` checkout and deployed dashboard image are not modified.
+The operator confirmed Toss OAuth OK, 1-minute candles HTTP 200, and four research symbols (NVDA, SOXL, SOXS, SPY) saved **300 rows each** under `historical-smoke/` (1,200 total). This does not demonstrate complete daily coverage; records included US extended hours. Tick and periodic services were not yet running.
 
-- `setup.sh` stages the original Toss history and tick collectors and installs their dependencies in an isolated virtual environment; it uses API credentials **already saved** in the SSH-only admin key vault to create a restricted 0600 broker configuration. It starts **no collection job**.
-- `smoke.sh` starts a temporary single-issuer local OAuth broker, fetches up to three pages per symbol for NVDA/SOXL/SOXS/SPY, writes restartable SQLite files to `/srv/ai-data/stock-collection/historical-smoke`, prints summary rows and shuts down the broker. It does not start a scheduled or real-time job.
-- The script uses +09:00 ISO date boundaries because the existing historical collector compares API timestamp strings lexicographically. A future production scheduler should compare normalized datetime objects instead.
-- Research files remain **unverified** for complete per-minute trading-day coverage even when an individual call succeeds.
-- Actual tick trades are a lossy feed and cannot be assumed to provide all executions.
+## Architecture
 
-## Installation (run as heh-heh)
+- A *single* OAuth broker (`market-stock-token-broker.service`) runs as `heh-heh`, reads a restricted 0600 credential file, and serves tokens only to authorized local Unix socket clients.
+- A scheduler (`market-stock-collection.service`) runs as `heh-heh` with limited memory, CPU and filesystem access. It is **paused on first install**, and reads `runtime/collection/control.json`. It launches only one worker at a time: the US regular-market WebSocket tick collector during trading hours, or a checkpointed historical one-minute REST backfill outside trading hours. If the official calendar does not confirm the session, REST backfill fails closed.
+- First deployment uses four explicitly configured symbols. The symbol list lives under `/srv/apps/_deploy/stock-collection/private/symbols.json` so updates don't reset the operator's selection. Only reviewed symbols can be added; valid list length is 1–50.
+- Historical SQLite: `/srv/ai-data/stock-collection/historical/`; tick sessions/status: `/srv/ai-data/stock-collection/ticks/`; scheduler state/leases: `/srv/ai-data/stock-collection/runtime/collection/`.
+- Old smoke data is preserved at `historical-smoke/`. No existing dashboard, Chess Academy, or Portainer containers are changed.
+- Tick status in the legacy worker used the old `ROOT/data/toss_ticks` path. The stage script maps that path to the persistent `ticks` directory without editing the frozen research branch.
+
+## Install from home server SSH (as heh-heh, not sudo)
 
 ```bash
 git -C /srv/apps/market-career-dashboard fetch origin main
 git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/setup.sh > /tmp/stock-collection-setup.sh
-git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/smoke.sh > /tmp/stock-collection-smoke.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/install-services.sh > /tmp/stock-collection-install-services.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/control.sh > /tmp/stock-collection-control.sh
+
 bash /tmp/stock-collection-setup.sh
-bash /tmp/stock-collection-smoke.sh
+bash /tmp/stock-collection-install-services.sh
+bash /tmp/stock-collection-control.sh status
 ```
 
-If `python3 -m venv` fails because the package is missing, install `python3-venv` and retry setup. Do not run the scripts with sudo.
+The service installer calls `sudo` only for writing the two new systemd unit files and restarting the two **market-data-specific** services. Its initial control file is explicitly paused. Rerunning does not overwrite existing pause/symbol config.
 
-## Security and migration status
+## Enable and pause
 
-- Only the home-server user can read the broker credentials; no tokens or secrets are passed on a command line. A temporary Unix-domain socket has local UID checks.
-- Never publish the broker socket, credentials, SQLite directory, or admin endpoints via Tailscale Funnel.
-- The OAuth broker owns the token. Do not run competing independent token issuers at the same time.
-- No actual orders, account information, trading bot control or automatic order submission.
-- Phase 2 must verify checkpoint integrity, session calendar and data retention, deploy a single-service scheduler with explicit pause/resume, and add verified status to the private admin portal before enabling daily historical and tick streams.
+Open the SSH-only portal at `http://127.0.0.1:18085/` (SSH tunnel required), then visit **자료수집 → 주식 과거 데이터** or **1틱 단위 수집기** and select *자동 수집 재개*. Update the administrator portal with the latest `deploy/admin-console/install.sh` before using the buttons.
+
+Alternative SSH commands (explicit operator action):
+
+```bash
+bash /tmp/stock-collection-control.sh resume
+bash /tmp/stock-collection-control.sh status
+bash /tmp/stock-collection-control.sh pause
+```
+
+The scheduler is automatically restarted by systemd after reboot. A previous `resume` persists; a previous `pause` also persists. The CLI changes **only** the collection pause state; it does not start trading or touch other apps.
+
+## Status and maintenance
+
+```bash
+systemctl is-active market-stock-token-broker.service market-stock-collection.service
+sudo journalctl -u market-stock-collection.service -n 40 --no-pager
+ls -lh /srv/ai-data/stock-collection/{historical,ticks}/
+```
+
+If the old `smoke.sh` was already run successfully, do not run it in parallel with the live scheduler because the new scheduler owns the backfill lock.
+
+## Important limitations
+
+- The inherited research worker currently has a hardcoded **October 31, 2026** historical upper bound, and its research dataset's Final OOS remains CLOSED. This is **not** yet a production-ready continuous historical collector beyond this date. It must be reviewed/updated separately, including data provenance and validation, before an indefinite backfill claim is warranted.
+- Backfilled candles are not assumed to be complete merely because 300 rows or an HTTP 200 response was received. The scheduler records verified vs missing US regular-session minutes.
+- Tick WebSocket messages may be lossy. Store reconnects, drops, and subscription failures; never imply an exchange-complete tape.
+- Data usage, OAuth issuance and rate limits are subject to Toss platform policy; the scheduler paces REST requests and refuses uncontrolled parallel workers.
+- API keys stored in the private admin vault are restricted plaintext files, **not encryption at rest**; do not sync or commit them.
