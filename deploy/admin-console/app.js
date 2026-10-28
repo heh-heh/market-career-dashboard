@@ -6,6 +6,7 @@ const NAMES = ["OPENAI_API_KEY","TOSS_CLIENT_ID","TOSS_CLIENT_SECRET","TOSS_ACCO
 const PAGE_TITLES = {
   research:["AI 연구","V0.8.3 연구 엔진"],
   bots:["V0.9 가상시장 관제","20개 가상 계좌 · 실제 틱 기반 paper trading"],
+  agents:["봇별 상태","가상 계좌별 보유 · 잔고 · 수익률 · 최근 거래"],
   historical:["주식 과거 데이터","과거 시세와 정기 자료 수집"],
   ticks:["1틱 단위 수집기","Tick 데이터 수집 상태"],
   api:["API 설정","홈서버 공개 API 연결"],
@@ -152,11 +153,137 @@ function renderPaper(paper) {
   }
   setText("paperAssumption","실제 주문 미사용 · 수신 틱 가격에 불리한 10bp 체결 보정 + 5bp 가정 수수료 · 실제 체결/투자수익 아님");
 }
+function botStateLabel(value) {
+  return ({
+    PAUSED:"일시정지",
+    WAITING_FOR_MARKET:"시장 대기",
+    HOLDING:"포지션 보유",
+    READY:"거래 신호 대기",
+    DATA_WARMUP:"시세 학습 구간"
+  })[value] || "상태 미확인";
+}
+function node(tag,klass,textValue) {
+  const e=document.createElement(tag);
+  if(klass)e.className=klass;
+  if(textValue!==undefined)e.textContent=String(textValue);
+  return e;
+}
+function metric(label,value) {
+  const wrap=node("div","agent-metric");
+  wrap.append(node("div","label",label),node("strong","",value));
+  return wrap;
+}
+function renderAgents(paper) {
+  const available=paper?.mode==="RECEIVED_TICK_PAPER_PILOT";
+  const agents=available&&Array.isArray(paper.agents)?paper.agents:[];
+  setText("agentsSession",!available?"서비스 미설치 / 데이터 없음":paper.paused?"시뮬레이션 일시정지":paper.state==="MARKET_ACTIVE"?"미국장 시세 관측 중":"시장 대기");
+  setText("agentsUpdated","최종 상태: "+prettyDate(paper?.updatedAt));
+  setText("agentsTotal",available?amount(agents.length)+"개":"—");
+  setText("agentsHolding",available?amount(agents.filter(x=>x.positionCount>0).length)+"개":"—");
+  const ret=Number(paper?.returnPct);
+  setText("agentsAggregateRoi",available&&Number.isFinite(ret)?ret.toFixed(3)+"%":"—");
+  const cardRoot=$("agentsCards");
+  if(!cardRoot)return;
+  const expanded=new Set([...cardRoot.querySelectorAll("details[data-agent-id][open]")].map(x=>x.dataset.agentId));
+  cardRoot.replaceChildren();
+  if(!agents.length){
+    cardRoot.appendChild(node("div","panel muted",available?"계좌별 상태가 아직 생성되지 않았습니다. 연구 서비스 업데이트가 필요합니다.":"가상 시뮬레이션을 설치하면 계좌 상태가 표시됩니다."));
+    setText("agentsVisible","0개 표시");
+    return;
+  }
+  const filter=$("agentsFilter").value;
+  const order=$("agentsSort").value;
+  const selected=agents.filter(agent=>{
+    const ret=Number(agent.returnPct);
+    if(filter==="holding")return Number(agent.positionCount)>0;
+    if(filter==="cash")return Number(agent.positionCount)===0;
+    if(filter==="profit")return Number.isFinite(ret)&&ret>0;
+    if(filter==="loss")return Number.isFinite(ret)&&ret<0;
+    return true;
+  });
+  if(order==="return-desc")selected.sort((a,b)=>Number(b.returnPct)-Number(a.returnPct));
+  else if(order==="return-asc")selected.sort((a,b)=>Number(a.returnPct)-Number(b.returnPct));
+  else if(order==="equity-desc")selected.sort((a,b)=>Number(b.equityUsd)-Number(a.equityUsd));
+  else selected.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  setText("agentsVisible",selected.length+" / "+agents.length+"개 표시");
+  if(!selected.length){
+    cardRoot.appendChild(node("div","panel muted","해당 조건에 맞는 가상 계좌가 없습니다."));
+    return;
+  }
+  for (const agent of selected) {
+    const card=node("article","panel agent-card");
+    const header=node("div","agent-card-head");
+    const idGroup=node("div");
+    idGroup.append(
+      node("h3","",agent.id||"—"),
+      node("div","agent-meta",agent.strategy==="MOMENTUM"?"모멘텀 추종 · 규칙 기반":"역추세 · 규칙 기반")
+    );
+    const chip=node("span","agent-state"+(agent.state==="HOLDING"||agent.state==="READY"?" active":""),botStateLabel(agent.state));
+    header.append(idGroup,chip);
+    const metrics=node("div","agent-metrics");
+    metrics.append(
+      metric("평가자산",money(agent.equityUsd)),
+      metric("남은 현금",money(agent.cashUsd)),
+      metric("매수 평가액",money(agent.investedUsd)),
+      metric("누적 손익",money(agent.pnlUsd)),
+      metric("수익률",Number(agent.returnPct).toFixed(3)+"%"),
+      metric("보유 포지션",amount(agent.positionCount)+"개")
+    );
+    const note=node("div","agent-meta",
+      "실현 "+money(agent.realizedPnlUsd)+" · 미실현 "+money(agent.unrealizedPnlUsd)+" · 가상 거래 "+amount(agent.tradeCount)+"회");
+    card.append(header,metrics,note);
+    const holdings=node("div","agent-positions");
+    const hTitle=node("div","label","보유 종목");
+    holdings.append(hTitle);
+    const positions=Array.isArray(agent.holdings)?agent.holdings:[];
+    if(!positions.length){
+      holdings.appendChild(node("p","agent-meta","현재 보유 없음 · 가상 현금 대기"));
+    } else {
+      const details=node("details");
+      details.dataset.agentId=agent.id;
+      details.open=expanded.has(agent.id);
+      details.appendChild(node("summary","",positions.map(p=>p.symbol+" "+amount(p.qty)+"주").join(" · ")));
+      const table=node("div","table-scroll");
+      const t=node("table","status-table");
+      const head=node("thead");
+      const hdr=node("tr");
+      for(const label of ["종목","수량","진입가","관측가","평가액","미실현 손익"])hdr.appendChild(node("th","",label));
+      head.appendChild(hdr);
+      t.appendChild(head);
+      const tbody=node("tbody");
+      for(const p of positions){
+        const tr=node("tr");
+        for(const item of [p.symbol,amount(p.qty),money(p.entryUsd),money(p.markUsd),money(p.marketValueUsd),money(p.unrealizedPnlUsd)]){
+          tr.appendChild(node("td","",item));
+        }
+        tbody.appendChild(tr);
+      }
+      t.appendChild(tbody);
+      table.appendChild(t);
+      details.appendChild(table);
+      holdings.appendChild(details);
+    }
+    if(agent.markStale){
+      holdings.appendChild(node("div","agent-meta bad","시세 지연: 마지막 관측가 기준 평가"));
+    }
+    card.appendChild(holdings);
+    const last=agent.lastTrade;
+    const tradeLabel=last?
+      "마지막 가상 거래: "+(last.side==="BUY"?"매수":"매도")+" "+last.symbol+" "+amount(last.qty)+"주 · "+money(last.fillUsd)+" · "+prettyDate(last.at):
+      "마지막 가상 거래: 없음";
+    card.append(
+      node("p","agent-meta",tradeLabel),
+      node("p","agent-meta","관심 종목: "+(agent.watchlist||[]).join(", "))
+    );
+    cardRoot.appendChild(card);
+  }
+}
 function render(data) {
   overview=data;
   setText("researchStatus",data.research?.status==="NOT_DEPLOYED"?"미배포":data.research?.status);
   setText("researchOutput",jsonSafe(data.research));
   renderPaper(data.paper || {});
+  renderAgents(data.paper || {});
   setText("historyStatus",data.historical?.serviceState==="running" && data.historical?.paused?"일시정지":
     data.historical?.collectorStatus==="NOT_DEPLOYED"?"미배포":data.historical?.collectorStatus);
   setText("historyStorage",data.historical?.storageExists?"저장소 있음":"준비 중");
@@ -274,8 +401,11 @@ for(const button of document.querySelectorAll("button[data-paper-action]")) {
   });
 }
 setInterval(()=>{
-  if(!APP.hidden&&!$("page-bots").hidden)refresh();
+  if(!APP.hidden&&(!$("page-bots").hidden||!$("page-agents").hidden))refresh();
 },7000);
+$("agentsManualRefresh").addEventListener("click",refresh);
+$("agentsFilter").addEventListener("change",()=>renderAgents(overview?.paper||{}));
+$("agentsSort").addEventListener("change",()=>renderAgents(overview?.paper||{}));
 $("keyForm").addEventListener("submit",async e=>{
   e.preventDefault();
   setText("keyMessage","");
