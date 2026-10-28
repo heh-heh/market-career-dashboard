@@ -134,7 +134,7 @@ class InstallTests(unittest.TestCase):
         import shutil
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);repo=root/'repo';repo.mkdir();bin_dir=root/'bin';bin_dir.mkdir()
-            for rel in ('server.py','dashboard_data.py','scripts/update_data.py','scripts/collect_dashboard.py','.dockerignore','deploy/dashboard/Dockerfile','deploy/dashboard/compose.yml','deploy/dashboard/install.sh'):
+            for rel in ('server.py','dashboard_data.py','scripts/update_data.py','scripts/collect_dashboard.py','scripts/configure_dashboard_api.py','.dockerignore','deploy/dashboard/Dockerfile','deploy/dashboard/compose.yml','deploy/dashboard/install.sh'):
                 target=repo/rel;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(ROOT/rel,target)
             for args in (['init','-b','main'],['config','user.name','test'],['config','user.email','test@example.invalid'],['add','.'],['commit','-qm','fixture'],['remote','add','origin','https://github.com/heh-heh/market-career-dashboard.git'],['update-ref','refs/remotes/origin/main','HEAD']):
                 subprocess.run(['git','-C',str(repo),*args],check=True,capture_output=True)

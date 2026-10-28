@@ -51,7 +51,7 @@ done
 # Extract into a fresh staging directory, never over the operating checkout.
 if [[ ! -f "$RELEASE/.ready" ]]; then
   STAGE=$(mktemp -d "$DEPLOY/releases/.stage-XXXXXX")
-  git -C "$REPO" archive "$REV" server.py dashboard_data.py scripts/update_data.py scripts/collect_dashboard.py .dockerignore deploy/dashboard | tar -xf - -C "$STAGE"
+  git -C "$REPO" archive "$REV" server.py dashboard_data.py scripts/update_data.py scripts/collect_dashboard.py scripts/configure_dashboard_api.py .dockerignore deploy/dashboard | tar -xf - -C "$STAGE"
   cp -a "$STAGE/." "$RELEASE/"
   # Staging source is intentionally retained for inspection; it contains no live data.
   printf '%s\n' "$REV" > "$RELEASE/.ready"
@@ -60,7 +60,7 @@ python3 - "$REPO" "$REV" "$RELEASE" <<'PYVERIFY'
 import hashlib,subprocess,sys
 from pathlib import Path
 repo,rev,release=sys.argv[1:]
-for rel in ('server.py','dashboard_data.py','scripts/update_data.py','scripts/collect_dashboard.py','.dockerignore','deploy/dashboard/Dockerfile','deploy/dashboard/compose.yml'):
+for rel in ('server.py','dashboard_data.py','scripts/update_data.py','scripts/collect_dashboard.py','scripts/configure_dashboard_api.py','.dockerignore','deploy/dashboard/Dockerfile','deploy/dashboard/compose.yml'):
     expected=subprocess.check_output(['git','-C',repo,'show',rev+':'+rel])
     actual=(Path(release)/rel).read_bytes()
     if hashlib.sha256(actual).digest()!=hashlib.sha256(expected).digest():

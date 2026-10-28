@@ -40,6 +40,8 @@ services:
   collector:
     <<: *base
     container_name: market-dashboard-collector
+    # Public feeds only; no service discovery or connection to other Compose apps.
+    network_mode: bridge
     command: ["python", "scripts/collect_dashboard.py", "--loop"]
     environment:
       DASHBOARD_ONLY: "true"

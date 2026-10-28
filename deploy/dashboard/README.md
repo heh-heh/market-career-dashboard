@@ -68,7 +68,8 @@ machine verify public health, data, CORS and blocked private endpoints BEFORE se
 the public (non-secret) repository variable and deploying:
 
 ```bash
-python3 scripts/configure_dashboard_api.py --url https://YOUR-HOST.YOUR-TAILNET.ts.net --out /tmp/dashboard-config-verified.js
+RELEASE=$(sed -n 's/^DASHBOARD_SOURCE_DIR=//p' /srv/apps/_deploy/dashboard/home.env)
+python3 "$RELEASE/scripts/configure_dashboard_api.py" --url https://YOUR-HOST.YOUR-TAILNET.ts.net --out /tmp/dashboard-config-verified.js
 gh variable set DASHBOARD_API_BASE_URL --repo heh-heh/market-career-dashboard --body https://YOUR-HOST.YOUR-TAILNET.ts.net
 gh workflow run pages.yml --repo heh-heh/market-career-dashboard --ref main
 ```
