@@ -16,14 +16,23 @@ for tool in git python3 tar; do command -v "$tool" >/dev/null || { echo "ERROR=M
 git -C "$REPO" fetch origin strategy-engine-v3
 REV=$(git -C "$REPO" rev-parse refs/remotes/origin/strategy-engine-v3)
 RELEASE="$BASE/releases/$REV"
-mkdir -p "$RELEASE" "$BASE/private" "$DATA/runtime" "$DATA/historical-smoke"
-chmod 700 "$BASE/private" "$DATA/runtime"
+mkdir -p "$RELEASE" "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical-smoke" "$DATA/historical" "$DATA/ticks"
+chmod 700 "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical" "$DATA/ticks"
 git -C "$REPO" archive "$REV" \
   requirements.txt toss_auth.py toss_rate_limit.py toss_token_broker.py \
   research_collection_scheduler.py research \
   scripts/collect_toss_1m.py scripts/collect_toss_ticks.py \
   scripts/collect_research_1m.py \
   | tar -xf - -C "$RELEASE"
+
+# Legacy tick status uses ROOT/data/toss_ticks/status.json instead of --data-dir.
+# Redirect that path to the persistent SSD, without modifying the research source.
+mkdir -p "$RELEASE/data"
+if [[ -e "$RELEASE/data/toss_ticks" && ! -L "$RELEASE/data/toss_ticks" ]]; then
+  echo "ERROR=RELEASE_TICK_PATH_CONFLICT"
+  exit 1
+fi
+ln -sfnT "$DATA/ticks" "$RELEASE/data/toss_ticks"
 
 python3 -m py_compile "$RELEASE/toss_auth.py" "$RELEASE/toss_token_broker.py" \
   "$RELEASE/scripts/collect_toss_1m.py" "$RELEASE/scripts/collect_toss_ticks.py"
