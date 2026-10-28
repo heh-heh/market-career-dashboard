@@ -38,6 +38,7 @@ def main():
         assert db.execute("SELECT COUNT(*) FROM accounts").fetchone()[0]==20
         app.cycle(db)
         assert app.read_json(app.BASE/"status.json")["state"]=="PAUSED"
+        assert all(a["state"] == "PAUSED" for a in app.read_json(app.BASE/"status.json")["agents"])
         app.atomic_json(app.BASE/"control.json",{"paused":False})
         app.cycle(db)  # first encounter: start at EOF, don't trade on old rows
         with target.open("a",newline="") as f:
@@ -58,6 +59,17 @@ def main():
         assert status["equityUsd"] > 0
         assert status["cashUsd"] < 20000
         assert status["uniqueHoldings"] >= 1
+        agents=status.get("agents", [])
+        assert len(agents) == 20, "one card per paper account"
+        assert len({agent["id"] for agent in agents}) == 20, "unique bot IDs"
+        assert sum(round(agent["cashUsd"]*100) for agent in agents) == round(status["cashUsd"]*100)
+        assert sum(round(agent["equityUsd"]*100) for agent in agents) == round(status["equityUsd"]*100)
+        assert sum(round(agent["investedUsd"]*100) for agent in agents) == round(status["investedUsd"]*100)
+        assert all(agent["initialCapitalUsd"] == 1000 for agent in agents)
+        assert all(agent["strategy"] in ("MOMENTUM","MEAN_REVERSION") for agent in agents)
+        assert all(len(agent["holdings"]) <= 3 for agent in agents)
+        assert any(agent["lastTrade"] is not None for agent in agents)
+        assert any(agent["state"] == "HOLDING" for agent in agents)
         app.cycle(db)
         assert app.read_json(app.BASE/"status.json")["tradeCount"]==count, "duplicate trade on poll"
         db.close()
@@ -65,6 +77,7 @@ def main():
         app.init_db(db)
         app.cycle(db)
         assert app.read_json(app.BASE/"status.json")["tradeCount"]==count, "duplicate trade on restart"
+        assert len(app.read_json(app.BASE/"status.json")["agents"])==20, "agents persist across restart"
         app.atomic_json(app.BASE/"control.json",{"paused":True})
         app.cycle(db)
         assert app.read_json(app.BASE/"status.json")["state"]=="PAUSED"
