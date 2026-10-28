@@ -306,8 +306,10 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 </section>
 <div class="notice" id="notice">데이터 정책을 불러오는 중...</div></div><div id="stockModal" class="modal"><div class="modal-box"><div id="stockDetail"></div></div></div><div id="jobModal" class="modal"><div class="modal-box"><div id="jobDetail"></div></div></div>
 </div>
+<script src="dashboard-config.js"></script>
 <script>
-const AWS_API_BASE="https://35.79.235.14"; // EC2 HTTPS API
+const PUBLIC_READ_ONLY=window.DASHBOARD_CONFIG?.publicReadOnly===true;
+const AWS_API_BASE=window.DASHBOARD_CONFIG?.apiBase||"https://35.79.235.14"; // Existing endpoint retained until verified HTTPS configuration is supplied.
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function formatKSTDateTime(v){
   if(!v)return "-";
@@ -322,6 +324,7 @@ function settingsHeaders(){
  return token?{"Content-Type":"application/json","Authorization":"Bearer "+token}:{"Content-Type":"application/json"};
 }
 async function settingsRequest(path,options={}){
+ if(PUBLIC_READ_ONLY) throw new Error("공개 대시보드는 조회 전용입니다.");
  if(!AWS_API_BASE) throw new Error("AWS_API_BASE가 설정되지 않았습니다.");
  const res=await fetch(AWS_API_BASE+path,{...options,headers:{...settingsHeaders(),...(options.headers||{})}});
  const data=await res.json().catch(()=>({}));
@@ -371,6 +374,7 @@ async function logoutSettings(){
  settingsMessage("로그아웃되었습니다.");
 }
 async function tradingRequest(path,options={}){
+ if(PUBLIC_READ_ONLY) throw new Error("거래 기능이 비활성화되어 있습니다.");
  const token=localStorage.getItem(SETTINGS_TOKEN_KEY)||"";
  if(!token)throw new Error("먼저 설정 탭에서 관리자 로그인하세요.");
  const res=await fetch(AWS_API_BASE+path,{...options,headers:{...settingsHeaders(),...(options.headers||{})}});
@@ -529,9 +533,16 @@ document.getElementById("adminPassword")?.addEventListener("keydown",e=>{if(e.ke
 let cached;
 async function loadData(){
  try{
-  cached=await fetch((AWS_API_BASE?AWS_API_BASE+"/api/dashboard":"data/dashboard.json")+"?"+Date.now()).then(r=>r.json());
-  render(cached);
- }catch(e){document.getElementById("status").textContent="데이터를 불러오지 못했습니다.";}
+  const r=await fetch((AWS_API_BASE?AWS_API_BASE+"/api/dashboard":"data/dashboard.json")+"?"+Date.now(),{signal:AbortSignal.timeout(10000)});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  cached=await r.json();render(cached);
+ }catch(e){
+  try{
+   const r=await fetch("data/dashboard.json?"+Date.now());if(!r.ok)throw new Error("fallback");
+   cached=await r.json();render(cached);
+   document.getElementById("status").textContent+=" · API 연결 불가: 저장된 데이터 표시";
+  }catch(_){document.getElementById("status").textContent="데이터를 불러오지 못했습니다.";}
+ }
 }
 function stockRow(s){
  const isUS=/^(NVDA|AMD|INTC|AVGO|MU|TSM)$/.test(s.symbol);
@@ -777,6 +788,7 @@ function applyRealtimeQuote(symbol,quote){
  }
 }
 function startRealtime(){
+ if(PUBLIC_READ_ONLY){updateRealtimeStatus("시간별 수집 데이터",false);return;}
  if(!AWS_API_BASE){
   updateRealtimeStatus("로컬 데이터 모드",false);
   return;
@@ -1196,6 +1208,7 @@ async function loadBacktestMonitor(){
  }
 }
 function startBacktestMonitor(){
+ if(PUBLIC_READ_ONLY)return;
  if(btTimer)clearInterval(btTimer);
  loadTickCollectorMonitor();
  loadV4ResearchMonitor();
@@ -1206,6 +1219,10 @@ function startBacktestMonitor(){
 document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.closest('button[data-view="v9"]');if(b)startBacktestMonitor()});
 
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
+if(PUBLIC_READ_ONLY){
+ document.querySelectorAll('nav button[data-view="v7"],nav button[data-view="v9"]').forEach(x=>x.hidden=true);
+}
 loadData();
+setInterval(loadData,60000);
 startRealtime();
-</script><script>document.querySelectorAll("nav button[data-view]").forEach(b=>{if(b.textContent.trim()==="증권")b.remove()});</script><script src="research-export.js"></script></body></html>
+</script><script>document.querySelectorAll("nav button[data-view]").forEach(b=>{if(b.textContent.trim()==="증권")b.remove()});</script></body></html>

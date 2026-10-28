@@ -1,0 +1,9 @@
+**
+!server.py
+!dashboard_data.py
+!scripts/
+!scripts/update_data.py
+!scripts/collect_dashboard.py
+!deploy/
+!deploy/dashboard/
+!deploy/dashboard/Dockerfile

@@ -3,24 +3,48 @@ import json, urllib.request, urllib.parse, xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import time
+import os, sys, threading
+from concurrent.futures import ThreadPoolExecutor
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from dashboard_data import atomic_json, validate_dashboard
 
-OUT=Path("data/dashboard.json")
-OUT.parent.mkdir(parents=True,exist_ok=True)
+WORKERS=max(1,min(6,int(os.getenv("COLLECT_WORKERS","4"))))
+REQUEST_TIMEOUT=max(1,min(20,float(os.getenv("COLLECT_REQUEST_TIMEOUT","8"))))
+DEADLINE=time.monotonic()+max(10,float(os.getenv("COLLECT_MAX_SECONDS","600"))-5)
+METRICS={"requests":0,"requestFailures":0,"detailRequests":0}
+METRICS_LOCK=threading.Lock()
+DETAIL_CACHE={}
 
-def get(url, attempts=3, timeout=12):
+def log_stage(stage, **fields):
+    print(json.dumps({"stage":stage,**fields},ensure_ascii=False),flush=True)
+
+def parallel_map(fn, items):
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        return list(pool.map(fn,items))
+
+
+OUT=Path(os.getenv("DASHBOARD_DATA_FILE", str(Path(os.getenv("DASHBOARD_DATA_DIR", "data"))/"dashboard.json")))
+
+def get(url, attempts=2, timeout=8):
     last=None
-    for n in range(attempts):
+    for n in range(min(attempts,2)):
+        remaining=DEADLINE-time.monotonic()
+        if remaining<=0:
+            raise TimeoutError("COLLECTION_DEADLINE")
         try:
+            with METRICS_LOCK: METRICS["requests"]+=1
             req=urllib.request.Request(url,headers={
                 "User-Agent":"Mozilla/5.0 market-career-dashboard/1.1",
                 "Accept":"application/json,text/plain,*/*"
             })
-            with urllib.request.urlopen(req,timeout=timeout) as r:
-                return r.read()
+            with urllib.request.urlopen(req,timeout=min(timeout,REQUEST_TIMEOUT,remaining)) as r:
+                value=r.read(8*1024*1024+1)
+                if len(value)>8*1024*1024: raise ValueError("RESPONSE_TOO_LARGE")
+                return value
         except Exception as e:
             last=e
-            if n+1 < attempts:
-                time.sleep(1.2*(n+1))
+            with METRICS_LOCK: METRICS["requestFailures"]+=1
+            if n+1<min(attempts,2): time.sleep(min(0.3,max(0,DEADLINE-time.monotonic())))
     raise last
 
 def quote_symbol(symbol):
@@ -49,16 +73,8 @@ def chart_data(symbol, rng, interval):
     except Exception:
         return []
 
-try:
-    previous_data=json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
-except Exception:
-    previous_data={}
-
-previous_by_symbol={
-    x.get("symbol"):x
-    for x in previous_data.get("stocks",[])+previous_data.get("indices",[])
-    if x.get("symbol")
-}
+previous_data={}
+previous_by_symbol={}
 
 def enrich_next_day_forecast(items, indices):
     """다음 거래일 참고 시나리오.
@@ -320,10 +336,13 @@ def collect_stock_news(previous):
         "TSMC":["tsmc"]
     }
     fresh=[]
-    for q in queries:
-        fresh += rss(q,8,days=2)
+    for batch in parallel_map(lambda q:rss(q,8,days=2),queries):
+        fresh += batch
+    if not fresh:
+        return previous.get("news",[]),previous.get("newsUpdatedAt","")
     merged={}
     for item in previous.get("news",[])+fresh:
+        item=dict(item)
         title=str(item.get("title",""))
         if not title:
             continue
@@ -504,9 +523,11 @@ def collect_employment_news(previous):
         "개발자 채용 공고 취업"
     ]
     fresh=[]
-    for q in queries:
-        fresh += rss(q,8,days=2)
+    for batch in parallel_map(lambda q:rss(q,8,days=2),queries):
+        fresh += batch
 
+    if not fresh:
+        return previous.get("employmentNews",[]),previous_updated
     cutoff=now-timedelta(days=2)
     merged={}
     for item in previous.get("employmentNews",[])+fresh:
@@ -574,6 +595,12 @@ def direct_job_list(url, site_name, limit=80, keywords=None):
             break
     return out
 
+def canonical_job_link(link):
+    parts=urllib.parse.urlsplit(link)
+    query=[(k,v) for k,v in urllib.parse.parse_qsl(parts.query,keep_blank_values=True)
+           if not k.lower().startswith("utm_") and k.lower() not in {"fbclid","gclid"}]
+    return urllib.parse.urlunsplit((parts.scheme.lower(),parts.netloc.lower(),parts.path,urllib.parse.urlencode(sorted(query)),""))
+
 def collect_job_postings(previous):
     now=datetime.now(timezone.utc)
     previous_updated=previous.get("jobPostingsUpdatedAt","")
@@ -581,7 +608,9 @@ def collect_job_postings(previous):
         last=datetime.fromisoformat(previous_updated.replace("Z","+00:00"))
     except Exception:
         last=datetime.min.replace(tzinfo=timezone.utc)
-    # Refresh job postings on every scheduled run.
+    if (now-last).total_seconds()<int(os.getenv("JOB_REFRESH_SECONDS","3600")):
+        return previous.get("jobPostings",[]), previous_updated
+    log_stage("jobs_discovery")
 
     fresh=[]
     # GameJob has a server-rendered public recruitment list with pagination.
@@ -590,7 +619,7 @@ def collect_job_postings(previous):
         "프로그래머","클라이언트","서버","네트워크","엔진","백엔드",
         "개발","C++","C#","Unity","Unreal","언리얼","게임","테크"
     ]
-    for page in range(1,7):
+    for page in range(1,1+max(1,min(6,int(os.getenv("JOB_LIST_PAGES","3"))))):
         url="https://www.gamejob.co.kr/Recruit/joblist" if page==1 else f"https://www.gamejob.co.kr/recruit/_GI_Job_List?Page={page}"
         page_jobs=direct_job_list(url,"게임잡",limit=80,keywords=game_keywords)
         print(f"job source gamejob page={page} count={len(page_jobs)}")
@@ -624,9 +653,9 @@ def collect_job_postings(previous):
         ("site:career.programmers.co.kr 게임 개발자", "프로그래머스")
     ]
 
-    existing_links={x.get("link") for x in previous.get("jobPostings",[])}
-    for q,site_name in sites:
-        for item in rss(q,20,days=14):
+    existing_links={canonical_job_link(x.get("link","")) for x in previous.get("jobPostings",[])}
+    for (q,site_name),batch in zip(sites,parallel_map(lambda pair:rss(pair[0],20,days=14),sites)):
+        for item in batch:
             link=item.get("link","")
             desc=item.get("description","")
             title=item.get("title","").strip()
@@ -646,18 +675,38 @@ def collect_job_postings(previous):
                 "sourceSite":site_name,
             })
 
+    if not fresh:
+        return previous.get("jobPostings",[]),previous_updated
     cutoff=now-timedelta(days=30)
     candidates=previous.get("jobPostings",[])+fresh
 
-    enriched=[]
+    # Deduplicate before detail fetch; cache both successful and empty detail results.
+    unique={}
     for item in candidates:
-        if item.get("link") in existing_links and item.get("skills"):
-            enriched.append(item)
-            continue
-        detail=parse_job_detail(item)
-        item={**item,**{k:v for k,v in detail.items() if v}}
-        enriched.append(item)
-    candidates=enriched
+        link=canonical_job_link(item.get("link",""))
+        key=link or normalize_text(item.get("company",""))+"|"+normalize_text(item.get("title",""))
+        if key: unique[key]={**unique.get(key,{}),**item}
+    candidates=list(unique.values())
+    pending=[]
+    now_ts=time.time()
+    ttl=max(3600,int(os.getenv("JOB_DETAIL_CACHE_SECONDS","86400")))
+    for item in candidates:
+        key=canonical_job_link(item.get("link",""))
+        cached=DETAIL_CACHE.get(key,{})
+        if now_ts-cached.get("fetchedAt",0)<ttl:
+            item.update(cached.get("detail",{}))
+        elif not (item.get("detailText") or (key in existing_links and item.get("skills"))):
+            pending.append(item)
+    limit=max(0,min(100,int(os.getenv("JOB_DETAIL_LIMIT","20"))))
+    selected=pending[:limit]
+    log_stage("jobs_details",candidates=len(candidates),fetches=len(selected))
+    for item,detail in zip(selected,parallel_map(parse_job_detail,selected)):
+        key=canonical_job_link(item.get("link",""))
+        with METRICS_LOCK: METRICS["detailRequests"]+=1
+        DETAIL_CACHE[key]={"fetchedAt":now_ts,"detail":detail}
+        item.update({k:v for k,v in detail.items() if v})
+    for key in list(DETAIL_CACHE):
+        if now_ts-DETAIL_CACHE[key].get("fetchedAt",0)>=ttl: DETAIL_CACHE.pop(key)
 
     def role_tokens(title, company):
         import re
@@ -716,89 +765,126 @@ def collect_job_postings(previous):
     items=sorted(grouped.values(),key=lambda x:x.get("publishedAt",""),reverse=True)[:200]
     return items, now.isoformat(timespec="seconds")
 
-now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
-employment_news, employment_updated_at=collect_employment_news(previous_data)
-job_postings, job_postings_updated_at=collect_job_postings(previous_data)
+def collect():
+    global previous_data,previous_by_symbol,DETAIL_CACHE
+    try: previous_data=json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
+    except (ValueError,OSError): raise RuntimeError("PREVIOUS_DASHBOARD_INVALID")
+    previous_by_symbol={x.get("symbol"):x for x in previous_data.get("stocks",[])+previous_data.get("indices",[]) if x.get("symbol")}
+    try: DETAIL_CACHE=json.loads((OUT.parent/"job_detail_cache.json").read_text(encoding="utf-8"))
+    except (ValueError,OSError): DETAIL_CACHE={}
+    now=datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
+    log_stage("quotes")
 
 
-korea=[
-    stock("005930.KS","삼성전자","한국 반도체"),
-    stock("000660.KS","SK하이닉스","한국 반도체"),
-    stock("042700.KS","한미반도체","한국 반도체"),
-    stock("036570.KS","엔씨소프트","한국 게임")
-]
-
-us=[
-    stock("NVDA","NVIDIA","미국 반도체"),
-    stock("AMD","AMD","미국 반도체"),
-    stock("INTC","Intel","미국 반도체"),
-    stock("AVGO","Broadcom","미국 반도체"),
-    stock("MU","Micron","미국 반도체"),
-    stock("TSM","TSMC","미국/글로벌 반도체"),
-    stock("SOXL","Direxion Daily Semiconductor Bull 3X ETF","반도체 레버리지 ETF"),
-    stock("SOXS","Direxion Daily Semiconductor Bear 3X ETF","반도체 인버스 ETF")
-]
-
-indices=[
-    stock("^KS11","KOSPI","종합 지수"),
-    stock("^KQ11","KOSDAQ","종합 지수"),
-    stock("^IXIC","NASDAQ Composite","종합 지수"),
-    stock("^GSPC","S&P 500","종합 지수"),
-    stock("^SOX","PHLX Semiconductor Index (SOX)","반도체 종합"),
-    stock("SOXX","iShares Semiconductor ETF","반도체 ETF"),
-    stock("SMH","VanEck Semiconductor ETF","반도체 ETF")
-]
-
-# 주식/ETF에 다음 거래일 참고 시나리오를 부여한다.
-enrich_next_day_forecast(korea+us, indices)
-enrich_next_day_forecast(indices, indices)
-
-news, news_updated_at=collect_stock_news(previous_data)
-
-data={
-    "updatedAt":now,
-    "notice":"뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
-    "stocks":korea+us,
-    "indices":indices,
-    "news":news,
-    "newsUpdatedAt":news_updated_at,
-    "employmentNews":employment_news,
-    "employmentUpdatedAt":employment_updated_at,
-    "jobPostings":job_postings,
-    "jobPostingsUpdatedAt":job_postings_updated_at,
-    "employment":[
-        {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
-        {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
-        {"title":"백엔드","skills":["REST API","DB","Docker","Cloud","테스트"]}
-    ],
-    "trends":[
-        {"title":"생성형 AI","text":"코드 생성·리뷰·테스트·문서화 등 개발 파이프라인 보조"},
-        {"title":"AI Agent","text":"여러 단계의 개발 작업을 계획하고 도구를 호출하는 자동화"},
-        {"title":"온디바이스 AI","text":"기기에서 추론해 지연시간·비용·데이터 이동을 줄이는 방향"},
-        {"title":"게임 라이브서비스","text":"실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"}
+    korea=[
+        ("005930.KS","삼성전자","한국 반도체"),
+        ("000660.KS","SK하이닉스","한국 반도체"),
+        ("042700.KS","한미반도체","한국 반도체"),
+        ("036570.KS","엔씨소프트","한국 게임")
     ]
-}
 
-all_quotes=data["stocks"]+data["indices"]
-successful=[x for x in all_quotes if isinstance(x.get("price"),(int,float))]
-candle_ready=sum(
-    1 for x in all_quotes
-    if any(x.get("candles",{}).get(k) for k in ("1m","5m","1h","1d"))
-)
+    us=[
+        ("NVDA","NVIDIA","미국 반도체"),
+        ("AMD","AMD","미국 반도체"),
+        ("INTC","Intel","미국 반도체"),
+        ("AVGO","Broadcom","미국 반도체"),
+        ("MU","Micron","미국 반도체"),
+        ("TSM","TSMC","미국/글로벌 반도체"),
+        ("SOXL","Direxion Daily Semiconductor Bull 3X ETF","반도체 레버리지 ETF"),
+        ("SOXS","Direxion Daily Semiconductor Bear 3X ETF","반도체 인버스 ETF")
+    ]
 
-if len(successful)<10:
-    raise RuntimeError(
-        f"data quality guard: only {len(successful)}/{len(all_quotes)} quotes available; refusing to overwrite dashboard.json"
+    indices=[
+        ("^KS11","KOSPI","종합 지수"),
+        ("^KQ11","KOSDAQ","종합 지수"),
+        ("^IXIC","NASDAQ Composite","종합 지수"),
+        ("^GSPC","S&P 500","종합 지수"),
+        ("^SOX","PHLX Semiconductor Index (SOX)","반도체 종합"),
+        ("SOXX","iShares Semiconductor ETF","반도체 ETF"),
+        ("SMH","VanEck Semiconductor ETF","반도체 ETF")
+    ]
+
+    korea=parallel_map(lambda args:stock(*args),korea)
+    us=parallel_map(lambda args:stock(*args),us)
+    indices=parallel_map(lambda args:stock(*args),indices)
+    log_stage("employment_news")
+    employment_news, employment_updated_at=collect_employment_news(previous_data)
+    log_stage("jobs")
+    job_postings, job_postings_updated_at=collect_job_postings(previous_data)
+    log_stage("stock_news")
+    # 주식/ETF에 다음 거래일 참고 시나리오를 부여한다.
+    enrich_next_day_forecast(korea+us, indices)
+    enrich_next_day_forecast(indices, indices)
+
+    news, news_updated_at=collect_stock_news(previous_data)
+
+    data={
+        "updatedAt":now,
+        "notice":"뉴스는 주요 종목·반도체·AI·게임·금리·환율 관련 RSS를 1시간 단위로 수집하고, 종목 직접 언급·시장 영향 키워드를 기준으로 영향도를 1차 분류합니다. 주가·지수: Yahoo Finance 참고 데이터. 다음 거래일 예상은 최근 모멘텀·이동평균·변동성·관련 지수 흐름을 조합한 참고용 시나리오이며 실제 주가를 보장하지 않습니다. 캔들은 1분·5분·1시간·일봉으로 수집하며 제공처 지연이 있을 수 있습니다. 페이지는 60초마다 데이터를 재조회합니다. 뉴스 영향은 키워드 기반 1차 분류입니다.",
+        "stocks":korea+us,
+        "indices":indices,
+        "news":news,
+        "newsUpdatedAt":news_updated_at,
+        "employmentNews":employment_news,
+        "employmentUpdatedAt":employment_updated_at,
+        "jobPostings":job_postings,
+        "jobPostingsUpdatedAt":job_postings_updated_at,
+        "employment":[
+            {"title":"게임 클라이언트","skills":["C++","Unity","Unreal","자료구조/알고리즘","최적화"]},
+            {"title":"게임 서버","skills":["C++/Java/Python","REST API","DB","Redis","AWS","네트워크"]},
+            {"title":"백엔드","skills":["REST API","DB","Docker","Cloud","테스트"]}
+        ],
+        "trends":[
+            {"title":"생성형 AI","text":"코드 생성·리뷰·테스트·문서화 등 개발 파이프라인 보조"},
+            {"title":"AI Agent","text":"여러 단계의 개발 작업을 계획하고 도구를 호출하는 자동화"},
+            {"title":"온디바이스 AI","text":"기기에서 추론해 지연시간·비용·데이터 이동을 줄이는 방향"},
+            {"title":"게임 라이브서비스","text":"실시간 지표와 운영 자동화, 콘텐츠 배포 및 실험의 중요성"}
+        ]
+    }
+
+    all_quotes=data["stocks"]+data["indices"]
+    successful=[x for x in all_quotes if isinstance(x.get("price"),(int,float))]
+    candle_ready=sum(
+        1 for x in all_quotes
+        if any(x.get("candles",{}).get(k) for k in ("1m","5m","1h","1d"))
     )
 
-data["quality"]={
-    "quotes_ok":len(successful),
-    "quotes_total":len(all_quotes),
-    "candle_ready":candle_ready,
-    "generatedAt":now
-}
+    if len(successful)<10:
+        raise RuntimeError(
+            f"data quality guard: only {len(successful)}/{len(all_quotes)} quotes available; refusing to overwrite dashboard.json"
+        )
 
-tmp=OUT.with_suffix(".json.tmp")
-tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding="utf-8")
-tmp.replace(OUT)
-print(f"updated {OUT} at {now}; quotes={len(successful)}/{len(all_quotes)} candle_ready={candle_ready} job_postings={len(job_postings)}")
+    data["quality"]={
+        "quotes_ok":len(successful),
+        "quotes_total":len(all_quotes),
+        "candle_ready":candle_ready,
+        "generatedAt":now,
+        "freshQuotes":sum(x.get("source")=="Yahoo Finance" for x in successful),
+        "requests":dict(METRICS)
+    }
+
+    validate_dashboard(data, require_fresh=True)
+    # Do not replace working non-empty news/jobs with a failed empty scrape.
+    for field in ("news","employmentNews","jobPostings"):
+        if not data[field] and previous_data.get(field):
+            raise RuntimeError("DATA_QUALITY_EMPTY_SECTION:"+field)
+    if previous_data:
+        atomic_json(OUT.parent/"dashboard.previous.json",previous_data)
+    atomic_json(OUT.parent/"job_detail_cache.json",dict(list(DETAIL_CACHE.items())[-2000:]))
+    atomic_json(OUT,data)
+    log_stage("completed",quotes=len(successful),jobs=len(job_postings),**METRICS)
+
+if __name__=="__main__":
+    if "--worker" in sys.argv:
+        import fcntl
+        fd=int(os.environ.get("DASHBOARD_COLLECT_LOCK_FD","-1"))
+        if fd<0: raise RuntimeError("COLLECTOR_SUPERVISOR_REQUIRED")
+        expected=(OUT.parent/"collector.lock").stat()
+        actual=os.fstat(fd)
+        if (actual.st_dev,actual.st_ino)!=(expected.st_dev,expected.st_ino):
+            raise RuntimeError("COLLECTOR_LOCK_INVALID")
+        fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        collect()
+    else:
+        from collect_dashboard import main
+        sys.exit(main())

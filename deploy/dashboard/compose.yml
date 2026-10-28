@@ -1,0 +1,63 @@
+name: market-dashboard-home
+x-base: &base
+  image: market-dashboard-home:${DASHBOARD_REVISION:?revision required}
+  build:
+    context: ${DASHBOARD_SOURCE_DIR:?source required}
+    dockerfile: deploy/dashboard/Dockerfile
+  user: "${DASHBOARD_UID:-1000}:${DASHBOARD_GID:-1000}"
+  restart: unless-stopped
+  init: true
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 64
+  tmpfs: ["/tmp:size=64m,mode=1777"]
+  logging:
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+services:
+  api:
+    <<: *base
+    container_name: market-dashboard-api
+    ports: ["127.0.0.1:18084:8080"]
+    environment:
+      DASHBOARD_ONLY: "true"
+      DASHBOARD_DATA_DIR: /data
+      HOST: 0.0.0.0
+      PORT: "8080"
+      CORS_ORIGINS: https://heh-heh.github.io
+      TRADING_MODE: disabled
+      LIVE_TRADING_ENABLED: "false"
+    volumes: ["${DASHBOARD_DATA_DIR:?data required}:/data:ro"]
+    cpus: 0.50
+    mem_limit: 384m
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; d=json.load(urllib.request.urlopen('http://127.0.0.1:8080/api/health',timeout=4)); assert d['ok'] and not d['tradingEnabled']"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+  collector:
+    <<: *base
+    container_name: market-dashboard-collector
+    command: ["python", "scripts/collect_dashboard.py", "--loop"]
+    environment:
+      DASHBOARD_ONLY: "true"
+      DASHBOARD_DATA_DIR: /data
+      COLLECT_INTERVAL_SECONDS: "3600"
+      COLLECT_MAX_SECONDS: "600"
+      COLLECT_WORKERS: "4"
+      COLLECT_REQUEST_TIMEOUT: "8"
+      JOB_DETAIL_LIMIT: "20"
+      JOB_DETAIL_CACHE_SECONDS: "86400"
+      JOB_LIST_PAGES: "3"
+    volumes: ["${DASHBOARD_DATA_DIR:?data required}:/data"]
+    cpus: 1.0
+    mem_limit: 768m
+    stop_grace_period: 15s
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,datetime; s=json.load(open('/data/collector_status.json')); t=datetime.datetime.fromisoformat(s.get('lastSuccessAt') or s['startedAt']); assert (datetime.datetime.now(datetime.timezone.utc)-t).total_seconds()<7500 and s['phase']!='FAILED'"]
+      interval: 120s
+      timeout: 5s
+      retries: 2
+      start_period: 650s

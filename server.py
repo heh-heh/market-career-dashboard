@@ -2,13 +2,16 @@
 import asyncio, json, os, re, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from trading import paper as paper_broker, strategy as trading_strategy
-from live_trader import LiveAutoTrader
-from toss_auth import get_token as shared_toss_token
-from toss_rate_limit import wait_for_slot, group_for_path
+DASHBOARD_ONLY=os.getenv("DASHBOARD_ONLY","false").lower()=="true"
+if not DASHBOARD_ONLY:
+    from trading import paper as paper_broker, strategy as trading_strategy
+    from live_trader import LiveAutoTrader
+    from toss_auth import get_token as shared_toss_token
+    from toss_rate_limit import wait_for_slot, group_for_path
+from dashboard_data import read_dashboard
 
 ROOT=Path(__file__).resolve().parent
-DATA=ROOT/"data"/"dashboard.json"
+DATA=Path(os.getenv("DASHBOARD_DATA_FILE",str(Path(os.getenv("DASHBOARD_DATA_DIR",str(ROOT/"data")))/"dashboard.json")))
 SECRETS=ROOT/"server_secrets.json"
 HOST=os.getenv("HOST","0.0.0.0")
 PORT=int(os.getenv("PORT","8080"))
@@ -30,7 +33,7 @@ TRADING_STATE={
     "last_error":None,
 }
 TRADING_LOCK=threading.Lock()
-LIVE_TRADER=LiveAutoTrader(ROOT)
+LIVE_TRADER=None if DASHBOARD_ONLY else LiveAutoTrader(ROOT)
 
 def load_secrets():
     if not SECRETS.exists():
@@ -139,7 +142,8 @@ def toss_quotes(cfg, items):
             }
     return out
 
-LIVE_TRADER.set_token_provider(lambda force=False: toss_access_token(load_secrets(), force=force))
+if not DASHBOARD_ONLY:
+    LIVE_TRADER.set_token_provider(lambda force=False: toss_access_token(load_secrets(), force=force))
 
 def yahoo_quote(symbol):
     url="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol,safe="")+"?range=1d&interval=1m&includePrePost=false"
@@ -385,12 +389,43 @@ def start_realtime():
     except Exception as e:
         print("realtime server stopped:",e,flush=True)
 
+class DashboardHTTPServer(ThreadingHTTPServer):
+    daemon_threads=True
+    request_queue_size=16
+
+    def __init__(self,*args,**kwargs):
+        self.slots=threading.BoundedSemaphore(4)
+        super().__init__(*args,**kwargs)
+
+    def get_request(self):
+        request,address=super().get_request()
+        request.settimeout(10)
+        return request,address
+
+    def process_request(self,request,address):
+        if not self.slots.acquire(blocking=False):
+            self.shutdown_request(request)
+            return
+        try: super().process_request(request,address)
+        except Exception:
+            self.slots.release()
+            raise
+
+    def process_request_thread(self,request,address):
+        try: super().process_request_thread(request,address)
+        finally: self.slots.release()
+
 class Handler(BaseHTTPRequestHandler):
     def send_json(self,obj,status=200):
         raw=json.dumps(obj,ensure_ascii=False).encode()
         self.send_response(status)
         self.send_header("Content-Type","application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin","https://heh-heh.github.io")
+        allowed={x.strip() for x in os.getenv("CORS_ORIGINS","https://heh-heh.github.io").split(",") if x.strip()}
+        origin=self.headers.get("Origin","")
+        if origin in allowed:
+            self.send_header("Access-Control-Allow-Origin",origin)
+        self.send_header("Vary","Origin")
+        self.send_header("X-Content-Type-Options","nosniff")
         self.send_header("Access-Control-Allow-Headers","Content-Type, Authorization")
         self.send_header("Access-Control-Allow-Methods","GET, POST, OPTIONS")
         self.send_header("Cache-Control","no-store")
@@ -406,8 +441,39 @@ class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_json({"ok":True})
 
+    def dashboard_get(self,path):
+        # Explicit public allowlist. No admin, broker, paper, research, settings or proxy API.
+        sections={"/api/stocks":"stocks","/api/indices":"indices","/api/news":"news",
+                  "/api/jobs":"jobPostings","/api/employment":"employmentNews"}
+        if path=="/api/health":
+            ready=False; updated=None
+            try:
+                data=read_dashboard(DATA); updated=data["updatedAt"]; ready=True
+            except (ValueError,OSError,TypeError): pass
+            self.send_json({"ok":True,"service":"market-career-dashboard","mode":"dashboard-only",
+                            "dataReady":ready,"dataUpdatedAt":updated,"tradingEnabled":False,
+                            "researchEnabled":False,"collectorInApi":False}); return
+        if path not in {"/api/dashboard","/api/quotes","/api/realtime",*sections}:
+            self.send_json({"ok":False,"error":"DASHBOARD_ONLY_ROUTE_DISABLED"},403); return
+        if path=="/api/realtime":
+            self.send_json({"ok":True,"connected":False,"provider":"hourly_snapshot","quotes":{}}); return
+        try:
+            data=read_dashboard(DATA)
+            if path=="/api/dashboard": result=data
+            elif path in sections:
+                result={"updatedAt":data["updatedAt"],"items":data[sections[path]]}
+            else:
+                result={"quotes":{x["symbol"]:{"price":x.get("price"),"change":x.get("change"),
+                         "live":False,"provider":"hourly_snapshot","timestamp":data["updatedAt"]}
+                         for x in data["stocks"]+data["indices"]},"updatedAt":data["updatedAt"]}
+            self.send_json(result)
+        except (ValueError,OSError,TypeError,KeyError):
+            self.send_json({"ok":False,"error":"DASHBOARD_DATA_UNAVAILABLE"},503)
+
     def do_GET(self):
         path=self.path.split("?")[0]
+        if DASHBOARD_ONLY:
+            self.dashboard_get(path); return
         if path=="/api/trading/status":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -540,6 +606,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path=self.path.split("?")[0]
+        if DASHBOARD_ONLY:
+            self.send_json({"ok":False,"error":"DASHBOARD_ONLY_READ_ONLY"},403); return
         if path=="/api/trading/engine":
             if not trading_authorized(self):
                 self.send_json({"ok":False,"error":"unauthorized"},401); return
@@ -655,11 +723,13 @@ class Handler(BaseHTTPRequestHandler):
         print("%s - %s"%(self.address_string(),fmt%args),flush=True)
 
 if __name__=="__main__":
-    DATA.parent.mkdir(parents=True,exist_ok=True)
-    threading.Thread(target=update_data,daemon=True).start()
-    threading.Thread(target=start_realtime,daemon=True).start()
-    LIVE_TRADER.start()
+    if not DASHBOARD_ONLY:
+        DATA.parent.mkdir(parents=True,exist_ok=True)
+        threading.Thread(target=update_data,daemon=True).start()
+        threading.Thread(target=start_realtime,daemon=True).start()
+        LIVE_TRADER.start()
     print(f"API listening on {HOST}:{PORT}; update interval={INTERVAL}s",flush=True)
     if not ADMIN_PASSWORD:
         print("WARNING: ADMIN_PASSWORD is not set; /api/login is disabled.",flush=True)
-    ThreadingHTTPServer((HOST,PORT),Handler).serve_forever()
+    server_class=DashboardHTTPServer if DASHBOARD_ONLY else ThreadingHTTPServer
+    server_class((HOST,PORT),Handler).serve_forever()

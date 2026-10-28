@@ -1,17 +1,14 @@
 name: Deploy GitHub Pages
 on:
   push:
-    branches: ["strategy-engine-v3"]
+    branches: ["main"]
     paths:
       - "index.html"
-      - "admin.html"
-      - "collection.html"
-      - "backtest-v2.html"
-      - "research-export.js"
-      - "research-export.css"
-      - "autonomous-research.js"
+      - "dashboard-config.js"
+      - "scripts/configure_dashboard_api.py"
       - "data/dashboard.json"
       - ".github/workflows/pages.yml"
+  workflow_dispatch:
 concurrency:
   group: deploy-github-pages
   cancel-in-progress: true
@@ -34,9 +31,14 @@ jobs:
       - name: Assemble public UI only
         run: |
           mkdir -p _site/data
-          cp index.html admin.html collection.html backtest-v2.html research-export.js research-export.css autonomous-research.js _site/
+          cp index.html dashboard-config.js _site/
           cp data/dashboard.json _site/data/
           touch _site/.nojekyll
+      - name: Verify configured home-server HTTPS API
+        if: ${{ vars.DASHBOARD_API_BASE_URL != '' }}
+        env:
+          DASHBOARD_API_BASE_URL: ${{ vars.DASHBOARD_API_BASE_URL }}
+        run: python3 scripts/configure_dashboard_api.py --url "$DASHBOARD_API_BASE_URL" --out _site/dashboard-config.js
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:

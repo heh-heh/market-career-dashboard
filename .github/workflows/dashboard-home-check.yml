@@ -1,0 +1,24 @@
+name: Dashboard home checks
+on:
+  push:
+    branches: [main]
+    paths: [.dockerignore, server.py, dashboard_data.py, scripts/update_data.py, scripts/collect_dashboard.py, scripts/configure_dashboard_api.py, deploy/dashboard/**, tests/test_dashboard_home.py, .github/workflows/dashboard-home-check.yml]
+  pull_request:
+    paths: [.dockerignore, server.py, dashboard_data.py, scripts/update_data.py, scripts/collect_dashboard.py, scripts/configure_dashboard_api.py, deploy/dashboard/**, tests/test_dashboard_home.py, .github/workflows/dashboard-home-check.yml]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with: {python-version: '3.12'}
+      - run: python -m unittest discover -s tests -p test_dashboard_home.py
+      - run: python -m py_compile server.py dashboard_data.py scripts/update_data.py scripts/collect_dashboard.py scripts/configure_dashboard_api.py
+      - run: bash -n deploy/dashboard/install.sh && node --check dashboard-config.js
+      - name: Check Compose and isolated image
+        run: |
+          DASHBOARD_SOURCE_DIR="$PWD" DASHBOARD_REVISION=ci DASHBOARD_DATA_DIR=/tmp/dashboard-data docker compose -f deploy/dashboard/compose.yml config --quiet
+          docker build -t market-dashboard-home:ci -f deploy/dashboard/Dockerfile .
+          docker run --rm --network none market-dashboard-home:ci python -c "import server; assert server.DASHBOARD_ONLY and server.LIVE_TRADER is None"
