@@ -68,14 +68,21 @@ function render(data) {
   setText("researchOutput",jsonSafe(data.research));
   setText("botCount",data.bots?.count==null?"미가동":String(data.bots.count));
   setText("botsOutput",jsonSafe(data.bots));
-  setText("historyStatus",data.historical?.collectorStatus==="NOT_DEPLOYED"?"미배포":data.historical?.collectorStatus);
+  setText("historyStatus",data.historical?.serviceState==="running" && data.historical?.paused?"일시정지":
+    data.historical?.collectorStatus==="NOT_DEPLOYED"?"미배포":data.historical?.collectorStatus);
   setText("historyStorage",data.historical?.storageExists?"저장소 있음":"준비 중");
   setText("publicCollector",data.collection?.phase==="COMPLETED"?"수집 정상":data.collection?.phase||"미확인");
   setText("collectionOutput",jsonSafe({
     historical:data.historical,
     dashboardCollector:data.collection
   }));
-  setText("tickStatus",data.ticks?.mode==="NOT_MIGRATED"?"이전 대기":data.ticks?.state);
+  for (const b of document.querySelectorAll("button[data-collection-action]")) {
+    const installed = data.historical?.serviceState === "running";
+    const paused = data.historical?.paused !== false;
+    b.disabled = !installed || (b.dataset.collectionAction==="resume" ? !paused : paused);
+  }
+  setText("tickStatus",data.ticks?.serviceState==="not-running"?"서비스 중지":
+    data.ticks?.paused?"일시정지":data.ticks?.mode==="NOT_MIGRATED"?"이전 대기":data.ticks?.mode);
   setText("ticksOutput",jsonSafe(data.ticks));
   setText("apiStatus",data.api?.ok?"정상":"연결 오류");
   setText("apiMode",data.api?.mode||"미확인");
@@ -139,6 +146,24 @@ for(const button of document.querySelectorAll("button[data-page]")){
 }
 for(const button of document.querySelectorAll("button[data-action]")){
   button.addEventListener("click",()=>runAction(button.dataset.action));
+}
+for (const button of document.querySelectorAll("button[data-collection-action]")) {
+  button.addEventListener("click", async () => {
+    const action=button.dataset.collectionAction;
+    if(!["pause","resume"].includes(action))return;
+    const paused=action==="pause";
+    if(!confirm(paused?"주식 데이터 자동 수집을 일시정지할까요?":"주식 데이터 자동 수집을 활성화할까요? 정규장에는 1틱, 장외에는 과거 1분봉이 수집됩니다."))return;
+    setText("collectionMessage","제어 요청 전송 중...");
+    button.disabled=true;
+    try {
+      const result=await post("/api/collection/control",{paused});
+      setText("collectionMessage",result.paused?"일시정지 요청됨":"자동 수집 재개 요청됨");
+      await refresh();
+    } catch(error){
+      setText("collectionMessage","실패: "+error.message);
+      await refresh();
+    }
+  });
 }
 $("keyForm").addEventListener("submit",async e=>{
   e.preventDefault();
