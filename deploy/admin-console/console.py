@@ -214,6 +214,40 @@ def overview() -> dict:
         {k: item.get(k) for k in ("at", "bot", "side", "symbol", "qty", "fillUsd", "feeUsd")}
         for item in paper_raw.get("recentTrades", [])[:10] if isinstance(item, dict)
     ] if isinstance(paper_raw.get("recentTrades"), list) else []
+    # Twenty isolated *paper* account status cards. No broker keys or raw files.
+    paper["agents"] = []
+    raw_agents = paper_raw.get("agents")
+    if isinstance(raw_agents, list):
+        for entry in raw_agents[:20]:
+            if not isinstance(entry, dict):
+                continue
+            agent_id = entry.get("id")
+            if not isinstance(agent_id, str) or not re.fullmatch(r"A(?:0[1-9]|1[0-9]|20)", agent_id):
+                continue
+            safe = {key: entry.get(key) for key in (
+                "id", "strategy", "state", "initialCapitalUsd", "cashUsd",
+                "investedUsd", "equityUsd", "pnlUsd", "returnPct",
+                "realizedPnlUsd", "unrealizedPnlUsd", "positionCount",
+                "tradeCount", "markStale"
+            )}
+            watchlist = entry.get("watchlist")
+            safe["watchlist"] = [
+                sym for sym in watchlist[:6]
+                if isinstance(sym, str) and re.fullmatch(r"[A-Z0-9]{1,8}", sym)
+            ] if isinstance(watchlist, list) else []
+            holdings = entry.get("holdings")
+            safe["holdings"] = [
+                {key: item.get(key) for key in (
+                    "symbol", "qty", "entryUsd", "markUsd", "marketValueUsd",
+                    "unrealizedPnlUsd", "openedAt", "quoteAt", "markStale"
+                )}
+                for item in holdings[:3] if isinstance(item, dict)
+            ] if isinstance(holdings, list) else []
+            last = entry.get("lastTrade")
+            safe["lastTrade"] = {key: last.get(key) for key in (
+                "at", "side", "symbol", "qty", "fillUsd"
+            )} if isinstance(last, dict) else None
+            paper["agents"].append(safe)
     ai_dir = Path("/srv/ai-data/ai-research")
     # AI engine has not been migrated. Do not treat archived files as running bots.
     return {
