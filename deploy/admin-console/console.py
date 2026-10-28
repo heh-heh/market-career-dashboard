@@ -53,6 +53,7 @@ def run_known(action: str) -> dict:
     try:
         env = os.environ.copy()
         env["GIT_TERMINAL_PROMPT"] = "0"
+        env["GIT_OPTIONAL_LOCKS"] = "0"
         result = subprocess.run(
             command, cwd=cwd, env=env, capture_output=True, text=True,
             encoding="utf-8", errors="replace", timeout=12, check=False,
