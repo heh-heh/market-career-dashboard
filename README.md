@@ -2,7 +2,7 @@
 
 **주식 시장 · 게임/IT 취업 정보 · 기술 동향**을 한곳에서 확인하는 개인용 웹 대시보드입니다. 공개 리포트와 인증된 관리자 기능을 분리하고, 주식 전략 백테스트 및 AI 연구를 별도로 운영합니다.
 
-[**대시보드 열기**](https://heh-heh.github.io/market-career-dashboard/) · [관리자 페이지](https://heh-heh.github.io/market-career-dashboard/admin.html) · [데이터 수집 현황](https://heh-heh.github.io/market-career-dashboard/collection.html)
+[**대시보드 열기**](https://heh-heh.github.io/market-career-dashboard/) · [관리자 페이지](https://heh-heh.github.io/market-career-dashboard/admin.html) · [데이터 수집 현황](https://heh-heh.github.io/market-career-dashboard/collection.html) · [**V0.9 연구 문서**](docs/v09/README.md)
 
 > **프로젝트 성격:** 개인 연구·모니터링 서비스입니다. 주식 분석, 시뮬레이션 및 AI 학습 결과는 투자 수익을 보장하지 않습니다. 공개 화면의 수치와 자료는 데이터 소스·갱신 시각·수집 상태에 따라 달라질 수 있습니다.
 
@@ -18,6 +18,17 @@
 | **관리자** | 거래·모의매매·백테스트, AI 연구, 서버/Git 콘솔, API 관리, 데이터 수집·다운로드 |
 
 공개 페이지는 **GitHub Pages 기반 정적 프런트엔드**이며, 인증이 필요한 관리 기능과 일부 동적 데이터는 **별도 EC2 API 서버**를 사용합니다. 관리자 인증이 필요한 기능은 정적 페이지에 접속하는 것만으로 실행할 수 없습니다.
+
+## V0.9 Virtual Market Arena — 연구 기획 문서
+
+**공유 가상 주문장에서 AI 봇들이 경쟁·진화하는 V0.9 프로젝트**의 기획 및 기술 설계를 `main`에서도 읽을 수 있도록 정리했습니다. **현재 V0.9 실행 엔진은 구현·배포되지 않았으며 문서 검토 단계**입니다.
+
+- [**V0.9 한눈에 보기 (시작 페이지)**](docs/v09/README.md) — 핵심 개념, 아키텍처 다이어그램, 16시간/8시간 가상 사이클, 5세션 번식, 개발 순서
+- [종합 기획서](docs/v09/V09_PROJECT_PROPOSAL.md) — 요구사항, 범위, 일정, 리스크
+- [기술·검증 설계서](docs/v09/V09_TECHNICAL_DESIGN.md) — 주문장, 원장, 지연, 정책·번식, 테스트
+- [에이전트 교차 검토](docs/v09/V09_AGENT_REVIEWS.md) — 독립 의견, 반론, 미해결 위험
+
+> 문서는 `strategy-engine-v3`의 V0.9 설계 원문을 복사해 보존한 것입니다. 연구용 코드·실행 환경·실거래 시스템을 `main`으로 병합하지 않습니다.
 
 ## V0.7 AI 연구
 
