@@ -339,6 +339,45 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"ok": True},
                        {"Set-Cookie": f"{SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"})
             return
+        if path == "/api/collection/control":
+            desired = body.get("paused")
+            if type(desired) is not bool:
+                self.reply(400, {"error": "INVALID_CONTROL_VALUE"})
+                return
+            if desired is False and (
+                service_state("market-stock-token-broker.service") != "running" or
+                service_state("market-stock-collection.service") != "running"
+            ):
+                self.reply(409, {"error": "COLLECTION_SERVICE_NOT_RUNNING"})
+                return
+            control_dir = Path("/srv/ai-data/stock-collection/runtime/collection")
+            control_file = control_dir / "control.json"
+            if not control_dir.is_dir() or control_dir.is_symlink() or control_file.is_symlink():
+                self.reply(409, {"error": "COLLECTION_NOT_INSTALLED"})
+                return
+            control_data = {
+                "paused": desired,
+                "reason": "ADMIN_UI_PAUSE" if desired else "ADMIN_UI_RESUME",
+                "updatedAt": datetime.now(timezone.utc).isoformat(),
+            }
+            temp = control_dir / ("control." + secrets.token_hex(12) + ".tmp")
+            try:
+                fd = os.open(str(temp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                with os.fdopen(fd, "w", encoding="utf-8") as output:
+                    json.dump(control_data, output)
+                    output.flush()
+                    os.fsync(output.fileno())
+                os.replace(temp, control_file)
+            except OSError:
+                self.reply(500, {"error": "CONTROL_WRITE_FAILED"})
+                return
+            finally:
+                try:
+                    temp.unlink(missing_ok=True)
+                except OSError:
+                    pass
+            self.reply(200, {"ok": True, "paused": desired, "status": "REQUESTED"})
+            return
         if path == "/api/keys":
             name = body.get("name", "")
             value = body.get("value", "")
