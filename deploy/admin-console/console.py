@@ -165,6 +165,29 @@ def overview() -> dict:
                 "latestTimestamp": item.get("latestTimestamp"),
                 "completedPages": item.get("page"),
             }
+    prod_data = Path("/srv/ai-data/stock-collection")
+    runtime = prod_data / "runtime/collection"
+    scheduler = _json_file(runtime / "status.json")
+    control = _json_file(runtime / "control.json")
+    live_progress = _json_file(prod_data / "historical/_collection_progress.json")
+    tick_progress = _json_file(prod_data / "ticks/status.json")
+    scheduler_service = service_state("market-stock-collection.service")
+    collection_paused = control.get("paused") is not False
+    live_summary = {}
+    for symbol, state in sorted(live_progress.items()):
+        if not isinstance(symbol, str) or not isinstance(state, dict):
+            continue
+        if not re.fullmatch(r"[A-Z0-9]{1,8}", symbol):
+            continue
+        live_summary[symbol] = {
+            "status": str(state.get("status", "unknown"))[:70],
+            "storedRows": state.get("stored"),
+            "verifiedTradingDays": state.get("verifiedTradingDays"),
+            "missingTradingDays": state.get("missingTradingDays"),
+            "latestTimestamp": state.get("latestTimestamp"),
+        }
+        if len(live_summary) >= 50:
+            break
     ai_dir = Path("/srv/ai-data/ai-research")
     # AI engine has not been migrated. Do not treat archived files as running bots.
     return {
@@ -173,14 +196,28 @@ def overview() -> dict:
         "research": {"status": "NOT_DEPLOYED", "running": False, "note": "AI V0.8.3 학습 엔진은 별도 이전 예정입니다."},
         "bots": {"status": "NOT_DEPLOYED", "count": None, "note": "현재 운영 중인 학습 봇이 없습니다."},
         "historical": {"storageExists": history_dir.is_dir(),
-                       "storagePath": str(history_dir),
-                       "collectorStatus": "SMOKE_DATA_ONLY" if history_summary else "NOT_DEPLOYED",
+                       "storagePath": str(prod_data / "historical"),
+                       "collectorStatus": scheduler.get("mode") or ("SMOKE_DATA_ONLY" if history_summary else "NOT_DEPLOYED"),
+                       "serviceState": scheduler_service,
+                       "paused": collection_paused,
+                       "activeWorker": scheduler.get("collector"),
+                       "calendarConfirmed": scheduler.get("calendarConfirmed"),
+                       "sessionDate": scheduler.get("sessionDate"),
+                       "reason": str(scheduler.get("reason") or "")[:80],
                        "verification": "UNVERIFIED",
-                       "automaticCollection": False,
-                       "symbols": history_summary},
-        "ticks": {"service": "collect-toss-ticks.service",
-                  "state": service_state("collect-toss-ticks.service"),
-                  "mode": "NOT_MIGRATED", "note": "AWS의 1틱 수집기를 홈서버에 아직 이전하지 않았습니다."},
+                       "automaticCollection": scheduler_service == "running" and not collection_paused,
+                       "smokeSymbols": history_summary,
+                       "symbols": live_summary},
+        "ticks": {"service": "market-stock-collection.service",
+                  "state": scheduler_service,
+                  "mode": scheduler.get("mode") or "NOT_DEPLOYED",
+                  "paused": collection_paused,
+                  "activeWorker": scheduler.get("collector"),
+                  "lastUpdate": tick_progress.get("updatedAt"),
+                  "feedState": str(tick_progress.get("state") or "NO_TICK_STATUS")[:80],
+                  "sessionDate": tick_progress.get("sessionDate"),
+                  "symbolCount": len(tick_progress.get("symbols") or []) if isinstance(tick_progress.get("symbols"), list) else None,
+                  "note": "정규장에는 Tick, 장외에는 과거 1분봉 보충을 단일 스케줄러가 배타적으로 실행합니다."},
         "keys": {name: bool(_json_file(PRIVATE / "api_keys.json").get(name)) for name in VALID_KEYS},
         "meta": {"adminAccess": "SSH tunnel only", "serverPath": str(REPO),
                  "aiStorageReady": ai_dir.is_dir(), "publicAdmin": False}
