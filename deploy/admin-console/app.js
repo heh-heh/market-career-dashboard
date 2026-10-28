@@ -5,7 +5,7 @@ const APP = $("appView");
 const NAMES = ["OPENAI_API_KEY","TOSS_CLIENT_ID","TOSS_CLIENT_SECRET","TOSS_ACCOUNT_SEQ","NEWS_API_KEY","ALPHA_VANTAGE_API_KEY"];
 const PAGE_TITLES = {
   research:["AI 연구","V0.8.3 연구 엔진"],
-  bots:["봇 상태","개체 수와 학습 세대"],
+  bots:["V0.9 가상시장 관제","20개 가상 계좌 · 실제 틱 기반 paper trading"],
   historical:["주식 과거 데이터","과거 시세와 정기 자료 수집"],
   ticks:["1틱 단위 수집기","Tick 데이터 수집 상태"],
   api:["API 설정","홈서버 공개 API 연결"],
@@ -62,12 +62,101 @@ function showPage(page) {
 function jsonSafe(data) {
   return JSON.stringify(data,null,2) || "{}";
 }
+function money(amount) {
+  const n=Number(amount);
+  return Number.isFinite(n)?"$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+}
+function amount(value) {
+  const n=Number(value);
+  return Number.isFinite(n)?n.toLocaleString("ko-KR"):"—";
+}
+function prettyDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())?"—":date.toLocaleString("ko-KR",{hour12:false});
+}
+function tableTo(id, columns, records, fallback) {
+  const node=$(id);
+  if(!node)return;
+  node.replaceChildren();
+  if(!records?.length) { node.textContent=fallback; return; }
+  const table=document.createElement("table");
+  table.className="status-table";
+  const thead=document.createElement("thead");
+  const thr=document.createElement("tr");
+  for (const column of columns) {
+    const th=document.createElement("th");
+    th.textContent=column.title;
+    thr.appendChild(th);
+  }
+  thead.appendChild(thr);
+  table.appendChild(thead);
+  const tbody=document.createElement("tbody");
+  for (const record of records) {
+    const tr=document.createElement("tr");
+    for (const column of columns) {
+      const td=document.createElement("td");
+      td.textContent=column.render(record);
+      if(column.numeric)td.className="num";
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+  node.appendChild(table);
+}
+function renderPaper(paper) {
+  const installed=paper.service==="running";
+  const paused=paper.paused!==false;
+  const available=paper.mode==="RECEIVED_TICK_PAPER_PILOT";
+  const state=!installed?"미배포":paused?"일시정지":paper.state==="MARKET_ACTIVE"?"가상매매 활성":"시장 / 데이터 대기";
+  setText("paperState",state);
+  setText("paperUpdated","마지막 갱신: "+prettyDate(paper.updatedAt));
+  const m=available?money:()=> "—";
+  setText("paperEquity",m(paper.equityUsd));
+  setText("paperInitial","초기 가상 자본 "+m(paper.initialCapitalUsd));
+  setText("paperPnl",m(paper.pnlUsd));
+  const ret=Number(paper.returnPct);
+  setText("paperReturn",available&&Number.isFinite(ret)?"가상 수익률 "+ret.toFixed(3)+"%":"수익률 —");
+  setText("paperCash",m(paper.cashUsd));
+  setText("paperInvested","보유 평가액 "+m(paper.investedUsd));
+  setText("paperBots",available?amount(paper.bots)+"개":"—");
+  setText("paperActiveBots","포지션 보유 계좌 "+(available?amount(paper.botsWithPositions):"—"));
+  setText("paperHoldings",available?amount(paper.uniqueHoldings)+"종목":"—");
+  setText("paperPositions","계좌별 전체 포지션 "+(available?amount(paper.positionsCount):"—"));
+  setText("paperTrades",available?amount(paper.tradeCount)+"건":"—");
+  setText("paperSession","거래 세션 "+(paper.sessionDate||"대기")+" · "+(paper.feedReason||"정규장 정보 확인"));
+  tableTo("paperHoldingsTable",[
+    {title:"종목",render:r=>r.symbol||"—"},
+    {title:"총 수량",render:r=>amount(r.shares),numeric:true},
+    {title:"보유 계좌",render:r=>amount(r.accounts),numeric:true},
+    {title:"평가액",render:r=>money(r.marketValueUsd),numeric:true},
+    {title:"미실현 손익",render:r=>money(r.unrealizedPnlUsd),numeric:true}
+  ],paper.holdings||[],"아직 보유 종목이 없습니다.");
+  tableTo("paperQuotesTable",[
+    {title:"종목",render:r=>r.symbol||"—"},
+    {title:"관측가",render:r=>money(r.priceUsd),numeric:true},
+    {title:"최근 틱 시각",render:r=>prettyDate(r.receivedAt)}
+  ],paper.quotes||[],"시세 대기 중...");
+  tableTo("paperTradesTable",[
+    {title:"가상 시각",render:r=>prettyDate(r.at)},
+    {title:"가상 계좌",render:r=>r.bot||"—"},
+    {title:"구분",render:r=>r.side==="BUY"?"매수":r.side==="SELL"?"매도":"—"},
+    {title:"종목",render:r=>r.symbol||"—"},
+    {title:"수량",render:r=>amount(r.qty),numeric:true},
+    {title:"가정 체결가",render:r=>money(r.fillUsd),numeric:true},
+    {title:"가정 수수료",render:r=>money(r.feeUsd),numeric:true}
+  ],paper.recentTrades||[],"가상 체결이 아직 없습니다.");
+  for(const button of document.querySelectorAll("button[data-paper-action]")) {
+    button.disabled=!installed||(button.dataset.paperAction==="resume"?!paused:paused);
+  }
+  setText("paperAssumption","실제 주문 미사용 · 수신 틱 가격에 불리한 10bp 체결 보정 + 5bp 가정 수수료 · 실제 체결/투자수익 아님");
+}
 function render(data) {
   overview=data;
   setText("researchStatus",data.research?.status==="NOT_DEPLOYED"?"미배포":data.research?.status);
   setText("researchOutput",jsonSafe(data.research));
-  setText("botCount",data.bots?.count==null?"미가동":String(data.bots.count));
-  setText("botsOutput",jsonSafe(data.bots));
+  renderPaper(data.paper || {});
   setText("historyStatus",data.historical?.serviceState==="running" && data.historical?.paused?"일시정지":
     data.historical?.collectorStatus==="NOT_DEPLOYED"?"미배포":data.historical?.collectorStatus);
   setText("historyStorage",data.historical?.storageExists?"저장소 있음":"준비 중");
@@ -165,6 +254,28 @@ for (const button of document.querySelectorAll("button[data-collection-action]")
     }
   });
 }
+for(const button of document.querySelectorAll("button[data-paper-action]")) {
+  button.addEventListener("click",async()=>{
+    const action=button.dataset.paperAction;
+    if(!["pause","resume"].includes(action))return;
+    if(!confirm(action==="resume"?
+      "실제 주문 없이 20개 가상 계좌의 모의매매를 시작할까요? 수집된 실시간 시세를 읽어 가상 체결합니다.":
+      "가상 시뮬레이션을 일시정지할까요? 기존 가상 원장은 보존됩니다."))return;
+    button.disabled=true;
+    setText("paperMessage","요청 처리 중...");
+    try {
+      const result=await post("/api/paper/control",{paused:action==="pause"});
+      setText("paperMessage",result.paused?"가상매매 일시정지 요청 완료":"가상매매 재개 요청 완료");
+      await refresh();
+    }catch(e) {
+      setText("paperMessage","오류: "+e.message);
+      await refresh();
+    }
+  });
+}
+setInterval(()=>{
+  if(!APP.hidden&&!$("page-bots").hidden)refresh();
+},7000);
 $("keyForm").addEventListener("submit",async e=>{
   e.preventDefault();
   setText("keyMessage","");
