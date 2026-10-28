@@ -1,0 +1,26 @@
+[Unit]
+Description=Market Dashboard private admin console (localhost only)
+Documentation=https://github.com/heh-heh/market-career-dashboard
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=simple
+User=heh-heh
+Group=heh-heh
+SupplementaryGroups=docker
+WorkingDirectory=/srv/apps/market-career-dashboard
+ExecStart=/usr/bin/python3 /srv/apps/_deploy/dashboard/admin-console/current/console.py
+Restart=on-failure
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+MemoryMax=256M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
