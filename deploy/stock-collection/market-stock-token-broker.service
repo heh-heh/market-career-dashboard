@@ -1,0 +1,27 @@
+[Unit]
+Description=Market stock collection private Toss token broker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=heh-heh
+Group=heh-heh
+WorkingDirectory=/srv/apps/_deploy/stock-collection/current
+ExecStart=/usr/bin/bash /srv/apps/_deploy/stock-collection/bin/run-broker.sh
+Restart=on-failure
+RestartSec=5
+UMask=0077
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/ai-data/stock-collection
+MemoryMax=256M
+TasksMax=32
+
+[Install]
+WantedBy=multi-user.target
