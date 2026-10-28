@@ -62,15 +62,20 @@ fi
 sudo install -m 0644 "$SRC/admin-console.service" "$UNITPATH"
 sudo systemctl daemon-reload
 sudo systemctl enable "$UNIT" >/dev/null
-sudo systemctl restart "$UNIT"
+RESTART_OK=true
+if ! sudo systemctl restart "$UNIT"; then
+  RESTART_OK=false
+fi
 READY=false
-for attempt in {1..15}; do
-  if curl -fsS --max-time 2 http://127.0.0.1:18085/api/health | grep -q '"mode": "authenticated-admin"'; then
-    READY=true
-    break
-  fi
-  sleep 1
-done
+if $RESTART_OK; then
+  for attempt in {1..15}; do
+    if curl -fsS --max-time 2 http://127.0.0.1:18085/api/health | grep -q '"mode": "authenticated-admin"'; then
+      READY=true
+      break
+    fi
+    sleep 1
+  done
+fi
 if ! $READY; then
   echo "ADMIN_CONSOLE_HEALTH_FAILED"
   if [[ -n "$OLD" ]]; then
