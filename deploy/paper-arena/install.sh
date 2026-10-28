@@ -26,7 +26,13 @@ if [[ ! -f "$DATA/control.json" ]]; then
   printf '{"paused":true,"reason":"FIRST_INSTALL_PAUSED"}\n' > "$DATA/control.json"
   chmod 600 "$DATA/control.json"
 fi
-python3 "$RELEASE/paper_arena.py" --once
+# Only bootstrap a new research ledger when the service is not already active.
+# Never run a second simulator process concurrently with an existing live writer.
+if [[ "$(systemctl is-active "$UNIT" 2>/dev/null || true)" != "active" ]]; then
+  python3 "$RELEASE/paper_arena.py" --once
+else
+  echo "EXISTING_SIMULATOR_LEDGER_PRESERVED=true"
+fi
 OLD=""
 [[ ! -L "$BASE/current" ]] || OLD=$(readlink "$BASE/current")
 ln -sfn "$RELEASE" "$BASE/current.new"
