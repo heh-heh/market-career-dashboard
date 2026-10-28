@@ -286,6 +286,85 @@ def decide(db, now):
                 hypothetical_order(db, bot, symbol, "SELL", price, now)
 
 
+def agent_statuses(db, now, paused, market_ok, marks):
+    """Stable per-account read model; no live order access and no mutation."""
+    accounts = db.execute("SELECT id,cash,realized FROM accounts ORDER BY id").fetchall()
+    positions = db.execute(
+        "SELECT bot,symbol,qty,cost,opened FROM positions ORDER BY bot,symbol").fetchall()
+    trades = db.execute(
+        "SELECT bot,COUNT(*),MAX(id) FROM trades GROUP BY bot").fetchall()
+    trade_count = {bot: count for bot, count, _ in trades}
+    last_trade = {}
+    for bot, _, latest_id in trades:
+        item = db.execute(
+            "SELECT at,side,symbol,qty,fill_cents FROM trades WHERE id=?",
+            (latest_id,)).fetchone()
+        if item:
+            last_trade[bot] = {
+                "at": item[0], "side": item[1], "symbol": item[2],
+                "qty": item[3], "fillUsd": usd(item[4])
+            }
+    by_bot = {bot: [] for bot, _, _ in accounts}
+    for bot, symbol, qty, cost, opened in positions:
+        quote = marks.get(symbol)
+        px = quote[1] if quote else cost
+        age = (now - aware(quote[2])).total_seconds() if quote else None
+        by_bot[bot].append({
+            "symbol": symbol,
+            "qty": qty,
+            "entryUsd": usd(cost),
+            "markUsd": usd(px),
+            "marketValueUsd": usd(qty * px),
+            "unrealizedPnlUsd": usd(qty * (px - cost)),
+            "openedAt": opened,
+            "quoteAt": quote[2] if quote else None,
+            "markStale": age is None or age > FRESH_SECONDS,
+        })
+    agents = []
+    for bot, cash, realized in accounts:
+        owned = by_bot[bot]
+        # Use integer-cent quote marks for authoritative per-agent accounting.
+        invested_cents = sum(
+            qty * (marks[symbol][1] if symbol in marks else cost)
+            for b, symbol, qty, cost, _ in positions if b == bot
+        )
+        equity_cents = cash + invested_cents
+        watched = [sym for i, sym in enumerate(SYMBOLS) if (i + bot) % 6 <= 3]
+        ready = any(
+            (record := marks.get(sym)) and
+            (now - aware(record[2])).total_seconds() <= 30
+            and db.execute("SELECT samples FROM quotes WHERE symbol=?", (sym,)).fetchone()[0] >= 20
+            for sym in watched
+        )
+        state = ("PAUSED" if paused else
+                 "WAITING_FOR_MARKET" if not market_ok else
+                 "HOLDING" if owned else
+                 "READY" if ready else "DATA_WARMUP")
+        agents.append({
+            "id": f"A{bot:02d}",
+            "strategy": "MOMENTUM" if bot % 2 else "MEAN_REVERSION",
+            "state": state,
+            "watchlist": watched,
+            "initialCapitalUsd": usd(START_CENTS),
+            "cashUsd": usd(cash),
+            "investedUsd": usd(invested_cents),
+            "equityUsd": usd(equity_cents),
+            "pnlUsd": usd(equity_cents - START_CENTS),
+            "returnPct": round((equity_cents - START_CENTS) * 100 / START_CENTS, 3),
+            "realizedPnlUsd": usd(realized),
+            "unrealizedPnlUsd": usd(sum(
+                qty * ((marks[symbol][1] if symbol in marks else cost) - cost)
+                for b, symbol, qty, cost, _ in positions if b == bot
+            )),
+            "positionCount": len(owned),
+            "holdings": owned,
+            "tradeCount": trade_count.get(bot, 0),
+            "lastTrade": last_trade.get(bot),
+            "markStale": any(item["markStale"] for item in owned),
+        })
+    return agents
+
+
 def snapshot(db, now, paused, market_ok, session, reason, processed):
     wallets = db.execute("SELECT COALESCE(SUM(cash),0),COALESCE(SUM(realized),0),"
                          "COUNT(*) FROM accounts").fetchone()
@@ -334,6 +413,7 @@ def snapshot(db, now, paused, market_ok, session, reason, processed):
         "ticksProcessedThisPoll": processed,
         "holdings": entries,
         "quotes": latest,
+        "agents": agent_statuses(db, now, paused, market_ok, marks),
         "recentTrades": [
             {"at": a, "bot": f"A{b:02d}", "side": side, "symbol": symbol,
              "qty": qty, "fillUsd": usd(price), "feeUsd": usd(fee)}
