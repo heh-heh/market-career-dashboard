@@ -210,6 +210,7 @@ def overview() -> dict:
                        "symbols": live_summary},
         "ticks": {"service": "market-stock-collection.service",
                   "state": scheduler_service,
+                  "serviceState": scheduler_service,
                   "mode": scheduler.get("mode") or "NOT_DEPLOYED",
                   "paused": collection_paused,
                   "activeWorker": scheduler.get("collector"),
