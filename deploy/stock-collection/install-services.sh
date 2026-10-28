@@ -52,8 +52,14 @@ for i in {1..12}; do
   fi
   sleep 1
 done
-echo "BROKER_SERVICE=$(systemctl is-active market-stock-token-broker.service || true)"
-echo "COLLECTION_SERVICE=$(systemctl is-active market-stock-collection.service || true)"
+BROKER_STATE=$(systemctl is-active market-stock-token-broker.service || true)
+COLLECTION_STATE=$(systemctl is-active market-stock-collection.service || true)
+echo "BROKER_SERVICE=$BROKER_STATE"
+echo "COLLECTION_SERVICE=$COLLECTION_STATE"
+if [[ "$BROKER_STATE" != "active" || "$COLLECTION_STATE" != "active" ]]; then
+  echo "ERROR=STOCK_COLLECTOR_UNITS_NOT_HEALTHY"
+  exit 1
+fi
 python3 - "$DATA/runtime/collection/control.json" <<'PY'
 import json,sys
 from pathlib import Path
