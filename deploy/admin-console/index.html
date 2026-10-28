@@ -106,7 +106,13 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <div class="panel"><div class="label">데이터 디렉터리</div><div class="value" id="historyStorage" style="font-size:16px">확인 중</div></div>
         <div class="panel"><div class="label">시장·뉴스 수집기</div><div class="value" id="publicCollector">확인 중</div></div>
       </div>
-      <div class="panel"><h3>현재 정기 수집 정보</h3><pre id="collectionOutput">불러오는 중...</pre></div>
+      <div class="panel">
+        <h3>자동 수집 관리</h3>
+        <p class="muted small">미국 정규장에는 1틱, 장 마감 후에는 과거 1분봉을 수집합니다. 최초 설치 시 일시정지 상태입니다.</p>
+        <div class="actions"><button data-collection-action="resume">자동 수집 재개</button><button data-collection-action="pause">일시정지</button></div>
+        <p id="collectionMessage" class="meta" role="status"></p>
+      </div>
+      <div class="panel" style="margin-top:14px"><h3>현재 정기 수집 정보</h3><pre id="collectionOutput">불러오는 중...</pre></div>
       <div class="notice">기존 공개 대시보드의 1시간 단위 수집과 AI 연구용 과거 1분봉 수집은 별개야. 과거 주가의 연속 데이터 수집은 엔진 이전 후 별도로 구성해.</div>
     </section>
     <section class="page" id="page-ticks" hidden>
@@ -115,8 +121,13 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <div class="panel"><div class="label">데이터 제공 API</div><div class="value">연결 대기</div></div>
         <div class="panel"><div class="label">1틱 저장소</div><div class="value">미연결</div></div>
       </div>
-      <div class="notice">기존 AWS의 Tick 서비스는 삭제된 서버에 있던 서비스야. 홈서버에서 재구축·약관·호출 제한 점검 전에는 수집 시작 버튼을 제공하지 않아.</div>
-      <div class="panel"><h3>수집기 진단</h3><pre id="ticksOutput">불러오는 중...</pre></div>
+      <div class="notice">실시간 틱 스트림은 모든 체결을 보장하지 않아. 수신 실패·재연결·결측은 기록하고 과거 수집과 구분해.</div>
+      <div class="panel">
+        <h3>자동 수집 제어</h3>
+        <div class="actions"><button data-collection-action="resume">자동 수집 재개</button><button data-collection-action="pause">일시정지</button></div>
+        <p class="small muted">학습·실거래와 분리된 시세 수집 스케줄러만 제어합니다.</p>
+      </div>
+      <div class="panel" style="margin-top:14px"><h3>수집기 진단</h3><pre id="ticksOutput">불러오는 중...</pre></div>
     </section>
     <section class="page" id="page-api" hidden>
       <div class="cards">
