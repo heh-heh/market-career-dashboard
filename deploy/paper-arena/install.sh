@@ -15,8 +15,10 @@ RELEASE="$BASE/releases/$REV"
 mkdir -p "$RELEASE" "$DATA"
 chmod 700 "$DATA"
 git -C "$REPO" show "$REV:deploy/paper-arena/paper_arena.py" > "$RELEASE/paper_arena.py"
+git -C "$REPO" show "$REV:deploy/paper-arena/test_paper_arena.py" > "$RELEASE/test_paper_arena.py"
 git -C "$REPO" show "$REV:deploy/paper-arena/paper-arena.service" > "$RELEASE/paper-arena.service"
 python3 -m py_compile "$RELEASE/paper_arena.py"
+(cd "$RELEASE" && python3 test_paper_arena.py)
 [[ ! -L "$DATA/control.json" ]] || { echo "ERROR=CONTROL_SYMLINK_REJECTED"; exit 1; }
 [[ ! -L "$DATA/ledger.sqlite3" ]] || { echo "ERROR=DATABASE_SYMLINK_REJECTED"; exit 1; }
 # First install never trades: admin or CLI resume must be an explicit action.
