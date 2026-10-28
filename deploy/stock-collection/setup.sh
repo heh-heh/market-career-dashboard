@@ -28,9 +28,19 @@ git -C "$REPO" archive "$REV" \
 python3 -m py_compile "$RELEASE/toss_auth.py" "$RELEASE/toss_token_broker.py" \
   "$RELEASE/scripts/collect_toss_1m.py" "$RELEASE/scripts/collect_toss_ticks.py"
 
-if [[ ! -x "$BASE/venv/bin/python" ]]; then
-  python3 -m venv "$BASE/venv" || { echo "ERROR=VENV_SETUP_FAILED (try sudo apt install python3-venv)"; exit 1; }
+# A previous failed venv creation can leave an executable interpreter without pip.
+# Detect the broken state rather than assuming bin/python proves the venv is usable.
+if [[ ! -x "$BASE/venv/bin/python" ]] || ! "$BASE/venv/bin/python" -m pip --version >/dev/null 2>&1; then
+  echo "VENV_MISSING_OR_INCOMPLETE=true"
+  python3 -m venv --clear "$BASE/venv" || {
+    echo "ERROR=VENV_SETUP_FAILED (install matching python3.X-venv, e.g. python3.14-venv)"
+    exit 1
+  }
 fi
+"$BASE/venv/bin/python" -m pip --version >/dev/null || {
+  echo "ERROR=VENV_PIP_UNAVAILABLE"
+  exit 1
+}
 "$BASE/venv/bin/python" -m pip install --disable-pip-version-check -r "$RELEASE/requirements.txt" 'pandas>=2.2,<3'
 
 python3 - "$VAULT" "$BASE/private/toss-broker.json" <<'PY'
