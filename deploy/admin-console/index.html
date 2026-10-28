@@ -41,6 +41,20 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .formrow label{font-size:12px;color:var(--muted)}
 .meta{font-size:12px;color:var(--muted)}
 .foot{margin-top:24px;font-size:12px;color:var(--muted)}
+.agent-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.agent-card{min-width:0}
+.agent-card-head{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.agent-card-head h3{margin:0;font-size:17px}
+.agent-state{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted)}
+.agent-state.active{border-color:#346e5c;color:var(--green)}
+.agent-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0}
+.agent-metric .label{font-size:11px}
+.agent-metric strong{font-size:15px;word-break:break-word}
+.agent-meta{font-size:12px;color:var(--muted)}
+.agent-positions{border-top:1px solid var(--line);padding-top:12px;margin-top:10px}
+.agent-positions details summary{cursor:pointer;color:#bac7ff}
+@media(max-width:800px){.agent-grid{grid-template-columns:1fr}}
+@media(max-width:450px){.agent-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .table-scroll{overflow-x:auto}
 .status-table{width:100%;border-collapse:collapse;font-size:13px}
 .status-table th,.status-table td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
@@ -71,6 +85,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
     <div class="nav-label">AI</div>
     <button class="nav-item active" data-page="research">연구</button>
     <button class="nav-item" data-page="bots">V0.9 가상시장 관제</button>
+    <button class="nav-item" data-page="agents">봇별 상태</button>
     <div class="nav-label">자료수집</div>
     <button class="nav-item" data-page="historical">주식 과거 데이터</button>
     <button class="nav-item" data-page="ticks">1틱 단위 수집기</button>
@@ -121,6 +136,41 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
       </div>
       <div class="panel"><h3>최근 가상 거래</h3><div id="paperTradesTable" class="table-scroll">가상 거래가 아직 없습니다.</div></div>
       <p class="foot" id="paperAssumption">실제 주문 미사용 · 가상 데이터 · 20개 계좌 · $1,000/계좌 · 수익률은 가상 평가손익</p>
+    </section>
+    <section class="page" id="page-agents" hidden>
+      <div class="notice"><strong>V0.9-lite · 봇별 상태</strong><p class="muted small" style="margin:5px 0 0">20개 독립 가상 계좌의 현금, 보유 종목, 수익률과 거래 내역을 확인합니다. 현재는 학습된 AI가 아닌 모멘텀·역추세 규칙 기반이며 실제 주문은 실행하지 않습니다.</p></div>
+      <div class="actions" style="align-items:center">
+        <span class="chip" id="agentsSession">수집 상태 확인 중</span>
+        <span class="meta" id="agentsUpdated">—</span>
+        <button id="agentsManualRefresh">봇 현황 새로고침</button>
+      </div>
+      <div class="cards">
+        <div class="panel"><div class="label">모의 계좌 수</div><div class="value" id="agentsTotal">—</div></div>
+        <div class="panel"><div class="label">현재 포지션 보유</div><div class="value" id="agentsHolding">—</div></div>
+        <div class="panel"><div class="label">누적 가상 수익률 (전체)</div><div class="value" id="agentsAggregateRoi">—</div></div>
+      </div>
+      <div class="actions" style="align-items:center">
+        <label class="meta" for="agentsFilter">상태 필터</label>
+        <select id="agentsFilter" style="width:auto;min-width:155px">
+          <option value="all">전체</option>
+          <option value="holding">보유 중</option>
+          <option value="cash">미보유 / 대기</option>
+          <option value="profit">수익 중</option>
+          <option value="loss">손실 중</option>
+        </select>
+        <label class="meta" for="agentsSort">정렬</label>
+        <select id="agentsSort" style="width:auto;min-width:175px">
+          <option value="id">계좌 번호</option>
+          <option value="return-desc">수익률 높은 순</option>
+          <option value="return-asc">수익률 낮은 순</option>
+          <option value="equity-desc">평가자산 높은 순</option>
+        </select>
+        <span class="meta" id="agentsVisible">—</span>
+      </div>
+      <div class="agent-grid" id="agentsCards" aria-live="polite">
+        <div class="panel muted">가상 계좌 상태를 불러오는 중...</div>
+      </div>
+      <div class="notice">보유 종목의 평가액은 마지막으로 받은 틱 가격 기준입니다. 시세가 오래되면 ‘시세 지연’으로 표시되며, 평가손익은 실제 청산 가능 금액이 아닙니다.</div>
     </section>
     <section class="page" id="page-historical" hidden>
       <div class="cards">
