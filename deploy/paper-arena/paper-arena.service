@@ -1,7 +1,6 @@
 [Unit]
 Description=V0.9-lite 20-agent read-only paper market pilot
 After=market-stock-collection.service
-Wants=market-stock-collection.service
 
 [Service]
 Type=simple
@@ -20,6 +19,9 @@ ReadWritePaths=/srv/ai-data/paper-arena
 ReadOnlyPaths=/srv/ai-data/stock-collection/ticks
 ProtectHome=true
 PrivateDevices=true
+PrivateNetwork=true
+IPAddressDeny=any
+RestrictAddressFamilies=AF_UNIX
 PrivateTmp=true
 MemoryMax=256M
 CPUQuota=65%
