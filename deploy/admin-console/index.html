@@ -41,6 +41,12 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .formrow label{font-size:12px;color:var(--muted)}
 .meta{font-size:12px;color:var(--muted)}
 .foot{margin-top:24px;font-size:12px;color:var(--muted)}
+.table-scroll{overflow-x:auto}
+.status-table{width:100%;border-collapse:collapse;font-size:13px}
+.status-table th,.status-table td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.status-table th{font-weight:600;color:var(--muted);font-size:12px}
+.status-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+
 @media(max-width:960px){.shell{grid-template-columns:185px 1fr}main{padding:20px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.formrow{grid-template-columns:1fr}}
 @media(max-width:680px){.shell{display:block}aside{border-right:0;border-bottom:1px solid var(--line);padding:14px;display:block}aside .sub{margin-bottom:8px}.nav-label{margin:12px 4px 4px}.nav-item{width:auto;margin:3px;padding:8px 11px;font-size:12px}main{padding:17px 13px}.grid,.cards{grid-template-columns:1fr}.login{margin:10vh 14px}}
 </style>
@@ -64,7 +70,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
     <p class="sub">관리자 센터 · SSH 전용</p>
     <div class="nav-label">AI</div>
     <button class="nav-item active" data-page="research">연구</button>
-    <button class="nav-item" data-page="bots">봇 상태</button>
+    <button class="nav-item" data-page="bots">V0.9 가상시장 관제</button>
     <div class="nav-label">자료수집</div>
     <button class="nav-item" data-page="historical">주식 과거 데이터</button>
     <button class="nav-item" data-page="ticks">1틱 단위 수집기</button>
@@ -93,12 +99,28 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
       <div class="panel"><h3>연구 상태</h3><pre id="researchOutput">불러오는 중...</pre></div>
     </section>
     <section class="page" id="page-bots" hidden>
-      <div class="cards">
-        <div class="panel"><div class="label">학습 봇</div><div class="value" id="botCount">미가동</div></div>
-        <div class="panel"><div class="label">세대</div><div class="value">—</div></div>
-        <div class="panel"><div class="label">백테스트</div><div class="value">연결 대기</div></div>
+      <div class="notice"><strong>V0.9-lite · 실제 시세 기반 가상매매</strong><p class="muted small" style="margin:5px 0 0">실제 토스 틱 수신 데이터를 바탕으로 가상 체결을 계산하는 연구 파일럿입니다. 공동 주문장·진화 학습은 아직 구현되지 않았으며, 실계좌 거래·API 주문은 절대 실행하지 않습니다. 가상 체결은 보수적인 슬리피지·수수료 가정이며 실제 체결 결과가 아닙니다.</p></div>
+      <div class="actions" style="align-items:center">
+        <span class="chip" id="paperState">상태 조회 중</span>
+        <span class="meta" id="paperUpdated">—</span>
+        <button data-paper-action="resume">가상 시뮬레이션 시작 / 재개</button>
+        <button data-paper-action="pause">일시정지</button>
+        <span class="meta" id="paperMessage" role="status"></span>
       </div>
-      <div class="panel"><h3>봇 상태</h3><pre id="botsOutput">불러오는 중...</pre></div>
+      <div class="cards">
+        <div class="panel"><div class="label">총 가상 평가자산</div><div class="value" id="paperEquity">—</div><div class="meta" id="paperInitial">초기 자본 확인 중</div></div>
+        <div class="panel"><div class="label">누적 가상 손익</div><div class="value" id="paperPnl">—</div><div class="meta" id="paperReturn">수익률 —</div></div>
+        <div class="panel"><div class="label">남은 가상 현금</div><div class="value" id="paperCash">—</div><div class="meta" id="paperInvested">보유 평가액 —</div></div>
+        <div class="panel"><div class="label">시뮬레이션 계좌</div><div class="value" id="paperBots">—</div><div class="meta" id="paperActiveBots">포지션 보유 계좌 —</div></div>
+        <div class="panel"><div class="label">보유 현황</div><div class="value" id="paperHoldings">—</div><div class="meta" id="paperPositions">전체 포지션 —</div></div>
+        <div class="panel"><div class="label">가상 매매 횟수</div><div class="value" id="paperTrades">—</div><div class="meta" id="paperSession">장 상태 —</div></div>
+      </div>
+      <div class="grid">
+        <div class="panel"><h3>보유 중인 종목 · 전체 계좌 합산</h3><div id="paperHoldingsTable" class="table-scroll">아직 보유 종목이 없습니다.</div></div>
+        <div class="panel"><h3>참고 중인 실제 틱 가격</h3><div id="paperQuotesTable" class="table-scroll">시세 대기 중...</div><p class="meta">마지막 수신 시각을 확인하세요. 시세가 오래되면 평가자산도 과거 시점 기준입니다.</p></div>
+      </div>
+      <div class="panel"><h3>최근 가상 거래</h3><div id="paperTradesTable" class="table-scroll">가상 거래가 아직 없습니다.</div></div>
+      <p class="foot" id="paperAssumption">실제 주문 미사용 · 가상 데이터 · 20개 계좌 · $1,000/계좌 · 수익률은 가상 평가손익</p>
     </section>
     <section class="page" id="page-historical" hidden>
       <div class="cards">
