@@ -17,9 +17,11 @@ mkdir -p "$RELEASE" "$BASE/private"
 chmod 700 "$BASE/private"
 git -C "$REPO" archive "$REV" deploy/admin-console | tar -xf - -C "$RELEASE"
 SRC="$RELEASE/deploy/admin-console"
+git -C "$REPO" show "$REV:server-metrics.js" > "$SRC/server-metrics.js"
+git -C "$REPO" show "$REV:server-metrics.css" > "$SRC/server-metrics.css"
 python3 -m py_compile "$SRC/console.py" "$SRC/mfa_auth.py" "$SRC/setup_mfa.py"
 (cd "$SRC" && python3 test_mfa.py)
-[[ -s "$SRC/index.html" && -s "$SRC/app.js" ]] || { echo "ASSETS_MISSING"; exit 1; }
+[[ -s "$SRC/index.html" && -s "$SRC/app.js" && -s "$SRC/server-metrics.js" && -s "$SRC/server-metrics.css" ]] || { echo "ASSETS_MISSING"; exit 1; }
 
 if [[ ! -f "$BASE/private/credentials.json" ]]; then
   [[ -t 0 ]] || { echo 'FIRST_INSTALL_REQUIRES_INTERACTIVE_SSH_FOR_PASSWORD'; exit 1; }
