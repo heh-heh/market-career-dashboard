@@ -280,6 +280,7 @@ function renderAgents(paper) {
 }
 function render(data) {
   overview=data;
+  if(window.ServerMetrics)window.ServerMetrics.render($("privateServerMetrics"),data.telemetry);
   setText("researchStatus",data.research?.status==="NOT_DEPLOYED"?"미배포":data.research?.status);
   setText("researchOutput",jsonSafe(data.research));
   renderPaper(data.paper || {});
