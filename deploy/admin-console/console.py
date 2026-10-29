@@ -19,6 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from mfa_auth import password_valid, otp_match_step
+from history_progress import progress_snapshot
 
 HERE = Path(__file__).resolve().parent
 REPO = Path("/srv/apps/market-career-dashboard")
@@ -343,6 +344,7 @@ def overview() -> dict:
         "paper": paper,
         "research": {"status": "NOT_DEPLOYED", "running": False, "note": "AI V0.8.3 학습 엔진은 별도 이전 예정입니다."},
         "bots": {"status": "NOT_DEPLOYED", "count": None, "note": "현재 운영 중인 학습 봇이 없습니다."},
+        "historical50": progress_snapshot(),
         "historical": {"storageExists": history_dir.is_dir(),
                        "storagePath": str(prod_data / "historical"),
                        "collectorStatus": scheduler.get("mode") or ("SMOKE_DATA_ONLY" if history_summary else "NOT_DEPLOYED"),
@@ -481,6 +483,8 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"authenticated": True, "csrf": session[1]})
         elif path.path == "/api/overview":
             self.reply(200, overview())
+        elif path.path == "/api/history/status":
+            self.reply(200, progress_snapshot())
         elif path.path == "/api/telemetry":
             self.reply(200, telemetry_snapshot())
         elif path.path == "/api/run":
@@ -606,6 +610,36 @@ class Handler(BaseHTTPRequestHandler):
                 except OSError:
                     pass
             self.reply(200, {"ok": True, "paused": paused, "status": "REQUESTED"})
+            return
+        if path == "/api/history/control":
+            enabled=body.get("enabled")
+            if type(enabled) is not bool:
+                self.reply(400,{"error":"INVALID_HISTORICAL_CONTROL"})
+                return
+            control_file=Path("/srv/ai-data/stock-collection/runtime/collection/historical-control.json")
+            if control_file.is_symlink() or not control_file.parent.is_dir() or not control_file.is_file():
+                self.reply(409,{"error":"HISTORICAL_50_NOT_INSTALLED"})
+                return
+            current=progress_snapshot()
+            if not current.get("configured"):
+                self.reply(409,{"error":"HISTORICAL_50_SYMBOLS_NOT_READY"})
+                return
+            temp=control_file.with_name(control_file.name+"."+secrets.token_hex(8)+".tmp")
+            data={"enabled":enabled,"reason":"ADMIN_HISTORY_RESUME" if enabled else "ADMIN_HISTORY_PAUSE",
+                  "updatedAt":datetime.now(timezone.utc).isoformat()}
+            try:
+                fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+                with os.fdopen(fd,"w",encoding="utf-8") as output:
+                    json.dump(data,output)
+                    output.flush();os.fsync(output.fileno())
+                os.replace(temp,control_file)
+            except OSError:
+                self.reply(500,{"error":"HISTORICAL_CONTROL_WRITE_FAILED"})
+                return
+            finally:
+                temp.unlink(missing_ok=True)
+            self.reply(200,{"ok":True,"enabled":enabled,
+                            "note":"SCHEDULER_REQUIRES_MASTER_RESUME_AND_OFFHOURS"})
             return
         if path == "/api/collection/control":
             desired = body.get("paused")
