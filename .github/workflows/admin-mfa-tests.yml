@@ -25,11 +25,35 @@ jobs:
       - name: Compile server authentication and run offline tests
         run: |
           python -m py_compile deploy/admin-console/{console.py,mfa_auth.py,setup_mfa.py,test_mfa.py}
-          (cd deploy/admin-console && python test_mfa.py)
+          (cd deploy/admin-console && python test_mfa.py && python test_performance.py)
       - name: Validate browser login script and admin console script
         run: |
           node --check admin-login.js
           node --check deploy/admin-console/app.js
+          node --check server-metrics.js
+      - name: Verify Task Manager layout is private, responsive, and retains telemetry auth
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          ui=Path("deploy/admin-console/index.html").read_text()
+          code=Path("deploy/admin-console/app.js").read_text()
+          server=Path("deploy/admin-console/console.py").read_text()
+          shared=Path("server-metrics.js").read_text()
+          assert 'id="privateServerMetrics"' in ui
+          assert 'class="server-performance-frame"' in ui
+          assert 'id="serverPerfRefresh"' in ui
+          assert 'id="serverDiagnostics"' in ui
+          assert 'id="serverPerfState"' in ui
+          assert 'ServerMetrics.render' in code
+          assert 'get("/api/telemetry")' in code
+          assert 'setInterval(' in code
+          assert 'if(page==="server")void refreshServerPerformance();' in code
+          assert 'states=new WeakMap()' in shared
+          assert 'data-resource' in shared
+          assert 'elif path.path == "/api/telemetry":' in server
+          assert server.index('session = active_session(self)') < server.index('elif path.path == "/api/telemetry":')
+          print("ADMIN_TASK_MANAGER_UI_TEST=PASS")
+          PY
       - name: Validate JavaScript embedded in the main dashboard
         run: |
           python - <<'PY'
