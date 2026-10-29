@@ -7,7 +7,8 @@ export TOSS_TOKEN_SOCKET="$DATA/runtime/toss-broker.sock"
 export TOSS_RATE_LIMIT_FILE="$DATA/runtime/toss-api-rate.lock"
 export RESEARCH_COLLECTION_STATE_DIR="$DATA/runtime/collection"
 export RESEARCH_COLLECTION_WORKER_LOCK="$DATA/runtime/collection/worker.lock"
-export COLLECTION_50_DIR="$DATA/historical"
+export COLLECTION_50_DIR="$DATA/historical-50-2015-2026"
+export HISTORY_50_CONTROL_FILE="$DATA/runtime/collection/historical-control.json"
 export PYTHONDONTWRITEBYTECODE=1
 # systemd After= orders process start, not the Unix socket's readiness.
 # Wait briefly for the credential broker on boot rather than fail/restart.
@@ -27,7 +28,7 @@ fi
 cd "$BASE/current"
 exec "$BASE/venv/bin/python" research_collection_scheduler.py \
  --state-dir "$RESEARCH_COLLECTION_STATE_DIR" \
- --data-dir "$DATA/historical" \
+ --data-dir "$DATA/historical-50-2015-2026" \
  --tick-dir "$DATA/ticks" \
- --symbols-file "$BASE/private/symbols.json" \
+ --symbols-file "$BASE/private/historical-symbols.json" \
  --preopen-seconds 90
