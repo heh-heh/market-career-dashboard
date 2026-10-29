@@ -27,6 +27,13 @@ with tempfile.TemporaryDirectory() as root:
     module.apply(root)
     result=f.read_text()
     assert 'HISTORY_50_EXPLICIT_START_REQUIRED' in result
+    assert 'TICKS_DISABLED_BY_OPERATOR' in result
+    assert 'TICK_COLLECTION_CONTROL_FILE' in result
+    assert "if desired == 'tick':" in result
+    assert "if desired == 'backfill':" in result
+    assert result.index("if desired == 'tick':") < result.index("if desired == 'backfill':")
+    # A deleted/invalid tick-control.json must fail closed; historical gate
+    # remains an independent decision and cannot be turned off by this setting.
     assert "'2015-01-01T00:00:00-05:00'" in result
     assert "'2026-10-01T23:59:59-04:00'" in result
     assert "if desired == 'tick':" in result
