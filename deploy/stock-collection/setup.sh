@@ -13,9 +13,11 @@ for tool in git python3 tar; do command -v "$tool" >/dev/null || { echo "ERROR=M
 [[ -f "$VAULT" && ! -L "$VAULT" ]] || { echo "ERROR=ADMIN_API_KEY_VAULT_MISSING"; exit 1; }
 [[ "$(git -C "$REPO" remote get-url origin)" == *heh-heh/market-career-dashboard* ]] || { echo "ERROR=WRONG_REPO"; exit 1; }
 
-git -C "$REPO" fetch origin strategy-engine-v3
+git -C "$REPO" fetch origin strategy-engine-v3 main
 REV=$(git -C "$REPO" rev-parse refs/remotes/origin/strategy-engine-v3)
-RELEASE="$BASE/releases/$REV"
+MAINREV=$(git -C "$REPO" rev-parse refs/remotes/origin/main)
+# Each release is immutable; never rewrite the currently running version.
+RELEASE="$BASE/releases/$REV-$MAINREV"
 mkdir -p "$RELEASE" "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical-smoke" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
 chmod 700 "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
 git -C "$REPO" archive "$REV" \
@@ -35,8 +37,6 @@ fi
 ln -sfnT "$DATA/ticks" "$RELEASE/data/toss_ticks"
 
 # Apply the reviewed, main-owned scheduler overlay to this staged immutable release.
-git -C "$REPO" fetch origin main
-MAINREV=$(git -C "$REPO" rev-parse refs/remotes/origin/main)
 git -C "$REPO" show "$MAINREV:deploy/stock-collection/patch-history-50.py" > "$RELEASE/_patch_history_50.py"
 python3 "$RELEASE/_patch_history_50.py" "$RELEASE"
 python3 -m py_compile "$RELEASE/research_collection_scheduler.py" "$RELEASE/scripts/collect_research_1m.py" \
