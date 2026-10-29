@@ -55,10 +55,7 @@ function showPage(page) {
   }
   setText("pageTitle",PAGE_TITLES[page][0]);
   setText("pageSub",PAGE_TITLES[page][1]);
-  if(page==="server") {
-    runAction("server.containers");
-    runAction("git.status");
-  }
+  // Diagnostics are folded by default; only load logs on demand.
 }
 function jsonSafe(data) {
   return JSON.stringify(data,null,2) || "{}";
@@ -411,6 +408,12 @@ for(const button of document.querySelectorAll("button[data-paper-action]")) {
 setInterval(()=>{
   if(!APP.hidden&&(!$("page-bots").hidden||!$("page-agents").hidden))refresh();
 },7000);
+$("serverDiagnostics").addEventListener("toggle",function(){
+  if(this.open){
+    runAction("server.containers");
+    runAction("git.status");
+  }
+});
 $("agentsManualRefresh").addEventListener("click",refresh);
 $("agentsFilter").addEventListener("change",()=>renderAgents(overview?.paper||{}));
 $("agentsSort").addEventListener("change",()=>renderAgents(overview?.paper||{}));
