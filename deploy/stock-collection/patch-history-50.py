@@ -22,8 +22,23 @@ def apply(release):
         raise SystemExit("UNREVIEWED_UPSTREAM_ALREADY_PATCHED")
 
     old="        desired = {'MARKET_OPEN': 'tick', 'MARKET_CLOSED': 'backfill'}.get(decision['mode'])\n"
-    new=old+"""        # 50-symbol historical backfill requires independent, explicit consent.
-        # The real-time tick branch is never affected by this extra gate.
+    new=old+"""        # Separate historical/tick permissions; the operator disabled ticks.
+        # Missing/invalid configuration fails closed for *tick* collection,
+        # without blocking the off-hours historical one-minute worker.
+        if desired == 'tick':
+            try:
+                config_path = Path(os.environ["TICK_COLLECTION_CONTROL_FILE"])
+                if config_path.is_symlink():
+                    raise ValueError("CONTROL_SYMLINK")
+                tick_control = json.loads(config_path.read_text(encoding="utf-8"))
+                tick_enabled = isinstance(tick_control, dict) and tick_control.get("enabled") is True
+            except (OSError, ValueError, KeyError):
+                tick_enabled = False
+            if not tick_enabled:
+                desired = None
+                decision = {**decision, 'mode': 'TICKS_PAUSED',
+                            'reason': 'TICKS_DISABLED_BY_OPERATOR'}
+        # 50-symbol historical backfill requires independent, explicit consent.
         if desired == 'backfill':
             try:
                 config_path = Path(os.environ["HISTORY_50_CONTROL_FILE"])
