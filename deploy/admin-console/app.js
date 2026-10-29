@@ -7,8 +7,8 @@ const PAGE_TITLES = {
   research:["AI 연구","V0.8.3 연구 엔진"],
   bots:["V0.9 가상시장 관제","20개 가상 계좌 · 실제 틱 기반 paper trading"],
   agents:["봇별 상태","가상 계좌별 보유 · 잔고 · 수익률 · 최근 거래"],
-  historical:["주식 과거 데이터","과거 시세와 정기 자료 수집"],
-  ticks:["1틱 단위 수집기","Tick 데이터 수집 상태"],
+  historical:["주식 데이터 수집기","과거 50종목 · 실시간 1틱 독립 제어"],
+  inventory:["현재 데이터 현황","SQLite 저장 파일 · 종목별 기간 · 1틱 보존 데이터"],
   api:["API 설정","홈서버 공개 API 연결"],
   server:["서버 성능","작업 관리자 · CPU / 메모리 / 디스크 / 네트워크 / 전력"],
   keys:["API Key 관리","홈서버 비밀키 저장소"]
@@ -57,6 +57,7 @@ function showPage(page) {
   setText("pageSub",PAGE_TITLES[page][1]);
   if(page==="server")void refreshServerPerformance();
   if(page==="historical")void refreshHistory50();
+  if(page==="inventory")void refreshInventory();
   // Diagnostics are folded by default; only load logs on demand.
 }
 function jsonSafe(data) {
@@ -403,6 +404,92 @@ async function refreshHistory50(){
       setText("history50Message","상태 조회 실패: "+err.message);
   }finally{fetchingHistory50=false;}
 }
+let lastInventory=null;
+function formatInventoryBytes(value){
+  if(!Number.isFinite(value)||value<0)return "미확인";
+  if(value===0)return "0 B";
+  const units=["B","KB","MB","GB","TB"];
+  const k=Math.min(units.length-1,Math.floor(Math.log(value)/Math.log(1024)));
+  return (value/(1024**k)).toLocaleString("ko-KR",{maximumFractionDigits:k===0?0:1})+" "+units[k];
+}
+function inventoryDate(value){
+  return typeof value==="string"&&value.length>=10?value.slice(0,10):"—";
+}
+function renderInventory(data){
+  lastInventory=data;
+  const historical=data?.history||{},tick=data?.ticks||{};
+  setText("inventoryFiles",Number.isFinite(historical.fileCount)?historical.fileCount+" / 50":"—");
+  setText("inventoryRows",Number.isFinite(historical.checkpointRows)?historyNum(historical.checkpointRows):"—");
+  setText("inventoryBytes",formatInventoryBytes(historical.storedBytes));
+  setText("inventoryTickSessions",Number.isFinite(tick.sessionFolderCount)?historyNum(tick.sessionFolderCount):"—");
+  setText("inventoryTickLatest","마지막 세션 "+(tick.lastSession||"없음"));
+  setText("inventoryTickStatus","마지막 기록: "+(tick.lastSession||"없음")+
+    " · 저장 CSV "+(tick.lastSessionFiles?.length||0)+"개 · 크기 "+formatInventoryBytes(tick.lastSessionBytes)+
+    " · 수집기 마지막 상태 "+(tick.status||"미확인"));
+  const filter=$("inventoryFilter")?.value||"all";
+  let records=Array.isArray(historical.symbols)?historical.symbols:[];
+  records=records.filter(x=>filter==="saved"?x.dbExists===true:
+    filter==="missing"?x.dbExists===false:
+    filter==="gaps"?(Number(x.missingDays)>0):true);
+  setText("inventoryUpdated",records.length+" / "+(historical.symbols?.length||0)+
+    "종목 표시 · 실제 파일 크기 확인 · 행 수/기간은 마지막 수집 체크포인트 기준");
+  const root=$("inventoryTable");if(root){
+    root.replaceChildren();
+    if(!records.length)root.appendChild(node("p","meta","표시할 데이터가 없습니다."));
+    else{
+      const table=node("table","history-table");
+      const head=node("thead"),titles=node("tr");
+      for(const name of ["종목","저장 파일","마지막 기록 봉 수","시작 날짜","마지막 날짜","파일 크기","결측 거래일","탐색 진행"])titles.append(node("th","",name));
+      head.append(titles);table.append(head);
+      const body=node("tbody");
+      for(const item of records){
+        const row=node("tr");
+        row.append(node("td","history-name",item.symbol||"—"));
+        row.append(node("td",item.dbExists?"":"history-file-missing",item.dbExists?"SQLite 있음":"파일 없음"));
+        row.append(node("td","",item.dbExists?historyNum(item.checkpointRows):"—"));
+        row.append(node("td","inventory-date",inventoryDate(item.oldest)));
+        row.append(node("td","inventory-date",inventoryDate(item.newest)));
+        row.append(node("td","",formatInventoryBytes(item.bytes)));
+        row.append(node("td","",Number.isFinite(item.missingDays)?historyNum(item.missingDays):"검증 대기"));
+        const percent=node("td","history-progress-cell");
+        percent.append(node("span","",historyPct(item.scanPercent)),percentBar(item.scanPercent));
+        row.append(percent);body.append(row);
+      }
+      table.append(body);root.append(table);
+    }
+  }
+  const tickRoot=$("inventoryTickTable");
+  if(tickRoot){
+    tickRoot.replaceChildren();
+    const stored=Array.isArray(tick.lastSessionFiles)?tick.lastSessionFiles:[];
+    if(!stored.length)tickRoot.append(node("p","meta","최근 세션의 1틱 CSV 파일이 없습니다."));
+    else{
+      const table=node("table","history-table"),thead=node("thead"),titles=node("tr");
+      for(const name of ["종목","저장 파일","용량"])titles.append(node("th","",name));
+      thead.append(titles);table.append(thead);
+      const body=node("tbody");
+      for(const item of stored){
+        const row=node("tr");
+        row.append(node("td","history-name",item.symbol||"—"));
+        row.append(node("td","",tick.lastSession+"/"+item.symbol+".csv"));
+        row.append(node("td","",formatInventoryBytes(item.bytes)));
+        body.append(row);
+      }
+      table.append(body);tickRoot.append(table);
+    }
+  }
+}
+let inventoryLoading=false;
+async function refreshInventory(){
+  if(inventoryLoading||APP.hidden||$("page-inventory").hidden)return;
+  inventoryLoading=true;
+  try{
+    const data=await get("/api/data/inventory");
+    if(!APP.hidden&&!$("page-inventory").hidden)renderInventory(data);
+  }catch(error){
+    if(!APP.hidden&&!$("page-inventory").hidden)setText("inventoryUpdated","조회 오류: "+error.message);
+  }finally{inventoryLoading=false;}
+}
 function render(data) {
   overview=data;
   if(window.ServerMetrics && !$("page-server").hidden)
@@ -425,9 +512,15 @@ function render(data) {
     const paused = data.historical?.paused !== false;
     b.disabled = !installed || (b.dataset.collectionAction==="resume" ? !paused : paused);
   }
-  setText("tickStatus",data.ticks?.serviceState==="not-running"?"서비스 중지":
-    data.ticks?.paused?"일시정지":data.ticks?.mode==="NOT_MIGRATED"?"이전 대기":data.ticks?.mode);
-  setText("ticksOutput",jsonSafe(data.ticks));
+  const tick=data.ticks||{};
+  setText("tickStatus",tick.enabled===false?"중지":tick.active?"허용 · 수집 중":"허용 · 대기");
+  setText("tickWorkerState",tick.active?(tick.enabled?"실시간 수신":"중지 전환 중"):
+    tick.serviceState==="running"?"작업 중지":"서비스 중지");
+  setText("tickSession",tick.sessionDate||"기록 없음");
+  setText("ticksOutput",jsonSafe(tick));
+  for(const button of document.querySelectorAll("button[data-tick-action]")){
+    button.disabled = button.dataset.tickAction==="resume"?tick.enabled===true:tick.enabled===false;
+  }
   setText("apiStatus",data.api?.ok?"정상":"연결 오류");
   setText("apiMode",data.api?.mode||"미확인");
   setText("apiUpdated",data.api?.dataUpdatedAt?
@@ -513,6 +606,29 @@ $("logout").addEventListener("click",async()=>{
 });
 $("refresh").addEventListener("click",refresh);
 $("serverPerfRefresh").addEventListener("click",refreshServerPerformance);
+$("inventoryRefresh").addEventListener("click",refreshInventory);
+$("inventoryFilter").addEventListener("change",()=>renderInventory(lastInventory));
+setInterval(()=>{if(!document.hidden&&!APP.hidden&&!$("page-inventory").hidden)void refreshInventory();},15000);
+for(const button of document.querySelectorAll("button[data-tick-action]")){
+  button.addEventListener("click",async()=>{
+    const enabled=button.dataset.tickAction==="resume";
+    if(!confirm(enabled?
+      "실시간 1틱 수집을 다시 허용할까요? 미국 정규장에서는 1틱 작업이 우선 실행될 수 있습니다.":
+      "실시간 1틱 수집을 중지할까요? 과거 50종목 1분봉 수집과 저장 데이터는 유지됩니다."))return;
+    button.disabled=true;
+    setText("tickActionMessage","1틱 설정 변경 중...");
+    try{
+      const result=await post("/api/ticks/control",{enabled});
+      setText("tickActionMessage",result.enabled?
+        "1틱 수집 허용됨 · 미국장 일정과 스케줄러 상태에 따라 시작":
+        "1틱 중지 요청 완료 · 이미 실행 중이면 스케줄러가 종료합니다");
+      await refresh();
+    }catch(e){
+      setText("tickActionMessage","변경 실패: "+e.message);
+      await refresh();
+    }
+  });
+}
 $("history50Refresh").addEventListener("click",refreshHistory50);
 $("history50Filter").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
 $("history50Sort").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
