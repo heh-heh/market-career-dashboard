@@ -207,6 +207,25 @@ def service_state(service: str) -> str:
         return "unknown"
 
 
+def telemetry_snapshot() -> dict:
+    """Private authenticated view of the already sanitized, read-only host metrics.
+
+    No control endpoints, secret files, shell commands or credentials are involved.
+    """
+    try:
+        with urllib.request.urlopen(
+            "http://127.0.0.1:18084/api/server-telemetry", timeout=3
+        ) as response:
+            telemetry = json.load(response)
+        if (not isinstance(telemetry, dict) or
+                telemetry.get("mode") != "PUBLIC_READ_ONLY_AGGREGATED" or
+                telemetry.get("ok") is not True):
+            raise ValueError("UNVERIFIED_TELEMETRY")
+        return telemetry
+    except (OSError, ValueError, TypeError):
+        return {"ok": False, "error": "TELEMETRY_API_NOT_READY"}
+
+
 def overview() -> dict:
     try:
         with urllib.request.urlopen("http://127.0.0.1:18084/api/health", timeout=3) as response:
@@ -216,13 +235,7 @@ def overview() -> dict:
                ("ok", "service", "mode", "dataReady", "dataUpdatedAt", "tradingEnabled", "researchEnabled")}
     except (OSError, ValueError):
         api = {"ok": False, "error": "API 연결 실패"}
-    try:
-        with urllib.request.urlopen("http://127.0.0.1:18084/api/server-telemetry",timeout=3) as response:
-            telemetry=json.load(response)
-        if not isinstance(telemetry,dict) or telemetry.get("mode")!="PUBLIC_READ_ONLY_AGGREGATED":
-            telemetry={"ok":False,"error":"UNVERIFIED_TELEMETRY"}
-    except (OSError,ValueError):
-        telemetry={"ok":False,"error":"TELEMETRY_API_NOT_READY"}
+    telemetry = telemetry_snapshot()
     collect = _json_file(DATA / "collector_status.json")
     collection = {k: collect.get(k) for k in ("phase", "startedAt", "finishedAt", "lastSuccessAt", "counts")}
     history_dir = Path("/srv/ai-data/stock-collection/historical-smoke")
@@ -468,6 +481,8 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, {"authenticated": True, "csrf": session[1]})
         elif path.path == "/api/overview":
             self.reply(200, overview())
+        elif path.path == "/api/telemetry":
+            self.reply(200, telemetry_snapshot())
         elif path.path == "/api/run":
             names = parse_qs(path.query).get("action", [])
             action = names[0] if len(names) == 1 else ""
