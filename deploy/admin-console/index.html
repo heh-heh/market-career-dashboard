@@ -69,10 +69,14 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 <section id="loginView" class="login" hidden>
   <h1>관리자 로그인</h1>
   <p class="muted">Market & Career Dashboard · 홈서버 관리자</p>
-  <p class="small muted">SSH 터널을 통해서만 접속할 수 있습니다. 관리자 비밀번호는 GitHub Pages로 전송되지 않습니다.</p>
+  <p class="small muted">홈서버에서 ID, 비밀번호, Google OTP를 검증합니다. 최초 OTP 등록 전에는 기존 SSH 터널에서 비밀번호만으로 로그인할 수 있습니다.</p>
   <form id="loginForm" autocomplete="on">
+    <label for="adminUsername">관리자 ID</label>
+    <input id="adminUsername" type="text" autocomplete="username" maxlength="32" placeholder="OTP 등록 시 지정한 ID">
     <label for="password">관리자 비밀번호</label>
-    <input id="password" type="password" autocomplete="current-password" required minlength="12" autofocus>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <label for="adminOtp">Google OTP 6자리</label>
+    <input id="adminOtp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000">
     <button type="submit">로그인</button>
     <div id="loginError" class="bad small" role="status"></div>
   </form>
@@ -249,7 +253,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <pre id="keysOutput">불러오는 중...</pre>
       </div>
     </section>
-    <p class="foot">관리자 기능은 SSH 터널을 통해서만 이용할 수 있어. 서버 명령 실행·주식 실거래·자동매매는 이번 배포에서 활성화하지 않아.</p>
+    <p class="foot">관리자 기능은 SSH 터널 또는 Tailscale 전용 HTTPS 연결로만 이용할 수 있습니다. 실제 주식 주문·실거래는 이 관리자 서비스에서 비활성화되어 있습니다.</p>
   </main>
 </div>
 <script src="/app.js" defer></script>
