@@ -20,7 +20,7 @@ SRC="$RELEASE/deploy/admin-console"
 git -C "$REPO" show "$REV:server-metrics.js" > "$SRC/server-metrics.js"
 git -C "$REPO" show "$REV:server-metrics.css" > "$SRC/server-metrics.css"
 python3 -m py_compile "$SRC/console.py" "$SRC/mfa_auth.py" "$SRC/setup_mfa.py"
-(cd "$SRC" && python3 test_mfa.py)
+(cd "$SRC" && python3 test_mfa.py && python3 test_history_progress.py)
 [[ -s "$SRC/index.html" && -s "$SRC/app.js" && -s "$SRC/server-metrics.js" && -s "$SRC/server-metrics.css" ]] || { echo "ASSETS_MISSING"; exit 1; }
 
 if [[ ! -f "$BASE/private/credentials.json" ]]; then
