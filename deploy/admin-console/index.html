@@ -68,6 +68,22 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .server-monitor-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .server-monitor-title h3{margin:0;font-size:14px}
 .server-monitor .metric-intro{margin:6px 0}
+.collector-switches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.collector-switch-card{border:1px solid var(--line);border-radius:12px;padding:15px;background:#121e33;min-width:0}
+.collector-switch-row{display:flex;align-items:center;gap:13px}
+.collector-switch-row>div{flex:1;min-width:0}
+.collector-switch-row strong{font-size:16px}
+.collector-switch-row p{font-size:12px;color:var(--muted);margin:5px 0}
+.collector-switch{display:inline-flex;align-items:center;position:relative;flex-shrink:0;cursor:pointer}
+.collector-switch input{position:absolute;width:100%;height:100%;inset:0;margin:0;opacity:0;cursor:pointer;z-index:2}
+.collector-switch-track{display:inline-block;width:50px;height:28px;border-radius:30px;background:#394963;border:1px solid #7788a7;position:relative;transition:background .15s}
+.collector-switch-track:before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}
+.collector-switch input:checked+.collector-switch-track{background:#426bda}
+.collector-switch input:checked+.collector-switch-track:before{transform:translateX(21px)}
+.collector-switch input:focus-visible+.collector-switch-track{outline:3px solid #a8c8ff;outline-offset:3px}
+.collector-switch input:disabled+.collector-switch-track{opacity:.5;cursor:wait}
+.collector-switch-card .meta{margin-top:8px;line-height:1.55;overflow-wrap:anywhere}
+@media(max-width:690px){.collector-switches{grid-template-columns:minmax(0,1fr)}}
 .history-dashboard-cards .value{font-size:22px;font-variant-numeric:tabular-nums}
 .history-dashboard-cards .meta{font-size:11px}
 .history-bar{height:9px;overflow:hidden;background:#16283d;border-radius:50px;margin:7px 0 5px}
@@ -255,6 +271,29 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <strong>과거 1분봉 · 50종목 수집 현황</strong>
         <p class="muted small" style="margin:5px 0 0">대상 기간: <b>2015-01-01 ~ 2026-10-01</b> · 미국 정규장 데이터 · 실제 제공 가능한 과거 기록만 저장 · 기존 실시간 1틱 수집기와 분리</p>
       </div>
+      <div class="collector-switches" aria-label="수집기 독립 실행 설정">
+        <section class="collector-switch-card">
+          <div class="collector-switch-row">
+            <div><strong>과거 1분봉 수집</strong><p>50종목 · 2015-01-01~2026-10-01</p></div>
+            <label class="collector-switch" aria-label="1분봉 수집 켜기 또는 끄기">
+              <input type="checkbox" id="historyCollectorToggle" aria-label="1분봉 수집">
+              <span class="collector-switch-track" aria-hidden="true"></span>
+            </label>
+          </div>
+          <p class="meta" id="historyToggleStatus">서버 설정 확인 중...</p>
+        </section>
+        <section class="collector-switch-card">
+          <div class="collector-switch-row">
+            <div><strong>실시간 1틱 수집</strong><p>미국 정규장 중 실시간 틱 데이터</p></div>
+            <label class="collector-switch" aria-label="1틱 수집 켜기 또는 끄기">
+              <input type="checkbox" id="tickCollectorToggle" aria-label="1틱 수집">
+              <span class="collector-switch-track" aria-hidden="true"></span>
+            </label>
+          </div>
+          <p class="meta" id="tickToggleStatus">서버 설정 확인 중...</p>
+        </section>
+      </div>
+      <div class="history-note" id="collectorPriorityInfo">양쪽 ON: 장중 1틱 / 장외 1분봉 · 1분봉만 ON: 장중·장외 1분봉 · 1틱만 ON: 장중 1틱 · 둘 다 OFF: 수집 중지</div>
       <div class="cards history-dashboard-cards">
         <div class="panel"><div class="label">대상 종목</div><div class="value" id="history50Count">50개</div><div class="meta" id="history50Active">등록 확인 중</div></div>
         <div class="panel"><div class="label">기간 탐색 진행률</div><div class="value" id="history50Scan">—</div><div class="history-bar"><span id="history50ScanBar"></span></div><div class="meta">시점 이동 진행률 · 데이터 완성률이 아님</div></div>
@@ -265,23 +304,16 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <div class="history-toolbar">
           <div>
             <h3>50종목 과거 데이터 수집</h3>
-            <p class="meta">과거 데이터 수집은 별도 시작 승인 후 정규장 밖에서만 실행됩니다. 기존 실시간 틱 수집 설정은 바뀌지 않습니다.</p>
+            <p class="meta">위의 토글 두 개로 각 수집기를 독립 제어합니다. 둘 다 켜면 정규장에는 1틱, 장외에는 1분봉을 우선 실행합니다.</p>
           </div>
           <div class="actions">
-            <button type="button" data-history-50="resume" id="history50Start">과거 50종목 수집 시작 / 예약</button>
             <button type="button" id="history50Refresh">진행률 새로고침</button>
           </div>
         </div>
         <p class="meta" id="history50Message" role="status"></p>
         <p class="meta" id="history50Persisted">저장된 수집 설정 확인 중...</p>
         <p class="meta" id="history50MasterState">전체 데이터 스케줄러 상태 확인 중...</p>
-        <details class="history-danger-zone">
-          <summary>과거 수집 중지 설정 열기</summary>
-          <div class="actions">
-            <span class="meta">과거 50종목 수집만 중지하며 저장된 SQLite 파일은 보존합니다.</span>
-            <button type="button" data-history-50="pause">과거 수집 일시정지</button>
-          </div>
-        </details>
+
         <div class="history-note">
           <b>진행률 읽는 방법:</b> 파란 막대는 지정한 날짜 범위에서 API 페이지 커서가 얼마나 과거로 이동했는지를 나타냅니다.
           전체 1분봉 확보율이 아니며, 상장 전 기간·공급사 보존 한계·거래 없음·API 응답 오류 때문에 모든 거래일을 채우지 못할 수 있습니다.
@@ -317,10 +349,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
             <h3>실시간 1틱 수집기</h3>
             <p class="meta">현재 요청에 따라 중지 상태가 기본값입니다. 과거 50종목 1분봉 수집에는 영향을 주지 않습니다.</p>
           </div>
-          <div class="actions">
-            <button type="button" data-tick-action="pause">1틱 수집 중지</button>
-            <button type="button" data-tick-action="resume">1틱 수집 재개</button>
-          </div>
+
         </div>
         <div class="cards">
           <div class="panel"><div class="label">1틱 허용 상태</div><div class="value" id="tickStatus">확인 중</div></div>
@@ -328,7 +357,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
           <div class="panel"><div class="label">마지막 저장 세션</div><div class="value" id="tickSession">—</div></div>
         </div>
         <p class="meta" id="tickActionMessage" role="status"></p>
-        <div class="history-note">실시간 1틱 수집을 중지해도 이미 저장한 데이터는 삭제하지 않습니다. 수집기 서비스 자체는 계속 살아 있으므로 미국장 마감 후 과거 1분봉을 수집할 수 있습니다.</div>
+        <div class="history-note">실시간 1틱 수집을 중지해도 이미 저장한 데이터는 삭제하지 않습니다. 스케줄러 서비스는 유지됩니다. 1분봉만 켜진 상태라면 정규장에도 1분봉을 수집하며, 둘 다 켜면 장중 1틱을 우선합니다.</div>
         <details style="margin-top:8px"><summary>1틱 진단 데이터</summary><pre id="ticksOutput">불러오는 중...</pre></details>
       </div>
       <details class="server-diagnostics">
