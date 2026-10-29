@@ -70,6 +70,15 @@ def main():
                 assert json.loads((runtime/"historical-control.json").read_text())["reason"]=="ADMIN_HISTORY_START"
                 assert json.loads((runtime/"control.json").read_text())["paused"] is False
                 assert json.loads((runtime/"tick-control.json").read_text())["enabled"] is False
+                # Tick switch must be independent of the existing 1-minute
+                # permission, while enabling tick resumes shared scheduler.
+                enabled_tick=call(base,token,csrf,"/api/ticks/control",{"enabled":True})
+                assert enabled_tick["enabled"] is True
+                assert enabled_tick["masterPaused"] is False
+                assert json.loads((runtime/"historical-control.json").read_text())["enabled"] is True
+                disabled_tick=call(base,token,csrf,"/api/ticks/control",{"enabled":False})
+                assert disabled_tick["enabled"] is False
+                assert json.loads((runtime/"historical-control.json").read_text())["enabled"] is True
                 # Start is idempotent. No second click can implicitly pause collection.
                 result=call(base,token,csrf,"/api/history/start",{})
                 assert result["enabled"] is True
