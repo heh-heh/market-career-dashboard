@@ -68,7 +68,9 @@ def progress_snapshot(root=ROOT,symbols_path=CONFIG,control_path=CONTROL):
         if cursor:
             scan=round(max(0.0,min(100.0,(end-cursor).total_seconds()/span*100.0)),2)
         else:
-            scan=0.0 if status=="queued" else None
+            # No checkpointed cursor means no provable scanned portion; report
+            # the conservative 0%, even for errors, rather than invent coverage.
+            scan=0.0
         verified=safe_int(state.get("verifiedTradingDays"))
         missing=safe_int(state.get("missingTradingDays"))
         completed=(status=="collection_pass_finished_unverified")
