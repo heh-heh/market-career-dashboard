@@ -10,13 +10,16 @@ DATA=/srv/ai-data/stock-collection
 grep -q 'HISTORY_50_EXPLICIT_START_REQUIRED' "$BASE/current/research_collection_scheduler.py" || {
   echo "ERROR=HISTORICAL_50_SCHEDULER_NOT_PATCHED"; exit 1;
 }
+grep -q 'TICKS_DISABLED_BY_OPERATOR' "$BASE/current/research_collection_scheduler.py" || {
+  echo "ERROR=TICK_PAUSE_GATE_NOT_PATCHED"; exit 1;
+}
 [[ -f "$BASE/private/toss-broker.json" ]] || { echo "ERROR=BROKER_CONFIG_MISSING"; exit 1; }
 for tool in git sudo python3 curl; do command -v "$tool" >/dev/null || { echo "ERROR=MISSING_TOOL:$tool"; exit 1; }; done
 git -C "$REPO" fetch origin main
 REV=$(git -C "$REPO" rev-parse refs/remotes/origin/main)
 mkdir -p "$BASE/bin" "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
 chmod 700 "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
-for name in run-broker.sh run-scheduler.sh control.sh history-control.sh; do
+for name in run-broker.sh run-scheduler.sh control.sh history-control.sh tick-control.sh; do
   git -C "$REPO" show "$REV:deploy/stock-collection/$name" > "$BASE/bin/$name.new"
   bash -n "$BASE/bin/$name.new"
   mv -f "$BASE/bin/$name.new" "$BASE/bin/$name"
@@ -71,6 +74,24 @@ print("HISTORICAL_SYMBOL_COUNT=50")
 print("HISTORICAL_ACTIVE="+str(control["enabled"]).lower())
 print("HISTORICAL_START=2015-01-01")
 print("HISTORICAL_END=2026-10-01")
+PY
+# User requested stopping 1-tick collection while preserving historic 1-minute
+# backfill. Existing explicit operator tick control is preserved on upgrades.
+python3 - "$DATA/runtime/collection/tick-control.json" <<'PY'
+import json,os,sys
+from pathlib import Path
+p=Path(sys.argv[1])
+if p.is_symlink():raise SystemExit("ERROR=TICK_CONTROL_SYMLINK")
+if not p.exists():
+    fd=os.open(p,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
+    with os.fdopen(fd,"w",encoding="utf-8") as f:
+        json.dump({"enabled":False,"reason":"USER_REQUESTED_TICKS_PAUSED"},f)
+        f.flush();os.fsync(f.fileno())
+data=json.loads(p.read_text(encoding="utf-8"))
+if not isinstance(data,dict) or type(data.get("enabled")) is not bool:
+    raise SystemExit("ERROR=TICK_CONTROL_INVALID")
+os.chmod(p,0o600)
+print("TICK_COLLECTION_ENABLED="+str(data["enabled"]).lower())
 PY
 # No existing services from this new install, and no change to dashboard/chess.
 sudo install -m 0644 "$BASE/bin/market-stock-token-broker.service" /etc/systemd/system/
