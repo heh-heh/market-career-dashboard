@@ -216,6 +216,13 @@ def overview() -> dict:
                ("ok", "service", "mode", "dataReady", "dataUpdatedAt", "tradingEnabled", "researchEnabled")}
     except (OSError, ValueError):
         api = {"ok": False, "error": "API 연결 실패"}
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:18084/api/server-telemetry",timeout=3) as response:
+            telemetry=json.load(response)
+        if not isinstance(telemetry,dict) or telemetry.get("mode")!="PUBLIC_READ_ONLY_AGGREGATED":
+            telemetry={"ok":False,"error":"UNVERIFIED_TELEMETRY"}
+    except (OSError,ValueError):
+        telemetry={"ok":False,"error":"TELEMETRY_API_NOT_READY"}
     collect = _json_file(DATA / "collector_status.json")
     collection = {k: collect.get(k) for k in ("phase", "startedAt", "finishedAt", "lastSuccessAt", "counts")}
     history_dir = Path("/srv/ai-data/stock-collection/historical-smoke")
@@ -318,6 +325,7 @@ def overview() -> dict:
     # AI engine has not been migrated. Do not treat archived files as running bots.
     return {
         "api": api,
+        "telemetry": telemetry,
         "collection": collection,
         "paper": paper,
         "research": {"status": "NOT_DEPLOYED", "running": False, "note": "AI V0.8.3 학습 엔진은 별도 이전 예정입니다."},
@@ -438,9 +446,13 @@ class Handler(BaseHTTPRequestHandler):
         if path.path == "/api/health":
             self.reply(200, {"ok": True, "scope": "localhost-only", "mode": "authenticated-admin"})
             return
-        if path.path in ("/", "/app.js"):
+        if path.path in ("/", "/app.js", "/server-metrics.js", "/server-metrics.css"):
             if path.path == "/app.js":
                 filename, mime = "app.js", "text/javascript; charset=utf-8"
+            elif path.path == "/server-metrics.js":
+                filename, mime = "server-metrics.js", "text/javascript; charset=utf-8"
+            elif path.path == "/server-metrics.css":
+                filename, mime = "server-metrics.css", "text/css; charset=utf-8"
             else:
                 filename, mime = "index.html", "text/html; charset=utf-8"
             try:
