@@ -79,6 +79,32 @@ if $RESTART_OK; then
     sleep 1
   done
 fi
+# Health 200 alone is insufficient: Task Manager previously rendered without
+# its same-origin stylesheet because admin CSP blocked external CSS.
+if $READY; then
+  if ! python3 - <<'PY'
+from urllib.request import urlopen
+
+base = "http://127.0.0.1:18085"
+with urlopen(base + "/", timeout=5) as response:
+    html = response.read().decode("utf-8")
+    csp = response.headers.get("Content-Security-Policy", "")
+assert 'href="/server-metrics.css"' in html, "ADMIN_STYLESHEET_LINK_MISSING"
+assert "style-src 'self' 'unsafe-inline'" in csp, "ADMIN_STYLESHEET_BLOCKED_BY_CSP"
+with urlopen(base + "/server-metrics.css", timeout=5) as response:
+    css = response.read().decode("utf-8")
+    assert "text/css" in response.headers.get("Content-Type", ""), "BAD_STYLESHEET_MIME"
+assert ".metric-workbench" in css and ".metric-resource-list" in css, "TASK_MANAGER_CSS_MISSING"
+with urlopen(base + "/server-metrics.js", timeout=5) as response:
+    js = response.read().decode("utf-8")
+assert "window.ServerMetrics" in js, "TASK_MANAGER_SCRIPT_MISSING"
+print("ADMIN_TASK_MANAGER_ASSETS=PASS")
+PY
+  then
+    echo "ADMIN_TASK_MANAGER_ASSETS_FAILED"
+    READY=false
+  fi
+fi
 if ! $READY; then
   echo "ADMIN_CONSOLE_HEALTH_FAILED"
   if [[ -n "$OLD" ]]; then
