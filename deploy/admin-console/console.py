@@ -20,6 +20,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from mfa_auth import password_valid, otp_match_step
 from history_progress import progress_snapshot
+from data_inventory import inventory
 
 HERE = Path(__file__).resolve().parent
 REPO = Path("/srv/apps/market-career-dashboard")
@@ -260,6 +261,8 @@ def overview() -> dict:
     tick_progress = _json_file(prod_data / "ticks/status.json")
     scheduler_service = service_state("market-stock-collection.service")
     collection_paused = control.get("paused") is not False
+    tick_control = _json_file(runtime / "tick-control.json")
+    tick_enabled = tick_control.get("enabled") is True
     live_summary = {}
     for symbol, state in sorted(live_progress.items()):
         if not isinstance(symbol, str) or not isinstance(state, dict):
@@ -362,6 +365,9 @@ def overview() -> dict:
                        "smokeSymbols": history_summary,
                        "symbols": live_summary},
         "ticks": {"service": "market-stock-collection.service",
+                  "enabled": tick_enabled,
+                  "active": scheduler.get("collector") == "tick",
+                  "controlReason": str(tick_control.get("reason") or "MISSING_DISABLED")[:80],
                   "state": scheduler_service,
                   "serviceState": scheduler_service,
                   "mode": scheduler.get("mode") or "NOT_DEPLOYED",
@@ -488,6 +494,8 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(200, overview())
         elif path.path == "/api/history/status":
             self.reply(200, progress_snapshot())
+        elif path.path == "/api/data/inventory":
+            self.reply(200, inventory())
         elif path.path == "/api/telemetry":
             self.reply(200, telemetry_snapshot())
         elif path.path == "/api/run":
@@ -613,6 +621,40 @@ class Handler(BaseHTTPRequestHandler):
                 except OSError:
                     pass
             self.reply(200, {"ok": True, "paused": paused, "status": "REQUESTED"})
+            return
+        if path == "/api/ticks/control":
+            enabled = body.get("enabled")
+            if type(enabled) is not bool:
+                self.reply(400, {"error":"INVALID_TICK_CONTROL"})
+                return
+            config=Path("/srv/ai-data/stock-collection/runtime/collection/tick-control.json")
+            if not config.is_file() or config.is_symlink() or config.parent.is_symlink():
+                self.reply(409, {"error":"TICK_PAUSE_GATE_NOT_INSTALLED"})
+                return
+            if enabled and (service_state("market-stock-collection.service")!="running" or
+                            service_state("market-stock-token-broker.service")!="running"):
+                self.reply(409, {"error":"COLLECTOR_SERVICE_NOT_RUNNING"})
+                return
+            saved=_json_file(config)
+            if type(saved.get("enabled")) is not bool:
+                self.reply(409, {"error":"TICK_CONFIG_INVALID"})
+                return
+            new={"enabled":enabled,
+                 "reason":"ADMIN_TICK_RESUME" if enabled else "ADMIN_TICK_PAUSE",
+                 "updatedAt":datetime.now(timezone.utc).isoformat()}
+            temp=config.with_name("tick-control."+secrets.token_hex(12)+".tmp")
+            try:
+                fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+                with os.fdopen(fd,"w",encoding="utf-8") as output:
+                    json.dump(new,output)
+                    output.flush();os.fsync(output.fileno())
+                os.replace(temp,config)
+            except OSError:
+                self.reply(500,{"error":"TICK_CONTROL_WRITE_FAILED"})
+                return
+            finally:
+                temp.unlink(missing_ok=True)
+            self.reply(200,{"ok":True,"enabled":enabled,"status":"REQUESTED"})
             return
         if path == "/api/history/control":
             enabled=body.get("enabled")
