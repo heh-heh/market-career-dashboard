@@ -11,8 +11,8 @@ DATA=/srv/ai-data/stock-collection
 for tool in git sudo python3 curl; do command -v "$tool" >/dev/null || { echo "ERROR=MISSING_TOOL:$tool"; exit 1; }; done
 git -C "$REPO" fetch origin main
 REV=$(git -C "$REPO" rev-parse refs/remotes/origin/main)
-mkdir -p "$BASE/bin" "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/ticks"
-chmod 700 "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/ticks"
+mkdir -p "$BASE/bin" "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
+chmod 700 "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
 for name in run-broker.sh run-scheduler.sh; do
   git -C "$REPO" show "$REV:deploy/stock-collection/$name" > "$BASE/bin/$name.new"
   bash -n "$BASE/bin/$name.new"
@@ -38,6 +38,36 @@ for path, content in (
     os.chmod(path,0o600)
 print("INITIAL_SYMBOLS_PRESERVED=true")
 print("PAUSE_CONTROL_PRESERVED=true")
+PY
+# Historical target lives in a *different* config and storage from tick data.
+# Do not overwrite existing per-operator symbols, or start backfill on update.
+python3 - "$BASE/private/historical-symbols.json" "$DATA/runtime/collection/historical-control.json" <<'PY'
+import json,os,sys,re
+from pathlib import Path
+symbols_path, control_path = (Path(raw) for raw in sys.argv[1:])
+default="AAPL MSFT NVDA AMD INTC AVGO TSM MU QCOM AMAT LRCX KLAC ASML MRVL ARM GOOGL GOOG AMZN META TSLA NFLX PLTR ORCL ADBE CRM NOW SNOW UBER COIN HOOD JPM BAC GS V MA WMT COST UNH LLY XOM SPY QQQ IWM DIA SOXX SMH SOXL SOXS TQQQ SQQQ".split()
+assert len(default)==50 and len(set(default))==50
+for p, obj in ((symbols_path,{"symbols":default}), (control_path,{"enabled":False,"reason":"EXPLICIT_HISTORICAL_START_REQUIRED"})):
+    if p.is_symlink():
+        raise SystemExit("ERROR=UNSAFE_HISTORICAL_CONTROL")
+    if not p.exists():
+        fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        with os.fdopen(fd,"w",encoding="utf-8") as f:
+            json.dump(obj,f)
+            f.flush();os.fsync(f.fileno())
+    os.chmod(p,0o600)
+raw=json.loads(symbols_path.read_text(encoding="utf-8"))
+symbols=raw.get("symbols") if isinstance(raw,dict) else None
+if not isinstance(symbols,list) or len(symbols)!=50 or len(set(symbols))!=50 or any(
+    not isinstance(x,str) or not re.fullmatch(r"[A-Z0-9]{1,8}",x) for x in symbols):
+    raise SystemExit("ERROR=HISTORICAL_SYMBOLS_MUST_BE_50_UNIQUE")
+control=json.loads(control_path.read_text(encoding="utf-8"))
+if not isinstance(control,dict) or type(control.get("enabled")) is not bool:
+    raise SystemExit("ERROR=HISTORICAL_ENABLE_STATE_INVALID")
+print("HISTORICAL_SYMBOL_COUNT=50")
+print("HISTORICAL_ACTIVE="+str(control["enabled"]).lower())
+print("HISTORICAL_START=2015-01-01")
+print("HISTORICAL_END=2026-10-01")
 PY
 # No existing services from this new install, and no change to dashboard/chess.
 sudo install -m 0644 "$BASE/bin/market-stock-token-broker.service" /etc/systemd/system/
