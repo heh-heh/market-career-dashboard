@@ -344,7 +344,7 @@ function renderHistory50(plan,master){
     " · 마지막 설정 "+lastAction+" · "+prettyDate(plan?.controlUpdatedAt));
   for(const button of document.querySelectorAll("[data-history-50]")){
     button.disabled=historyControlPending||!ready||
-      (button.dataset.history50==="resume"?plan.enabled:!plan.enabled);
+      (button.getAttribute("data-history-50")==="resume"?plan.enabled:!plan.enabled);
   }
   const filter=$("history50Filter")?.value||"all";
   const sort=$("history50Sort")?.value||"progress";
@@ -644,7 +644,7 @@ for(const button of document.querySelectorAll("button[data-history-50]")){
     // A second click, in-flight poll or a stale card must not cause the
     // opposite action. Start is a distinct API, not a toggling endpoint.
     if(historyControlPending)return;
-    const enabled=button.dataset.history50==="resume";
+    const enabled=button.getAttribute("data-history-50")==="resume";
     if(!confirm(enabled?
       "50종목 과거 1분봉 수집을 시작/예약할까요? 전체 스케줄러도 재개됩니다. 미국 정규장 중에는 종료 후 시작되며, API 호출량이 많을 수 있습니다.":
       "과거 50종목 수집만 중지할까요? 저장된 SQLite 데이터는 유지됩니다."))return;
