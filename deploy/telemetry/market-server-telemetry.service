@@ -1,0 +1,28 @@
+[Unit]
+Description=Market Dashboard safe host telemetry sampler (aggregated only)
+After=local-fs.target
+
+[Service]
+Type=simple
+User=heh-heh
+Group=heh-heh
+WorkingDirectory=/srv/apps/_deploy/server-telemetry/current
+ExecStart=/usr/bin/python3 /srv/apps/_deploy/server-telemetry/current/collector.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/srv/ai-data/market-dashboard
+ReadOnlyPaths=/srv/ai-data
+ProtectHome=true
+PrivateDevices=true
+PrivateTmp=true
+MemoryMax=96M
+CPUQuota=15%
+TasksMax=12
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
