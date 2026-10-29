@@ -16,8 +16,8 @@ for tool in git python3 tar; do command -v "$tool" >/dev/null || { echo "ERROR=M
 git -C "$REPO" fetch origin strategy-engine-v3
 REV=$(git -C "$REPO" rev-parse refs/remotes/origin/strategy-engine-v3)
 RELEASE="$BASE/releases/$REV"
-mkdir -p "$RELEASE" "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical-smoke" "$DATA/historical" "$DATA/ticks"
-chmod 700 "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical" "$DATA/ticks"
+mkdir -p "$RELEASE" "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical-smoke" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
+chmod 700 "$BASE/private" "$DATA/runtime" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
 git -C "$REPO" archive "$REV" \
   requirements.txt toss_auth.py toss_rate_limit.py toss_token_broker.py \
   research_collection_scheduler.py research \
@@ -34,8 +34,15 @@ if [[ -e "$RELEASE/data/toss_ticks" && ! -L "$RELEASE/data/toss_ticks" ]]; then
 fi
 ln -sfnT "$DATA/ticks" "$RELEASE/data/toss_ticks"
 
-python3 -m py_compile "$RELEASE/toss_auth.py" "$RELEASE/toss_token_broker.py" \
+# Apply the reviewed, main-owned scheduler overlay to this staged immutable release.
+git -C "$REPO" fetch origin main
+MAINREV=$(git -C "$REPO" rev-parse refs/remotes/origin/main)
+git -C "$REPO" show "$MAINREV:deploy/stock-collection/patch-history-50.py" > "$RELEASE/_patch_history_50.py"
+python3 "$RELEASE/_patch_history_50.py" "$RELEASE"
+python3 -m py_compile "$RELEASE/research_collection_scheduler.py" "$RELEASE/scripts/collect_research_1m.py" \
+  "$RELEASE/toss_auth.py" "$RELEASE/toss_token_broker.py" \
   "$RELEASE/scripts/collect_toss_1m.py" "$RELEASE/scripts/collect_toss_ticks.py"
+
 
 # A previous failed venv creation can leave an executable interpreter without pip.
 # Detect the broken state rather than assuming bin/python proves the venv is usable.
