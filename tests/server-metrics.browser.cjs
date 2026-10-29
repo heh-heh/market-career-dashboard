@@ -24,8 +24,39 @@ const inventoryFixture={kind:'PRIVATE_COLLECTOR_STORAGE_INVENTORY',history:{
 lastSessionFiles:[{symbol:'NVDA',bytes:500}],lastSessionBytes:500,
 status:'stopped',lastUpdate:'2026-10-29T00:00:00Z'}};
 const publicRequests=[];
+let historyEnabled=false;
+let historyRequests=[];
+const historyFixture=()=>({
+  configured:true,enabled:historyEnabled,symbolCount:50,scanPercent:0.47,
+  totalStoredRows:722500,totalPages:7225,
+  controlReason:historyEnabled?'ADMIN_HISTORY_START':'ADMIN_HISTORY_PAUSE',
+  controlUpdatedAt:'2026-10-29T14:00:00+00:00',
+  counts:{queued:0,error:0,collection_pass_finished_unverified:0},
+  symbols:Array.from({length:50},(_,i)=>({
+    symbol:i===0?'NVDA':'TEST'+i,status:'collecting',state:'collecting',
+    scanPercent:0.47,storedRows:i===0?722500:0,pages:i===0?7225:0
+  })),
+  scheduler:{serviceState:'running',paused:false,activeWorker:null,
+    collectorStatus:'TICKS_PAUSED',reason:'TICKS_DISABLED_BY_OPERATOR',calendarConfirmed:true}
+});
 const server=http.createServer((req,res)=>{
   const pathname=new URL(req.url,'http://localhost').pathname;
+  if(pathname==='/api/history/status'&&req.method==='GET'){
+    res.setHeader('Content-Type','application/json');res.end(JSON.stringify(historyFixture()));return;
+  }
+  if(pathname==='/api/history/start'&&req.method==='POST'){
+    historyRequests.push('start');
+    historyEnabled=true;
+    res.setHeader('Content-Type','application/json');
+    res.end(JSON.stringify({ok:true,enabled:true,masterPaused:false,mode:'TICKS_PAUSED',collector:null,queued:true}));
+    return;
+  }
+  if(pathname==='/api/history/control'&&req.method==='POST'){
+    historyRequests.push('pause');
+    historyEnabled=false;
+    res.setHeader('Content-Type','application/json');res.end(JSON.stringify({ok:true,enabled:false}));
+    return;
+  }
   if(pathname==='/api/data/inventory'){
     res.setHeader('Content-Type','application/json');res.end(JSON.stringify(inventoryFixture));return;
   }
@@ -132,6 +163,21 @@ const server=http.createServer((req,res)=>{
         await page.screenshot({path:`/tmp/server-performance-${admin?'admin':'public'}-${width}.png`,fullPage:true});
       }
       if(admin){
+        historyEnabled=false;
+        historyRequests=[];
+        page.on('dialog',async dialog=>dialog.accept());
+        await page.locator('[data-page="historical"]').click();
+        await page.waitForFunction(()=>document.querySelector('#history50Start')?.disabled===false);
+        await page.locator('#history50Start').click();
+        await page.waitForFunction(()=>document.querySelector('#history50Persisted')?.textContent?.includes('수집 허용됨'));
+        assert.deepEqual(historyRequests,['start'],'start click must not call pause endpoint');
+        assert.equal(historyEnabled,true,'historical permission must stay enabled after start');
+        assert((await page.locator('#history50State').textContent()).includes('수집 예약'),
+          'ticks-paused at market open is a queued history job, not a stopped history job');
+        assert.equal(await page.locator('[data-history-50="pause"]').isVisible(),false,
+          'pause action must be hidden behind deliberate details');
+        assert.equal(await page.locator('#history50Start').isDisabled(),true,
+          'start must be disabled once permission is confirmed');
         await page.locator('[data-page="inventory"]').click();
         await page.locator('#inventoryTable tbody tr').first().waitFor();
         assert.equal(await page.locator('#inventoryTable tbody tr').count(),50);
