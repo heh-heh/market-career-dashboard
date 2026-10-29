@@ -66,7 +66,11 @@
       legend.appendChild(wrap);
     }
     panel.appendChild(legend);
-    if(note)panel.appendChild(el("p","metric-muted",note));
+    if(note){
+      const details=el("details","metric-explainer");
+      details.append(el("summary","metric-muted","측정 기준"),el("p","metric-muted",note));
+      panel.appendChild(details);
+    }
     return panel;
   }
   function render(target,data){
@@ -81,8 +85,17 @@
     const stamp=data.updatedAt?new Date(data.updatedAt):null;
     const text=stamp&&!Number.isNaN(stamp.getTime())?stamp.toLocaleString("ko-KR",{hour12:false}):"—";
     const intro=el("div","metric-intro");
-    intro.append(el("strong","",data.stale?"데이터 지연 · 마지막 측정 기준":"서버 모니터링 · 읽기 전용"),
-                 el("span","metric-muted","최종 수집: "+text+" · 측정 간격 약 60초"));
+    const actions=el("div","metric-intro-actions");
+    const toggle=el("button","metric-button",target.classList.contains("metric-expanded")?"작게 보기":"크게 보기");
+    toggle.type="button";
+    toggle.setAttribute("aria-pressed",String(target.classList.contains("metric-expanded")));
+    toggle.addEventListener("click",()=>{
+      const enabled=target.classList.toggle("metric-expanded");
+      toggle.textContent=enabled?"작게 보기":"크게 보기";
+      toggle.setAttribute("aria-pressed",String(enabled));
+    });
+    actions.append(el("span","metric-muted","최종 수집: "+text+" · 60초 간격"),toggle);
+    intro.append(el("strong","",data.stale?"● 데이터 갱신 지연":"● 서버 리소스 실시간 요약"),actions);
     target.appendChild(intro);
     const cards=el("div","metric-cards");
     const items=[
