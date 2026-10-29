@@ -21,37 +21,36 @@ def apply(release):
     if "HISTORY_50_EXPLICIT_START_REQUIRED" in body:
         raise SystemExit("UNREVIEWED_UPSTREAM_ALREADY_PATCHED")
 
-    old="        desired = {'MARKET_OPEN': 'tick', 'MARKET_CLOSED': 'backfill'}.get(decision['mode'])\n"
-    new=old+"""        # Separate historical/tick permissions; the operator disabled ticks.
-        # Missing/invalid configuration fails closed for *tick* collection,
-        # without blocking the off-hours historical one-minute worker.
-        if desired == 'tick':
-            try:
-                config_path = Path(os.environ["TICK_COLLECTION_CONTROL_FILE"])
-                if config_path.is_symlink():
-                    raise ValueError("CONTROL_SYMLINK")
-                tick_control = json.loads(config_path.read_text(encoding="utf-8"))
-                tick_enabled = isinstance(tick_control, dict) and tick_control.get("enabled") is True
-            except (OSError, ValueError, KeyError):
-                tick_enabled = False
-            if not tick_enabled:
-                desired = None
-                decision = {**decision, 'mode': 'TICKS_PAUSED',
-                            'reason': 'TICKS_DISABLED_BY_OPERATOR'}
-        # 50-symbol historical backfill requires independent, explicit consent.
-        if desired == 'backfill':
-            try:
-                config_path = Path(os.environ["HISTORY_50_CONTROL_FILE"])
-                if config_path.is_symlink():
-                    raise ValueError("CONTROL_SYMLINK")
-                approved = json.loads(config_path.read_text(encoding="utf-8"))
-                enabled = isinstance(approved, dict) and approved.get("enabled") is True
-            except (OSError, ValueError, KeyError):
-                enabled = False
-            if not enabled:
-                desired = None
-                decision = {**decision, 'mode': 'HISTORY_PAUSED',
-                            'reason': 'HISTORY_50_EXPLICIT_START_REQUIRED'}
+    old="        desired = {'MARKET_OPEN': 'tick', 'MARKET_CLOSED': 'backfill'}.get(decision['mode'])\\n"
+    new="""        # One scheduler, two separate workers and two independent permissions.
+        # The policy module authorizes historical-only collection even during
+        # US regular hours when official calendars match.
+        from collector_policy import enabled, choose_worker
+        tick_allowed = enabled(os.environ.get('TICK_COLLECTION_CONTROL_FILE'))
+        history_allowed = enabled(os.environ.get('HISTORY_50_CONTROL_FILE'))
+        desired, decision = choose_worker(decision, ticks=tick_allowed,
+                                          history=history_allowed)
+"""
+    body=replace_once(body,old,new)
+    old="""        # During every transition/shutdown invalidate REST permission before SIGTERM.
+"""
+    new="""        # History-only mode grants a short renewed lease during market hours.
+        # It does not change the exclusive worker lock or tick priority.
+        if decision['mode'] == 'HISTORY_ONLY_RUNNING':
+            permit['requestDeadline'] = (now+timedelta(seconds=4)).isoformat()
+        # During every transition/shutdown invalidate REST permission before SIGTERM.
+"""
+    body=replace_once(body,old,new)
+    old="""        return (state['mode'] == 'MARKET_CLOSED' and
+                now < aware(state['leaseExpiresAt']) and
+                now < aware(state['requestDeadline']) and
+                not regular_clock(now)['isOpen'])
+"""
+    new="""        from collector_policy import enabled, rest_allowed
+        return rest_allowed(
+            state, now, is_market_open=regular_clock(now)['isOpen'],
+            ticks=enabled(os.environ.get('TICK_COLLECTION_CONTROL_FILE')),
+            history=enabled(os.environ.get('HISTORY_50_CONTROL_FILE')))
 """
     body=replace_once(body,old,new)
     old="""            if desired == 'backfill' and self.args.symbols_file:
