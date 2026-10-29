@@ -225,6 +225,29 @@ def service_state(service: str) -> str:
         return "unknown"
 
 
+def history_status_snapshot() -> dict:
+    """Return 50-symbol progress and a fresh scheduler snapshot together.
+
+    This prevents the admin UI from pairing current history permission with
+    a stale /api/overview scheduler mode from an earlier market session.
+    """
+    snapshot=progress_snapshot()
+    runtime=Path("/srv/ai-data/stock-collection/runtime/collection")
+    state=_json_file(runtime/"status.json")
+    control=_json_file(runtime/"control.json")
+    snapshot["scheduler"]={
+        "serviceState":service_state("market-stock-collection.service"),
+        "paused":control.get("paused") is not False,
+        "collectorStatus":str(state.get("mode") or "UNKNOWN")[:64],
+        "activeWorker":state.get("collector") if state.get("collector") in ("tick","backfill") else None,
+        "reason":str(state.get("reason") or "")[:80],
+        "calendarConfirmed":state.get("calendarConfirmed") is True,
+        "workerFailures":state.get("workerFailures") if type(state.get("workerFailures")) is int else None,
+        "lastSchedulerUpdate":str(state.get("updatedAt") or "")[:40]
+    }
+    return snapshot
+
+
 def telemetry_snapshot() -> dict:
     """Private authenticated view of the already sanitized, read-only host metrics.
 
@@ -509,7 +532,7 @@ class Handler(BaseHTTPRequestHandler):
         elif path.path == "/api/overview":
             self.reply(200, overview())
         elif path.path == "/api/history/status":
-            self.reply(200, progress_snapshot())
+            self.reply(200, history_status_snapshot())
         elif path.path == "/api/data/inventory":
             self.reply(200, inventory())
         elif path.path == "/api/telemetry":
