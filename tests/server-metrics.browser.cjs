@@ -62,7 +62,9 @@ const server=http.createServer((req,res)=>{
   }
   if(pathname==='/api/me'||pathname==='/api/overview'||pathname==='/api/telemetry'){
     res.setHeader('Content-Type','application/json');
-    res.end(JSON.stringify(pathname==='/api/me'?{csrf:'fixture'}:pathname==='/api/overview'?{telemetry:fixture}:fixture));
+    res.end(JSON.stringify(pathname==='/api/me'?{csrf:'fixture'}:
+      pathname==='/api/overview'?{telemetry:fixture,historical50:historyFixture(),
+        historical:historyFixture().scheduler,ticks:{enabled:false,active:false}}:fixture));
     return;
   }
   const files={'/':'server-status.html','/console':'deploy/admin-console/index.html','/app.js':'deploy/admin-console/app.js'};
@@ -167,19 +169,7 @@ const server=http.createServer((req,res)=>{
         historyRequests=[];
         page.on('dialog',async dialog=>dialog.accept());
         await page.locator('[data-page="historical"]').click();
-        try{
-          await page.waitForFunction(()=>document.querySelector('#history50Start')?.disabled===false,{timeout:5000});
-        }catch(err){
-          console.error('HISTORY_UI_DEBUG',await page.evaluate(()=>({
-            appHidden:document.querySelector('#appView')?.hidden,
-            pageHidden:document.querySelector('#page-historical')?.hidden,
-            startDisabled:document.querySelector('#history50Start')?.disabled,
-            persisted:document.querySelector('#history50Persisted')?.textContent,
-            message:document.querySelector('#history50Message')?.textContent,
-            globalError:document.querySelector('#globalError')?.textContent
-          })),errors);
-          throw err;
-        }
+        await page.waitForFunction(()=>document.querySelector('#history50Start')?.disabled===false,null,{timeout:5000});
         await page.locator('#history50Start').click();
         await page.waitForFunction(()=>document.querySelector('#history50Persisted')?.textContent?.includes('수집 허용됨'));
         assert.deepEqual(historyRequests,['start'],'start click must not call pause endpoint');
