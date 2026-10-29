@@ -1,0 +1,54 @@
+name: Server telemetry safety checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server.py'
+      - 'server-status.html'
+      - 'server-status.js'
+      - 'server-metrics.js'
+      - 'server-metrics.css'
+      - 'deploy/telemetry/**'
+      - 'deploy/admin-console/**'
+      - '.github/workflows/pages.yml'
+      - '.github/workflows/server-telemetry-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile backend and telemetry sampler
+        run: |
+          python3 -m py_compile server.py deploy/telemetry/*.py deploy/admin-console/console.py
+      - name: Offline host sampling and public API security fixture
+        run: |
+          (cd deploy/telemetry && python3 test_collector.py)
+          PYTHONPATH=. python3 deploy/telemetry/test_api.py
+      - name: Check standalone JavaScript charts and dashboard bundle
+        run: |
+          node --check server-metrics.js
+          node --check server-status.js
+          node --check deploy/admin-console/app.js
+      - name: Make sure served pages have no admin API access
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          page=Path("server-status.html").read_text()
+          script=Path("server-status.js").read_text()
+          assert 'server-metrics.js' in page and 'server-status.js' in page
+          assert '/api/server-telemetry' in script
+          assert ':8444' not in script
+          assert 'POST' not in script
+          api=Path("server.py").read_text()
+          assert '"/api/server-telemetry"' in api
+          print("TELEMETRY_PUBLIC_ONLY=PASS")
+          PY
