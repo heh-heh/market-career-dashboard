@@ -9,6 +9,7 @@ export RESEARCH_COLLECTION_STATE_DIR="$DATA/runtime/collection"
 export RESEARCH_COLLECTION_WORKER_LOCK="$DATA/runtime/collection/worker.lock"
 export COLLECTION_50_DIR="$DATA/historical-50-2015-2026"
 export HISTORY_50_CONTROL_FILE="$DATA/runtime/collection/historical-control.json"
+export TICK_COLLECTION_CONTROL_FILE="$DATA/runtime/collection/tick-control.json"
 export PYTHONDONTWRITEBYTECODE=1
 # systemd After= orders process start, not the Unix socket's readiness.
 # Wait briefly for the credential broker on boot rather than fail/restart.
