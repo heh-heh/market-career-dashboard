@@ -27,7 +27,7 @@ PY
     ;;
   pause|resume)
     [[ -f "$BASE/current/research_collection_scheduler.py" ]] || { echo "ERROR=COLLECTOR_RELEASE_MISSING"; exit 1; }
-    grep -q 'TICKS_DISABLED_BY_OPERATOR' "$BASE/current/research_collection_scheduler.py" || {
+    grep -q 'from collector_policy import enabled, choose_worker' "$BASE/current/research_collection_scheduler.py" || {
       echo "ERROR=TICK_PAUSE_GATE_NOT_INSTALLED"; exit 1;
     }
     python3 - "$CONFIG" "$action" <<'PY'
