@@ -12,9 +12,23 @@ assert(adminCsp&&adminCsp.includes("style-src 'self' 'unsafe-inline'"),'admin CS
 const fixture={ok:true,mode:'PUBLIC_READ_ONLY_AGGREGATED',samplingSeconds:60,updatedAt:'2026-10-29T10:04:00Z',
   metrics:{cpuPct:60,memoryPct:52,memoryUsedGiB:4.16,memoryTotalGiB:8,diskPct:40,diskUsedGiB:40,diskTotalGiB:100,dataDiskPct:20,dataDiskUsedGiB:40,dataDiskTotalGiB:200,networkRxMbps:2,networkTxMbps:.5,cpuPackageWatts:null},
   history:[0,20,40,null,60].map((v,i)=>({at:`2026-10-29T10:0${i}:00Z`,cpuPct:v,memoryPct:48+i,diskPct:40,dataDiskPct:20,networkRxMbps:i*.5,networkTxMbps:i*.125,cpuPackageWatts:null}))};
+const inventoryFixture={kind:'PRIVATE_COLLECTOR_STORAGE_INVENTORY',history:{
+  targetCount:50,fileCount:1,storedBytes:1024,checkpointRows:500,
+  symbols:Array.from({length:50},(_,i)=>({
+    symbol:i===0?'NVDA':'TEST'+i,dbExists:i===0,bytes:i===0?1024:null,
+    checkpointRows:i===0?500:null,oldest:i===0?'2015-01-01T00:00:00Z':null,
+    newest:i===0?'2026-10-01T00:00:00Z':null,scanPercent:i===0?40:0,
+    missingDays:i===0?3:null,state:i===0?'collecting':'queued'
+  }))
+},ticks:{sessionFolderCount:1,lastSession:'2026-10-28',
+lastSessionFiles:[{symbol:'NVDA',bytes:500}],lastSessionBytes:500,
+status:'stopped',lastUpdate:'2026-10-29T00:00:00Z'}};
 const publicRequests=[];
 const server=http.createServer((req,res)=>{
   const pathname=new URL(req.url,'http://localhost').pathname;
+  if(pathname==='/api/data/inventory'){
+    res.setHeader('Content-Type','application/json');res.end(JSON.stringify(inventoryFixture));return;
+  }
   if(pathname==='/api/me'||pathname==='/api/overview'||pathname==='/api/telemetry'){
     res.setHeader('Content-Type','application/json');
     res.end(JSON.stringify(pathname==='/api/me'?{csrf:'fixture'}:pathname==='/api/overview'?{telemetry:fixture}:fixture));
@@ -116,6 +130,24 @@ const server=http.createServer((req,res)=>{
       if(process.env.METRIC_SCREENSHOTS&&[390,1440].includes(width)){
         await page.evaluate(({selector,data})=>window.ServerMetrics.render(document.querySelector(selector),data),{selector,data:fixture});
         await page.screenshot({path:`/tmp/server-performance-${admin?'admin':'public'}-${width}.png`,fullPage:true});
+      }
+      if(admin){
+        await page.locator('[data-page="inventory"]').click();
+        await page.locator('#inventoryTable tbody tr').first().waitFor();
+        assert.equal(await page.locator('#inventoryTable tbody tr').count(),50);
+        assert.equal(await page.locator('#inventoryFiles').textContent(),'1 / 50');
+        assert.equal(await page.locator('#inventoryTickSessions').textContent(),'1');
+        assert((await page.locator('#inventoryTable tbody tr').first().textContent()).includes('NVDA'));
+        await page.locator('#inventoryFilter').selectOption('missing');
+        assert.equal(await page.locator('#inventoryTable tbody tr').count(),49);
+        await page.locator('[data-page="historical"]').click();
+        assert.equal(await page.locator('[data-page="ticks"]').count(),0);
+        assert.equal(await page.locator('#page-ticks').count(),0);
+        assert.equal(await page.locator('[data-tick-action="pause"]').count(),1);
+        assert.equal(await page.locator('[data-tick-action="resume"]').count(),1);
+        const actual=await page.locator('#page-historical').isVisible();
+        assert(actual,'unified collector page should be visible');
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
       }
       await page.close();cases++;
     }
