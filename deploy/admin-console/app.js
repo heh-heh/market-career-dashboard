@@ -344,13 +344,20 @@ $("loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   setText("loginError","");
   const password=$("password").value;
+  const username=$("adminUsername").value.trim();
+  const otp=$("adminOtp").value.trim();
   try{
-    const s=await post("/api/login",{password},false);
+    const s=await post("/api/login",{username,password,otp},false);
     csrf=s.csrf;
     $("password").value="";
+    $("adminOtp").value="";
     showLoggedIn(true);
     await refresh();
-  }catch(err){setText("loginError",err.message);}
+  }catch(err){
+    $("password").value="";
+    $("adminOtp").value="";
+    setText("loginError",err.message);
+  }
 });
 $("logout").addEventListener("click",async()=>{
   try{await post("/api/logout",{});}catch(e){}
