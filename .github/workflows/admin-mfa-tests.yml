@@ -26,7 +26,7 @@ jobs:
       - name: Compile server authentication and run offline tests
         run: |
           python -m py_compile deploy/admin-console/{console.py,mfa_auth.py,setup_mfa.py,test_mfa.py}
-          (cd deploy/admin-console && python test_mfa.py && python test_performance.py && python test_history_progress.py && python test_data_inventory.py && python test_tick_routes.py)
+          (cd deploy/admin-console && python test_mfa.py && python test_performance.py && python test_history_progress.py && python test_data_inventory.py && python test_tick_routes.py && python test_history_start.py)
       - name: Validate isolated 50-symbol historical patch and UI wiring
         run: |
           python3 -m py_compile deploy/stock-collection/patch-history-50.py deploy/stock-collection/test_patch_history_50.py deploy/admin-console/history_progress.py deploy/admin-console/data_inventory.py
@@ -45,6 +45,11 @@ jobs:
           assert '"/api/history/control"' in js
           assert '"/api/history/status"' in api
           assert '"/api/history/control"' in api
+          assert '"/api/history/start"' in api
+          assert '"/api/history/start"' in js
+          assert 'id="history50Persisted"' in ui
+          assert 'id="history50Start"' in ui
+          assert 'class="history-danger-zone"' in ui
           assert api.index('session = active_session(self)') < api.index('elif path.path == "/api/history/status"')
           assert 'HISTORY_50_CONTROL_FILE' in Path("deploy/stock-collection/run-scheduler.sh").read_text()
           install=Path("deploy/stock-collection/install-services.sh").read_text()
