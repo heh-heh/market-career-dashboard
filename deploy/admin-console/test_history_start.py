@@ -22,7 +22,8 @@ def call(base, token, csrf, endpoint, value):
     body=json.dumps(value).encode("utf-8")
     req=urllib.request.Request(base+endpoint,method="POST",data=body,
         headers={"Cookie":console.SESSION_COOKIE+"="+token,
-                 "X-CSRF-Token":csrf,"Content-Type":"application/json"})
+                 "X-CSRF-Token":csrf,"Content-Type":"application/json",
+                 "Origin":base})
     with urllib.request.urlopen(req,timeout=5) as response:
         assert response.status==200
         return json.load(response)
