@@ -56,6 +56,7 @@ function showPage(page) {
   setText("pageTitle",PAGE_TITLES[page][0]);
   setText("pageSub",PAGE_TITLES[page][1]);
   if(page==="server")void refreshServerPerformance();
+  if(page==="historical")void refreshHistory50();
   // Diagnostics are folded by default; only load logs on demand.
 }
 function jsonSafe(data) {
@@ -276,6 +277,111 @@ function renderAgents(paper) {
     cardRoot.appendChild(card);
   }
 }
+let latestHistory50=null;
+function historyStateLabel(state){
+  return {queued:"대기",collecting:"수집 중",checkpoint:"저장 중",error:"오류",
+    collection_pass_finished_unverified:"1차 탐색 종료 · 검증 미완료",
+    unknown:"상태 확인 필요"}[state]||"확인 중";
+}
+function historyNum(v){
+  return Number.isFinite(v)&&v>=0?Math.floor(v).toLocaleString("ko-KR"):"—";
+}
+function historyPct(v){
+  return Number.isFinite(v)&&v>=0&&v<=100?v.toFixed(2)+"%":"미확인";
+}
+function percentBar(v) {
+  const outer=document.createElement("div");
+  outer.className="history-bar";
+  const fill=document.createElement("span");
+  fill.style.width=Number.isFinite(v)&&v>=0&&v<=100?v+"%":"0%";
+  outer.appendChild(fill);
+  return outer;
+}
+function renderHistory50(plan,master){
+  latestHistory50=plan;
+  const ready=plan?.configured===true;
+  const entries=ready&&Array.isArray(plan.symbols)?plan.symbols:[];
+  setText("history50Count",ready?entries.length+" / 50개":"설정 대기");
+  const state=master?.serviceState==="running"?
+    (plan.enabled?"허용됨":"과거 수집 중지"):"서비스 확인 필요";
+  setText("history50State",ready?state:"미설치");
+  setText("history50Active",ready?("대기 "+historyNum(plan.counts?.queued)+"개 · 완료 검토 "+historyNum(plan.counts?.collection_pass_finished_unverified)+"개"):"50종목 구성 필요");
+  setText("history50Scan",historyPct(plan?.scanPercent));
+  const bar=$("history50ScanBar");
+  if(bar)bar.style.width=Number.isFinite(plan?.scanPercent)?Math.max(0,Math.min(100,plan.scanPercent))+"%":"0%";
+  setText("history50Rows",ready?historyNum(plan.totalStoredRows):"—");
+  setText("history50Pages","API 요청 페이지 "+(ready?historyNum(plan.totalPages):"—"));
+  setText("history50Errors","오류 "+(ready?historyNum(plan.counts?.error):"—")+"개 종목");
+  setText("history50MasterState","공유 스케줄러: "+(master?.serviceState||"미확인")+
+    " · 전체 일시정지 "+(master?.paused?"예":"아니오")+
+    " · 현재 작업 "+(master?.activeWorker||"없음")+
+    (plan?.enabled&&master?.paused?" · 과거 수집을 진행하려면 상세 진단에서 전체 스케줄러를 재개해야 합니다.":""));
+  for(const button of document.querySelectorAll("[data-history-50]")){
+    button.disabled=!ready||(button.dataset.history50==="resume"?plan.enabled:!plan.enabled);
+  }
+  const filter=$("history50Filter")?.value||"all";
+  const sort=$("history50Sort")?.value||"progress";
+  let filtered=entries.filter(x=>{
+    if(filter==="active")return x.state==="collecting"||x.state==="checkpoint";
+    if(filter==="error")return x.state==="error";
+    if(filter==="queued")return x.state==="queued";
+    if(filter==="finished")return x.state==="collection_pass_finished_unverified";
+    return true;
+  });
+  filtered=[...filtered];
+  if(sort==="symbol")filtered.sort((a,b)=>a.symbol.localeCompare(b.symbol));
+  else if(sort==="error")filtered.sort((a,b)=>(b.state==="error")-(a.state==="error")||a.symbol.localeCompare(b.symbol));
+  else filtered.sort((a,b)=>(Number.isFinite(b.scanPercent)?b.scanPercent:-1)-
+    (Number.isFinite(a.scanPercent)?a.scanPercent:-1)||a.symbol.localeCompare(b.symbol));
+  setText("history50Visible",filtered.length+" / "+entries.length+"개 표시");
+  const root=$("history50Table");if(!root)return;
+  root.replaceChildren();
+  if(!filtered.length){
+    root.appendChild(node("p","meta",ready?"해당 조건의 종목이 없습니다.":"먼저 50종목 수집기를 설치해 주세요."));
+    return;
+  }
+  const table=node("table","history-table");
+  const head=node("thead");
+  const tr=node("tr");
+  for(const name of ["종목","탐색 진행률","거래일 검증","저장 봉 수","API 페이지","상태"]){
+    tr.appendChild(node("th","",name));
+  }
+  head.appendChild(tr);table.appendChild(head);
+  const body=node("tbody");
+  for(const item of filtered){
+    const row=node("tr");
+    row.appendChild(node("td","history-name",item.symbol));
+    const progress=node("td","history-progress-cell");
+    const caption=node("div","history-progress-line");
+    caption.append(node("span","meta","기간 탐색"),node("strong","",historyPct(item.scanPercent)));
+    progress.append(caption,percentBar(item.scanPercent));row.appendChild(progress);
+    const audit=node("td");
+    audit.appendChild(node("strong","",historyPct(item.verifiedDaysPercent)));
+    audit.appendChild(node("div","meta",
+      Number.isFinite(item.verifiedDaysPercent)?"거래일 기준 · 1차 탐색 후 계산":"검증 중 · 완료율 아님"));
+    row.appendChild(audit);
+    row.appendChild(node("td","",historyNum(item.storedRows)));
+    row.appendChild(node("td","",historyNum(item.pages)));
+    const status=node("td",item.state==="error"?"history-error":"",historyStateLabel(item.state));
+    if(item.errorCode)status.append(node("small","history-error"," · "+item.errorCode));
+    row.appendChild(status);
+    body.appendChild(row);
+  }
+  table.appendChild(body);root.appendChild(table);
+}
+let fetchingHistory50=false;
+async function refreshHistory50(){
+  if(fetchingHistory50||APP.hidden||$("page-historical").hidden)return;
+  fetchingHistory50=true;
+  try{
+    const data=await get("/api/history/status");
+    if(!APP.hidden&&!$("page-historical").hidden)
+      renderHistory50(data,overview?.historical);
+  }catch(err){
+    if(!APP.hidden&&!$("page-historical").hidden)
+      setText("history50Message","상태 조회 실패: "+err.message);
+  }finally{fetchingHistory50=false;}
+}
 function render(data) {
   overview=data;
   if(window.ServerMetrics && !$("page-server").hidden)
@@ -284,6 +390,7 @@ function render(data) {
   setText("researchOutput",jsonSafe(data.research));
   renderPaper(data.paper || {});
   renderAgents(data.paper || {});
+  renderHistory50(data.historical50||{},data.historical||{});
   setText("historyStatus",data.historical?.serviceState==="running" && data.historical?.paused?"일시정지":
     data.historical?.collectorStatus==="NOT_DEPLOYED"?"미배포":data.historical?.collectorStatus);
   setText("historyStorage",data.historical?.storageExists?"저장소 있음":"준비 중");
@@ -385,6 +492,29 @@ $("logout").addEventListener("click",async()=>{
 });
 $("refresh").addEventListener("click",refresh);
 $("serverPerfRefresh").addEventListener("click",refreshServerPerformance);
+$("history50Refresh").addEventListener("click",refreshHistory50);
+$("history50Filter").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
+$("history50Sort").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
+setInterval(()=>{if(!document.hidden&&!APP.hidden&&!$("page-historical").hidden)void refreshHistory50();},10000);
+for(const button of document.querySelectorAll("button[data-history-50]")){
+  button.addEventListener("click",async()=>{
+    const enabled=button.dataset.history50==="resume";
+    if(!confirm(enabled?
+      "2015~2026년 50종목 과거 데이터 수집을 허용할까요? 수집기는 정규장 외 시간에만 실행하며, 수십~수백만 행 이상의 요청이 발생할 수 있습니다. 별도 API 요금과 이용 제한을 확인하세요.":
+      "50종목 과거 수집만 일시정지할까요? 이미 저장한 SQLite 데이터는 유지됩니다."))return;
+    button.disabled=true;
+    setText("history50Message","설정 적용 중...");
+    try{
+      const result=await post("/api/history/control",{enabled});
+      setText("history50Message",result.enabled?"과거 수집 허용됨 · 전체 스케줄러와 장 상태에 따라 실행":"과거 수집 일시정지됨");
+      await refresh();
+    }catch(err){
+      setText("history50Message","설정 실패: "+err.message);
+      await refreshHistory50();
+    }
+  });
+}
+
 setInterval(()=>{
   if(!document.hidden && !APP.hidden && !$("page-server").hidden)
     void refreshServerPerformance();
