@@ -95,6 +95,8 @@ def progress_snapshot(root=ROOT,symbols_path=CONFIG,control_path=CONTROL):
             ("queued","collecting","checkpoint","error","collection_pass_finished_unverified")}
     return {
         "configured":len(out)==50,"enabled":controls.get("enabled") is True,
+        "controlReason":str(controls.get("reason") or "NO_CONTROL_REASON")[:70],
+        "controlUpdatedAt":str(controls.get("updatedAt") or "")[:40] or None,
         "symbolCount":50,"startDate":"2015-01-01","endDate":"2026-10-01",
         "scanPercent":mean,"scanKnownCount":len(known),
         "totalStoredRows":sum(x["storedRows"] for x in out),
