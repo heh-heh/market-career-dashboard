@@ -26,7 +26,7 @@ jobs:
       - name: Compile server authentication and run offline tests
         run: |
           python -m py_compile deploy/admin-console/{console.py,mfa_auth.py,setup_mfa.py,test_mfa.py}
-          (cd deploy/admin-console && python test_mfa.py && python test_performance.py && python test_history_progress.py && python test_data_inventory.py)
+          (cd deploy/admin-console && python test_mfa.py && python test_performance.py && python test_history_progress.py && python test_data_inventory.py && python test_tick_routes.py)
       - name: Validate isolated 50-symbol historical patch and UI wiring
         run: |
           python3 -m py_compile deploy/stock-collection/patch-history-50.py deploy/stock-collection/test_patch_history_50.py deploy/admin-console/history_progress.py deploy/admin-console/data_inventory.py
