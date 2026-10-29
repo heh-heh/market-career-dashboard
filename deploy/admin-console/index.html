@@ -88,6 +88,12 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .history-table .history-bar{margin:3px 0 0;height:7px}
 .history-table .history-error{color:#ffb2bc}
 @media(max-width:700px){.history-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.history-table-scroll{max-height:550px}}
+.history-file-missing{color:#f4aeb7}
+.inventory-status-chip{display:inline-block;border:1px solid var(--line);border-radius:30px;padding:2px 8px;color:#baccee;font-size:11px}
+.inventory-date{font-size:11px;color:var(--muted)}
+#page-inventory .panel{min-width:0}
+#page-inventory .history-table-scroll{max-height:72vh}
+@media(max-width:640px){#page-inventory .cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .server-performance-page{width:100%}
 .server-performance-header{display:flex;justify-content:space-between;align-items:center;gap:10px 18px;margin:12px 0;flex-wrap:wrap}
 .server-performance-header h3{font-size:21px;font-weight:700;margin:0}
@@ -154,8 +160,8 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
     <button class="nav-item" data-page="bots">V0.9 가상시장 관제</button>
     <button class="nav-item" data-page="agents">봇별 상태</button>
     <div class="nav-label">자료수집</div>
-    <button class="nav-item" data-page="historical">주식 과거 데이터</button>
-    <button class="nav-item" data-page="ticks">1틱 단위 수집기</button>
+    <button class="nav-item" data-page="historical">주식 데이터 수집기</button>
+    <button class="nav-item" data-page="inventory">현재 데이터 현황</button>
     <div class="nav-label">설정</div>
     <button class="nav-item" data-page="api">API 설정</button>
     <button class="nav-item" data-page="server">서버 성능</button>
@@ -293,6 +299,26 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <div id="history50Table" class="history-table-scroll">수집 현황을 불러오는 중...</div>
         <div class="meta" id="history50Visible">—</div>
       </div>
+      <div class="panel">
+        <div class="history-toolbar">
+          <div>
+            <h3>실시간 1틱 수집기</h3>
+            <p class="meta">현재 요청에 따라 중지 상태가 기본값입니다. 과거 50종목 1분봉 수집에는 영향을 주지 않습니다.</p>
+          </div>
+          <div class="actions">
+            <button type="button" data-tick-action="pause">1틱 수집 중지</button>
+            <button type="button" data-tick-action="resume">1틱 수집 재개</button>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="panel"><div class="label">1틱 허용 상태</div><div class="value" id="tickStatus">확인 중</div></div>
+          <div class="panel"><div class="label">실제 작동</div><div class="value" id="tickWorkerState">확인 중</div></div>
+          <div class="panel"><div class="label">마지막 저장 세션</div><div class="value" id="tickSession">—</div></div>
+        </div>
+        <p class="meta" id="tickActionMessage" role="status"></p>
+        <div class="history-note">실시간 1틱 수집을 중지해도 이미 저장한 데이터는 삭제하지 않습니다. 수집기 서비스 자체는 계속 살아 있으므로 미국장 마감 후 과거 1분봉을 수집할 수 있습니다.</div>
+        <details style="margin-top:8px"><summary>1틱 진단 데이터</summary><pre id="ticksOutput">불러오는 중...</pre></details>
+      </div>
       <details class="server-diagnostics">
         <summary>기존 수집기 상태·진단 펼치기</summary>
         <div class="cards">
@@ -308,19 +334,43 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
         <div class="panel"><h3>진단 원본</h3><pre id="collectionOutput">불러오는 중...</pre></div>
       </details>
     </section>
-    <section class="page" id="page-ticks" hidden>
-      <div class="cards">
-        <div class="panel"><div class="label">1틱 수집기 상태</div><div class="value" id="tickStatus">확인 중</div></div>
-        <div class="panel"><div class="label">데이터 제공 API</div><div class="value">연결 대기</div></div>
-        <div class="panel"><div class="label">1틱 저장소</div><div class="value">미연결</div></div>
+    <section class="page" id="page-inventory" hidden>
+      <div class="notice">
+        <strong>현재 데이터 현황 · 홈서버 저장소</strong>
+        <p class="meta">실제 SQLite 파일과 마지막 수집 체크포인트 기준. 날짜·행 수는 마지막 저장 기록이며 모든 거래일의 데이터 확보를 의미하지 않습니다.</p>
       </div>
-      <div class="notice">실시간 틱 스트림은 모든 체결을 보장하지 않아. 수신 실패·재연결·결측은 기록하고 과거 수집과 구분해.</div>
+      <div class="history-toolbar">
+        <h3>수집 데이터 저장 현황</h3>
+        <button type="button" id="inventoryRefresh">현황 새로고침</button>
+      </div>
+      <div class="cards history-dashboard-cards">
+        <div class="panel"><div class="label">과거 데이터가 있는 종목</div><div class="value" id="inventoryFiles">—</div><div class="meta">50종목 중 SQLite 파일 존재</div></div>
+        <div class="panel"><div class="label">마지막 기록 1분봉</div><div class="value" id="inventoryRows">—</div><div class="meta">최종 검증된 데이터 건수 아님</div></div>
+        <div class="panel"><div class="label">과거 데이터 디스크 사용</div><div class="value" id="inventoryBytes">—</div><div class="meta">SQLite 파일 크기 (WAL 제외)</div></div>
+        <div class="panel"><div class="label">1틱 보존 세션</div><div class="value" id="inventoryTickSessions">—</div><div class="meta" id="inventoryTickLatest">마지막 세션 —</div></div>
+      </div>
       <div class="panel">
-        <h3>자동 수집 제어</h3>
-        <div class="actions"><button data-collection-action="resume">자동 수집 재개</button><button data-collection-action="pause">일시정지</button></div>
-        <p class="small muted">학습·실거래와 분리된 시세 수집 스케줄러만 제어합니다.</p>
+        <div class="history-toolbar">
+          <h3>50종목 과거 데이터 보유 현황</h3>
+          <div class="actions">
+            <label for="inventoryFilter" class="meta">보기</label>
+            <select id="inventoryFilter">
+              <option value="all">전체 종목</option>
+              <option value="saved">저장 파일 있음</option>
+              <option value="missing">파일 없음</option>
+              <option value="gaps">누락 기록 있음</option>
+            </select>
+          </div>
+        </div>
+        <div id="inventoryTable" class="history-table-scroll">서버 저장 파일 확인 중...</div>
+        <p class="meta" id="inventoryUpdated">실제 파일 크기·마지막 수집 기록을 표시합니다.</p>
       </div>
-      <div class="panel" style="margin-top:14px"><h3>수집기 진단</h3><pre id="ticksOutput">불러오는 중...</pre></div>
+      <div class="panel">
+        <h3>보존 중인 1틱 데이터</h3>
+        <p class="meta" id="inventoryTickStatus">저장 현황 확인 중...</p>
+        <div id="inventoryTickTable" class="history-table-scroll">세션 내 저장 파일 확인 중...</div>
+      </div>
+      <div class="history-note">행 수는 체크포인트 저장 시점의 기록입니다. 정확한 SQLite 정합성·거래일별 결측 검사는 별도 검증이 필요하며 표시된 퍼센트는 날짜 탐색 진행도를 뜻합니다.</div>
     </section>
     <section class="page" id="page-api" hidden>
       <div class="cards">
