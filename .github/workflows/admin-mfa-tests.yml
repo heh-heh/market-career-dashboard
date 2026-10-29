@@ -32,6 +32,22 @@ jobs:
           python3 -m py_compile deploy/stock-collection/patch-history-50.py deploy/stock-collection/test_patch_history_50.py deploy/admin-console/history_progress.py deploy/admin-console/data_inventory.py deploy/stock-collection/collector_policy.py deploy/stock-collection/test_collector_policy.py
           python3 deploy/stock-collection/test_patch_history_50.py
           (cd deploy/stock-collection && python3 test_collector_policy.py)
+          # Test against the actual frozen research scheduler, not only a
+          # hand-written fixture; the stock installer uses this same branch.
+          git fetch --depth=1 origin strategy-engine-v3
+          mkdir -p /tmp/stock-scheduler-real-branch
+          git show FETCH_HEAD:research_collection_scheduler.py > /tmp/stock-scheduler-real-branch/research_collection_scheduler.py
+          python3 deploy/stock-collection/patch-history-50.py /tmp/stock-scheduler-real-branch
+          python3 -m py_compile /tmp/stock-scheduler-real-branch/research_collection_scheduler.py
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path("/tmp/stock-scheduler-real-branch/research_collection_scheduler.py").read_text()
+          assert "from collector_policy import enabled, choose_worker" in src
+          assert "from collector_policy import enabled, rest_allowed" in src
+          assert "'HISTORY_ONLY_RUNNING'" in src
+          assert "--since" in src and "2015-01-01" in src and "2026-10-01" in src
+          print("REAL_SCHEDULER_BRANCH_OVERLAY=PASS")
+          PY
           bash -n deploy/stock-collection/setup.sh deploy/stock-collection/install-services.sh deploy/stock-collection/run-scheduler.sh deploy/stock-collection/control.sh deploy/stock-collection/history-control.sh deploy/stock-collection/tick-control.sh
           python3 - <<'PY'
           from pathlib import Path
