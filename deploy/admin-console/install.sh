@@ -17,7 +17,8 @@ mkdir -p "$RELEASE" "$BASE/private"
 chmod 700 "$BASE/private"
 git -C "$REPO" archive "$REV" deploy/admin-console | tar -xf - -C "$RELEASE"
 SRC="$RELEASE/deploy/admin-console"
-python3 -m py_compile "$SRC/console.py"
+python3 -m py_compile "$SRC/console.py" "$SRC/mfa_auth.py" "$SRC/setup_mfa.py"
+(cd "$SRC" && python3 test_mfa.py)
 [[ -s "$SRC/index.html" && -s "$SRC/app.js" ]] || { echo "ASSETS_MISSING"; exit 1; }
 
 if [[ ! -f "$BASE/private/credentials.json" ]]; then
