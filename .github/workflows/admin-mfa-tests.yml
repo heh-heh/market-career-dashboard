@@ -36,7 +36,8 @@ jobs:
           import re
           from pathlib import Path
           html=Path("index.html").read_text(encoding="utf-8")
-          inline=re.findall(r"<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>",html)
+          inline=re.findall(r"<script[^>]*>(.*?)</script>",html,re.S)
+          assert inline, "No scripts found in dashboard"
           for index,source in enumerate(inline):
               Path("/tmp/market-inline-"+str(index)+".js").write_text(source,encoding="utf-8")
           print("INLINE_SCRIPT_COUNT="+str(len(inline)))
