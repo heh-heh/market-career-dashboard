@@ -5,7 +5,9 @@
   async function refresh(){
     // The home Dashboard-only API already has its own PUBLIC read-only HTTPS
     // endpoint. Never call a private admin, Tailscale Serve :8444 or expose auth.
-    const base=window.DASHBOARD_CONFIG?.apiBase;
+    // Prefer the verified configured public API; otherwise use the existing
+    // read-only dashboard Funnel hostname (never the private admin :8444).
+    const base=window.DASHBOARD_CONFIG?.apiBase||"https://heh-heh.tail39e546.ts.net";
     if(typeof base!=="string"||!/^https:\/\//.test(base)){
       status.textContent="공개 서버 지표 API 설정을 확인할 수 없습니다.";
       window.ServerMetrics.render(target,null);
