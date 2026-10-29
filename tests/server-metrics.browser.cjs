@@ -167,7 +167,19 @@ const server=http.createServer((req,res)=>{
         historyRequests=[];
         page.on('dialog',async dialog=>dialog.accept());
         await page.locator('[data-page="historical"]').click();
-        await page.waitForFunction(()=>document.querySelector('#history50Start')?.disabled===false);
+        try{
+          await page.waitForFunction(()=>document.querySelector('#history50Start')?.disabled===false,{timeout:5000});
+        }catch(err){
+          console.error('HISTORY_UI_DEBUG',await page.evaluate(()=>({
+            appHidden:document.querySelector('#appView')?.hidden,
+            pageHidden:document.querySelector('#page-historical')?.hidden,
+            startDisabled:document.querySelector('#history50Start')?.disabled,
+            persisted:document.querySelector('#history50Persisted')?.textContent,
+            message:document.querySelector('#history50Message')?.textContent,
+            globalError:document.querySelector('#globalError')?.textContent
+          })),errors);
+          throw err;
+        }
         await page.locator('#history50Start').click();
         await page.waitForFunction(()=>document.querySelector('#history50Persisted')?.textContent?.includes('수집 허용됨'));
         assert.deepEqual(historyRequests,['start'],'start click must not call pause endpoint');
