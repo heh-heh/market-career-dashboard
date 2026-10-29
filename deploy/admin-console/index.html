@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Market & Career · 관리자</title>
+<link rel="stylesheet" href="/server-metrics.css">
 <style>
 :root{color-scheme:dark;--bg:#080e1b;--sidebar:#0c1729;--panel:#121e33;--panel2:#0b1729;--line:#2a3d5d;--txt:#edf3ff;--muted:#9aaccc;--accent:#8195ff;--green:#74dba5;--yellow:#f6c96e;--red:#ff889d}
 *{box-sizing:border-box}
@@ -215,6 +216,11 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
       <div class="notice">공개 HTTPS API는 읽기 전용으로 유지해. 관리자 API, 실거래, 주문 및 연구 실행 기능을 공개 Funnel에 연결하지 않아.</div>
     </section>
     <section class="page" id="page-server" hidden>
+      <div class="panel" style="margin:15px 0">
+        <h3>시스템 리소스 모니터링 · 실제 측정 그래프</h3>
+        <p class="muted small">60초 간격으로 측정한 호스트 CPU·메모리·네트워크·디스크·CPU 패키지 전력 추이입니다. 전체 시스템 전력은 외부 측정기가 없다면 표시하지 않습니다.</p>
+        <div id="privateServerMetrics" aria-live="polite">수집된 서버 지표를 불러오는 중...</div>
+      </div>
       <div class="grid">
         <div class="panel">
           <h3>서버 콘솔</h3><p class="muted small">허용된 상태 조회만 실행</p>
@@ -256,6 +262,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
     <p class="foot">관리자 기능은 SSH 터널 또는 Tailscale 전용 HTTPS 연결로만 이용할 수 있습니다. 실제 주식 주문·실거래는 이 관리자 서비스에서 비활성화되어 있습니다.</p>
   </main>
 </div>
+<script src="/server-metrics.js" defer></script>
 <script src="/app.js" defer></script>
 </body>
 </html>
