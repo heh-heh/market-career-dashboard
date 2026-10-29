@@ -311,7 +311,8 @@ function renderHistory50(plan,master){
     else if(master?.paused)state="전체 수집 일시정지";
     else if(master?.activeWorker==="backfill")state="과거 1분봉 수집 중";
     else if(mode==="ERROR")state="거래일정 검증 오류";
-    else if(mode==="MARKET_OPEN")state="미국장 개장 · 틱 우선";
+    else if(mode==="MARKET_OPEN")state="정규장 개장 · 과거 수집 예약";
+    else if(mode==="TICKS_PAUSED")state="정규장 개장 · 1틱 중지 · 과거 수집 예약";
     else if(mode==="SWITCHING")state="작업 전환 중";
     else if(mode==="MARKET_CLOSED")state="장외 · 작업 시작 대기";
     else if(mode==="PAUSED")state="스케줄러 일시정지";
@@ -338,8 +339,12 @@ function renderHistory50(plan,master){
   if(master?.lastExitCode!==null&&master?.lastExitCode!==undefined&&master.lastExitCode!==0)
     diagnosis.push("직전 종료 코드 "+master.lastExitCode);
   setText("history50MasterState",diagnosis.join(" · "));
+  const lastAction=plan?.controlReason||"미확인";
+  setText("history50Persisted","서버 저장값: "+(plan?.enabled?"과거 수집 허용됨":"과거 수집 중지")+
+    " · 마지막 설정 "+lastAction+" · "+prettyDate(plan?.controlUpdatedAt));
   for(const button of document.querySelectorAll("[data-history-50]")){
-    button.disabled=!ready||(button.dataset.history50==="resume"?plan.enabled:!plan.enabled);
+    button.disabled=historyControlPending||!ready||
+      (button.dataset.history50==="resume"?plan.enabled:!plan.enabled);
   }
   const filter=$("history50Filter")?.value||"all";
   const sort=$("history50Sort")?.value||"progress";
@@ -398,7 +403,7 @@ async function refreshHistory50(){
   try{
     const data=await get("/api/history/status");
     if(!APP.hidden&&!$("page-historical").hidden)
-      renderHistory50(data,overview?.historical);
+      renderHistory50(data,data.scheduler||overview?.historical);
   }catch(err){
     if(!APP.hidden&&!$("page-historical").hidden)
       setText("history50Message","상태 조회 실패: "+err.message);
@@ -633,23 +638,46 @@ $("history50Refresh").addEventListener("click",refreshHistory50);
 $("history50Filter").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
 $("history50Sort").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
 setInterval(()=>{if(!document.hidden&&!APP.hidden&&!$("page-historical").hidden)void refreshHistory50();},10000);
+let historyControlPending=false;
 for(const button of document.querySelectorAll("button[data-history-50]")){
   button.addEventListener("click",async()=>{
+    // A second click, in-flight poll or a stale card must not cause the
+    // opposite action. Start is a distinct API, not a toggling endpoint.
+    if(historyControlPending)return;
     const enabled=button.dataset.history50==="resume";
     if(!confirm(enabled?
-      "2015~2026년 50종목 과거 데이터 수집을 허용할까요? 수집기는 정규장 외 시간에만 실행하며, 수십~수백만 행 이상의 요청이 발생할 수 있습니다. 별도 API 요금과 이용 제한을 확인하세요.":
-      "50종목 과거 수집만 일시정지할까요? 이미 저장한 SQLite 데이터는 유지됩니다."))return;
-    button.disabled=true;
-    setText("history50Message","설정 적용 중...");
+      "50종목 과거 1분봉 수집을 시작/예약할까요? 전체 스케줄러도 재개됩니다. 미국 정규장 중에는 종료 후 시작되며, API 호출량이 많을 수 있습니다.":
+      "과거 50종목 수집만 중지할까요? 저장된 SQLite 데이터는 유지됩니다."))return;
+    historyControlPending=true;
+    for(const action of document.querySelectorAll("button[data-history-50]"))action.disabled=true;
+    setText("history50Message",enabled?"수집 시작 설정을 서버에 저장하고 검증하는 중...":"과거 수집 중지 설정 확인 중...");
     try{
-      const result=await post("/api/history/control",{enabled});
-      setText("history50Message",result.enabled?
-        "과거 수집을 허용했어. 실제 다운로드 여부는 아래의 '수집 상태'와 '현재 작업'을 확인해. 전체 스케줄러·거래 일정 검증이 별도로 필요해.":
-        "과거 수집 일시정지 요청 완료. 기존 데이터는 보존돼.");
+      const result=enabled?await post("/api/history/start",{}):
+        await post("/api/history/control",{enabled:false});
+      // Verify the disk state through a separate authenticated read, rather
+      // than treating the POST acknowledgement as collection progress.
+      const status=await get("/api/history/status");
+      if(status.enabled!==enabled)
+        throw new Error("설정 검증 불일치: 서버 값이 다른 요청으로 변경됨 ("+(status.controlReason||"원인 미확인")+")");
+      if(enabled && status.scheduler?.paused!==false)
+        throw new Error("과거 수집은 허용됐지만 전체 스케줄러는 여전히 일시정지 상태입니다.");
+      renderHistory50(status,status.scheduler||overview?.historical);
+      if(enabled){
+        const active=status.scheduler?.activeWorker==="backfill";
+        setText("history50Message",active?"과거 1분봉 다운로드 실행 확인됨.":
+          "수집 허용·스케줄러 재개 확인됨. 미국 정규장 중이면 장 종료 후 수집이 시작됩니다. ("+
+          (status.scheduler?.collectorStatus||"작업 대기")+")");
+      }else{
+        setText("history50Message","과거 1분봉 수집 중지를 서버 저장값으로 확인했습니다.");
+      }
       await refresh();
     }catch(err){
-      setText("history50Message","설정 실패: "+err.message);
+      setText("history50Message","설정 확인 실패: "+err.message);
+      await refresh();
+    }finally{
+      historyControlPending=false;
       await refreshHistory50();
+      if(latestHistory50)renderHistory50(latestHistory50,latestHistory50.scheduler||overview?.historical);
     }
   });
 }
