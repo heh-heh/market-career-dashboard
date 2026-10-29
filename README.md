@@ -2,7 +2,7 @@
 
 **주식 시장 · 게임/IT 취업 정보 · 기술 동향**을 한곳에서 확인하는 개인용 웹 대시보드입니다. 공개 리포트와 인증된 관리자 기능을 분리하고, 주식 전략 백테스트 및 AI 연구를 별도로 운영합니다.
 
-[**대시보드 열기**](https://heh-heh.github.io/market-career-dashboard/) · [관리자 페이지](https://heh-heh.github.io/market-career-dashboard/admin.html) · [데이터 수집 현황](https://heh-heh.github.io/market-career-dashboard/collection.html) · [**V0.9 연구 문서**](docs/v09/README.md)
+[**대시보드 열기**](https://heh-heh.github.io/market-career-dashboard/) · [**서버 상태 그래프 (공개 조회)**](https://heh-heh.github.io/market-career-dashboard/server-status.html) · [관리자 로그인 (OTP)](https://heh-heh.github.io/market-career-dashboard/admin.html) · [데이터 수집 현황](https://heh-heh.github.io/market-career-dashboard/collection.html) · [**V0.9 연구 문서**](docs/v09/README.md)
 
 > **프로젝트 성격:** 개인 연구·모니터링 서비스입니다. 주식 분석, 시뮬레이션 및 AI 학습 결과는 투자 수익을 보장하지 않습니다. 공개 화면의 수치와 자료는 데이터 소스·갱신 시각·수집 상태에 따라 달라질 수 있습니다.
 
@@ -29,6 +29,13 @@
 - [에이전트 교차 검토](docs/v09/V09_AGENT_REVIEWS.md) — 독립 의견, 반론, 미해결 위험
 
 > 문서는 `strategy-engine-v3`의 V0.9 설계 원문을 복사해 보존한 것입니다. 연구용 코드·실행 환경·실거래 시스템을 `main`으로 병합하지 않습니다.
+
+## 서버 모니터링과 관리자 접근 구분
+
+- **공개 GitHub Pages:** [서버 상태 그래프](server-status.html)에서 CPU, RAM, 물리 네트워크 수신·송신, 루트·데이터 저장공간과 지원되는 경우 CPU 패키지 전력의 최대 12시간 추이를 읽기 전용으로 표시합니다. 서버의 자세한 식별정보, 파일 경로, 원격 명령 및 API 키는 출력하지 않습니다. 이 조회 데이터 자체는 인터넷에 공개됩니다.
+- **홈서버 전용 관리자:** [GitHub Pages 로그인 화면](admin.html)에서 ID·비밀번호·Google OTP를 입력하되 실제 검증 및 작업 화면은 **Tailscale Serve / SSH 전용**입니다. API 키·원격 제어·Git 작업·서비스 조작·세부 로그는 절대 공개 API에 포함하지 않습니다.
+- **전력 표기:** Intel RAPL이 제공되면 **CPU 패키지 전력**만 표시하며 **서버 전체 전력량은 측정기를 연결하기 전까지 알 수 없습니다.** 임의 소비전력을 꾸며서 표기하지 않습니다.
+- **서버 설치:** [시스템 측정 서비스·공개 읽기 전용 API·관리자 화면 배포 방법](deploy/telemetry/README.md). GitHub 코드 배포만으로 홈서버의 실시간 지표가 자동으로 생기지는 않습니다.
 
 ## V0.7 AI 연구
 
