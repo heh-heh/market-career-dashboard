@@ -4,6 +4,8 @@ on:
     branches: ["main"]
     paths:
       - "index.html"
+      - "admin.html"
+      - "admin-login.js"
       - "dashboard-config.js"
       - "scripts/configure_dashboard_api.py"
       - "data/dashboard.json"
@@ -31,7 +33,7 @@ jobs:
       - name: Assemble public UI only
         run: |
           mkdir -p _site/data
-          cp index.html dashboard-config.js _site/
+          cp index.html admin.html admin-login.js dashboard-config.js _site/
           cp data/dashboard.json _site/data/
           touch _site/.nojekyll
       - name: Verify configured home-server HTTPS API
