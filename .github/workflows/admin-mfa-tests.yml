@@ -7,6 +7,7 @@ on:
       - 'admin-login.js'
       - 'index.html'
       - 'deploy/admin-console/**'
+      - 'deploy/stock-collection/**'
       - '.github/workflows/admin-mfa-tests.yml'
   workflow_dispatch:
 
