@@ -18,9 +18,21 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
 .trade-toggle input:checked+.trade-switch:after{transform:translateX(24px)}
 .trade-toggle .toggle-text{font-weight:800;min-width:28px}
 .trade-toggle input:disabled+.trade-switch{opacity:.45;cursor:not-allowed}
-</style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style><style>.bt-symbol-pct{font-size:22px;font-weight:900;margin-top:8px;font-variant-numeric:tabular-nums}</style></head>
+</style><style>.backtest-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.bt-progress{height:24px;background:#0b1322;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:14px 0}.bt-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#43d17d);transition:width .5s}.bt-progress-text{font-size:26px;font-weight:900}.bt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bt-stat{background:#0d1627;border:1px solid var(--line);border-radius:12px;padding:14px}.bt-stat .v{font-size:19px;font-weight:800;margin-top:5px}.bt-symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.bt-symbol{background:#0d1627;border:1px solid var(--line);border-radius:10px;padding:12px}.bt-ok{color:var(--up)}.bt-wait{color:var(--muted)}.bt-log{background:#080d18;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:360px;overflow:auto;color:#c6d0e4}@media(max-width:800px){.bt-grid{grid-template-columns:1fr 1fr}.bt-symbols{grid-template-columns:1fr 1fr}}@media(max-width:450px){.bt-grid,.bt-symbols{grid-template-columns:1fr}.bt-progress-text{font-size:22px}}</style><style>.bt-mini-progress{height:7px;background:#202c49;border-radius:999px;overflow:hidden;margin-top:8px}.bt-mini-progress i{display:block;height:100%;background:var(--accent);transition:width .4s}</style><style>.bt-symbol-pct{font-size:22px;font-weight:900;margin-top:8px;font-variant-numeric:tabular-nums}</style><style>
+/* Admin login is a static form; only the home server can authenticate it. */
+.admin-login-box{max-width:525px}
+.admin-login-form{display:grid;gap:12px;margin:14px 0 10px}
+.admin-login-form label{display:grid;gap:5px;font-size:13px;font-weight:650;color:#d9e4fb}
+.admin-login-form input{font:inherit;color:#eef3ff;background:#0b1427;border:1px solid #405372;border-radius:9px;padding:10px 12px;width:100%;min-height:43px}
+.admin-login-form input:focus-visible{outline:2px solid #8497ff;outline-offset:1px}
+.admin-login-form button{background:#485fcb;color:#fff;font-weight:750}
+.admin-login-status{min-height:24px;font-size:12px;color:#ffb9c6;margin:8px 0}
+.admin-quick-link{display:inline-block;color:#cad5ff;font-size:12px;margin-top:6px}
+@media(max-width:800px){.admin-login-box{max-width:none}}
+</style>
+</head>
 <body><div class="app">
-<header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages</div></header>
+<header><div><h1>Market & Career Dashboard</h1><div class="sub">반도체 · 게임 · IT 주식 / 게임 개발자 취업 · 개발 동향</div></div><div class="date">개인 리포트 대시보드<br>GitHub Pages<br><a class="admin-quick-link" href="./admin.html">관리자 로그인 (OTP)</a></div></header>
 <nav><button class="active" data-view="v0">종합</button><button data-view="v1">주식</button><button data-view="v2">취업 시장</button><button data-view="v5">채용공고</button><button data-view="v4">IT 동향</button><button data-view="v9">연구·데이터</button><button data-view="v7">관리자</button></nav>
 <section id="v0" class="view active"><div id="summary" class="cards"></div><div class="grid"><div class="card"><div class="label">주요 뉴스 · 영향 분석</div><div id="topnews"></div></div><div class="card"><div class="label">데이터 상태</div><div id="status" class="signal">데이터를 불러오는 중...</div></div></div></section>
 <section id="v1" class="view">
@@ -279,25 +291,41 @@ nav{display:flex;gap:8px;overflow:auto;margin-bottom:20px}button{border:1px soli
   <div id="btLog" class="bt-log">로그를 불러오는 중...</div>
 </div>
 </section>
-<section id="v7" class="view">
+<section id="v7" class="view" aria-label="관리자 로그인">
   <div class="grid">
-    <div class="card">
-      <h3>홈서버 관리자 로그인</h3>
-      <p class="muted">관리자 ID·비밀번호·Google OTP로 인증합니다. 실제 검증은 홈서버에서만 처리하며, Tailscale 전용 HTTPS로 연결합니다.</p>
-      <div class="settings-actions" style="margin-top:16px">
-        <button id="settingsLoginBtn" type="button">관리자 로그인 · 관리 페이지 열기</button>
-        <button type="button" onclick="location.href='./server-status.html'">서버 상태 그래프 (조회 전용)</button>
+    <div class="card admin-login-box">
+      <div class="label">HOME SERVER · PRIVATE ADMINISTRATION</div>
+      <h2 style="margin:5px 0 8px">관리자 로그인</h2>
+      <p class="muted mini">ID·비밀번호·Google OTP로 인증합니다. 검증과 세션 발급은 홈서버에서만 수행합니다.</p>
+      <form id="login" class="admin-login-form" autocomplete="on">
+        <label for="user">관리자 ID
+          <input id="user" name="username" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z][A-Za-z0-9_-]{2,31}" required>
+        </label>
+        <label for="password">비밀번호
+          <input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required>
+        </label>
+        <label for="otp">Google OTP · 6자리
+          <input id="otp" name="otp" type="text" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
+        </label>
+        <button id="submit" type="submit">인증 후 관리자 페이지 접속</button>
+      </form>
+      <div id="loginStatus" class="admin-login-status" role="status" aria-live="polite"></div>
+      <p class="mini">Tailscale이 연결된 기기에서만 로그인할 수 있습니다. 입력 정보는 GitHub Pages에 저장하지 않습니다.</p>
+      <div class="settings-actions">
+        <a href="./admin.html">로그인 화면을 새 페이지로 열기</a>
+        <a href="./server-status.html">서버 상태 그래프</a>
       </div>
-      <div id="settingsStatus" class="signal settings-status">사용 중인 기기에서 Tailscale에 연결한 뒤 관리자 로그인할 수 있습니다.</div>
+      <div id="settingsStatus" class="mini muted" style="margin-top:9px">보안 연결: 홈서버 Tailscale HTTPS (외부 인터넷에는 비공개)</div>
     </div>
     <div class="card">
-      <h3>관리자 메뉴</h3>
+      <h3>로그인 후 이용할 수 있는 기능</h3>
       <div class="signal">
-        <b>AI</b> · 연구 / 봇 상태<br>
-        <b>자료수집</b> · 과거 주식 데이터 / 1틱 수집기<br>
-        <b>설정</b> · API 설정 / 서버 상태 / API Key
+        <b>AI</b> · V0.9 가상시장 관제 / 봇별 상태<br>
+        <b>데이터 수집</b> · 틱 / 과거 시세 / 수집기 제어<br>
+        <b>서버</b> · 성능 그래프 / 운영 상태 / Git 확인<br>
+        <b>보안 설정</b> · API 키 관리 (홈서버 전용)
       </div>
-      <p class="mini" style="margin-top:12px">공개 데이터 API는 조회 전용입니다. 관리자 화면은 Tailnet 안에서만 열리며 OTP로 보호합니다.</p>
+      <p class="mini" style="margin-top:12px">GitHub Pages는 로그인 화면만 제공하며 관리자 데이터를 공개하지 않습니다. 인증되면 Tailnet 안의 별도 관리 화면으로 이동합니다.</p>
     </div>
   </div>
 </section>
@@ -484,7 +512,7 @@ document.getElementById("liveScanBtn")?.addEventListener("click",async()=>{
  catch(e){alert(e.message);}
 });
 document.getElementById("liveDisarmBtn")?.remove();
-document.getElementById("tradingLoginBtn")?.addEventListener("click",()=>{showView("v7",document.querySelector('nav button[data-view="v7"]'));document.getElementById("adminPassword")?.focus();});
+document.getElementById("tradingLoginBtn")?.addEventListener("click",()=>{showView("v7",document.querySelector('nav button[data-view="v7"]'));document.getElementById("user")?.focus();});
 document.getElementById("tradingLogoutBtn")?.addEventListener("click",logoutSettings);
 document.getElementById("tradingEngineBtn")?.addEventListener("click",async()=>{try{const st=await tradingRequest("/api/trading/status");await tradingRequest("/api/trading/engine",{method:"POST",body:JSON.stringify({enabled:!st.engine_enabled})});await refreshTrading();}catch(e){alert(e.message);}});
 document.getElementById("paperBuyBtn")?.addEventListener("click",()=>paperTrade("BUY"));
@@ -493,7 +521,7 @@ document.getElementById("paperResetBtn")?.addEventListener("click",async()=>{if(
 function showView(id,button){document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===id));window.scrollTo(0,0)}
 
 document.querySelector("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-view]");if(!b)return;showView(b.dataset.view,b);if(b.dataset.view==="v7")loadSettings()});
-document.getElementById("settingsLoginBtn")?.addEventListener("click",loginSettings);
+// Administrator sign-in form in #v7 is handled by shared admin-login.js.
 
 document.getElementById("settingsLogoutBtn")?.addEventListener("click",logoutSettings);
 document.getElementById("openAdminPageBtn")?.addEventListener("click",()=>{location.href=ADMIN_PORTAL_URL;});
@@ -1189,9 +1217,10 @@ document.querySelector("nav")?.addEventListener("click",e=>{const b=e.target.clo
 
 document.getElementById("jobAreaFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobCareerFilter")?.addEventListener("change",renderJobPostings);document.getElementById("jobSkillFilter")?.addEventListener("input",renderJobPostings);
 if(PUBLIC_READ_ONLY){
- document.querySelectorAll('nav button[data-view="v7"],nav button[data-view="v9"]').forEach(x=>x.hidden=true);
+ // Only internal research controls remain hidden in the read-only public view.
+ document.querySelectorAll('nav button[data-view="v9"]').forEach(x=>x.hidden=true);
 }
 loadData();
 setInterval(loadData,60000);
 startRealtime();
-</script><script>document.querySelectorAll("nav button[data-view]").forEach(b=>{if(b.textContent.trim()==="증권")b.remove()});</script></body></html>
+</script><script src="./admin-login.js" defer></script><script>document.querySelectorAll("nav button[data-view]").forEach(b=>{if(b.textContent.trim()==="증권")b.remove()});</script></body></html>
