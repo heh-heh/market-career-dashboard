@@ -25,9 +25,10 @@ lastSessionFiles:[{symbol:'NVDA',bytes:500}],lastSessionBytes:500,
 status:'stopped',lastUpdate:'2026-10-29T00:00:00Z'}};
 const publicRequests=[];
 let historyEnabled=false;
+let tickEnabled=false;
 let historyRequests=[];
 const historyFixture=()=>({
-  configured:true,enabled:historyEnabled,symbolCount:50,scanPercent:0.47,
+  configured:true,enabled:historyEnabled,tickEnabled,symbolCount:50,scanPercent:0.47,
   totalStoredRows:722500,totalPages:7225,
   controlReason:historyEnabled?'ADMIN_HISTORY_START':'ADMIN_HISTORY_PAUSE',
   controlUpdatedAt:'2026-10-29T14:00:00+00:00',
@@ -36,8 +37,11 @@ const historyFixture=()=>({
     symbol:i===0?'NVDA':'TEST'+i,status:'collecting',state:'collecting',
     scanPercent:0.47,storedRows:i===0?722500:0,pages:i===0?7225:0
   })),
-  scheduler:{serviceState:'running',paused:false,activeWorker:null,
-    collectorStatus:'TICKS_PAUSED',reason:'TICKS_DISABLED_BY_OPERATOR',calendarConfirmed:true}
+  scheduler:{serviceState:'running',paused:false,
+    activeWorker:historyEnabled?(tickEnabled?'tick':'backfill'):(tickEnabled?'tick':null),
+    collectorStatus:tickEnabled?'MARKET_OPEN':historyEnabled?'HISTORY_ONLY_RUNNING':'ALL_COLLECTORS_PAUSED',
+    reason:tickEnabled?null:historyEnabled?'HISTORY_ONLY_DURING_MARKET_OPEN':'TICK_AND_HISTORY_DISABLED',
+    calendarConfirmed:true}
 });
 const server=http.createServer((req,res)=>{
   const pathname=new URL(req.url,'http://localhost').pathname;
@@ -49,6 +53,18 @@ const server=http.createServer((req,res)=>{
     historyEnabled=true;
     res.setHeader('Content-Type','application/json');
     res.end(JSON.stringify({ok:true,enabled:true,masterPaused:false,mode:'TICKS_PAUSED',collector:null,queued:true}));
+    return;
+  }
+  if(pathname==='/api/ticks/control'&&req.method==='POST'){
+    let json='';
+    req.on('data',part=>json+=part);
+    req.on('end',()=>{
+      const reqBody=JSON.parse(json);
+      tickEnabled=reqBody.enabled===true;
+      historyRequests.push(tickEnabled?'tick-on':'tick-off');
+      res.setHeader('Content-Type','application/json');
+      res.end(JSON.stringify({ok:true,enabled:tickEnabled,masterPaused:false}));
+    });
     return;
   }
   if(pathname==='/api/history/control'&&req.method==='POST'){
@@ -64,7 +80,7 @@ const server=http.createServer((req,res)=>{
     res.setHeader('Content-Type','application/json');
     res.end(JSON.stringify(pathname==='/api/me'?{csrf:'fixture'}:
       pathname==='/api/overview'?{telemetry:fixture,historical50:historyFixture(),
-        historical:historyFixture().scheduler,ticks:{enabled:false,active:false}}:fixture));
+        historical:historyFixture().scheduler,ticks:{enabled:tickEnabled,active:tickEnabled}}:fixture));
     return;
   }
   const files={'/':'server-status.html','/console':'deploy/admin-console/index.html','/app.js':'deploy/admin-console/app.js'};
@@ -166,20 +182,34 @@ const server=http.createServer((req,res)=>{
       }
       if(admin){
         historyEnabled=false;
+        tickEnabled=false;
         historyRequests=[];
         page.on('dialog',async dialog=>dialog.accept());
         await page.locator('[data-page="historical"]').click();
-        await page.waitForFunction(()=>document.querySelector('#history50Start')?.disabled===false,null,{timeout:5000});
-        await page.locator('#history50Start').click();
+        const historyToggle=page.locator('#historyCollectorToggle');
+        const tickToggle=page.locator('#tickCollectorToggle');
+        await page.waitForFunction(()=>!document.querySelector('#historyCollectorToggle')?.disabled);
+        assert.equal(await historyToggle.isChecked(),false);
+        assert.equal(await tickToggle.isChecked(),false);
+        await historyToggle.check();
         await page.waitForFunction(()=>document.querySelector('#history50Persisted')?.textContent?.includes('수집 허용됨'));
-        assert.deepEqual(historyRequests,['start'],'start click must not call pause endpoint');
-        assert.equal(historyEnabled,true,'historical permission must stay enabled after start');
-        assert((await page.locator('#history50State').textContent()).includes('수집 예약'),
-          'ticks-paused at market open is a queued history job, not a stopped history job');
-        assert.equal(await page.locator('[data-history-50="pause"]').isVisible(),false,
-          'pause action must be hidden behind deliberate details');
-        assert.equal(await page.locator('#history50Start').isDisabled(),true,
-          'start must be disabled once permission is confirmed');
+        assert.deepEqual(historyRequests,['start'],'1-minute ON must never dispatch pause');
+        assert.equal(historyEnabled,true);
+        assert((await page.locator('#history50State').textContent()).includes('1분봉'),
+          '1-minute only must run during US market open');
+        await tickToggle.check();
+        await page.waitForFunction(()=>document.querySelector('#tickToggleStatus')?.textContent?.includes('ON'));
+        assert.equal(tickEnabled,true);
+        assert.deepEqual(historyRequests,['start','tick-on']);
+        await historyToggle.uncheck();
+        await page.waitForFunction(()=>document.querySelector('#history50Persisted')?.textContent?.includes('과거 수집 중지'));
+        assert.deepEqual(historyRequests,['start','tick-on','pause'],'1-minute OFF must not turn off tick');
+        assert.equal(tickEnabled,true);
+        await tickToggle.uncheck();
+        await page.waitForFunction(()=>document.querySelector('#tickToggleStatus')?.textContent?.includes('OFF'));
+        assert.deepEqual(historyRequests,['start','tick-on','pause','tick-off']);
+        assert.equal(historyEnabled,false);
+        assert.equal(tickEnabled,false);
         await page.locator('[data-page="inventory"]').click();
         await page.locator('#inventoryTable tbody tr').first().waitFor();
         assert.equal(await page.locator('#inventoryTable tbody tr').count(),50);
@@ -191,8 +221,8 @@ const server=http.createServer((req,res)=>{
         await page.locator('[data-page="historical"]').click();
         assert.equal(await page.locator('[data-page="ticks"]').count(),0);
         assert.equal(await page.locator('#page-ticks').count(),0);
-        assert.equal(await page.locator('[data-tick-action="pause"]').count(),1);
-        assert.equal(await page.locator('[data-tick-action="resume"]').count(),1);
+        assert.equal(await page.locator('#historyCollectorToggle').count(),1);
+        assert.equal(await page.locator('#tickCollectorToggle').count(),1);
         const actual=await page.locator('#page-historical').isVisible();
         assert(actual,'unified collector page should be visible');
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
