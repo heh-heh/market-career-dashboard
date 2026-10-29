@@ -68,6 +68,40 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .server-monitor-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .server-monitor-title h3{margin:0;font-size:14px}
 .server-monitor .metric-intro{margin:6px 0}
+.server-performance-page{width:100%}
+.server-performance-header{display:flex;justify-content:space-between;align-items:center;gap:10px 18px;margin:12px 0;flex-wrap:wrap}
+.server-performance-header h3{font-size:21px;font-weight:700;margin:0}
+.server-performance-header h3 .meta{font-size:13px;font-weight:400}
+.server-performance-header p{margin:2px 0 0}
+.server-performance-actions{display:flex;align-items:center;gap:9px}
+.server-performance-frame{background:#141414;border:1px solid #363636;border-radius:8px;padding:13px 15px;color:#efefef;min-width:0}
+.server-performance-frame .metric-intro{margin:0 0 8px}
+.server-performance-frame .metric-workbench{grid-template-columns:225px minmax(0,1fr);gap:12px}
+.server-performance-frame .metric-resource{background:#1c1c1c}
+.server-performance-frame .metric-resource.is-selected{background:#2b2b2b}
+.server-performance-frame .metric-detail{min-height:510px}
+.server-performance-help{margin:7px 3px 15px;line-height:1.6}
+@media(min-width:1200px){
+  .server-performance-frame .metric-workbench{grid-template-columns:238px minmax(0,1fr)}
+  .server-performance-frame .metric-graph{height:315px}
+}
+@media(max-width:1050px){
+  .server-performance-frame .metric-workbench{grid-template-columns:195px minmax(0,1fr)}
+  .server-performance-frame .metric-detail{padding:12px}
+}
+@media(max-width:780px){
+  .server-performance-frame{padding:8px}
+  .server-performance-frame .metric-workbench{grid-template-columns:minmax(0,1fr)}
+  .server-performance-frame .metric-resource-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .server-performance-frame .metric-detail{min-height:0}
+  .server-performance-frame .metric-graph{height:230px}
+}
+@media(max-width:460px){
+  .server-performance-header h3{font-size:19px}
+  .server-performance-frame .metric-resource{padding:7px 5px;gap:6px}
+  .server-performance-frame .metric-spark{flex-basis:40px;width:40px;height:37px}
+  .server-performance-frame .metric-stat-values{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 .server-diagnostics{margin:10px 0}
 .server-diagnostics>summary{padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:#c5d5ff;cursor:pointer;font-size:13px}
 .server-diagnostics[open]>summary{border-radius:10px 10px 0 0}
@@ -104,7 +138,7 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
     <button class="nav-item" data-page="ticks">1틱 단위 수집기</button>
     <div class="nav-label">설정</div>
     <button class="nav-item" data-page="api">API 설정</button>
-    <button class="nav-item" data-page="server">현재 서버 상태</button>
+    <button class="nav-item" data-page="server">서버 성능</button>
     <button class="nav-item" data-page="keys">API Key 관리</button>
     <div style="margin-top:auto;padding-top:20px">
       <button id="logout" style="width:100%">로그아웃</button>
@@ -223,14 +257,21 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
       <div class="panel"><h3>API 설정 및 연결</h3><pre id="apiOutput">불러오는 중...</pre></div>
       <div class="notice">공개 HTTPS API는 읽기 전용으로 유지해. 관리자 API, 실거래, 주문 및 연구 실행 기능을 공개 Funnel에 연결하지 않아.</div>
     </section>
-    <section class="page" id="page-server" hidden>
-      <div class="panel server-monitor">
-        <div class="server-monitor-title">
-          <h3>서버 성능 · 최근 12시간</h3>
-          <span class="muted small">CPU · RAM · 네트워크 · 저장공간 · CPU 패키지 전력</span>
+    <section class="page server-performance-page" id="page-server" hidden>
+      <div class="server-performance-header">
+        <div>
+          <h3>성능 <span class="meta">· Ubuntu 홈서버</span></h3>
+          <p class="meta">작업 관리자처럼 왼쪽에서 항목을 선택하면 오른쪽 상세 그래프가 변경돼.</p>
         </div>
-        <div id="privateServerMetrics" aria-live="polite">수집된 서버 지표를 불러오는 중...</div>
+        <div class="server-performance-actions">
+          <span class="chip" id="serverPerfState">측정 상태 확인 중</span>
+          <button type="button" id="serverPerfRefresh">새로고침</button>
+        </div>
       </div>
+      <div class="server-performance-frame">
+        <div id="privateServerMetrics" aria-live="polite">시스템 리소스를 확인하는 중...</div>
+      </div>
+      <p class="meta server-performance-help">측정 간격 60초 · 화면 자동 갱신 30초 · 최근 최대 12시간 · GPU 센서가 없으면 미표시 · CPU 전력은 전체 PC 소비전력이 아님</p>
       <details class="server-diagnostics" id="serverDiagnostics">
         <summary>상세 진단 열기 · 서버 콘솔 / Git 상태 / 로그</summary>
         <div class="grid">
