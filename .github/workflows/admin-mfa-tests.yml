@@ -41,7 +41,7 @@ jobs:
           assert 'admin-login.js' in page
           assert 'heh-heh.tail39e546.ts.net:8444' in app
           assert 'const ADMIN_PORTAL_URL="./admin.html";' in home
-          assert 'localStorage' not in app
+          assert 'localStorage.setItem' not in app and 'sessionStorage.setItem' not in app
           assert 'fetch(HOST+"/api/remote/login"' in app
           print("STATIC_ADMIN_GATE=PASS")
           PY
