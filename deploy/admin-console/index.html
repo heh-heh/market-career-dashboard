@@ -64,6 +64,14 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 
 @media(max-width:960px){.shell{grid-template-columns:185px 1fr}main{padding:20px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.formrow{grid-template-columns:1fr}}
 @media(max-width:680px){.shell{display:block}aside{border-right:0;border-bottom:1px solid var(--line);padding:14px;display:block}aside .sub{margin-bottom:8px}.nav-label{margin:12px 4px 4px}.nav-item{width:auto;margin:3px;padding:8px 11px;font-size:12px}main{padding:17px 13px}.grid,.cards{grid-template-columns:1fr}.login{margin:10vh 14px}}
+.server-monitor{margin:10px 0;padding:12px}
+.server-monitor-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.server-monitor-title h3{margin:0;font-size:14px}
+.server-monitor .metric-intro{margin:6px 0}
+.server-diagnostics{margin:10px 0}
+.server-diagnostics>summary{padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:#c5d5ff;cursor:pointer;font-size:13px}
+.server-diagnostics[open]>summary{border-radius:10px 10px 0 0}
+.server-diagnostics>.grid{margin:8px 0}
 </style>
 </head>
 <body>
@@ -216,12 +224,16 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
       <div class="notice">공개 HTTPS API는 읽기 전용으로 유지해. 관리자 API, 실거래, 주문 및 연구 실행 기능을 공개 Funnel에 연결하지 않아.</div>
     </section>
     <section class="page" id="page-server" hidden>
-      <div class="panel" style="margin:15px 0">
-        <h3>시스템 리소스 모니터링 · 실제 측정 그래프</h3>
-        <p class="muted small">60초 간격으로 측정한 호스트 CPU·메모리·네트워크·디스크·CPU 패키지 전력 추이입니다. 전체 시스템 전력은 외부 측정기가 없다면 표시하지 않습니다.</p>
+      <div class="panel server-monitor">
+        <div class="server-monitor-title">
+          <h3>서버 리소스 요약 · 최근 12시간</h3>
+          <span class="muted small">CPU · RAM · 네트워크 · 저장공간 · CPU 패키지 전력</span>
+        </div>
         <div id="privateServerMetrics" aria-live="polite">수집된 서버 지표를 불러오는 중...</div>
       </div>
-      <div class="grid">
+      <details class="server-diagnostics" id="serverDiagnostics">
+        <summary>상세 진단 열기 · 서버 콘솔 / Git 상태 / 로그</summary>
+        <div class="grid">
         <div class="panel">
           <h3>서버 콘솔</h3><p class="muted small">허용된 상태 조회만 실행</p>
           <div class="actions" id="server-actions">
@@ -242,7 +254,8 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
           </div>
           <pre id="git-output">Git 상태 확인 대기...</pre>
         </div>
-      </div>
+        </div>
+      </details>
     </section>
     <section class="page" id="page-keys" hidden>
       <div class="notice">API 키는 <b>홈서버 전용 권한 제한 파일(0600)</b>에 저장하고 화면이나 GitHub에 실제 값을 다시 표시하지 않아. 현재는 저장·삭제만 지원하며, AI/1틱 서비스가 배포되기 전까지 실제 호출에 사용되지 않아.</div>
