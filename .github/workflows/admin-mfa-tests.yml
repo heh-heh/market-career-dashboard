@@ -1,0 +1,47 @@
+name: Admin MFA security smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'admin.html'
+      - 'admin-login.js'
+      - 'index.html'
+      - 'deploy/admin-console/**'
+      - '.github/workflows/admin-mfa-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile server authentication and run offline tests
+        run: |
+          python -m py_compile deploy/admin-console/{console.py,mfa_auth.py,setup_mfa.py,test_mfa.py}
+          (cd deploy/admin-console && python test_mfa.py)
+      - name: Validate browser login script and admin console script
+        run: |
+          node --check admin-login.js
+          node --check deploy/admin-console/app.js
+      - name: Ensure static login has no secret and is routed to private server
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          page=Path("admin.html").read_text(encoding="utf-8")
+          app=Path("admin-login.js").read_text(encoding="utf-8")
+          home=Path("index.html").read_text(encoding="utf-8")
+          assert 'id="user"' in page and 'id="password"' in page and 'id="otp"' in page
+          assert 'admin-login.js' in page
+          assert 'heh-heh.tail39e546.ts.net:8444' in app
+          assert 'const ADMIN_PORTAL_URL="./admin.html";' in home
+          assert 'localStorage' not in app
+          assert 'fetch(HOST+"/api/remote/login"' in app
+          print("STATIC_ADMIN_GATE=PASS")
+          PY
