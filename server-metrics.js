@@ -1,136 +1,162 @@
 "use strict";
-/* Shared, dependency-free, read-only telemetry charts for public Pages and admin.
-   Operates only on schema-approved server values; never sends control requests. */
+/* Shared read-only performance view. No fetch, credentials or control operations. */
 (() => {
-  const NS="http://www.w3.org/2000/svg";
-  const el=(tag,cls,txt)=>{
-    const node=document.createElement(tag);
-    if(cls)node.className=cls;
-    if(txt!==undefined)node.textContent=String(txt);
-    return node;
+  const NS="http://www.w3.org/2000/svg", states=new WeakMap();
+  let sequence=0;
+  const finite=v=>typeof v==="number"&&Number.isFinite(v);
+  const number=(v,digits=1)=>finite(v)?v.toLocaleString("ko-KR",{maximumFractionDigits:digits}):"측정 불가";
+  const value=(v,unit)=>finite(v)?number(v,unit===" Mbps"?3:1)+unit:"측정 불가";
+  const node=(tag,cls,text)=>{
+    const n=document.createElement(tag);
+    if(cls)n.className=cls;
+    if(text!==undefined)n.textContent=String(text);
+    return n;
   };
   const svg=(tag,attrs={})=>{
     const n=document.createElementNS(NS,tag);
     for(const [key,val] of Object.entries(attrs))n.setAttribute(key,String(val));
     return n;
   };
-  const finite=value=>value!==null&&value!==undefined&&typeof value==="number"&&Number.isFinite(value);
-  const format=(v,digits=1)=>finite(v)?v.toLocaleString("ko-KR",{maximumFractionDigits:digits}):"측정 불가";
-  const pct=v=>finite(v)?format(v)+"%":"측정 불가";
-  function chart(label,rows,series,{maxValue=null,unit="",note=""}={}){
-    const panel=el("section","metric-panel");
-    panel.append(el("h3","",label));
-    const graphic=svg("svg",{viewBox:"0 0 640 174",role:"img","aria-label":label+" 최근 측정 그래프",preserveAspectRatio:"none"});
-    for(const y of [32,65,98,131]){
-      graphic.appendChild(svg("line",{x1:32,y1:y,x2:625,y2:y,stroke:"#34425c","stroke-width":1}));
-    }
-    const available=series.flatMap(s=>rows.map(r=>r?.[s.key]).filter(finite));
-    const peak=maxValue||Math.max(1,...available)*1.15;
-    const usable=rows.length>1&&available.length>1;
-    if(usable){
-      for(const s of series){
-        let segment=[];
-        const flush=()=>{
-          if(segment.length>1){
-            const line=svg("polyline",{points:segment.join(" "),fill:"none",stroke:s.color,
-                                    "stroke-width":2.6,"stroke-linecap":"round","stroke-linejoin":"round"});
-            graphic.appendChild(line);
-          }
-          segment=[];
-        };
-        for(let i=0;i<rows.length;i++){
-          const v=rows[i]?.[s.key];
-          if(!finite(v)){flush();continue;}
-          const x=32+593*(i/(rows.length-1));
-          const y=131-Math.min(1,Math.max(0,v/peak))*111;
-          segment.push(x.toFixed(2)+","+y.toFixed(2));
-        }
-        flush();
+  const series=(key,name,color)=>({key,name,color});
+  const resources=[
+    {id:"cpu",name:"CPU",sub:"프로세서 사용률",unit:"%",limit:100,series:[series("cpuPct","CPU","#63cbe8")]},
+    {id:"memory",name:"메모리",sub:"RAM 사용률",unit:"%",limit:100,series:[series("memoryPct","RAM","#bb91ed")],capacity:["memoryUsedGiB","memoryTotalGiB"]},
+    {id:"root",name:"루트 디스크",sub:"저장공간 사용률",unit:"%",limit:100,series:[series("diskPct","루트","#85ce93")],capacity:["diskUsedGiB","diskTotalGiB"],note:"사용량은 저장공간 점유율이며 디스크 I/O 활성 시간이나 읽기·쓰기 속도가 아닙니다."},
+    {id:"data",name:"데이터 디스크",sub:"저장공간 사용률",unit:"%",limit:100,series:[series("dataDiskPct","데이터","#e4ac71")],capacity:["dataDiskUsedGiB","dataDiskTotalGiB"],note:"루트와 데이터 경로가 같은 물리 디스크에 있으면 사용량이 같을 수 있습니다. 디스크 I/O 사용률이 아닙니다."},
+    {id:"network",name:"네트워크",sub:"물리 NIC · 수신 / 송신",unit:" Mbps",series:[series("networkRxMbps","수신","#e4cb76"),series("networkTxMbps","송신","#6aaef1")],note:"활성 물리 NIC의 관측된 전송률입니다. VPN·컨테이너 트래픽은 중복 합산하지 않습니다."},
+    {id:"power",name:"CPU 전력",sub:"CPU 패키지 · RAPL",unit:" W",series:[series("cpuPackageWatts","CPU 패키지","#ec8d9f")],note:"RAPL 센서로 측정한 CPU 패키지 전력입니다. 서버 전체 소비전력이 아니며 지원되지 않는 센서는 측정 불가로 표시합니다."},
+    {id:"gpu",name:"GPU",sub:"GPU 사용률",unit:"%",limit:100,optional:true,series:[series("gpuPct","GPU","#929aef")]}
+  ];
+  function timestamp(v){
+    if(typeof v!=="string"||!v.trim())return NaN;
+    return Date.parse(v);
+  }
+  const clock=t=>Number.isFinite(t)?new Date(t).toLocaleTimeString("ko-KR",{timeZone:"Asia/Seoul",hour12:false,hour:"2-digit",minute:"2-digit"}):"—";
+  const date=t=>Number.isFinite(t)?new Date(t).toLocaleString("ko-KR",{timeZone:"Asia/Seoul",hour12:false})+" KST":"측정 시각 없음";
+  const current=(resource,m)=>resource.series.map(s=>value(m[s.key],resource.unit)).join(" / ");
+  function capacity(resource,m){
+    if(!resource.capacity)return resource.sub;
+    const [used,total]=resource.capacity.map(k=>m[k]);
+    return finite(used)&&finite(total)?number(used)+" / "+number(total)+" GiB":resource.sub;
+  }
+  function history(data){
+    return (Array.isArray(data?.history)?data.history:[]).slice(-720)
+      .filter(r=>r&&Number.isFinite(timestamp(r.at)))
+      .map(r=>({row:r,time:timestamp(r.at)})).sort((a,b)=>a.time-b.time);
+  }
+  function graph(resource,rows,{mini=false,sampling=60}={}){
+    const w=mini?112:800,h=mini?40:300,pad=mini?2:0;
+    const graphic=svg("svg",{viewBox:`0 0 ${w} ${h}`,preserveAspectRatio:"none",class:mini?"metric-spark":"metric-graph"});
+    if(mini)graphic.setAttribute("aria-hidden","true");
+    else{
+      graphic.setAttribute("role","img");graphic.setAttribute("aria-label",resource.name+" 관측 시각 기준 시계열 그래프");
+      for(let i=0;i<=4;i++){
+        const y=pad+(h-pad*2)*i/4;
+        graphic.append(svg("line",{x1:pad,y1:y,x2:w-pad,y2:y,class:"metric-gridline"}));
+      }
+      for(let i=0;i<=8;i++){
+        const x=pad+(w-pad*2)*i/8;
+        graphic.append(svg("line",{x1:x,y1:pad,x2:x,y2:h-pad,class:"metric-gridline"}));
       }
     }
-    const top=svg("text",{x:3,y:23,fill:"#93a9cb","font-size":11});
-    top.textContent=format(peak,2)+unit;
-    graphic.appendChild(top);
-    for(const [x,text] of [[32,"이전"],[584,"최근"]]){
-      const t=svg("text",{x,y:159,fill:"#93a9cb","font-size":12});
-      t.textContent=text;graphic.appendChild(t);
+    const values=rows.flatMap(r=>resource.series.map(s=>r.row[s.key]).filter(finite));
+    const peak=resource.limit||Math.max(1,...values)*1.1;
+    const start=rows[0]?.time,end=rows[rows.length-1]?.time;
+    for(const s of resource.series){
+      let segment=[],previous=null;
+      const flush=()=>{
+        if(segment.length>1)graphic.append(svg("polyline",{points:segment.map(p=>p.join(",")).join(" "),fill:"none",stroke:s.color,"stroke-width":mini?1.6:2,"vector-effect":"non-scaling-stroke"}));
+        else if(segment.length===1)graphic.append(svg("circle",{cx:segment[0][0],cy:segment[0][1],r:mini?1.5:2.5,fill:s.color}));
+        segment=[];
+      };
+      for(const r of rows){
+        const v=r.row[s.key];
+        if(!finite(v)){flush();previous=null;continue;}
+        if(previous!==null&&r.time-previous>sampling*1500)flush();
+        const x=end>start?pad+(w-pad*2)*(r.time-start)/(end-start):w/2;
+        const y=h-pad-(h-pad*2)*Math.min(1,Math.max(0,v/peak));
+        segment.push([x.toFixed(2),y.toFixed(2)]);previous=r.time;
+      }
+      flush();
     }
-    panel.appendChild(graphic);
-    if(!usable)panel.appendChild(el("p","metric-muted","시간별 추이 데이터 축적 중"));
-    const legend=el("div","metric-legend");
-    for(const s of series){
-      const v=rows.length?rows[rows.length-1]?.[s.key]:null;
-      const wrap=el("span");
-      const dot=el("span","metric-dot");dot.style.background=s.color;
-      wrap.append(dot,el("span","",s.name+": "+(finite(v)?format(v,2)+unit:"측정 불가")));
-      legend.appendChild(wrap);
+    if(mini)return graphic;
+    // HTML labels remain readable on narrow screens; SVG scaling affects only the plot.
+    const frame=node("div","metric-chart");
+    frame.append(node("div","metric-chart-scale",values.length||resource.limit?value(peak,resource.unit):"범위 미정"),graphic);
+    const axis=node("div","metric-time-axis");
+    axis.append(node("span","",clock(start)),node("span","",clock(end)));frame.append(axis);
+    if(!values.length)frame.append(node("p","metric-chart-empty","측정 데이터 없음"));
+    return frame;
+  }
+  function detail(resource,m,rows,data,state){
+    const panel=node("section","metric-detail metric-"+resource.id);
+    panel.id=state.id;panel.setAttribute("aria-labelledby",state.id+"-title");
+    const header=node("header","metric-detail-head");
+    const title=node("h2","",resource.name);title.id=state.id+"-title";
+    const headline=node("div","metric-current",current(resource,m));
+    header.append(title,headline);panel.append(header,node("p","metric-muted metric-detail-sub",capacity(resource,m)));
+    const meta=node("div","metric-detail-meta");
+    meta.append(node("span","",data?.stale?"갱신 지연 · 마지막 관측값":"관측된 사용량"),node("span","","최근 갱신: "+date(timestamp(data?.updatedAt))));
+    panel.append(meta,graph(resource,rows,{sampling:finite(data?.samplingSeconds)&&data.samplingSeconds>0?data.samplingSeconds:60}));
+    const stats=node("div","metric-statistics");
+    for(const s of resource.series){
+      const vals=rows.map(r=>r.row[s.key]).filter(finite);
+      const group=node("section","metric-stat-group");
+      group.append(node("h3","",s.name));
+      const dl=node("dl","metric-stat-values");
+      const values=[["현재",m[s.key]],["평균",vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null],["최대",vals.length?Math.max(...vals):null],["최소",vals.length?Math.min(...vals):null]];
+      for(const [name,v] of values){const cell=node("div");cell.append(node("dt","",name),node("dd","",value(v,resource.unit)));dl.append(cell);}
+      group.append(dl,node("p","metric-muted",vals.length?"유효 관측 "+vals.length+"개 · 표시된 기록 구간 기준":"유효한 기록 없음"));stats.append(group);
     }
-    panel.appendChild(legend);
-    if(note){
-      const details=el("details","metric-explainer");
-      details.append(el("summary","metric-muted","측정 기준"),el("p","metric-muted",note));
-      panel.appendChild(details);
+    panel.append(stats);
+    if(resource.capacity){
+      const [used,total]=resource.capacity.map(k=>m[k]);
+      if(finite(total)&&finite(used)&&total>=used)panel.append(node("p","metric-muted","사용 가능: "+number(total-used)+" GiB · 전체: "+number(total)+" GiB"));
     }
+    if(rows.length<2)panel.append(node("p","metric-muted","시간별 추이 데이터 축적 중"));
+    panel.append(node("p","metric-muted metric-footnote","누락된 값·관측 간격은 그래프로 연결하지 않습니다. 평균·최대·최소는 유효한 기록만 집계합니다."));
+    if(resource.note)panel.append(node("p","metric-muted metric-footnote",resource.note));
     return panel;
   }
   function render(target,data){
     if(!target)return;
+    let state=states.get(target);
+    if(!state){state={selected:"cpu",id:"metric-detail-"+(++sequence)};states.set(target,state);}
+    const focused=document.activeElement;
+    const focusId=target.contains(focused)?focused?.dataset?.resource:null;
+    state.data=data;
+    const rows=history(data?.ok?data:null),m=data?.ok&&data.metrics&&typeof data.metrics==="object"?data.metrics:{};
+    const available=resources.filter(r=>!r.optional||r.series.some(s=>finite(m[s.key])||rows.some(row=>finite(row.row[s.key]))));
+    if(!available.some(r=>r.id===state.selected))state.selected="cpu";
     target.replaceChildren();
-    if(!data?.ok){
-      target.appendChild(el("div","metric-panel metric-muted","실시간 시스템 측정 데이터를 아직 받지 못했습니다. 홈서버 수집 서비스를 확인하세요."));
-      return;
+    const intro=node("div","metric-intro");
+    intro.append(node("strong","",!data?.ok?"측정 데이터 미수신":data.stale?"데이터 갱신 지연":"성능"),node("span","metric-muted","최종 수집: "+date(timestamp(data?.updatedAt))));
+    target.append(intro);
+    const workbench=node("div","metric-workbench"),list=node("nav","metric-resource-list");
+    list.setAttribute("aria-label","서버 성능 항목");
+    for(const resource of available){
+      const selected=resource.id===state.selected;
+      const card=node("button","metric-resource metric-"+resource.id+(selected?" is-selected":""));
+      card.type="button";card.dataset.resource=resource.id;
+      card.setAttribute("aria-pressed",String(selected));card.setAttribute("aria-controls",state.id);
+      card.append(graph(resource,rows.slice(-60),{mini:true,sampling:finite(data?.samplingSeconds)&&data.samplingSeconds>0?data.samplingSeconds:60}));
+      const text=node("span","metric-resource-text");
+      text.append(node("strong","metric-resource-title",resource.name),node("span","metric-resource-value",current(resource,m)),node("small","metric-muted",capacity(resource,m)));
+      card.append(text);
+      card.addEventListener("click",()=>{state.selected=resource.id;render(target,state.data);});
+      card.addEventListener("keydown",e=>{
+        const index=available.findIndex(r=>r.id===resource.id);
+        let next;
+        if(["ArrowDown","ArrowRight"].includes(e.key))next=(index+1)%available.length;
+        else if(["ArrowUp","ArrowLeft"].includes(e.key))next=(index+available.length-1)%available.length;
+        else if(e.key==="Home")next=0;else if(e.key==="End")next=available.length-1;
+        if(next!==undefined){e.preventDefault();state.selected=available[next].id;render(target,state.data);listButton(target,state.selected)?.focus({preventScroll:true});}
+      });
+      list.append(card);
     }
-    const rows=Array.isArray(data.history)?data.history.slice(-720):[];
-    const m=data.metrics||{};
-    const stamp=data.updatedAt?new Date(data.updatedAt):null;
-    const text=stamp&&!Number.isNaN(stamp.getTime())?stamp.toLocaleString("ko-KR",{hour12:false}):"—";
-    const intro=el("div","metric-intro");
-    const actions=el("div","metric-intro-actions");
-    const toggle=el("button","metric-button",target.classList.contains("metric-expanded")?"작게 보기":"크게 보기");
-    toggle.type="button";
-    toggle.setAttribute("aria-pressed",String(target.classList.contains("metric-expanded")));
-    toggle.addEventListener("click",()=>{
-      const enabled=target.classList.toggle("metric-expanded");
-      toggle.textContent=enabled?"작게 보기":"크게 보기";
-      toggle.setAttribute("aria-pressed",String(enabled));
-    });
-    actions.append(el("span","metric-muted","최종 수집: "+text+" · 60초 간격"),toggle);
-    intro.append(el("strong","",data.stale?"● 데이터 갱신 지연":"● 서버 리소스 실시간 요약"),actions);
-    target.appendChild(intro);
-    const cards=el("div","metric-cards");
-    const items=[
-      ["CPU",pct(m.cpuPct),"사용률"],
-      ["메모리",pct(m.memoryPct),
-       finite(m.memoryUsedGiB)&&finite(m.memoryTotalGiB)?format(m.memoryUsedGiB)+" / "+format(m.memoryTotalGiB)+" GiB":"실측 대기"],
-      ["네트워크 ↓",finite(m.networkRxMbps)?format(m.networkRxMbps,3)+" Mbps":"측정 불가","물리 NIC 수신"],
-      ["네트워크 ↑",finite(m.networkTxMbps)?format(m.networkTxMbps,3)+" Mbps":"측정 불가","물리 NIC 송신"],
-      ["루트 디스크",pct(m.diskPct),
-       finite(m.diskUsedGiB)&&finite(m.diskTotalGiB)?format(m.diskUsedGiB)+" / "+format(m.diskTotalGiB)+" GiB":"실측 대기"],
-      ["데이터 디스크",pct(m.dataDiskPct),
-       finite(m.dataDiskUsedGiB)&&finite(m.dataDiskTotalGiB)?format(m.dataDiskUsedGiB)+" / "+format(m.dataDiskTotalGiB)+" GiB":"실측 대기"],
-      ["CPU 패키지 전력",finite(m.cpuPackageWatts)?format(m.cpuPackageWatts,2)+" W":"측정 불가","RAPL · 서버 전체 전력 아님"],
-      ["서버 전체 소비전력","측정기 미연결","스마트플러그 등 별도 계측 필요"],
-    ];
-    for(const [name,value,sub] of items){
-      const item=el("div","metric-card");
-      item.append(el("span","metric-muted",name),el("strong","",value),el("small","metric-muted",sub));
-      cards.appendChild(item);
-    }
-    target.appendChild(cards);
-    const charts=el("div","metric-charts");
-    charts.append(
-      chart("CPU 사용률",rows,[{key:"cpuPct",name:"CPU",color:"#8c9aff"}],{maxValue:100,unit:"%"}),
-      chart("메모리 사용률",rows,[{key:"memoryPct",name:"RAM",color:"#5ed1a4"}],{maxValue:100,unit:"%"}),
-      chart("실시간 네트워크",rows,[
-        {key:"networkRxMbps",name:"수신",color:"#7cb7ff"},
-        {key:"networkTxMbps",name:"송신",color:"#ffca7a"}],{unit:" Mbps",note:"활성 물리 네트워크 인터페이스 합계이며 VPN·컨테이너 트래픽은 중복 계산하지 않습니다."}),
-      chart("저장공간 사용률",rows,[
-        {key:"diskPct",name:"루트",color:"#d6a6ff"},
-        {key:"dataDiskPct",name:"데이터",color:"#ff9ea9"}],{maxValue:100,unit:"%",note:"두 경로가 같은 물리 디스크일 경우 수치가 동일할 수 있습니다."}),
-      chart("CPU 패키지 소비전력",rows,[
-        {key:"cpuPackageWatts",name:"CPU package",color:"#ffb678"}],{unit:" W",note:"지원되는 Intel RAPL 에너지 센서가 있을 때만 표시합니다. 팬·GPU·스토리지·PSU 등을 포함한 시스템 전체 전력은 측정하지 않습니다."})
-    );
-    target.appendChild(charts);
+    workbench.append(list,detail(available.find(r=>r.id===state.selected),m,rows,data,state));target.append(workbench);
+    if(focusId)listButton(target,focusId)?.focus({preventScroll:true});
   }
+  function listButton(target,id){return target.querySelector('[data-resource="'+id+'"]');}
   window.ServerMetrics={render};
 })();

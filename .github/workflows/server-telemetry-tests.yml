@@ -8,6 +8,7 @@ on:
       - 'server-status.js'
       - 'server-metrics.js'
       - 'server-metrics.css'
+      - 'tests/server-metrics.browser.cjs'
       - 'deploy/telemetry/**'
       - 'deploy/admin-console/**'
       - '.github/workflows/pages.yml'
@@ -38,6 +39,12 @@ jobs:
           node --check server-metrics.js
           node --check server-status.js
           node --check deploy/admin-console/app.js
+      - name: Offline performance UI desktop and mobile regression
+        run: |
+          npm install --prefix /tmp/server-metrics-ui --no-audit --no-fund --ignore-scripts playwright@1.62.1
+          export NODE_PATH=/tmp/server-metrics-ui/node_modules
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node tests/server-metrics.browser.cjs
       - name: Make sure served pages have no admin API access
         run: |
           python3 - <<'PY'
