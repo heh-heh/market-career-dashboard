@@ -18,6 +18,9 @@ def replace_once(body, before, after):
 def apply(release):
     f=Path(release)/"research_collection_scheduler.py"
     body=f.read_text(encoding="utf-8")
+    if "HISTORY_50_EXPLICIT_START_REQUIRED" in body:
+        raise SystemExit("UNREVIEWED_UPSTREAM_ALREADY_PATCHED")
+
     old="        desired = {'MARKET_OPEN': 'tick', 'MARKET_CLOSED': 'backfill'}.get(decision['mode'])\n"
     new=old+"""        # 50-symbol historical backfill requires independent, explicit consent.
         # The real-time tick branch is never affected by this extra gate.
