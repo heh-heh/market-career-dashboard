@@ -10,7 +10,7 @@ const PAGE_TITLES = {
   historical:["주식 과거 데이터","과거 시세와 정기 자료 수집"],
   ticks:["1틱 단위 수집기","Tick 데이터 수집 상태"],
   api:["API 설정","홈서버 공개 API 연결"],
-  server:["현재 서버 상태","Ubuntu Docker 및 Git"],
+  server:["서버 성능","작업 관리자 · CPU / 메모리 / 디스크 / 네트워크 / 전력"],
   keys:["API Key 관리","홈서버 비밀키 저장소"]
 };
 let csrf = "";
@@ -55,6 +55,7 @@ function showPage(page) {
   }
   setText("pageTitle",PAGE_TITLES[page][0]);
   setText("pageSub",PAGE_TITLES[page][1]);
+  if(page==="server")void refreshServerPerformance();
   // Diagnostics are folded by default; only load logs on demand.
 }
 function jsonSafe(data) {
@@ -277,7 +278,8 @@ function renderAgents(paper) {
 }
 function render(data) {
   overview=data;
-  if(window.ServerMetrics)window.ServerMetrics.render($("privateServerMetrics"),data.telemetry);
+  if(window.ServerMetrics && !$("page-server").hidden)
+    window.ServerMetrics.render($("privateServerMetrics"),data.telemetry);
   setText("researchStatus",data.research?.status==="NOT_DEPLOYED"?"미배포":data.research?.status);
   setText("researchOutput",jsonSafe(data.research));
   renderPaper(data.paper || {});
@@ -308,6 +310,26 @@ function render(data) {
   const status={};
   for(const key of NAMES)status[key]=data.keys?.[key]?"설정됨":"미설정";
   setText("keysOutput",jsonSafe(status));
+}
+let serverPerformanceRefreshing=false;
+async function refreshServerPerformance(){
+  if(serverPerformanceRefreshing || APP.hidden || $("page-server").hidden)return;
+  serverPerformanceRefreshing=true;
+  setText("serverPerfState","측정값 확인 중");
+  try{
+    const telemetry=await get("/api/telemetry");
+    if(APP.hidden || $("page-server").hidden)return;
+    if(window.ServerMetrics)window.ServerMetrics.render($("privateServerMetrics"),telemetry);
+    setText("serverPerfState",!telemetry.ok?"측정 데이터 없음":
+      telemetry.stale?"갱신 지연":"정상 수집");
+  }catch(err){
+    if(!APP.hidden && !$("page-server").hidden){
+      setText("serverPerfState","연결 오류");
+      if(window.ServerMetrics)window.ServerMetrics.render($("privateServerMetrics"),null);
+    }
+  }finally{
+    serverPerformanceRefreshing=false;
+  }
 }
 async function refresh() {
   setText("globalError","");
@@ -362,6 +384,11 @@ $("logout").addEventListener("click",async()=>{
   csrf="";overview=null;showLoggedIn(false);
 });
 $("refresh").addEventListener("click",refresh);
+$("serverPerfRefresh").addEventListener("click",refreshServerPerformance);
+setInterval(()=>{
+  if(!document.hidden && !APP.hidden && !$("page-server").hidden)
+    void refreshServerPerformance();
+},30000);
 for(const button of document.querySelectorAll("button[data-page]")){
   button.addEventListener("click",()=>showPage(button.dataset.page));
 }
