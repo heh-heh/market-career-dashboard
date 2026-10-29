@@ -21,7 +21,8 @@ def apply(release):
     if "HISTORY_50_EXPLICIT_START_REQUIRED" in body:
         raise SystemExit("UNREVIEWED_UPSTREAM_ALREADY_PATCHED")
 
-    old="        desired = {'MARKET_OPEN': 'tick', 'MARKET_CLOSED': 'backfill'}.get(decision['mode'])\\n"
+    old="""        desired = {'MARKET_OPEN': 'tick', 'MARKET_CLOSED': 'backfill'}.get(decision['mode'])
+"""
     new="""        # One scheduler, two separate workers and two independent permissions.
         # The policy module authorizes historical-only collection even during
         # US regular hours when official calendars match.
