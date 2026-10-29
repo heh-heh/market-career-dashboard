@@ -3,7 +3,8 @@
   const HOST="https://heh-heh.tail39e546.ts.net:8444";
   const form=document.getElementById("login");
   const button=document.getElementById("submit");
-  const message=document.getElementById("status");
+  const message=document.getElementById("loginStatus") || document.getElementById("status");
+  if(!form || !button || !message) return;
   form.addEventListener("submit",async event=>{
     event.preventDefault();
     button.disabled=true;
