@@ -60,6 +60,22 @@ COMMANDS = {
 ALLOWED_HOSTS = {"127.0.0.1:18085", "localhost:18085"}
 
 
+def _atomic_control(path: Path, value: dict) -> None:
+    """Write a collector-owned control atomically, without following symlinks."""
+    if path.is_symlink() or not path.is_file() or path.parent.is_symlink():
+        raise OSError("INVALID_COLLECTOR_CONTROL")
+    temp=path.with_name(path.name+"."+secrets.token_hex(12)+".tmp")
+    fd=os.open(temp,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
+    try:
+        with os.fdopen(fd,"w",encoding="utf-8") as output:
+            json.dump(value,output)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temp,path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
 def _json_file(path: Path) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
@@ -656,6 +672,52 @@ class Handler(BaseHTTPRequestHandler):
                 temp.unlink(missing_ok=True)
             self.reply(200,{"ok":True,"enabled":enabled,"status":"REQUESTED"})
             return
+        if path == "/api/history/start":
+            # One explicit operator action starts/queues historical collection,
+            # without modifying the independently disabled 1-tick gate.
+            if service_state("market-stock-token-broker.service") != "running" or service_state("market-stock-collection.service") != "running":
+                self.reply(409,{"error":"STOCK_COLLECTOR_SERVICES_NOT_RUNNING"})
+                return
+            runtime=Path("/srv/ai-data/stock-collection/runtime/collection")
+            historical=runtime/"historical-control.json"
+            master=runtime/"control.json"
+            if runtime.is_symlink() or not runtime.is_dir() or any(
+                    p.is_symlink() or not p.is_file() for p in (historical,master)):
+                self.reply(409,{"error":"HISTORICAL_OR_SCHEDULER_CONTROL_NOT_INSTALLED"})
+                return
+            if not progress_snapshot().get("configured"):
+                self.reply(409,{"error":"HISTORICAL_50_SYMBOLS_NOT_READY"})
+                return
+            h_old=_json_file(historical)
+            m_old=_json_file(master)
+            if type(h_old.get("enabled")) is not bool or type(m_old.get("paused")) is not bool:
+                self.reply(409,{"error":"CONTROL_FILE_UNEXPECTED_STATE"})
+                return
+            # Write both permits in the same authenticated request. The shared
+            # scheduler resume alone cannot re-enable the separately paused tick.
+            updated=datetime.now(timezone.utc).isoformat()
+            try:
+                for target,payload in (
+                    (master,{"paused":False,"reason":"ADMIN_HISTORY_START_MASTER","updatedAt":updated}),
+                    (historical,{"enabled":True,"reason":"ADMIN_HISTORY_START","updatedAt":updated})
+                ):
+                    _atomic_control(target,payload)
+            except OSError:
+                self.reply(500,{"error":"HISTORICAL_START_WRITE_FAILED"})
+                return
+            verified_h=_json_file(historical)
+            verified_m=_json_file(master)
+            if verified_h.get("enabled") is not True or verified_m.get("paused") is not False:
+                self.reply(500,{"error":"HISTORICAL_START_VERIFICATION_FAILED"})
+                return
+            scheduler=_json_file(runtime/"status.json")
+            mode=scheduler.get("mode") if isinstance(scheduler.get("mode"),str) else "UNKNOWN"
+            worker=scheduler.get("collector") if scheduler.get("collector") in ("tick","backfill") else None
+            self.reply(200,{"ok":True,"enabled":True,"masterPaused":False,
+                            "mode":mode,"collector":worker,
+                            "queued":worker!="backfill",
+                            "lastAction":"ADMIN_HISTORY_START","updatedAt":updated})
+            return
         if path == "/api/history/control":
             enabled=body.get("enabled")
             if type(enabled) is not bool:
@@ -669,21 +731,20 @@ class Handler(BaseHTTPRequestHandler):
             if not current.get("configured"):
                 self.reply(409,{"error":"HISTORICAL_50_SYMBOLS_NOT_READY"})
                 return
-            temp=control_file.with_name(control_file.name+"."+secrets.token_hex(8)+".tmp")
+            updated=datetime.now(timezone.utc).isoformat()
             data={"enabled":enabled,"reason":"ADMIN_HISTORY_RESUME" if enabled else "ADMIN_HISTORY_PAUSE",
-                  "updatedAt":datetime.now(timezone.utc).isoformat()}
+                  "updatedAt":updated}
             try:
-                fd=os.open(temp,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
-                with os.fdopen(fd,"w",encoding="utf-8") as output:
-                    json.dump(data,output)
-                    output.flush();os.fsync(output.fileno())
-                os.replace(temp,control_file)
+                _atomic_control(control_file,data)
             except OSError:
                 self.reply(500,{"error":"HISTORICAL_CONTROL_WRITE_FAILED"})
                 return
-            finally:
-                temp.unlink(missing_ok=True)
-            self.reply(200,{"ok":True,"enabled":enabled,
+            verified=_json_file(control_file)
+            if verified.get("enabled") is not enabled:
+                self.reply(500,{"error":"HISTORICAL_CONTROL_VERIFY_FAILED"})
+                return
+            self.reply(200,{"ok":True,"enabled":enabled,"lastAction":data["reason"],
+                            "updatedAt":updated,
                             "note":"SCHEDULER_REQUIRES_MASTER_RESUME_AND_OFFHOURS"})
             return
         if path == "/api/collection/control":
