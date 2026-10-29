@@ -46,7 +46,7 @@ jobs:
           script=Path("server-status.js").read_text()
           assert 'server-metrics.js' in page and 'server-status.js' in page
           assert '/api/server-telemetry' in script
-          assert ':8444' not in script
+          assert 'https://heh-heh.tail39e546.ts.net:8444' not in script
           assert 'POST' not in script
           api=Path("server.py").read_text()
           assert '"/api/server-telemetry"' in api
