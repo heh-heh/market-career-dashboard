@@ -466,7 +466,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(item,dict):
                     continue
                 at=item.get("at")
-                if not isinstance(at,str) or not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}T[0-9:+\\-]+",at):
+                if not isinstance(at,str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:+.\\-]+",at):
                     continue
                 rows.append({"at":at[:35],**{k:n(item.get(k),hi=hi) for k,hi in cols.items()}})
             metrics=obj.get("metrics",{})
