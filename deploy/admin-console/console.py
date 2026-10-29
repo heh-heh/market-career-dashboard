@@ -682,6 +682,11 @@ class Handler(BaseHTTPRequestHandler):
             if type(saved.get("enabled")) is not bool:
                 self.reply(409, {"error":"TICK_CONFIG_INVALID"})
                 return
+            master=COLLECTION_RUNTIME/"control.json"
+            if enabled and (master.is_symlink() or master.parent.is_symlink() or
+                            type(_json_file(master).get("paused")) is not bool):
+                self.reply(409,{"error":"MASTER_SCHEDULER_CONTROL_NOT_READY"})
+                return
             new={"enabled":enabled,
                  "reason":"ADMIN_TICK_RESUME" if enabled else "ADMIN_TICK_PAUSE",
                  "updatedAt":datetime.now(timezone.utc).isoformat()}
