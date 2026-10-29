@@ -9,15 +9,15 @@
 </head><body>
 <main class="metric-wrap">
   <header class="metric-top">
-    <div><div class="metric-muted">Market & Career Dashboard · 공개 조회 전용</div><h1>홈서버 상태</h1><p class="metric-muted">CPU · 메모리 · 네트워크 · 저장공간 · CPU 전력 측정 기록</p></div>
-    <div><a href="./">← 대시보드로 돌아가기</a> · <a href="./admin.html">관리자 로그인 (OTP)</a></div>
+    <div><div class="metric-muted">Market & Career · 조회 전용</div><h1>홈서버 모니터링</h1><p class="metric-muted">CPU · RAM · 네트워크 · 디스크 · 전력</p></div>
+    <nav aria-label="페이지 이동"><a href="./">대시보드</a><a href="./admin.html">관리자 로그인</a></nav>
   </header>
-  <div class="metric-note"><strong>접근 범위</strong> · 이 페이지는 민감한 설정을 읽거나 변경하지 않습니다. 수집한 시스템 사용량 요약은 <strong>누구나 볼 수 있는 공개 지표</strong>이며, API 키·내부 IP·명령·로그·프로세스 정보는 포함하지 않습니다. 설정 변경, 서비스 제어 및 세부 진단은 Tailscale 전용 관리자에서만 가능합니다.</div>
+  <details class="metric-note"><summary>공개 조회 범위 · 보안 안내</summary><p>이 화면은 누구나 열람할 수 있는 서버 사용량 요약만 제공합니다. API 키·내부 IP·명령·로그·프로세스 정보는 포함하지 않습니다. 설정 변경과 상세 진단은 Tailscale 전용 관리자에서만 가능합니다.</p></details>
   <div id="metricStatus" class="metric-muted">서버의 최신 측정값을 불러오는 중…</div>
   <div id="serverMetrics"></div>
   <div class="metric-footer">
     <button type="button" id="refreshMetrics">지금 새로고침</button>
-    <span class="metric-muted">자동 갱신 30초 · 샘플 저장 간격 60초 · 과거 최대 12시간</span>
+    <span class="metric-muted">30초 자동 갱신 · 60초 샘플 · 최근 최대 12시간</span>
   </div>
 </main>
 <script src="./dashboard-config.js" defer></script>
