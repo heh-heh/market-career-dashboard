@@ -11,8 +11,10 @@ const fixture={ok:true,mode:'PUBLIC_READ_ONLY_AGGREGATED',samplingSeconds:60,upd
 const publicRequests=[];
 const server=http.createServer((req,res)=>{
   const pathname=new URL(req.url,'http://localhost').pathname;
-  if(pathname==='/api/me'||pathname==='/api/overview'){
-    res.setHeader('Content-Type','application/json');res.end(JSON.stringify(pathname==='/api/me'?{csrf:'fixture'}:{telemetry:fixture}));return;
+  if(pathname==='/api/me'||pathname==='/api/overview'||pathname==='/api/telemetry'){
+    res.setHeader('Content-Type','application/json');
+    res.end(JSON.stringify(pathname==='/api/me'?{csrf:'fixture'}:pathname==='/api/overview'?{telemetry:fixture}:fixture));
+    return;
   }
   const files={'/':'server-status.html','/console':'deploy/admin-console/index.html','/app.js':'deploy/admin-console/app.js'};
   const rel=files[pathname]||pathname.slice(1),file=path.resolve(root,rel);
@@ -33,7 +35,12 @@ const server=http.createServer((req,res)=>{
         return route.fulfill({json:fixture,headers:{'Access-Control-Allow-Origin':'*'}});
       });
       await page.goto(`http://127.0.0.1:${server.address().port}/${admin?'console':''}`);
-      if(admin)await page.click('[data-page="server"]');
+      if(admin){
+        await page.click('[data-page="server"]');
+        assert.equal(await page.locator('#serverDiagnostics').getAttribute('open'),null,'diagnostics start collapsed');
+        await page.locator('#serverPerfRefresh').click();
+        await page.waitForFunction(()=>document.querySelector('#serverPerfState')?.textContent==='정상 수집');
+      }
       const selector=admin?'#privateServerMetrics':'#serverMetrics';
       const target=page.locator(selector);
       await target.locator('.metric-resource').first().waitFor();
