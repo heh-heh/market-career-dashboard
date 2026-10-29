@@ -37,7 +37,7 @@ PY
       [[ "$(systemctl is-active market-stock-token-broker.service)" == active ]] || { echo "ERROR=TOKEN_BROKER_NOT_ACTIVE"; exit 1; }
       [[ "$(systemctl is-active market-stock-collection.service)" == active ]] || { echo "ERROR=COLLECTION_SCHEDULER_NOT_ACTIVE"; exit 1; }
       [[ -f "$BASE/current/research_collection_scheduler.py" ]] || { echo "ERROR=SCHEDULER_RELEASE_NOT_FOUND"; exit 1; }
-      grep -q 'HISTORY_50_EXPLICIT_START_REQUIRED' "$BASE/current/research_collection_scheduler.py" || {
+      grep -q 'from collector_policy import enabled, choose_worker' "$BASE/current/research_collection_scheduler.py" || {
         echo "ERROR=HISTORY_50_SAFETY_GATE_NOT_DEPLOYED"; exit 1;
       }
     fi
