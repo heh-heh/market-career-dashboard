@@ -49,6 +49,8 @@ jobs:
           assert '"/api/history/start"' in js
           assert 'id="history50Persisted"' in ui
           assert 'id="history50Start"' in ui
+          assert 'button.dataset.history50' not in js, "data-history-50 must not be read as dataset.history50"
+          assert 'button.getAttribute("data-history-50")' in js
           assert 'class="history-danger-zone"' in ui
           assert api.index('session = active_session(self)') < api.index('elif path.path == "/api/history/status"')
           assert 'HISTORY_50_CONTROL_FILE' in Path("deploy/stock-collection/run-scheduler.sh").read_text()
