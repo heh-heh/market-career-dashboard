@@ -302,9 +302,21 @@ function renderHistory50(plan,master){
   const ready=plan?.configured===true;
   const entries=ready&&Array.isArray(plan.symbols)?plan.symbols:[];
   setText("history50Count",ready?entries.length+" / 50개":"설정 대기");
-  const state=master?.serviceState==="running"?
-    (plan.enabled?"허용됨":"과거 수집 중지"):"서비스 확인 필요";
-  setText("history50State",ready?state:"미설치");
+  const mode=master?.collectorStatus;
+  let state="미설치";
+  if(ready){
+    if(master?.serviceState!=="running")state="스케줄러 중지";
+    else if(!plan.enabled)state="과거 수집 미허용";
+    else if(master?.paused)state="전체 수집 일시정지";
+    else if(master?.activeWorker==="backfill")state="과거 1분봉 수집 중";
+    else if(mode==="ERROR")state="거래일정 검증 오류";
+    else if(mode==="MARKET_OPEN")state="미국장 개장 · 틱 우선";
+    else if(mode==="SWITCHING")state="작업 전환 중";
+    else if(mode==="MARKET_CLOSED")state="장외 · 작업 시작 대기";
+    else if(mode==="PAUSED")state="스케줄러 일시정지";
+    else state="현재 작업 확인 필요";
+  }
+  setText("history50State",state);
   setText("history50Active",ready?("대기 "+historyNum(plan.counts?.queued)+"개 · 완료 검토 "+historyNum(plan.counts?.collection_pass_finished_unverified)+"개"):"50종목 구성 필요");
   setText("history50Scan",historyPct(plan?.scanPercent));
   const bar=$("history50ScanBar");
@@ -312,10 +324,19 @@ function renderHistory50(plan,master){
   setText("history50Rows",ready?historyNum(plan.totalStoredRows):"—");
   setText("history50Pages","API 요청 페이지 "+(ready?historyNum(plan.totalPages):"—"));
   setText("history50Errors","오류 "+(ready?historyNum(plan.counts?.error):"—")+"개 종목");
-  setText("history50MasterState","공유 스케줄러: "+(master?.serviceState||"미확인")+
-    " · 전체 일시정지 "+(master?.paused?"예":"아니오")+
-    " · 현재 작업 "+(master?.activeWorker||"없음")+
-    (plan?.enabled&&master?.paused?" · 과거 수집을 진행하려면 상세 진단에서 전체 스케줄러를 재개해야 합니다.":""));
+  const diagnosis=[
+    "스케줄러 "+(master?.serviceState||"미확인"),
+    "과거 수집 "+(plan?.enabled?"허용":"중지"),
+    "전체 "+(master?.paused?"일시정지":"허용"),
+    "모드 "+(mode||"확인 중"),
+    "현재 작업 "+(master?.activeWorker||"없음")
+  ];
+  if(master?.reason)diagnosis.push("사유 "+master.reason);
+  if(Number.isInteger(master?.workerFailures)&&master.workerFailures>0)
+    diagnosis.push("작업 실패 "+master.workerFailures+"회");
+  if(master?.lastExitCode!==null&&master?.lastExitCode!==undefined&&master.lastExitCode!==0)
+    diagnosis.push("직전 종료 코드 "+master.lastExitCode);
+  setText("history50MasterState",diagnosis.join(" · "));
   for(const button of document.querySelectorAll("[data-history-50]")){
     button.disabled=!ready||(button.dataset.history50==="resume"?plan.enabled:!plan.enabled);
   }
@@ -506,7 +527,9 @@ for(const button of document.querySelectorAll("button[data-history-50]")){
     setText("history50Message","설정 적용 중...");
     try{
       const result=await post("/api/history/control",{enabled});
-      setText("history50Message",result.enabled?"과거 수집 허용됨 · 전체 스케줄러와 장 상태에 따라 실행":"과거 수집 일시정지됨");
+      setText("history50Message",result.enabled?
+        "과거 수집을 허용했어. 실제 다운로드 여부는 아래의 '수집 상태'와 '현재 작업'을 확인해. 전체 스케줄러·거래 일정 검증이 별도로 필요해.":
+        "과거 수집 일시정지 요청 완료. 기존 데이터는 보존돼.");
       await refresh();
     }catch(err){
       setText("history50Message","설정 실패: "+err.message);
