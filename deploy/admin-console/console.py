@@ -234,6 +234,9 @@ def history_status_snapshot() -> dict:
     """
     snapshot=progress_snapshot()
     runtime=COLLECTION_RUNTIME
+    tick=_json_file(runtime/"tick-control.json")
+    snapshot["tickEnabled"]=tick.get("enabled") is True
+    snapshot["tickReason"]=str(tick.get("reason") or "TICKS_DISABLED")[:80]
     state=_json_file(runtime/"status.json")
     control=_json_file(runtime/"control.json")
     snapshot["scheduler"]={
@@ -694,7 +697,24 @@ class Handler(BaseHTTPRequestHandler):
                 return
             finally:
                 temp.unlink(missing_ok=True)
-            self.reply(200,{"ok":True,"enabled":enabled,"status":"REQUESTED"})
+            if enabled:
+                master=COLLECTION_RUNTIME/"control.json"
+                old_master=_json_file(master)
+                if type(old_master.get("paused")) is not bool or master.is_symlink():
+                    self.reply(409,{"error":"MASTER_SCHEDULER_CONTROL_NOT_READY"})
+                    return
+                try:
+                    _atomic_control(master,{"paused":False,
+                        "reason":"ADMIN_TICK_ENABLE_MASTER",
+                        "updatedAt":datetime.now(timezone.utc).isoformat()})
+                except OSError:
+                    self.reply(500,{"error":"MASTER_SCHEDULER_RESUME_FAILED"})
+                    return
+            saved=_json_file(config)
+            master=_json_file(COLLECTION_RUNTIME/"control.json")
+            self.reply(200,{"ok":True,"enabled":saved.get("enabled") is True,
+                            "masterPaused":master.get("paused") is not False,
+                            "status":"VERIFIED"})
             return
         if path == "/api/history/start":
             # One explicit operator action starts/queues historical collection,
