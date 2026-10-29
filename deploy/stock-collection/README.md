@@ -37,6 +37,35 @@ collect, explicitly use the private administrator page **자료수집 → 주식
 (the live 1-tick worker still has exclusive ownership during the US session).
 Old real-time tick symbols and credentials are not changed.
 
+### Start the historical collector without reinstalling (SSH)
+
+The 50-symbol history worker requires **both** `historical-control.json.enabled=true`
+and `control.json.paused=false`. A running systemd unit is not proof that
+the historical worker is active. To use the CLI without restarting services:
+
+```bash
+git -C /srv/apps/market-career-dashboard fetch origin main
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/control.sh > /tmp/market-stock-control.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/history-control.sh > /tmp/market-history-control.sh
+bash /tmp/market-history-control.sh status
+bash /tmp/market-history-control.sh resume
+bash /tmp/market-stock-control.sh resume
+bash /tmp/market-history-control.sh status
+```
+
+An older installer omitted `control.sh` from the deployed `bin/` folder.
+The installer now stages both scripts, but **no reinstall is needed** to run
+the temporary scripts above. For a paused job, `ADMIN_HISTORY_PAUSE` means
+the private admin pause route was invoked. The scheduler itself never sets
+that control-file reason.
+
+Even with the two permits enabled, downloading requires an **officially
+confirmed closed US market session**. During US regular hours the real-time
+tick collector has priority. Check `runtime/collection/status.json` for
+`collector: backfill` and monitor
+`historical-50-2015-2026/_collection_progress.json`. Never disable
+calendar guards merely to force the download.
+
 ### Install/upgrade via SSH (user heh-heh)
 
 ```bash
