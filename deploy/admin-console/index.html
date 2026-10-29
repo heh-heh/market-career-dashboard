@@ -68,6 +68,26 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .server-monitor-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .server-monitor-title h3{margin:0;font-size:14px}
 .server-monitor .metric-intro{margin:6px 0}
+.history-dashboard-cards .value{font-size:22px;font-variant-numeric:tabular-nums}
+.history-dashboard-cards .meta{font-size:11px}
+.history-bar{height:9px;overflow:hidden;background:#16283d;border-radius:50px;margin:7px 0 5px}
+.history-bar>span{height:100%;width:0;display:block;background:#6389f6;border-radius:50px;transition:width .2s}
+.history-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.history-toolbar h3{margin:0}
+.history-toolbar .actions{margin:0}
+.history-toolbar select{width:auto;min-width:114px;font-size:12px;padding:7px}
+.history-note{border-left:3px solid #6687f4;background:#0d1930;padding:12px;font-size:12px;color:#b7c9e5;line-height:1.65;border-radius:4px;margin-top:8px}
+.history-table-scroll{max-height:650px;overflow:auto;border:1px solid var(--line);border-radius:9px}
+.history-table{width:100%;border-collapse:collapse;min-width:730px;font-size:12px}
+.history-table th,.history-table td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;white-space:nowrap}
+.history-table th{position:sticky;top:0;background:#172338;z-index:1;color:#cad7eb}
+.history-table tbody tr:hover{background:#1a2b45}
+.history-table .history-name{font-weight:750;font-size:13px}
+.history-table .history-progress-cell{min-width:200px}
+.history-table .history-progress-line{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.history-table .history-bar{margin:3px 0 0;height:7px}
+.history-table .history-error{color:#ffb2bc}
+@media(max-width:700px){.history-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.history-table-scroll{max-height:550px}}
 .server-performance-page{width:100%}
 .server-performance-header{display:flex;justify-content:space-between;align-items:center;gap:10px 18px;margin:12px 0;flex-wrap:wrap}
 .server-performance-header h3{font-size:21px;font-weight:700;margin:0}
@@ -220,19 +240,73 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
       <div class="notice">보유 종목의 평가액은 마지막으로 받은 틱 가격 기준입니다. 시세가 오래되면 ‘시세 지연’으로 표시되며, 평가손익은 실제 청산 가능 금액이 아닙니다.</div>
     </section>
     <section class="page" id="page-historical" hidden>
-      <div class="cards">
-        <div class="panel"><div class="label">과거 주가 수집기</div><div class="value" id="historyStatus">확인 중</div></div>
-        <div class="panel"><div class="label">데이터 디렉터리</div><div class="value" id="historyStorage" style="font-size:16px">확인 중</div></div>
-        <div class="panel"><div class="label">시장·뉴스 수집기</div><div class="value" id="publicCollector">확인 중</div></div>
+      <div class="notice">
+        <strong>과거 1분봉 · 50종목 수집 현황</strong>
+        <p class="muted small" style="margin:5px 0 0">대상 기간: <b>2015-01-01 ~ 2026-10-01</b> · 미국 정규장 데이터 · 실제 제공 가능한 과거 기록만 저장 · 기존 실시간 1틱 수집기와 분리</p>
+      </div>
+      <div class="cards history-dashboard-cards">
+        <div class="panel"><div class="label">대상 종목</div><div class="value" id="history50Count">50개</div><div class="meta" id="history50Active">등록 확인 중</div></div>
+        <div class="panel"><div class="label">기간 탐색 진행률</div><div class="value" id="history50Scan">—</div><div class="history-bar"><span id="history50ScanBar"></span></div><div class="meta">시점 이동 진행률 · 데이터 완성률이 아님</div></div>
+        <div class="panel"><div class="label">저장된 1분봉</div><div class="value" id="history50Rows">—</div><div class="meta" id="history50Pages">요청 페이지 —</div></div>
+        <div class="panel"><div class="label">수집 상태</div><div class="value" id="history50State">—</div><div class="meta" id="history50Errors">오류 —</div></div>
       </div>
       <div class="panel">
-        <h3>자동 수집 관리</h3>
-        <p class="muted small">미국 정규장에는 1틱, 장 마감 후에는 과거 1분봉을 수집합니다. 최초 설치 시 일시정지 상태입니다.</p>
-        <div class="actions"><button data-collection-action="resume">자동 수집 재개</button><button data-collection-action="pause">일시정지</button></div>
-        <p id="collectionMessage" class="meta" role="status"></p>
+        <div class="history-toolbar">
+          <div>
+            <h3>50종목 과거 데이터 수집</h3>
+            <p class="meta">과거 데이터 수집은 별도 시작 승인 후 정규장 밖에서만 실행됩니다. 기존 실시간 틱 수집 설정은 바뀌지 않습니다.</p>
+          </div>
+          <div class="actions">
+            <button data-history-50="resume">과거 50종목 수집 허용</button>
+            <button data-history-50="pause">과거 수집 일시정지</button>
+            <button id="history50Refresh">진행률 새로고침</button>
+          </div>
+        </div>
+        <p class="meta" id="history50Message" role="status"></p>
+        <p class="meta" id="history50MasterState">전체 데이터 스케줄러 상태 확인 중...</p>
+        <div class="history-note">
+          <b>진행률 읽는 방법:</b> 파란 막대는 지정한 날짜 범위에서 API 페이지 커서가 얼마나 과거로 이동했는지를 나타냅니다.
+          전체 1분봉 확보율이 아니며, 상장 전 기간·공급사 보존 한계·거래 없음·API 응답 오류 때문에 모든 거래일을 채우지 못할 수 있습니다.
+          검증 거래일 비율은 한 차례 수집 패스가 끝나고 검증 데이터가 있을 때만 표시합니다.
+        </div>
       </div>
-      <div class="panel" style="margin-top:14px"><h3>현재 정기 수집 정보</h3><pre id="collectionOutput">불러오는 중...</pre></div>
-      <div class="notice">기존 공개 대시보드의 1시간 단위 수집과 AI 연구용 과거 1분봉 수집은 별개야. 과거 주가의 연속 데이터 수집은 엔진 이전 후 별도로 구성해.</div>
+      <div class="panel">
+        <div class="history-toolbar">
+          <h3>종목별 진행률</h3>
+          <div class="actions">
+            <label class="meta" for="history50Filter">상태</label>
+            <select id="history50Filter">
+              <option value="all">전체 50개</option>
+              <option value="active">진행 중</option>
+              <option value="error">오류</option>
+              <option value="queued">대기</option>
+              <option value="finished">1차 탐색 종료</option>
+            </select>
+            <label class="meta" for="history50Sort">정렬</label>
+            <select id="history50Sort">
+              <option value="progress">진행률 높은 순</option>
+              <option value="symbol">종목 이름순</option>
+              <option value="error">오류 우선</option>
+            </select>
+          </div>
+        </div>
+        <div id="history50Table" class="history-table-scroll">수집 현황을 불러오는 중...</div>
+        <div class="meta" id="history50Visible">—</div>
+      </div>
+      <details class="server-diagnostics">
+        <summary>기존 수집기 상태·진단 펼치기</summary>
+        <div class="cards">
+          <div class="panel"><div class="label">정기 수집 서비스</div><div class="value" id="historyStatus">확인 중</div></div>
+          <div class="panel"><div class="label">데이터 디렉터리</div><div class="value" id="historyStorage" style="font-size:16px">확인 중</div></div>
+          <div class="panel"><div class="label">시장·뉴스 수집기</div><div class="value" id="publicCollector">확인 중</div></div>
+        </div>
+        <div class="panel">
+          <h3>전체 데이터 스케줄러 제어 (실시간 틱 + 과거 수집)</h3>
+          <div class="actions"><button data-collection-action="resume">전체 스케줄러 재개</button><button data-collection-action="pause">전체 스케줄러 일시정지</button></div>
+          <p class="meta" id="collectionMessage"></p>
+        </div>
+        <div class="panel"><h3>진단 원본</h3><pre id="collectionOutput">불러오는 중...</pre></div>
+      </details>
     </section>
     <section class="page" id="page-ticks" hidden>
       <div class="cards">
