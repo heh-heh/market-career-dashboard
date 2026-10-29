@@ -31,6 +31,35 @@ def run():
     assert password_valid(record,password)
     assert not password_valid(record,"wrong")
     assert not password_valid({"salt":"foo"},"password")
+    # Verify the authentication gate: password-only SSH legacy works before
+    # enrollment, but remote access never works without TOTP. Once enrolled,
+    # BOTH the local and remote login paths require the same TOTP.
+    from pathlib import Path
+    import json
+    import tempfile
+    import console
+    with tempfile.TemporaryDirectory(prefix="admin-mfa-test-") as temp:
+        original=console.PRIVATE
+        console.PRIVATE=Path(temp)
+        try:
+            p=Path(temp)/"credentials.json"
+            p.write_text(json.dumps(record))
+            assert console.verify_login(None,password,None,require_mfa=False)
+            assert not console.verify_login(None,password,None,require_mfa=True)
+            record["username"]="owner_a"
+            record["totp_secret"]=secret
+            record["remote_host"]=console.REMOTE_HOST
+            p.write_text(json.dumps(record))
+            from unittest.mock import patch
+            with patch("console.otp_match_step",return_value=12):
+                assert not console.verify_login("owner_a",password,None,require_mfa=True)
+                assert not console.verify_login("incorrect",password,"287082",require_mfa=True)
+                assert console.verify_login("owner_a",password,"287082",require_mfa=True)
+                assert not console.verify_login("owner_a",password,"287082",require_mfa=True), "TOTP replay accepted"
+                assert not console.verify_login("owner_a","wrong","287082",require_mfa=False)
+        finally:
+            console.PRIVATE=original
+            console.LAST_OTP_STEP.clear()
     print("ADMIN_MFA_OFFLINE_TEST=PASS")
 
 if __name__=="__main__":
