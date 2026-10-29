@@ -6,6 +6,10 @@ on:
       - "index.html"
       - "admin.html"
       - "admin-login.js"
+      - "server-status.html"
+      - "server-status.js"
+      - "server-metrics.js"
+      - "server-metrics.css"
       - "dashboard-config.js"
       - "scripts/configure_dashboard_api.py"
       - "data/dashboard.json"
@@ -33,7 +37,7 @@ jobs:
       - name: Assemble public UI only
         run: |
           mkdir -p _site/data
-          cp index.html admin.html admin-login.js dashboard-config.js _site/
+          cp index.html admin.html admin-login.js server-status.html server-status.js server-metrics.js server-metrics.css dashboard-config.js _site/
           cp data/dashboard.json _site/data/
           touch _site/.nojekyll
       - name: Verify configured home-server HTTPS API
