@@ -312,7 +312,10 @@ function renderHistory50(plan,master){
     else if(master?.activeWorker==="backfill")state="과거 1분봉 수집 중";
     else if(mode==="ERROR")state="거래일정 검증 오류";
     else if(mode==="MARKET_OPEN")state="정규장 개장 · 과거 수집 예약";
-    else if(mode==="TICKS_PAUSED")state="정규장 개장 · 1틱 중지 · 과거 수집 예약";
+    else if(mode==="HISTORY_ONLY_RUNNING")state="1분봉 전용 · 수집 작업 전환 중";
+    else if(mode==="TICKS_PAUSED")state="1틱 중지 · 1분봉 대기";
+    else if(mode==="WAITING_MARKET_OPEN")state="1틱만 활성 · 장 개장 대기";
+    else if(mode==="ALL_COLLECTORS_PAUSED")state="두 수집기 모두 중지";
     else if(mode==="SWITCHING")state="작업 전환 중";
     else if(mode==="MARKET_CLOSED")state="장외 · 작업 시작 대기";
     else if(mode==="PAUSED")state="스케줄러 일시정지";
@@ -342,10 +345,21 @@ function renderHistory50(plan,master){
   const lastAction=plan?.controlReason||"미확인";
   setText("history50Persisted","서버 저장값: "+(plan?.enabled?"과거 수집 허용됨":"과거 수집 중지")+
     " · 마지막 설정 "+lastAction+" · "+prettyDate(plan?.controlUpdatedAt));
-  for(const button of document.querySelectorAll("[data-history-50]")){
-    button.disabled=historyControlPending||!ready||
-      (button.getAttribute("data-history-50")==="resume"?plan.enabled:!plan.enabled);
+  const hToggle=$("historyCollectorToggle"),tToggle=$("tickCollectorToggle");
+  if(hToggle){
+    if(!historyControlPending)hToggle.checked=Boolean(plan?.enabled);
+    hToggle.disabled=historyControlPending||!ready;
   }
+  if(tToggle){
+    if(!tickControlPending && typeof plan?.tickEnabled==="boolean")
+      tToggle.checked=plan.tickEnabled;
+    tToggle.disabled=tickControlPending||!ready;
+  }
+  setText("historyToggleStatus",historyControlPending?"설정 적용 중...":
+    plan?.enabled?"ON · 과거 1분봉 사용 허용":"OFF · 과거 1분봉 수집 중지");
+  setText("tickToggleStatus",tickControlPending?"설정 적용 중...":
+    plan?.tickEnabled===true?"ON · 미국 정규장에 1틱 우선":
+    plan?.tickEnabled===false?"OFF · 1틱 수집 중지":"설정 확인 중...");
   const filter=$("history50Filter")?.value||"all";
   const sort=$("history50Sort")?.value||"progress";
   let filtered=entries.filter(x=>{
@@ -503,7 +517,7 @@ function render(data) {
   setText("researchOutput",jsonSafe(data.research));
   renderPaper(data.paper || {});
   renderAgents(data.paper || {});
-  renderHistory50(data.historical50||{},data.historical||{});
+  renderHistory50({...data.historical50,tickEnabled:data.ticks?.enabled},data.historical||{});
   setText("historyStatus",data.historical?.serviceState==="running" && data.historical?.paused?"일시정지":
     data.historical?.collectorStatus==="NOT_DEPLOYED"?"미배포":data.historical?.collectorStatus);
   setText("historyStorage",data.historical?.storageExists?"저장소 있음":"준비 중");
@@ -523,9 +537,7 @@ function render(data) {
     tick.serviceState==="running"?"작업 중지":"서비스 중지");
   setText("tickSession",tick.sessionDate||"기록 없음");
   setText("ticksOutput",jsonSafe(tick));
-  for(const button of document.querySelectorAll("button[data-tick-action]")){
-    button.disabled = button.dataset.tickAction==="resume"?tick.enabled===true:tick.enabled===false;
-  }
+
   setText("apiStatus",data.api?.ok?"정상":"연결 오류");
   setText("apiMode",data.api?.mode||"미확인");
   setText("apiUpdated",data.api?.dataUpdatedAt?
@@ -614,73 +626,67 @@ $("serverPerfRefresh").addEventListener("click",refreshServerPerformance);
 $("inventoryRefresh").addEventListener("click",refreshInventory);
 $("inventoryFilter").addEventListener("change",()=>renderInventory(lastInventory));
 setInterval(()=>{if(!document.hidden&&!APP.hidden&&!$("page-inventory").hidden)void refreshInventory();},15000);
-for(const button of document.querySelectorAll("button[data-tick-action]")){
-  button.addEventListener("click",async()=>{
-    const enabled=button.dataset.tickAction==="resume";
-    if(!confirm(enabled?
-      "실시간 1틱 수집을 다시 허용할까요? 미국 정규장에서는 1틱 작업이 우선 실행될 수 있습니다.":
-      "실시간 1틱 수집을 중지할까요? 과거 50종목 1분봉 수집과 저장 데이터는 유지됩니다."))return;
-    button.disabled=true;
-    setText("tickActionMessage","1틱 설정 변경 중...");
-    try{
-      const result=await post("/api/ticks/control",{enabled});
-      setText("tickActionMessage",result.enabled?
-        "1틱 수집 허용됨 · 미국장 일정과 스케줄러 상태에 따라 시작":
-        "1틱 중지 요청 완료 · 이미 실행 중이면 스케줄러가 종료합니다");
-      await refresh();
-    }catch(e){
-      setText("tickActionMessage","변경 실패: "+e.message);
-      await refresh();
-    }
-  });
-}
+let tickControlPending=false;
+$("tickCollectorToggle").addEventListener("change",async()=>{
+  if(tickControlPending)return;
+  const checked=$("tickCollectorToggle").checked;
+  if(checked&&!confirm("1틱 수집을 활성화할까요? 1분봉도 켜져 있다면 미국 정규장에는 1틱이 우선합니다.")){
+    $("tickCollectorToggle").checked=false;return;
+  }
+  tickControlPending=true;
+  $("tickCollectorToggle").disabled=true;
+  setText("tickActionMessage","1틱 수집 설정을 서버에 적용하고 확인 중...");
+  try{
+    await post("/api/ticks/control",{enabled:checked});
+    const snapshot=await get("/api/history/status");
+    if(snapshot.tickEnabled!==checked)throw new Error("서버 저장 설정 확인 실패");
+    renderHistory50(snapshot,snapshot.scheduler||overview?.historical);
+    setText("tickActionMessage",checked?"1틱 수집 활성화 확인됨":"1틱 수집 중지 확인됨");
+    await refresh();
+  }catch(error){
+    setText("tickActionMessage","1틱 설정 실패: "+error.message);
+    await refreshHistory50();
+  }finally{
+    tickControlPending=false;
+    await refreshHistory50();
+  }
+});
 $("history50Refresh").addEventListener("click",refreshHistory50);
 $("history50Filter").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
 $("history50Sort").addEventListener("change",()=>renderHistory50(latestHistory50,overview?.historical));
 setInterval(()=>{if(!document.hidden&&!APP.hidden&&!$("page-historical").hidden)void refreshHistory50();},10000);
 let historyControlPending=false;
-for(const button of document.querySelectorAll("button[data-history-50]")){
-  button.addEventListener("click",async()=>{
-    // A second click, in-flight poll or a stale card must not cause the
-    // opposite action. Start is a distinct API, not a toggling endpoint.
-    if(historyControlPending)return;
-    const enabled=button.getAttribute("data-history-50")==="resume";
-    if(!confirm(enabled?
-      "50종목 과거 1분봉 수집을 시작/예약할까요? 전체 스케줄러도 재개됩니다. 미국 정규장 중에는 종료 후 시작되며, API 호출량이 많을 수 있습니다.":
-      "과거 50종목 수집만 중지할까요? 저장된 SQLite 데이터는 유지됩니다."))return;
-    historyControlPending=true;
-    for(const action of document.querySelectorAll("button[data-history-50]"))action.disabled=true;
-    setText("history50Message",enabled?"수집 시작 설정을 서버에 저장하고 검증하는 중...":"과거 수집 중지 설정 확인 중...");
-    try{
-      const result=enabled?await post("/api/history/start",{}):
-        await post("/api/history/control",{enabled:false});
-      // Verify the disk state through a separate authenticated read, rather
-      // than treating the POST acknowledgement as collection progress.
-      const status=await get("/api/history/status");
-      if(status.enabled!==enabled)
-        throw new Error("설정 검증 불일치: 서버 값이 다른 요청으로 변경됨 ("+(status.controlReason||"원인 미확인")+")");
-      if(enabled && status.scheduler?.paused!==false)
-        throw new Error("과거 수집은 허용됐지만 전체 스케줄러는 여전히 일시정지 상태입니다.");
-      renderHistory50(status,status.scheduler||overview?.historical);
-      if(enabled){
-        const active=status.scheduler?.activeWorker==="backfill";
-        setText("history50Message",active?"과거 1분봉 다운로드 실행 확인됨.":
-          "수집 허용·스케줄러 재개 확인됨. 미국 정규장 중이면 장 종료 후 수집이 시작됩니다. ("+
-          (status.scheduler?.collectorStatus||"작업 대기")+")");
-      }else{
-        setText("history50Message","과거 1분봉 수집 중지를 서버 저장값으로 확인했습니다.");
-      }
-      await refresh();
-    }catch(err){
-      setText("history50Message","설정 확인 실패: "+err.message);
-      await refresh();
-    }finally{
-      historyControlPending=false;
-      await refreshHistory50();
-      if(latestHistory50)renderHistory50(latestHistory50,latestHistory50.scheduler||overview?.historical);
-    }
-  });
-}
+$("historyCollectorToggle").addEventListener("change",async()=>{
+  if(historyControlPending)return;
+  const checked=$("historyCollectorToggle").checked;
+  if(checked&&!confirm("과거 50종목 1분봉 수집을 허용할까요? 1틱이 꺼져 있으면 정규장에도 1분봉을 수집합니다. API 요청량이 많을 수 있습니다.")){
+    $("historyCollectorToggle").checked=false;return;
+  }
+  historyControlPending=true;
+  $("historyCollectorToggle").disabled=true;
+  setText("history50Message","1분봉 수집 설정을 저장하고 서버에서 다시 확인 중...");
+  try{
+    if(checked)await post("/api/history/start",{});
+    else await post("/api/history/control",{enabled:false});
+    const snapshot=await get("/api/history/status");
+    if(snapshot.enabled!==checked)
+      throw new Error("서버 저장 상태가 요청과 일치하지 않습니다 ("+(snapshot.controlReason||"미확인")+")");
+    if(checked&&snapshot.scheduler?.paused!==false)
+      throw new Error("1분봉 허용됨 · 전체 스케줄러는 일시정지 상태입니다");
+    renderHistory50(snapshot,snapshot.scheduler||overview?.historical);
+    setText("history50Message",checked?
+      (snapshot.scheduler?.activeWorker==="backfill"?"과거 1분봉 수집 작업 실행 중":
+       "과거 1분봉 활성화 완료 · 스케줄러가 실행 작업을 선택합니다"):
+      "과거 1분봉 수집 중지 확인됨");
+    await refresh();
+  }catch(err){
+    setText("history50Message","1분봉 설정 실패: "+err.message);
+    await refreshHistory50();
+  }finally{
+    historyControlPending=false;
+    await refreshHistory50();
+  }
+});
 
 setInterval(()=>{
   if(!document.hidden && !APP.hidden && !$("page-server").hidden)
