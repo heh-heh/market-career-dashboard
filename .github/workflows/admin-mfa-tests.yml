@@ -30,6 +30,18 @@ jobs:
         run: |
           node --check admin-login.js
           node --check deploy/admin-console/app.js
+      - name: Validate JavaScript embedded in the main dashboard
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          html=Path("index.html").read_text(encoding="utf-8")
+          inline=re.findall(r"<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>",html)
+          for index,source in enumerate(inline):
+              Path("/tmp/market-inline-"+str(index)+".js").write_text(source,encoding="utf-8")
+          print("INLINE_SCRIPT_COUNT="+str(len(inline)))
+          PY
+          for file in /tmp/market-inline-*.js; do node --check "$file"; done
       - name: Ensure static login has no secret and is routed to private server
         run: |
           python - <<'PY'
@@ -43,5 +55,14 @@ jobs:
           assert 'const ADMIN_PORTAL_URL="./admin.html";' in home
           assert 'localStorage.setItem' not in app and 'sessionStorage.setItem' not in app
           assert 'fetch(HOST+"/api/remote/login"' in app
+          assert '<button data-view="v7">관리자</button>' in home
+          assert '<form id="login"' in home
+          assert 'id="loginStatus"' in home
+          assert 'src="./admin-login.js"' in home
+          assert 'data-view="v7"],nav button[data-view="v9"]' not in home
+          assert 'document.getElementById("loginStatus")' in app
+          assert home.count('id="login"') == 1
+          assert home.count('id="user"') == 1
+          assert home.count('id="otp"') == 1
           print("STATIC_ADMIN_GATE=PASS")
           PY
