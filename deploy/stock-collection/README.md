@@ -1,5 +1,53 @@
 # Home stock data collection — phases 1 and 2
 
+## 2026-10-29: Unified collector, saved-data inventory and 1-tick pause
+
+The private administrator now has **자료수집 → 주식 데이터 수집기**
+for both historical 1-minute and real-time tick controls, and a separate
+**현재 데이터 현황** page for last-checkpoint row counts, collection bounds,
+SQLite file sizes and saved tick sessions. Storage inventory is read-only
+and never performs expensive `COUNT(*)` scans over each full database.
+
+**Operator request:** Real-time `1틱` collection is disabled by default.
+A separate `tick-control.json` with `{"enabled":false}` is initialized
+during service install. The patched scheduler checks it every second; if
+already collecting ticks it ends that child gracefully, while the scheduler
+service and off-hours historical 1-minute collector stay available. No
+recorded ticks or historical candles are deleted. Existing explicit
+`tick-control.json` values are preserved on future reinstalls.
+
+Apply the new scheduler and UI from home-server SSH (non-root user
+`heh-heh`) with the same setup/install sequence as below. Before executing
+the upgrade, the live service is still running the *previous* scheduler
+and the new stop gate has **not** taken effect.
+
+If the patched scheduler is installed, `bash
+/srv/apps/_deploy/stock-collection/bin/tick-control.sh status` checks tick
+permission without restarting. `pause` disables ticks, `resume` explicitly
+re-enables. The web admin `1틱 수집 중지` button uses a separate
+authenticated, CSRF-protected control endpoint. Tick permission is
+independent of `historical-control.json` and `control.json`.
+
+### Upgrade in place
+
+```bash
+git -C /srv/apps/market-career-dashboard fetch origin main
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/setup.sh > /tmp/stock-collection-setup.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/install-services.sh > /tmp/stock-collection-install-services.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/admin-console/install.sh > /tmp/market-admin-install.sh
+
+bash /tmp/stock-collection-setup.sh
+bash /tmp/stock-collection-install-services.sh
+bash /tmp/market-admin-install.sh
+
+bash /srv/apps/_deploy/stock-collection/bin/tick-control.sh status
+bash /srv/apps/_deploy/stock-collection/bin/history-control.sh status
+```
+
+The stock installer restarts only the two stock services. It preserves the
+history enabled/master pause settings. The admin installer restarts only the
+private admin console. No public service or live trade is started.
+
 ## New: 50 US symbols / 2015-01-01 to 2026-10-01 (inclusive)
 
 The **historical 1-minute collector** now has a separate, opt-in research
