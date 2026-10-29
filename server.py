@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import asyncio, json, os, re, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
+import asyncio, json, math, os, re, secrets, subprocess, sys, threading, time, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 DASHBOARD_ONLY=os.getenv("DASHBOARD_ONLY","false").lower()=="true"
@@ -441,6 +441,62 @@ class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_json({"ok":True})
 
+    def public_telemetry(self):
+        # Strict output schema. Never return arbitrary JSON keys from host files.
+        f=DATA.parent/"server-telemetry.json"
+        try:
+            if f.is_symlink() or f.stat().st_size>220000:
+                raise ValueError("INVALID_TELEMETRY_FILE")
+            obj=json.loads(f.read_text(encoding="utf-8"))
+            if not isinstance(obj,dict) or obj.get("schemaVersion")!=1 or not isinstance(obj.get("history"),list):
+                raise ValueError("INVALID_TELEMETRY_SCHEMA")
+            def n(v,lo=0,hi=100000):
+                try:
+                    if isinstance(v,bool) or v is None:
+                        return None
+                    v=float(v)
+                    return round(v,3) if math.isfinite(v) and lo<=v<=hi else None
+                except (TypeError,ValueError):
+                    return None
+            cols={"cpuPct":100,"memoryPct":100,
+                  "networkRxMbps":100000,"networkTxMbps":100000,
+                  "diskPct":100,"dataDiskPct":100,"cpuPackageWatts":300}
+            rows=[]
+            for item in obj["history"][-720:]:
+                if not isinstance(item,dict):
+                    continue
+                at=item.get("at")
+                if not isinstance(at,str) or not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}T[0-9:+\\-]+",at):
+                    continue
+                rows.append({"at":at[:35],**{k:n(item.get(k),hi=hi) for k,hi in cols.items()}})
+            metrics=obj.get("metrics",{})
+            if not isinstance(metrics,dict):
+                metrics={}
+            details={"memoryUsedGiB":32768,"memoryTotalGiB":32768,
+                     "diskUsedGiB":1000000,"diskTotalGiB":1000000,
+                     "dataDiskUsedGiB":1000000,"dataDiskTotalGiB":1000000}
+            updated=obj.get("updatedAt")
+            if not isinstance(updated,str):
+                updated=""
+            from datetime import datetime,timezone
+            try:
+                seconds=(datetime.now(timezone.utc)-datetime.fromisoformat(updated.replace("Z","+00:00"))).total_seconds()
+                stale=seconds>180 or seconds< -30
+            except (ValueError,TypeError):
+                stale=True
+            latest=rows[-1] if rows else {}
+            self.send_json({"ok":True,"mode":"PUBLIC_READ_ONLY_AGGREGATED",
+                            "updatedAt":updated[:35],"stale":stale,
+                            "samplingSeconds":60,
+                            "metrics":{**{k:latest.get(k) for k in cols},
+                                       **{k:n(metrics.get(k),hi=limit) for k,limit in details.items()},
+                                       "systemWatts":None,
+                                       "powerLabel":"전체 서버 전력: 외부 측정기 미연결",
+                                       "cpuPowerLabel":"CPU 패키지 전력 (RAPL, 가능할 때만; 서버 총전력 아님)"},
+                            "history":rows})
+        except (OSError,ValueError,TypeError):
+            self.send_json({"ok":False,"error":"TELEMETRY_NOT_READY"},503)
+
     def dashboard_get(self,path):
         # Explicit public allowlist. No admin, broker, paper, research, settings or proxy API.
         sections={"/api/stocks":"stocks","/api/indices":"indices","/api/news":"news",
@@ -453,6 +509,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok":True,"service":"market-career-dashboard","mode":"dashboard-only",
                             "dataReady":ready,"dataUpdatedAt":updated,"tradingEnabled":False,
                             "researchEnabled":False,"collectorInApi":False}); return
+        if path=="/api/server-telemetry":
+            self.public_telemetry(); return
         if path not in {"/api/dashboard","/api/quotes","/api/realtime",*sections}:
             self.send_json({"ok":False,"error":"DASHBOARD_ONLY_ROUTE_DISABLED"},403); return
         if path=="/api/realtime":
