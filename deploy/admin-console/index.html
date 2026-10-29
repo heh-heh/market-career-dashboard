@@ -76,6 +76,11 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
 .history-toolbar h3{margin:0}
 .history-toolbar .actions{margin:0}
 .history-toolbar select{width:auto;min-width:114px;font-size:12px;padding:7px}
+.history-danger-zone{margin:14px 0 6px;border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+.history-danger-zone summary{font-size:12px;color:#b8c5df;cursor:pointer}
+.history-danger-zone .actions{margin-top:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#history50Start{background:#405ecc;border:1px solid #6788fa;color:white;font-weight:700}
+#history50Persisted{color:#9ac6f7;font-variant-numeric:tabular-nums}
 .history-note{border-left:3px solid #6687f4;background:#0d1930;padding:12px;font-size:12px;color:#b7c9e5;line-height:1.65;border-radius:4px;margin-top:8px}
 .history-table-scroll{max-height:650px;overflow:auto;border:1px solid var(--line);border-radius:9px}
 .history-table{width:100%;border-collapse:collapse;min-width:730px;font-size:12px}
@@ -263,13 +268,20 @@ section.page[hidden],section#loginView[hidden],div#appView[hidden]{display:none!
             <p class="meta">과거 데이터 수집은 별도 시작 승인 후 정규장 밖에서만 실행됩니다. 기존 실시간 틱 수집 설정은 바뀌지 않습니다.</p>
           </div>
           <div class="actions">
-            <button data-history-50="resume">과거 50종목 수집 허용</button>
-            <button data-history-50="pause">과거 수집 일시정지</button>
-            <button id="history50Refresh">진행률 새로고침</button>
+            <button type="button" data-history-50="resume" id="history50Start">과거 50종목 수집 시작 / 예약</button>
+            <button type="button" id="history50Refresh">진행률 새로고침</button>
           </div>
         </div>
         <p class="meta" id="history50Message" role="status"></p>
+        <p class="meta" id="history50Persisted">저장된 수집 설정 확인 중...</p>
         <p class="meta" id="history50MasterState">전체 데이터 스케줄러 상태 확인 중...</p>
+        <details class="history-danger-zone">
+          <summary>과거 수집 중지 설정 열기</summary>
+          <div class="actions">
+            <span class="meta">과거 50종목 수집만 중지하며 저장된 SQLite 파일은 보존합니다.</span>
+            <button type="button" data-history-50="pause">과거 수집 일시정지</button>
+          </div>
+        </details>
         <div class="history-note">
           <b>진행률 읽는 방법:</b> 파란 막대는 지정한 날짜 범위에서 API 페이지 커서가 얼마나 과거로 이동했는지를 나타냅니다.
           전체 1분봉 확보율이 아니며, 상장 전 기간·공급사 보존 한계·거래 없음·API 응답 오류 때문에 모든 거래일을 채우지 못할 수 있습니다.
