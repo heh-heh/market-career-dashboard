@@ -48,6 +48,57 @@ The stock installer restarts only the two stock services. It preserves the
 history enabled/master pause settings. The admin installer restarts only the
 private admin console. No public service or live trade is started.
 
+## Two independently selectable collectors (2026-10-30)
+
+The administrator **자료수집 → 주식 데이터 수집기** now has two
+independent **ON/OFF switches**: historical **1-minute candles** (50 US
+symbols; 2015-01-01 through 2026-10-01) and live **1-tick trades**.
+
+| Tick | 1-minute | US regular session | US closed session |
+|---|---|---|---|
+| OFF | OFF | No collection | No collection |
+| ON | OFF | Tick worker only | No collection |
+| OFF | ON | 1-minute worker only | 1-minute worker only |
+| ON | ON | Tick worker only | 1-minute worker only |
+
+**The workers are distinct programs**, `scripts/collect_toss_ticks.py` and
+`scripts/collect_research_1m.py`, selected by one exclusive scheduler. A
+shared worker lock and short-lived historical request permit prevent
+simultaneous REST/tick workers, even while switching at the market boundary.
+When both are ON, tick takes priority during regular hours; historical 1m is
+otherwise selected only when the Toss/XNYS calendar is confirmed. When only
+historical 1m is ON, it can run during regular hours **only with a verified
+calendar**; an invalid or missing official market calendar causes fail-closed
+idle/error, never guessed authorization. During any toggle change, the
+historical worker checks the latest flags for each API request. Historical
+1m can still fail for provider retention limits, API quotas, disk reserve
+requirements or a source fault: a toggle ON is permission, not proof of
+successful downloaded rows.
+
+Deployment stages `deploy/stock-collection/collector_policy.py` inside the
+immutable release and verifies that the scheduler uses it. The 1tick/1m
+toggles reuse distinct private JSON files, preserved on upgrade, and do not
+reset historical SQLite/checkpoint data or activate actual trading.
+
+To apply the new scheduler **and** UI on the home server (as `heh-heh`):
+
+```bash
+git -C /srv/apps/market-career-dashboard fetch origin main
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/setup.sh > /tmp/stock-collection-setup.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/install-services.sh > /tmp/stock-collection-install-services.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/admin-console/install.sh > /tmp/market-admin-install.sh
+bash /tmp/stock-collection-setup.sh
+bash /tmp/stock-collection-install-services.sh
+bash /tmp/market-admin-install.sh
+bash /srv/apps/_deploy/stock-collection/bin/history-control.sh status
+bash /srv/apps/_deploy/stock-collection/bin/tick-control.sh status
+```
+
+Only stock-related services and the private admin UI are restarted. Existing
+active tick work ends gracefully during the stock service restart. Verify
+actual work with the scheduler `collector: "backfill"` or `collector:
+"tick"`; no saved data is deleted.
+
 ## New: 50 US symbols / 2015-01-01 to 2026-10-01 (inclusive)
 
 The **historical 1-minute collector** now has a separate, opt-in research
