@@ -31,7 +31,7 @@ jobs:
         run: |
           python3 -m py_compile deploy/stock-collection/patch-history-50.py deploy/stock-collection/test_patch_history_50.py deploy/admin-console/history_progress.py
           python3 deploy/stock-collection/test_patch_history_50.py
-          bash -n deploy/stock-collection/setup.sh deploy/stock-collection/install-services.sh deploy/stock-collection/run-scheduler.sh
+          bash -n deploy/stock-collection/setup.sh deploy/stock-collection/install-services.sh deploy/stock-collection/run-scheduler.sh deploy/stock-collection/control.sh deploy/stock-collection/history-control.sh
           python3 - <<'PY'
           from pathlib import Path
           ui=Path("deploy/admin-console/index.html").read_text()
@@ -47,6 +47,10 @@ jobs:
           assert '"/api/history/control"' in api
           assert api.index('session = active_session(self)') < api.index('elif path.path == "/api/history/status"')
           assert 'HISTORY_50_CONTROL_FILE' in Path("deploy/stock-collection/run-scheduler.sh").read_text()
+          install=Path("deploy/stock-collection/install-services.sh").read_text()
+          assert 'for name in run-broker.sh run-scheduler.sh control.sh history-control.sh; do' in install
+          assert 'CLI_HISTORY_RESUME' in Path("deploy/stock-collection/history-control.sh").read_text()
+          print("HISTORY_50_CONTROL_INSTALL_TEST=PASS")
           print("HISTORY_50_ADMIN_UI=PASS")
           PY
       - name: Validate browser login script and admin console script
