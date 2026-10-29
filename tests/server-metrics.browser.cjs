@@ -5,6 +5,10 @@ const http=require('node:http');
 const path=require('node:path');
 const {chromium}=require('playwright');
 const root=path.resolve(__dirname,'..');
+const adminSource=fs.readFileSync(path.resolve(root,'deploy/admin-console/console.py'),'utf8');
+const adminCsp=(adminSource.match(/"default-src 'none'; script-src 'self'; style-src [^"]+"/)||[])[0]?.slice(1,-1);
+assert(adminCsp&&adminCsp.includes("style-src 'self' 'unsafe-inline'"),'admin CSP must allow its own task manager stylesheet');
+
 const fixture={ok:true,mode:'PUBLIC_READ_ONLY_AGGREGATED',samplingSeconds:60,updatedAt:'2026-10-29T10:04:00Z',
   metrics:{cpuPct:60,memoryPct:52,memoryUsedGiB:4.16,memoryTotalGiB:8,diskPct:40,diskUsedGiB:40,diskTotalGiB:100,dataDiskPct:20,dataDiskUsedGiB:40,dataDiskTotalGiB:200,networkRxMbps:2,networkTxMbps:.5,cpuPackageWatts:null},
   history:[0,20,40,null,60].map((v,i)=>({at:`2026-10-29T10:0${i}:00Z`,cpuPct:v,memoryPct:48+i,diskPct:40,dataDiskPct:20,networkRxMbps:i*.5,networkTxMbps:i*.125,cpuPackageWatts:null}))};
@@ -19,6 +23,8 @@ const server=http.createServer((req,res)=>{
   const files={'/':'server-status.html','/console':'deploy/admin-console/index.html','/app.js':'deploy/admin-console/app.js'};
   const rel=files[pathname]||pathname.slice(1),file=path.resolve(root,rel);
   if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}
+  if(pathname==='/console'||pathname==='/app.js'||pathname==='/server-metrics.css'||pathname==='/server-metrics.js')
+    res.setHeader('Content-Security-Policy',adminCsp);
   res.setHeader('Content-Type',file.endsWith('.css')?'text/css':file.endsWith('.js')?'application/javascript':'text/html');res.end(fs.readFileSync(file));
 });
 (async()=>{
@@ -28,6 +34,11 @@ const server=http.createServer((req,res)=>{
   try{
     for(const width of [320,390,768,1440])for(const admin of [false,true]){
       const page=await browser.newPage({viewport:{width,height:1000}}),errors=[];
+      let cssLoaded=false;
+      page.on('response',response=>{
+        if(admin&&new URL(response.url()).pathname==='/server-metrics.css'&&response.status()===200)
+          cssLoaded=true;
+      });
       page.on('pageerror',error=>errors.push(error.message));
       page.on('console',m=>{if(m.type()==='error'&&m.text().includes('Content Security Policy'))errors.push(m.text());});
       await page.route('https://heh-heh.tail39e546.ts.net/**',route=>{
@@ -44,6 +55,19 @@ const server=http.createServer((req,res)=>{
       const selector=admin?'#privateServerMetrics':'#serverMetrics';
       const target=page.locator(selector);
       await target.locator('.metric-resource').first().waitFor();
+      // Regression: the private page used to block /server-metrics.css via
+      // style-src 'unsafe-inline' (without 'self'), leaving all cards in one row.
+      const styled=await target.evaluate(t=>({
+        layout:getComputedStyle(t.querySelector('.metric-workbench')).display,
+        list:getComputedStyle(t.querySelector('.metric-resource-list')).display,
+        detail:getComputedStyle(t.querySelector('.metric-detail')).backgroundColor,
+        graphHeight:t.querySelector('.metric-graph').getBoundingClientRect().height
+      }));
+      assert.equal(styled.layout,'grid',`${width} ${admin?'admin':'public'}: stylesheet not loaded`);
+      assert.equal(styled.list,'grid','resource cards must form a vertical list or mobile grid');
+      assert(styled.graphHeight>=190,'detail chart is missing Task Manager sizing');
+      if(admin)assert(cssLoaded,'private administrator did not load /server-metrics.css');
+
       assert.equal(await target.locator('.metric-resource').count(),6,'GPU absent without real telemetry');
       assert.equal(await target.locator('.metric-spark').count(),6);
       assert.equal(await target.locator('.metric-detail h2').textContent(),'CPU');
