@@ -670,7 +670,7 @@ class Handler(BaseHTTPRequestHandler):
             if type(enabled) is not bool:
                 self.reply(400, {"error":"INVALID_TICK_CONTROL"})
                 return
-            config=Path("/srv/ai-data/stock-collection/runtime/collection/tick-control.json")
+            config=COLLECTION_RUNTIME/"tick-control.json"
             if not config.is_file() or config.is_symlink() or config.parent.is_symlink():
                 self.reply(409, {"error":"TICK_PAUSE_GATE_NOT_INSTALLED"})
                 return
