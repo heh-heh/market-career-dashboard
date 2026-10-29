@@ -353,7 +353,8 @@ function renderHistory50(plan,master){
   if(tToggle){
     if(!tickControlPending && typeof plan?.tickEnabled==="boolean")
       tToggle.checked=plan.tickEnabled;
-    tToggle.disabled=tickControlPending||!ready;
+    // Tick-only operation must not depend on historic-50 configuration.
+    tToggle.disabled=tickControlPending||typeof plan?.tickEnabled!=="boolean";
   }
   setText("historyToggleStatus",historyControlPending?"설정 적용 중...":
     plan?.enabled?"ON · 과거 1분봉 사용 허용":"OFF · 과거 1분봉 수집 중지");
