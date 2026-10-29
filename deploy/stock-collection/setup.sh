@@ -37,9 +37,12 @@ fi
 ln -sfnT "$DATA/ticks" "$RELEASE/data/toss_ticks"
 
 # Apply the reviewed, main-owned scheduler overlay to this staged immutable release.
+# Keep the two stock worker scripts separate. Only the shared selection policy
+# and immutable scheduler patch are sourced from reviewed main.
+git -C "$REPO" show "$MAINREV:deploy/stock-collection/collector_policy.py" > "$RELEASE/collector_policy.py"
 git -C "$REPO" show "$MAINREV:deploy/stock-collection/patch-history-50.py" > "$RELEASE/_patch_history_50.py"
 python3 "$RELEASE/_patch_history_50.py" "$RELEASE"
-python3 -m py_compile "$RELEASE/research_collection_scheduler.py" "$RELEASE/scripts/collect_research_1m.py" \
+python3 -m py_compile "$RELEASE/collector_policy.py" "$RELEASE/research_collection_scheduler.py" "$RELEASE/scripts/collect_research_1m.py" \
   "$RELEASE/toss_auth.py" "$RELEASE/toss_token_broker.py" \
   "$RELEASE/scripts/collect_toss_1m.py" "$RELEASE/scripts/collect_toss_ticks.py"
 
