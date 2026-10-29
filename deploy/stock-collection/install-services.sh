@@ -16,7 +16,7 @@ git -C "$REPO" fetch origin main
 REV=$(git -C "$REPO" rev-parse refs/remotes/origin/main)
 mkdir -p "$BASE/bin" "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
 chmod 700 "$BASE/private" "$DATA/runtime/collection" "$DATA/historical" "$DATA/historical-50-2015-2026" "$DATA/ticks"
-for name in run-broker.sh run-scheduler.sh; do
+for name in run-broker.sh run-scheduler.sh control.sh history-control.sh; do
   git -C "$REPO" show "$REV:deploy/stock-collection/$name" > "$BASE/bin/$name.new"
   bash -n "$BASE/bin/$name.new"
   mv -f "$BASE/bin/$name.new" "$BASE/bin/$name"
