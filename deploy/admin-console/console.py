@@ -18,6 +18,7 @@ from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
+from mfa_auth import password_valid, otp_match_step
 
 HERE = Path(__file__).resolve().parent
 REPO = Path("/srv/apps/market-career-dashboard")
@@ -27,10 +28,14 @@ BIND = "127.0.0.1"
 PORT = 18085
 MAX_OUTPUT = 24000
 MAX_BODY = 8192
-MAX_AGE = 8 * 3600
+MAX_AGE = 60 * 60
 SESSION_COOKIE = "market_home_admin"
 SESSIONS = {}
 FAILED_LOGINS = {}
+TICKETS = {}
+LAST_OTP_STEP = {}
+PAGES_ORIGIN = "https://heh-heh.github.io"
+REMOTE_HOST = "heh-heh.tail39e546.ts.net:8444"
 LOCK = threading.Lock()
 VALID_KEYS = ("OPENAI_API_KEY", "TOSS_CLIENT_ID", "TOSS_CLIENT_SECRET",
               "TOSS_ACCOUNT_SEQ", "NEWS_API_KEY", "ALPHA_VANTAGE_API_KEY")
@@ -78,18 +83,79 @@ def _atomic_private(path: Path, obj: dict) -> None:
             pass
 
 
-def verify_password(password: str) -> bool:
+def otp_enrolled() -> bool:
+    data = _json_file(PRIVATE / "credentials.json")
+    return bool(data.get("username") and data.get("totp_secret")
+                and data.get("remote_host") == REMOTE_HOST)
+
+
+def verify_login(username: str, password: str, otp: str, *, require_mfa: bool) -> bool:
     record = _json_file(PRIVATE / "credentials.json")
-    try:
-        salt = base64.b64decode(record["salt"], validate=True)
-        expected = base64.b64decode(record["digest"], validate=True)
-        rounds = int(record["iterations"])
-        if not 250000 <= rounds <= 1000000:
-            return False
-        actual = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, rounds)
-        return hmac.compare_digest(actual, expected)
-    except (ValueError, KeyError, TypeError):
+    if not isinstance(password, str) or not password_valid(record, password):
         return False
+    if otp_enrolled():
+        if not isinstance(username, str) or not hmac.compare_digest(
+                username.encode("utf-8"), str(record["username"]).encode("utf-8")):
+            return False
+        step = otp_match_step(record["totp_secret"], otp)
+        if step is None:
+            return False
+        with LOCK:
+            previous = LAST_OTP_STEP.get(username, -1)
+            if step <= previous:
+                return False
+            LAST_OTP_STEP[username] = step
+        return True
+    # Backwards-compatible localhost login only until enrollment. Remote login
+    # must NEVER use the legacy password-only path.
+    return not require_mfa
+
+
+def login_limited() -> bool:
+    with LOCK:
+        count, reset = FAILED_LOGINS.get("local", (0, 0))
+        if time.time() > reset:
+            FAILED_LOGINS["local"] = (0, time.time() + 600)
+            return False
+        return count >= 8
+
+
+def login_failure() -> None:
+    with LOCK:
+        count, reset = FAILED_LOGINS.get("local", (0, time.time() + 600))
+        FAILED_LOGINS["local"] = (count + 1, reset)
+
+
+def login_success() -> None:
+    with LOCK:
+        FAILED_LOGINS.pop("local", None)
+
+
+def create_session() -> tuple[str, str]:
+    token, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(24)
+    with LOCK:
+        SESSIONS[token] = {"expires": time.time() + MAX_AGE, "csrf": csrf}
+    return token, csrf
+
+
+def new_ticket() -> str:
+    value=secrets.token_urlsafe(36)
+    with LOCK:
+        for key, expiration in list(TICKETS.items()):
+            if expiration < time.time():
+                TICKETS.pop(key, None)
+        TICKETS[hashlib.sha256(value.encode("ascii")).digest()] = time.time()+45
+    return value
+
+
+def consume_ticket(value: str) -> bool:
+    if not isinstance(value,str) or len(value)>160:
+        return False
+    digest=hashlib.sha256(value.encode("utf-8")).digest()
+    with LOCK:
+        deadline=TICKETS.pop(digest,0)
+    return deadline>=time.time()
+
 
 
 def active_session(request: BaseHTTPRequestHandler) -> tuple[str, str] | None:
@@ -308,11 +374,51 @@ class Handler(BaseHTTPRequestHandler):
         self.send_bytes(status, json.dumps(obj, ensure_ascii=False).encode(),
                         "application/json; charset=utf-8", extra)
 
+    def is_remote(self) -> bool:
+        return self.headers.get("Host", "") == REMOTE_HOST
+
     def allowed_host(self) -> bool:
-        return self.headers.get("Host", "") in ALLOWED_HOSTS and self.client_address[0] in ("127.0.0.1", "::1")
+        host=self.headers.get("Host", "")
+        return (self.client_address[0] in ("127.0.0.1", "::1")
+                and (host in ALLOWED_HOSTS or (host == REMOTE_HOST and otp_enrolled())))
 
     def origin_valid(self) -> bool:
-        return self.headers.get("Origin", "") == "http://" + self.headers.get("Host", "")
+        scheme = "https" if self.is_remote() else "http"
+        return self.headers.get("Origin", "") == scheme + "://" + self.headers.get("Host", "")
+
+    def pages_origin(self) -> bool:
+        return (self.is_remote() and otp_enrolled()
+                and self.headers.get("Origin", "") == PAGES_ORIGIN)
+
+    def send_cors(self, status: int, data: dict) -> None:
+        self.reply(status,data,{"Access-Control-Allow-Origin":PAGES_ORIGIN,
+                                "Vary":"Origin", "Access-Control-Allow-Private-Network":"true"})
+
+    def session_cookie(self, token: str, max_age: int = MAX_AGE) -> str:
+        # Lax is needed for a top-level cross-site post/redirect from GitHub
+        # Pages; all subsequent write requests still require strict Origin + CSRF.
+        flags = "; Secure" if self.is_remote() else ""
+        return (f"{SESSION_COOKIE}={token}; Path=/; HttpOnly; "
+                f"SameSite=Lax; Max-Age={max_age}{flags}")
+
+    def do_OPTIONS(self):
+        if not self.allowed_host() or not self.pages_origin():
+            self.reply(403,{"error":"Forbidden"})
+            return
+        if urlsplit(self.path).path != "/api/remote/login":
+            self.reply(404,{"error":"Not found"})
+            return
+        if self.headers.get("Access-Control-Request-Method") != "POST":
+            self.reply(403,{"error":"METHOD_DENIED"})
+            return
+        self.send_bytes(204,b"","text/plain",{
+            "Access-Control-Allow-Origin":PAGES_ORIGIN,
+            "Access-Control-Allow-Methods":"POST",
+            "Access-Control-Allow-Headers":"Content-Type",
+            "Access-Control-Allow-Private-Network":"true",
+            "Access-Control-Max-Age":"600",
+            "Vary":"Origin",
+        })
 
     def json_body(self):
         try:
@@ -361,35 +467,72 @@ class Handler(BaseHTTPRequestHandler):
         if not self.allowed_host():
             self.reply(403, {"error": "Forbidden"})
             return
+        path = urlsplit(self.path).path
+        if path == "/auth/claim":
+            # One-time handoff from static Pages to the private, same-origin
+            # admin UI; never put credentials or bearer tokens into a URL.
+            if not self.pages_origin():
+                self.reply(403, {"error": "INVALID_ORIGIN"})
+                return
+            try:
+                size = int(self.headers.get("Content-Length","0"))
+                if not 0 < size <= 512 or self.headers.get("Content-Type","").split(";")[0] != "application/x-www-form-urlencoded":
+                    raise ValueError()
+                data = parse_qs(self.rfile.read(size).decode("ascii"),strict_parsing=True)
+                ticket = data.get("ticket", [])
+                if len(ticket)!=1 or not consume_ticket(ticket[0]):
+                    raise ValueError()
+            except (ValueError, UnicodeDecodeError, OSError):
+                self.reply(403, {"error": "INVALID_OR_EXPIRED_TICKET"})
+                return
+            token, csrf = create_session()
+            self.send_bytes(303,b"","text/plain",{"Set-Cookie":self.session_cookie(token),
+                                                    "Location":"/"})
+            return
+        if path == "/api/remote/login":
+            if not self.pages_origin():
+                self.reply(403, {"error":"INVALID_ORIGIN"})
+                return
+            body = self.json_body()
+            if body is None:
+                self.send_cors(400,{"error":"INVALID_JSON"})
+                return
+            if login_limited():
+                self.send_cors(429,{"error":"TOO_MANY_ATTEMPTS"})
+                return
+            username, password, otp = (body.get(k) for k in ("username","password","otp"))
+            if not (isinstance(username,str) and len(username)<=64 and
+                    isinstance(password,str) and len(password)<=256 and
+                    isinstance(otp,str) and verify_login(username,password,otp,require_mfa=True)):
+                login_failure()
+                self.send_cors(401,{"error":"INVALID_CREDENTIALS"})
+                return
+            login_success()
+            self.send_cors(200,{"ok":True,"ticket":new_ticket()})
+            return
         if not self.origin_valid():
             self.reply(403, {"error": "INVALID_ORIGIN"})
             return
-        path = urlsplit(self.path).path
         body = self.json_body()
         if body is None:
             self.reply(400, {"error": "INVALID_JSON"})
             return
         if path == "/api/login":
-            with LOCK:
-                count, reset = FAILED_LOGINS.get("local", (0, 0))
-                if time.time() > reset:
-                    count, reset = 0, time.time() + 600
-                if count >= 8:
-                    self.reply(429, {"error": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요."})
-                    return
-            password = body.get("password", "")
-            good = isinstance(password, str) and 0 < len(password) <= 256 and verify_password(password)
-            if not good:
-                with LOCK:
-                    FAILED_LOGINS["local"] = (count + 1, reset)
-                self.reply(401, {"error": "비밀번호가 올바르지 않습니다."})
+            if login_limited():
+                self.reply(429, {"error": "로그인 시도가 너무 많습니다. 잠시 후 다시 시도하세요."})
                 return
-            token, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(24)
-            with LOCK:
-                FAILED_LOGINS.pop("local", None)
-                SESSIONS[token] = {"expires": time.time() + MAX_AGE, "csrf": csrf}
+            username, password, otp = (body.get(k) for k in ("username","password","otp"))
+            # Remotely accessible HTTPS admin login always requires 3 factors.
+            # Local SSH can use the original password until enrollment.
+            good = verify_login(username,password,otp,require_mfa=self.is_remote())
+            if not good:
+                login_failure()
+                self.reply(401, {"error": "아이디, 비밀번호 또는 OTP가 올바르지 않습니다."})
+                return
+            login_success()
+            token, csrf = create_session()
             self.reply(200, {"ok": True, "csrf": csrf},
-                       {"Set-Cookie": f"{SESSION_COOKIE}={token}; Path=/; HttpOnly; SameSite=Strict; Max-Age={MAX_AGE}"})
+                       {"Set-Cookie": self.session_cookie(token)})
             return
         session = active_session(self)
         if not session or not hmac.compare_digest(self.headers.get("X-CSRF-Token", ""), session[1]):
@@ -399,7 +542,7 @@ class Handler(BaseHTTPRequestHandler):
             with LOCK:
                 SESSIONS.pop(session[0], None)
             self.reply(200, {"ok": True},
-                       {"Set-Cookie": f"{SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"})
+                       {"Set-Cookie": self.session_cookie("", 0)})
             return
         if path == "/api/paper/control":
             paused = body.get("paused")
