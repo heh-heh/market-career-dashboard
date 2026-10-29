@@ -7,6 +7,9 @@ BASE=/srv/apps/_deploy/stock-collection
 DATA=/srv/ai-data/stock-collection
 [[ "$(id -un)" == "heh-heh" ]] || { echo "ERROR=RUN_AS_HEH_HEH"; exit 1; }
 [[ -f "$BASE/current/research_collection_scheduler.py" ]] || { echo "ERROR=RUN_SETUP_FIRST"; exit 1; }
+grep -q 'HISTORY_50_EXPLICIT_START_REQUIRED' "$BASE/current/research_collection_scheduler.py" || {
+  echo "ERROR=HISTORICAL_50_SCHEDULER_NOT_PATCHED"; exit 1;
+}
 [[ -f "$BASE/private/toss-broker.json" ]] || { echo "ERROR=BROKER_CONFIG_MISSING"; exit 1; }
 for tool in git sudo python3 curl; do command -v "$tool" >/dev/null || { echo "ERROR=MISSING_TOOL:$tool"; exit 1; }; done
 git -C "$REPO" fetch origin main
