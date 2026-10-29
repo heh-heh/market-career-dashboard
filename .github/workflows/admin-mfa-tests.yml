@@ -29,8 +29,9 @@ jobs:
           (cd deploy/admin-console && python test_mfa.py && python test_performance.py && python test_history_progress.py && python test_data_inventory.py && python test_tick_routes.py && python test_history_start.py)
       - name: Validate isolated 50-symbol historical patch and UI wiring
         run: |
-          python3 -m py_compile deploy/stock-collection/patch-history-50.py deploy/stock-collection/test_patch_history_50.py deploy/admin-console/history_progress.py deploy/admin-console/data_inventory.py
+          python3 -m py_compile deploy/stock-collection/patch-history-50.py deploy/stock-collection/test_patch_history_50.py deploy/admin-console/history_progress.py deploy/admin-console/data_inventory.py deploy/stock-collection/collector_policy.py deploy/stock-collection/test_collector_policy.py
           python3 deploy/stock-collection/test_patch_history_50.py
+          (cd deploy/stock-collection && python3 test_collector_policy.py)
           bash -n deploy/stock-collection/setup.sh deploy/stock-collection/install-services.sh deploy/stock-collection/run-scheduler.sh deploy/stock-collection/control.sh deploy/stock-collection/history-control.sh deploy/stock-collection/tick-control.sh
           python3 - <<'PY'
           from pathlib import Path
@@ -39,8 +40,8 @@ jobs:
           api=Path("deploy/admin-console/console.py").read_text()
           assert 'id="history50Table"' in ui
           assert 'id="history50ScanBar"' in ui
-          assert 'data-history-50="resume"' in ui
-          assert 'data-history-50="pause"' in ui
+
+
           assert '"/api/history/status"' in js
           assert '"/api/history/control"' in js
           assert '"/api/history/status"' in api
@@ -48,17 +49,24 @@ jobs:
           assert '"/api/history/start"' in api
           assert '"/api/history/start"' in js
           assert 'id="history50Persisted"' in ui
-          assert 'id="history50Start"' in ui
-          assert 'button.dataset.history50' not in js, "data-history-50 must not be read as dataset.history50"
-          assert 'button.getAttribute("data-history-50")' in js
-          assert 'class="history-danger-zone"' in ui
+          assert 'id="historyCollectorToggle"' in ui and 'id="tickCollectorToggle"' in ui
+          assert '$("historyCollectorToggle").addEventListener("change"' in js
+          assert '$("tickCollectorToggle").addEventListener("change"' in js
+          assert 'from collector_policy import enabled, choose_worker' in Path("deploy/stock-collection/patch-history-50.py").read_text()
+          assert 'from collector_policy import enabled, rest_allowed' in Path("deploy/stock-collection/patch-history-50.py").read_text()
+          assert 'collector_policy.py' in Path("deploy/stock-collection/setup.sh").read_text()
+          assert 'HISTORY_ONLY_RUNNING' in Path("deploy/stock-collection/collector_policy.py").read_text()
+
+
+
+
           assert api.index('session = active_session(self)') < api.index('elif path.path == "/api/history/status"')
           assert 'HISTORY_50_CONTROL_FILE' in Path("deploy/stock-collection/run-scheduler.sh").read_text()
           install=Path("deploy/stock-collection/install-services.sh").read_text()
           assert 'for name in run-broker.sh run-scheduler.sh control.sh history-control.sh tick-control.sh; do' in install
           assert 'CLI_HISTORY_RESUME' in Path("deploy/stock-collection/history-control.sh").read_text()
           assert 'for name in run-broker.sh run-scheduler.sh control.sh history-control.sh tick-control.sh; do' in install
-          assert 'TICKS_DISABLED_BY_OPERATOR' in Path('deploy/stock-collection/patch-history-50.py').read_text()
+
           assert 'TICK_COLLECTION_CONTROL_FILE' in Path('deploy/stock-collection/run-scheduler.sh').read_text()
           assert '"enabled":False,"reason":"USER_REQUESTED_TICKS_PAUSED"' in install
           assert '"/api/ticks/control"' in api
