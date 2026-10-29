@@ -1,5 +1,77 @@
 # Home stock data collection — phases 1 and 2
 
+## New: 50 US symbols / 2015-01-01 to 2026-10-01 (inclusive)
+
+The **historical 1-minute collector** now has a separate, opt-in research
+target: **50 curated US symbols**, from **2015-01-01** through
+**2026-10-01**, with timestamps evaluated in US/Eastern exchange time.
+The real-time 1-tick worker and its existing data remain unchanged.
+
+**Important:** The external Toss historical API may not provide 1-minute data
+back to 2015 for every stock. Later-listed symbols such as ARM/COIN/HOOD/PLTR
+did not trade publicly throughout the full period. A requested historical
+range is *not* a guarantee of retrievable records. In the administrator UI,
+**scan progress** means how far the API pagination cursor moved through the
+requested dates, *not* the percent of actual OHLCV rows obtained. A separate
+verified-session ratio is only shown when a collector pass has ended; missing
+sessions and errors are never counted as 100% complete.
+
+Historical output lives in a dedicated folder:
+
+`/srv/ai-data/stock-collection/historical-50-2015-2026/`
+
+The previous `historical/` and `historical-smoke/` datasets are preserved.
+Historical symbol definitions are private and separate from any legacy
+real-time tick subscriptions:
+
+`/srv/apps/_deploy/stock-collection/private/historical-symbols.json`
+
+The new independent start gate is:
+
+`/srv/ai-data/stock-collection/runtime/collection/historical-control.json`
+
+The gate is created with `"enabled": false` and **is not changed by a
+reinstallation**. Existing scheduler pause state is also preserved. To
+collect, explicitly use the private administrator page **자료수집 → 주식 과거
+데이터 → 과거 50종목 수집 허용** and ensure the overall scheduler is resumed
+(the live 1-tick worker still has exclusive ownership during the US session).
+Old real-time tick symbols and credentials are not changed.
+
+### Install/upgrade via SSH (user heh-heh)
+
+```bash
+git -C /srv/apps/market-career-dashboard fetch origin main
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/setup.sh > /tmp/stock-collection-setup.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/stock-collection/install-services.sh > /tmp/stock-collection-install-services.sh
+git -C /srv/apps/market-career-dashboard show origin/main:deploy/admin-console/install.sh > /tmp/market-admin-install.sh
+
+bash /tmp/stock-collection-setup.sh
+bash /tmp/stock-collection-install-services.sh
+bash /tmp/market-admin-install.sh
+```
+
+The setup stages an isolated release from `strategy-engine-v3` with a
+reviewed `main` branch overlay that applies the two fixed dates and checks
+for the independent historical start gate. If the frozen upstream source
+changed unexpectedly or the guard cannot be installed, staging **fails
+closed**. The stock service install restarts only stock-specific systemd
+units; it does not start the 50-symbol backfill without an explicit opt-in.
+
+After login, the private administrator UI shows:
+- overall cursor scan percent (arithmetic average of 50 per-symbol cursors),
+- progress bars per ticker, number of stored bars and API pages,
+- completed/missing US trading-day audit percent when confirmed,
+- paused/running/error status, with filters and a manual refresh.
+
+The new 50-symbol list is based on the existing collector's 50-symbol
+universe. If the provider stops at an earlier historical boundary, the
+worker preserves the collected rows and marks the pass **unverified**;
+no fabricated backfill, no forced 100%, and no trading API.
+
+---
+
+
+
 This is **market-data-only**. It never accesses account balances, makes orders, enables automated trading, or opens a public admin API. All artifacts are stored on the home server under `/srv/ai-data/stock-collection`.
 
 ## Verified smoke test (2026-10-28)
