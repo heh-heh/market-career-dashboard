@@ -51,7 +51,7 @@ def run():
             record["remote_host"]=console.REMOTE_HOST
             p.write_text(json.dumps(record))
             from unittest.mock import patch
-            with patch("console.otp_match_step",return_value=12):
+            with patch("console.otp_match_step",side_effect=lambda key,code: 12 if code=="287082" else None):
                 assert not console.verify_login("owner_a",password,None,require_mfa=True)
                 assert not console.verify_login("incorrect",password,"287082",require_mfa=True)
                 assert console.verify_login("owner_a",password,"287082",require_mfa=True)
