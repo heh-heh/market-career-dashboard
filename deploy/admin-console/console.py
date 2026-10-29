@@ -28,6 +28,7 @@ DATA = Path("/srv/ai-data/market-dashboard")
 PRIVATE = Path("/srv/apps/_deploy/dashboard/admin-console/private")
 BIND = "127.0.0.1"
 PORT = 18085
+COLLECTION_RUNTIME = Path("/srv/ai-data/stock-collection/runtime/collection")
 MAX_OUTPUT = 24000
 MAX_BODY = 8192
 MAX_AGE = 60 * 60
@@ -232,7 +233,7 @@ def history_status_snapshot() -> dict:
     a stale /api/overview scheduler mode from an earlier market session.
     """
     snapshot=progress_snapshot()
-    runtime=Path("/srv/ai-data/stock-collection/runtime/collection")
+    runtime=COLLECTION_RUNTIME
     state=_json_file(runtime/"status.json")
     control=_json_file(runtime/"control.json")
     snapshot["scheduler"]={
@@ -701,7 +702,7 @@ class Handler(BaseHTTPRequestHandler):
             if service_state("market-stock-token-broker.service") != "running" or service_state("market-stock-collection.service") != "running":
                 self.reply(409,{"error":"STOCK_COLLECTOR_SERVICES_NOT_RUNNING"})
                 return
-            runtime=Path("/srv/ai-data/stock-collection/runtime/collection")
+            runtime=COLLECTION_RUNTIME
             historical=runtime/"historical-control.json"
             master=runtime/"control.json"
             if runtime.is_symlink() or not runtime.is_dir() or any(
@@ -746,7 +747,7 @@ class Handler(BaseHTTPRequestHandler):
             if type(enabled) is not bool:
                 self.reply(400,{"error":"INVALID_HISTORICAL_CONTROL"})
                 return
-            control_file=Path("/srv/ai-data/stock-collection/runtime/collection/historical-control.json")
+            control_file=COLLECTION_RUNTIME/"historical-control.json"
             if control_file.is_symlink() or not control_file.parent.is_dir() or not control_file.is_file():
                 self.reply(409,{"error":"HISTORICAL_50_NOT_INSTALLED"})
                 return
