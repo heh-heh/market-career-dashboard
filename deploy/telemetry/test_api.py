@@ -31,7 +31,7 @@ def main():
                            "dataDiskUsedGiB":100,"dataDiskTotalGiB":200,
                            "secretToken":"DO_NOT_RETURN"},
                 "history":[{"at":"2026-10-29T00:00:00+00:00",
-                            "cpuPct":22,"memoryPct":50,"networkRxMbps":3,
+                            "cpuPct":22,"memoryPct":50,"gpuPct":21,"gpuMemoryUsedMiB":512, "gpuMemoryTotalMiB":6144,"gpuTempC":48,"gpuWatts":35,"networkRxMbps":3,
                             "networkTxMbps":1,"diskPct":50,
                             "dataDiskPct":60,"cpuPackageWatts":13,
                             "secretApiKey":"DO_NOT_RETURN"}]
@@ -44,6 +44,8 @@ def main():
             assert "DO_NOT_RETURN" not in raw
             assert stub.data["metrics"]["systemWatts"] is None
             assert stub.data["history"][0]["cpuPct"]==22
+            assert stub.data["metrics"]["gpuPct"]==21
+            assert stub.data["metrics"]["gpuMemoryTotalMiB"]==6144
             assert stub.data["mode"]=="PUBLIC_READ_ONLY_AGGREGATED"
             # Check the public API cannot reinterpret missing telemetry as success.
             (folder/"server-telemetry.json").unlink()
