@@ -25,7 +25,10 @@
     {id:"data",name:"데이터 디스크",sub:"저장공간 사용률",unit:"%",limit:100,series:[series("dataDiskPct","데이터","#e4ac71")],capacity:["dataDiskUsedGiB","dataDiskTotalGiB"],note:"루트와 데이터 경로가 같은 물리 디스크에 있으면 사용량이 같을 수 있습니다. 디스크 I/O 사용률이 아닙니다."},
     {id:"network",name:"네트워크",sub:"물리 NIC · 수신 / 송신",unit:" Mbps",series:[series("networkRxMbps","수신","#e4cb76"),series("networkTxMbps","송신","#6aaef1")],note:"활성 물리 NIC의 관측된 전송률입니다. VPN·컨테이너 트래픽은 중복 합산하지 않습니다."},
     {id:"power",name:"CPU 전력",sub:"CPU 패키지 · RAPL",unit:" W",series:[series("cpuPackageWatts","CPU 패키지","#ec8d9f")],note:"RAPL 센서로 측정한 CPU 패키지 전력입니다. 서버 전체 소비전력이 아니며 지원되지 않는 센서는 측정 불가로 표시합니다."},
-    {id:"gpu",name:"GPU",sub:"GPU 사용률",unit:"%",limit:100,optional:true,series:[series("gpuPct","GPU","#929aef")]}
+    {id:"gpu",name:"GPU 사용률",sub:"그래픽 프로세서 활용률",unit:"%",limit:100,optional:true,series:[series("gpuPct","사용률","#929aef")]},
+    {id:"gpu-memory",name:"GPU 메모리",sub:"VRAM 사용량",unit:" MiB",optional:true,series:[series("gpuMemoryUsedMiB","사용 메모리","#86badc")],capacity:["gpuMemoryUsedMiB","gpuMemoryTotalMiB"],capacityUnit:"MiB",note:"VRAM 사용량이며 시스템 RAM과 구분됩니다."},
+    {id:"gpu-temp",name:"GPU 온도",sub:"GPU 센서 온도",unit:"°C",optional:true,series:[series("gpuTempC","온도","#e8a36d")]},
+    {id:"gpu-power",name:"GPU 전력",sub:"GPU 보드 전력 추정값",unit:" W",optional:true,series:[series("gpuWatts","전력","#cf94d9")],note:"GPU 드라이버가 보고한 전력값이며 서버 전체 전력이나 정확한 콘센트 소비전력은 아닙니다."}
   ];
   function timestamp(v){
     if(typeof v!=="string"||!v.trim())return NaN;
@@ -37,7 +40,7 @@
   function capacity(resource,m){
     if(!resource.capacity)return resource.sub;
     const [used,total]=resource.capacity.map(k=>m[k]);
-    return finite(used)&&finite(total)?number(used)+" / "+number(total)+" GiB":resource.sub;
+    return finite(used)&&finite(total)?number(used)+" / "+number(total)+" "+(resource.capacityUnit||"GiB"):resource.sub;
   }
   function history(data){
     return (Array.isArray(data?.history)?data.history:[]).slice(-720)
@@ -111,7 +114,7 @@
     panel.append(stats);
     if(resource.capacity){
       const [used,total]=resource.capacity.map(k=>m[k]);
-      if(finite(total)&&finite(used)&&total>=used)panel.append(node("p","metric-muted","사용 가능: "+number(total-used)+" GiB · 전체: "+number(total)+" GiB"));
+      if(finite(total)&&finite(used)&&total>=used)panel.append(node("p","metric-muted","사용 가능: "+number(total-used)+" "+(resource.capacityUnit||"GiB")+" · 전체: "+number(total)+" "+(resource.capacityUnit||"GiB")));
     }
     if(rows.length<2)panel.append(node("p","metric-muted","시간별 추이 데이터 축적 중"));
     panel.append(node("p","metric-muted metric-footnote","누락된 값·관측 간격은 그래프로 연결하지 않습니다. 평균·최대·최소는 유효한 기록만 집계합니다."));
