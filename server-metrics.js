@@ -25,10 +25,7 @@
     {id:"data",name:"데이터 디스크",sub:"저장공간 사용률",unit:"%",limit:100,series:[series("dataDiskPct","데이터","#e4ac71")],capacity:["dataDiskUsedGiB","dataDiskTotalGiB"],note:"루트와 데이터 경로가 같은 물리 디스크에 있으면 사용량이 같을 수 있습니다. 디스크 I/O 사용률이 아닙니다."},
     {id:"network",name:"네트워크",sub:"물리 NIC · 수신 / 송신",unit:" Mbps",series:[series("networkRxMbps","수신","#e4cb76"),series("networkTxMbps","송신","#6aaef1")],note:"활성 물리 NIC의 관측된 전송률입니다. VPN·컨테이너 트래픽은 중복 합산하지 않습니다."},
     {id:"power",name:"CPU 전력",sub:"CPU 패키지 · RAPL",unit:" W",series:[series("cpuPackageWatts","CPU 패키지","#ec8d9f")],note:"RAPL 센서로 측정한 CPU 패키지 전력입니다. 서버 전체 소비전력이 아니며 지원되지 않는 센서는 측정 불가로 표시합니다."},
-    {id:"gpu",name:"GPU 사용률",sub:"그래픽 프로세서 활용률",unit:"%",limit:100,optional:true,series:[series("gpuPct","사용률","#929aef")]},
-    {id:"gpu-memory",name:"GPU 메모리",sub:"VRAM 사용량",unit:" MiB",optional:true,series:[series("gpuMemoryUsedMiB","사용 메모리","#86badc")],capacity:["gpuMemoryUsedMiB","gpuMemoryTotalMiB"],capacityUnit:"MiB",note:"VRAM 사용량이며 시스템 RAM과 구분됩니다."},
-    {id:"gpu-temp",name:"GPU 온도",sub:"GPU 센서 온도",unit:"°C",optional:true,series:[series("gpuTempC","온도","#e8a36d")]},
-    {id:"gpu-power",name:"GPU 전력",sub:"GPU 보드 전력 추정값",unit:" W",optional:true,series:[series("gpuWatts","전력","#cf94d9")],note:"GPU 드라이버가 보고한 전력값이며 서버 전체 전력이나 정확한 콘센트 소비전력은 아닙니다."}
+    {id:"gpu",name:"GPU",sub:"사용률 · VRAM · 온도 · 전력",unit:"%",limit:100,optional:true,series:[series("gpuPct","사용률","#929aef")]}
   ];
   function timestamp(v){
     if(typeof v!=="string"||!v.trim())return NaN;
@@ -90,6 +87,41 @@
     axis.append(node("span","",clock(start)),node("span","",clock(end)));frame.append(axis);
     if(!values.length)frame.append(node("p","metric-chart-empty","측정 데이터 없음"));
     return frame;
+  }
+  function gpuDetail(resource,m,rows,data,state){
+    const panel=node("section","metric-detail metric-gpu");
+    panel.id=state.id;panel.setAttribute("aria-labelledby",state.id+"-title");
+    const header=node("header","metric-detail-head");
+    const title=node("h2","","GPU");title.id=state.id+"-title";
+    header.append(title,node("div","metric-current",value(m.gpuPct,"%")));
+    panel.append(header,node("p","metric-muted metric-detail-sub","그래픽 프로세서 · 4개 항목 통합 보기"));
+    const info=node("div","metric-detail-meta");
+    info.append(node("span","",data?.stale?"갱신 지연 · 마지막 관측값":"관측된 사용량"),
+      node("span","","최근 갱신: "+date(timestamp(data?.updatedAt))));
+    panel.append(info);
+    const gpuResources=[
+      {name:"GPU 사용률",unit:"%",limit:100,series:[series("gpuPct","사용률","#929aef")]},
+      {name:"VRAM 사용량",unit:" MiB",series:[series("gpuMemoryUsedMiB","VRAM","#86badc")]},
+      {name:"GPU 온도",unit:"°C",series:[series("gpuTempC","온도","#e8a36d")]},
+      {name:"GPU 소비전력",unit:" W",series:[series("gpuWatts","전력","#cf94d9")]}
+    ];
+    const sampling=finite(data?.samplingSeconds)&&data.samplingSeconds>0?data.samplingSeconds:60;
+    const sections=node("div","metric-gpu-panels");
+    for(const item of gpuResources){
+      const block=node("section","metric-gpu-panel");
+      const heading=node("h3","",item.name);
+      const key=item.series[0].key;
+      block.append(heading,node("div","metric-current",value(m[key],item.unit)));
+      if(key==="gpuMemoryUsedMiB"&&finite(m.gpuMemoryTotalMiB))
+        block.append(node("p","metric-muted","전체 "+number(m.gpuMemoryTotalMiB)+" MiB · 사용 가능 "+(finite(m[key])?number(Math.max(0,m.gpuMemoryTotalMiB-m[key])):"측정 불가")+" MiB"));
+      block.append(graph(item,rows,{sampling}));
+      const vals=rows.map(r=>r.row[key]).filter(finite);
+      const stats=node("p","metric-muted");
+      stats.textContent=vals.length?"평균 "+value(vals.reduce((a,b)=>a+b,0)/vals.length,item.unit)+" · 최대 "+value(Math.max(...vals),item.unit)+" · 최소 "+value(Math.min(...vals),item.unit):"측정 기록 없음";
+      block.append(stats);sections.append(block);
+    }
+    panel.append(sections,node("p","metric-muted metric-footnote","GPU 전력은 그래픽카드 측정값이며 서버 전체 소비전력이 아닙니다. 측정 누락은 그래프에서 연결하지 않습니다."));
+    return panel;
   }
   function detail(resource,m,rows,data,state){
     const panel=node("section","metric-detail metric-"+resource.id);
@@ -157,7 +189,7 @@
       });
       list.append(card);
     }
-    workbench.append(list,detail(available.find(r=>r.id===state.selected),m,rows,data,state));target.append(workbench);
+    workbench.append(list,state.selected==="gpu"?gpuDetail(available.find(r=>r.id===state.selected),m,rows,data,state):detail(available.find(r=>r.id===state.selected),m,rows,data,state));target.append(workbench);
     if(focusId)listButton(target,focusId)?.focus({preventScroll:true});
   }
   function listButton(target,id){return target.querySelector('[data-resource="'+id+'"]');}
