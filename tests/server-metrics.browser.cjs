@@ -172,7 +172,7 @@ const server=http.createServer((req,res)=>{
         assert.equal(await target.locator('[data-resource="'+id+'"]').count(),1,'missing '+id+' chart');
       await target.locator('[data-resource="gpu-memory"]').click();
       assert.equal(await target.locator('.metric-current').textContent(),'512 MiB');
-      assert((await target.locator('.metric-detail').textContent()).includes('6144 MiB'),'VRAM total must appear');
+      assert((await target.locator('.metric-detail').textContent()).includes('6,144 MiB'),'VRAM total must appear');
       await target.locator('[data-resource="gpu-temp"]').click();
       assert.equal(await target.locator('.metric-current').textContent(),'43°C');
       await target.locator('[data-resource="gpu-power"]').click();
