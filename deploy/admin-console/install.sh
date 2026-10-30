@@ -89,7 +89,7 @@ base = "http://127.0.0.1:18085"
 with urlopen(base + "/", timeout=5) as response:
     html = response.read().decode("utf-8")
     csp = response.headers.get("Content-Security-Policy", "")
-assert 'href="/server-metrics.css"' in html, "ADMIN_STYLESHEET_LINK_MISSING"
+assert 'href="/server-metrics.css?v=' in html, "ADMIN_STYLESHEET_LINK_MISSING"
 assert "style-src 'self' 'unsafe-inline'" in csp, "ADMIN_STYLESHEET_BLOCKED_BY_CSP"
 with urlopen(base + "/server-metrics.css", timeout=5) as response:
     css = response.read().decode("utf-8")
