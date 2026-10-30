@@ -445,7 +445,7 @@ class Handler(BaseHTTPRequestHandler):
         # Strict output schema. Never return arbitrary JSON keys from host files.
         f=DATA.parent/"server-telemetry.json"
         try:
-            if f.is_symlink() or f.stat().st_size>220000:
+            if f.is_symlink() or f.stat().st_size>500000:
                 raise ValueError("INVALID_TELEMETRY_FILE")
             obj=json.loads(f.read_text(encoding="utf-8"))
             if not isinstance(obj,dict) or obj.get("schemaVersion")!=1 or not isinstance(obj.get("history"),list):
@@ -460,7 +460,9 @@ class Handler(BaseHTTPRequestHandler):
                     return None
             cols={"cpuPct":100,"memoryPct":100,
                   "networkRxMbps":100000,"networkTxMbps":100000,
-                  "diskPct":100,"dataDiskPct":100,"cpuPackageWatts":300}
+                  "diskPct":100,"dataDiskPct":100,"cpuPackageWatts":300,
+                  "gpuPct":100,"gpuMemoryUsedMiB":1048576,
+                  "gpuMemoryTotalMiB":1048576,"gpuTempC":130,"gpuWatts":1000}
             rows=[]
             for item in obj["history"][-720:]:
                 if not isinstance(item,dict):

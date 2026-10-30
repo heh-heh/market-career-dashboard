@@ -15,4 +15,14 @@ with tempfile.TemporaryDirectory() as tmp:
     collector.write_atomic({"schemaVersion":1,"history":[]})
     assert collector.read_previous()==[]
     assert collector.OUTPUT.stat().st_mode & 0o777 == 0o644
+from unittest.mock import patch
+from subprocess import CompletedProcess, TimeoutExpired
+
+good=CompletedProcess([],0,stdout="12, 256, 6144, 48, 31.5\n",stderr="")
+with patch.object(collector.subprocess,"run",return_value=good):
+    assert collector.gpu_measurements()=={
+        "gpuPct":12.0,"gpuMemoryUsedMiB":256.0,"gpuMemoryTotalMiB":6144.0,
+        "gpuTempC":48.0,"gpuWatts":31.5}
+with patch.object(collector.subprocess,"run",side_effect=TimeoutExpired("nvidia-smi",3)):
+    assert collector.gpu_measurements()["gpuPct"] is None
 print("HOST_TELEMETRY_OFFLINE_TEST=PASS")
