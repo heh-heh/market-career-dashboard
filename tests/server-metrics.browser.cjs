@@ -162,21 +162,20 @@ const server=http.createServer((req,res)=>{
       await target.locator('[data-resource="gpu"]').click();
       assert.equal(await target.locator('.metric-current').textContent(),'0%');
       assert(!(await target.textContent()).includes('NEVER_RENDER_THIS'));
-      // Real GPU sensor payload creates four independent charts, without showing unknown keys.
+      // All four GPU signals appear in ONE GPU resource, on public and admin views.
       const gpuFixture={...fixture,metrics:{...fixture.metrics,
         gpuPct:12,gpuMemoryUsedMiB:512,gpuMemoryTotalMiB:6144,gpuTempC:43,gpuWatts:29.75},
         history:fixture.history.map((row,i)=>({...row,gpuPct:i*3,
           gpuMemoryUsedMiB:i*128,gpuTempC:40+i,gpuWatts:25+i}))};
       await page.evaluate(({selector,data})=>window.ServerMetrics.render(document.querySelector(selector),data),{selector,data:gpuFixture});
-      for(const id of ['gpu','gpu-memory','gpu-temp','gpu-power'])
-        assert.equal(await target.locator('[data-resource="'+id+'"]').count(),1,'missing '+id+' chart');
-      await target.locator('[data-resource="gpu-memory"]').click();
-      assert.equal(await target.locator('.metric-current').textContent(),'512 MiB');
-      assert((await target.locator('.metric-detail').textContent()).includes('6,144 MiB'),'VRAM total must appear');
-      await target.locator('[data-resource="gpu-temp"]').click();
-      assert.equal(await target.locator('.metric-current').textContent(),'43°C');
-      await target.locator('[data-resource="gpu-power"]').click();
-      assert.equal(await target.locator('.metric-current').textContent(),'29.8 W');
+      assert.equal(await target.locator('[data-resource="gpu"]').count(),1,'single GPU tab');
+      for(const id of ['gpu-memory','gpu-temp','gpu-power'])
+        assert.equal(await target.locator('[data-resource="'+id+'"]').count(),0,'no separate '+id+' tab');
+      await target.locator('[data-resource="gpu"]').click();
+      assert.equal(await target.locator('.metric-gpu-panel').count(),4,'four charts in GPU detail');
+      const gpuText=await target.locator('.metric-detail').textContent();
+      for(const expected of ['GPU 사용률','VRAM 사용량','GPU 온도','GPU 소비전력','512 MiB','6,144 MiB','43°C','29.8 W'])
+        assert(gpuText.includes(expected),'missing GPU detail '+expected);
       assert(!(await target.textContent()).includes('NEVER_RENDER_THIS'));
       // Missing timestamps are not invented; an unavailable payload never becomes zero usage.
       await page.evaluate(({selector,data})=>window.ServerMetrics.render(document.querySelector(selector),{...data,history:[{cpuPct:99}]}),{selector,data:fixture});
