@@ -18,7 +18,7 @@ with tempfile.TemporaryDirectory() as tmp:
 from unittest.mock import patch
 from subprocess import CompletedProcess, TimeoutExpired
 
-good=CompletedProcess([],0,stdout="12, 256, 6144, 48, 31.5\\n",stderr="")
+good=CompletedProcess([],0,stdout="12, 256, 6144, 48, 31.5\n",stderr="")
 with patch.object(collector.subprocess,"run",return_value=good):
     assert collector.gpu_measurements()=={
         "gpuPct":12.0,"gpuMemoryUsedMiB":256.0,"gpuMemoryTotalMiB":6144.0,
