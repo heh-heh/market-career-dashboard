@@ -11,6 +11,7 @@ import json
 import math
 import os
 import secrets
+import subprocess
 import shutil
 import signal
 import time
@@ -126,6 +127,38 @@ def compute_package_power(prev,curr,elapsed):
     watts=difference/1e6/elapsed
     return round(watts,2) if math.isfinite(watts) and 0<=watts<=300 else None
 
+def gpu_measurements():
+    """Best-effort NVIDIA metrics; never block host telemetry on GPU failure."""
+    keys=("gpuPct","gpuMemoryUsedMiB","gpuMemoryTotalMiB","gpuTempC","gpuWatts")
+    missing={key:None for key in keys}
+    try:
+        run=subprocess.run(
+            ["/usr/bin/nvidia-smi",
+             "--query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw",
+             "--format=csv,noheader,nounits"],
+            capture_output=True,text=True,timeout=3,check=False)
+        if run.returncode!=0:
+            return missing
+        rows=run.stdout.strip().splitlines()
+        if len(rows)!=1:  # avoid silently misreporting multiple cards
+            return missing
+        fields=[part.strip() for part in rows[0].split(",")]
+        if len(fields)!=5:
+            return missing
+        limits=(100,1048576,1048576,130,1000)
+        values=[]
+        for raw,limit in zip(fields,limits):
+            value=float(raw)
+            if not math.isfinite(value) or not 0<=value<=limit:
+                return missing
+            values.append(round(value,2))
+        if values[1]>values[2] or values[2]==0:
+            return missing
+        return dict(zip(keys,values))
+    except (OSError,ValueError,subprocess.TimeoutExpired):
+        return missing
+
+
 def read_previous():
     try:
         if OUTPUT.is_symlink():
@@ -189,7 +222,8 @@ def main():
                 "cpuPct":cpu,"memoryPct":memory_pct,
                 "networkRxMbps":rx,"networkTxMbps":tx,
                 "diskPct":disk_pct,"dataDiskPct":data_pct,
-                "cpuPackageWatts":package_w
+                "cpuPackageWatts":package_w,
+                **gpu_measurements()
             }
             history.append(sample)
             snapshot={
