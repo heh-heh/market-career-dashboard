@@ -460,7 +460,9 @@ class Handler(BaseHTTPRequestHandler):
                     return None
             cols={"cpuPct":100,"memoryPct":100,
                   "networkRxMbps":100000,"networkTxMbps":100000,
-                  "diskPct":100,"dataDiskPct":100,"cpuPackageWatts":300}
+                  "diskPct":100,"dataDiskPct":100,"cpuPackageWatts":300,
+                  "gpuPct":100,"gpuMemoryUsedMiB":1048576,
+                  "gpuMemoryTotalMiB":1048576,"gpuTempC":130,"gpuWatts":1000}
             rows=[]
             for item in obj["history"][-720:]:
                 if not isinstance(item,dict):
