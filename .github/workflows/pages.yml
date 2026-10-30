@@ -40,6 +40,15 @@ jobs:
           cp index.html admin.html admin-login.js server-status.html server-status.js server-metrics.js server-metrics.css dashboard-config.js _site/
           cp data/dashboard.json _site/data/
           touch _site/.nojekyll
+      - name: Validate linked public server status page
+        run: |
+          test -s _site/index.html
+          test -s _site/server-status.html
+          test -s _site/server-status.js
+          test -s _site/server-metrics.js
+          test -s _site/server-metrics.css
+          grep -Fq 'href="./server-status.html"' _site/index.html
+          grep -Fq 'href="./"' _site/server-status.html
       - name: Verify configured home-server HTTPS API
         if: ${{ vars.DASHBOARD_API_BASE_URL != '' }}
         env:
