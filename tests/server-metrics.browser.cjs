@@ -173,6 +173,15 @@ const server=http.createServer((req,res)=>{
         assert.equal(await target.locator('[data-resource="'+id+'"]').count(),0,'no separate '+id+' tab');
       await target.locator('[data-resource="gpu"]').click();
       assert.equal(await target.locator('.metric-gpu-panel').count(),4,'four charts in GPU detail');
+      assert.equal(await target.locator('.metric-gpu-panel .metric-graph').count(),4,'four visible GPU graphs');
+      const gpuGeometry=await target.locator('.metric-gpu-panel').evaluateAll(nodes=>nodes.map(n=>({
+        x:n.getBoundingClientRect().x,y:n.getBoundingClientRect().y,
+        height:n.querySelector('.metric-graph').getBoundingClientRect().height
+      })));
+      assert(gpuGeometry.every(n=>n.height>=140),'GPU graphs must be readable');
+      if(width>=1440)assert(Math.abs(gpuGeometry[0].y-gpuGeometry[1].y)<3,'desktop GPU charts must be 2 columns');
+      if(width<=390)assert(gpuGeometry[1].y>gpuGeometry[0].y,'mobile GPU charts must stack');
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'GPU chart must not cause horizontal overflow');
       const gpuText=await target.locator('.metric-detail').textContent();
       for(const expected of ['GPU 사용률','VRAM 사용량','GPU 온도','GPU 소비전력','512 MiB','6,144 MiB','43°C','29.8 W'])
         assert(gpuText.includes(expected),'missing GPU detail '+expected);
