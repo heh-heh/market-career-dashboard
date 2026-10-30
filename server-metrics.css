@@ -27,3 +27,20 @@
 @media(max-width:690px){.metric-wrap{padding:12px}.metric-top{align-items:flex-start;flex-direction:column;gap:6px}.metric-top h1{font-size:21px}.metric-workbench{grid-template-columns:minmax(0,1fr);gap:10px}.metric-resource-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.metric-resource{gap:7px;padding:8px 6px;align-items:flex-start}.metric-spark{flex-basis:40px;width:40px;height:37px}.metric-resource-title{font-size:12px}.metric-resource-value{font-size:11px}.metric-resource small{display:none}.metric-detail-head h2{font-size:23px}.metric-current{font-size:20px}.metric-graph{height:225px}.metric-stat-values{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.metric-stat-values dd{font-size:18px}}
 
 .metric-chart{position:relative;min-width:0}.metric-chart-scale{text-align:right;font-size:11px;line-height:20px;color:var(--metric-muted)}.metric-time-axis{display:flex;justify-content:space-between;font-size:11px;line-height:20px;color:var(--metric-muted)}.metric-chart-empty{position:absolute;left:0;right:0;top:45%;text-align:center;font-size:13px;color:var(--metric-muted);pointer-events:none}.metric-network .metric-stat-group:nth-child(2) h3{color:#6aaef1}
+
+/* One GPU navigation entry expands to four side-by-side readings/charts. */
+.metric-gpu-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch}
+.metric-gpu-panel{min-width:0;padding:12px;border:1px solid var(--metric-line);border-radius:5px;background:#171a1e;--metric-accent:#929aef}
+.metric-gpu-panel:nth-child(2){--metric-accent:#86badc}
+.metric-gpu-panel:nth-child(3){--metric-accent:#e8a36d}
+.metric-gpu-panel:nth-child(4){--metric-accent:#cf94d9}
+.metric-gpu-panel h3{margin:0 0 4px;font-size:14px;color:var(--metric-text)}
+.metric-gpu-panel .metric-current{font-size:20px;line-height:1.3}
+.metric-gpu-panel .metric-graph{height:156px}
+.metric-gpu-panel .metric-chart{margin-top:7px}
+.metric-gpu-panel .metric-muted{line-height:1.5}
+@media(max-width:980px){.metric-gpu-panels{grid-template-columns:minmax(0,1fr)}.metric-gpu-panel .metric-graph{height:165px}}
+
+/* Override admin page's generic graph-height rule for the four GPU charts. */
+.server-performance-frame .metric-gpu-panel .metric-graph{height:156px}
+@media(max-width:980px){.server-performance-frame .metric-gpu-panel .metric-graph{height:165px}}
