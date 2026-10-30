@@ -40,3 +40,7 @@
 .metric-gpu-panel .metric-chart{margin-top:7px}
 .metric-gpu-panel .metric-muted{line-height:1.5}
 @media(max-width:980px){.metric-gpu-panels{grid-template-columns:minmax(0,1fr)}.metric-gpu-panel .metric-graph{height:165px}}
+
+/* Override admin page's generic graph-height rule for the four GPU charts. */
+.server-performance-frame .metric-gpu-panel .metric-graph{height:156px}
+@media(max-width:980px){.server-performance-frame .metric-gpu-panel .metric-graph{height:165px}}
