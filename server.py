@@ -445,7 +445,7 @@ class Handler(BaseHTTPRequestHandler):
         # Strict output schema. Never return arbitrary JSON keys from host files.
         f=DATA.parent/"server-telemetry.json"
         try:
-            if f.is_symlink() or f.stat().st_size>220000:
+            if f.is_symlink() or f.stat().st_size>500000:
                 raise ValueError("INVALID_TELEMETRY_FILE")
             obj=json.loads(f.read_text(encoding="utf-8"))
             if not isinstance(obj,dict) or obj.get("schemaVersion")!=1 or not isinstance(obj.get("history"),list):
