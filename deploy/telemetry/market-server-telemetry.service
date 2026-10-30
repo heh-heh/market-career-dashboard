@@ -16,7 +16,9 @@ ProtectSystem=strict
 ReadWritePaths=/srv/ai-data/market-dashboard
 ReadOnlyPaths=/srv/ai-data
 ProtectHome=true
-PrivateDevices=true
+PrivateDevices=false
+# NVIDIA /dev nodes are needed for nvidia-smi; service remains non-root,
+# no-new-privileges, filesystem restricted, and public JSON allowlisted.
 PrivateTmp=true
 MemoryMax=96M
 CPUQuota=15%
