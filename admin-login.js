@@ -5,6 +5,31 @@
   const button=document.getElementById("submit");
   const message=document.getElementById("loginStatus") || document.getElementById("status");
   if(!form || !button || !message) return;
+  // The new public dashboard and private administrator share a hostname but
+  // NOT an origin or access policy. Navigate to the Tailnet-only admin login,
+  // rather than POST credentials cross-origin from the internet-public site.
+  // The original GitHub Pages login flow remains available for its legacy URL.
+  const url=new URL(window.location.href);
+  const homeHttps=url.protocol==="https:" &&
+    url.hostname==="heh-heh.tail39e546.ts.net" &&
+    (url.port===""||url.port==="10000");
+  const homeLocal=url.protocol==="http:" &&
+    (url.hostname==="localhost"||url.hostname==="127.0.0.1") &&
+    url.port==="18086";
+  if(homeHttps||homeLocal){
+    const container=document.createElement("div");
+    const link=document.createElement("a");
+    link.href=HOST+"/";
+    link.className="admin-direct-link";
+    link.textContent="Tailscale 관리자 로그인 화면 열기";
+    const note=document.createElement("p");
+    note.className="muted mini";
+    note.textContent="로그인은 비공개 관리자 사이트에서 진행됩니다. 먼저 이 기기의 Tailscale 연결을 확인하세요.";
+    container.append(link,note);
+    form.replaceWith(container);
+    message.textContent="관리자 인증은 공개 대시보드가 아닌 Tailscale 전용 서버에서 수행됩니다.";
+    return;
+  }
   form.addEventListener("submit",async event=>{
     event.preventDefault();
     button.disabled=true;
