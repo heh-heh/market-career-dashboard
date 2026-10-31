@@ -1,19 +1,7 @@
-name: Deploy GitHub Pages
+# Legacy dashboard Pages: manual fallback only while public hosting moves home.
+# The separate profile repo (heh-heh/heh-heh) is unaffected.
+name: Deploy GitHub Pages (legacy/manual)
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - "index.html"
-      - "admin.html"
-      - "admin-login.js"
-      - "server-status.html"
-      - "server-status.js"
-      - "server-metrics.js"
-      - "server-metrics.css"
-      - "dashboard-config.js"
-      - "scripts/configure_dashboard_api.py"
-      - "data/dashboard.json"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 concurrency:
   group: deploy-github-pages
