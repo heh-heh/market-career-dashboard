@@ -111,6 +111,10 @@ curl -fsS --max-time 8 http://127.0.0.1:18086/dashboard-config.js -o "$RELEASE/s
 grep -Fq 'window.location.origin' "$RELEASE/smoke-config.js"
 rm -f "$RELEASE/smoke-index.html" "$RELEASE/smoke-config.js"
 curl -fsS --max-time 8 http://127.0.0.1:18086/server-status.html >/dev/null
+curl -sSI --max-time 8 http://127.0.0.1:18086/admin.html -o "$RELEASE/smoke-admin.txt"
+grep -Fq 'HTTP/1.1 302' "$RELEASE/smoke-admin.txt"
+grep -Fiq 'Location: https://heh-heh.tail39e546.ts.net:8444/' "$RELEASE/smoke-admin.txt"
+rm -f "$RELEASE/smoke-admin.txt"
 curl -fsS --max-time 8 http://127.0.0.1:18086/api/health | python3 -c \
   'import json,sys; d=json.load(sys.stdin); assert d["ok"] and d["mode"]=="dashboard-only"'
 curl -fsS --max-time 8 http://127.0.0.1:18086/api/server-telemetry | python3 -c \
