@@ -51,6 +51,18 @@ tailscale serve status
 
 If the new container fails, the installer attempts to restore the old public-web
 release (if one exists); it does not touch the old Funnel/API/stock collector.
+`docker compose up -d` can report "Started" before Nginx listens; the installer
+waits up to 30 seconds and prints recent logs if startup fails. For diagnosis:
+
+```bash
+docker ps -a --filter name=market-dashboard-web
+docker logs --tail 70 market-dashboard-web
+ss -ltn | grep ':18086' || true
+curl -sS -i --max-time 5 http://127.0.0.1:18086/api/health
+```
+
+If startup fails again, send the container logs; do not modify Funnel or the existing
+API until the local listener is healthy.
 
 ## Phase 2: OPTIONAL safe public pilot (explicit manual action)
 
