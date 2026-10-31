@@ -73,8 +73,11 @@ trap rollback ERR
 docker compose --env-file "$RELEASE/web.env" -f "$COMPOSE" -p "$PROJECT" up -d --no-deps web
 
 # Validate local static UI, same-origin public API and non-exposed private paths.
-curl -fsS --max-time 8 http://127.0.0.1:18086/ | grep -Fq 'href="./server-status.html"'
-curl -fsS --max-time 8 http://127.0.0.1:18086/dashboard-config.js | grep -Fq 'window.location.origin'
+curl -fsS --max-time 8 http://127.0.0.1:18086/ -o "$RELEASE/smoke-index.html"
+grep -Fq 'href="./server-status.html"' "$RELEASE/smoke-index.html"
+curl -fsS --max-time 8 http://127.0.0.1:18086/dashboard-config.js -o "$RELEASE/smoke-config.js"
+grep -Fq 'window.location.origin' "$RELEASE/smoke-config.js"
+rm -f "$RELEASE/smoke-index.html" "$RELEASE/smoke-config.js"
 curl -fsS --max-time 8 http://127.0.0.1:18086/server-status.html >/dev/null
 curl -fsS --max-time 8 http://127.0.0.1:18086/api/health | python3 -c \
   'import json,sys; d=json.load(sys.stdin); assert d["ok"] and d["mode"]=="dashboard-only"'
