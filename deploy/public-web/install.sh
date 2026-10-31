@@ -72,6 +72,38 @@ rollback() {
 trap rollback ERR
 docker compose --env-file "$RELEASE/web.env" -f "$COMPOSE" -p "$PROJECT" up -d --no-deps web
 
+# Docker reports "Started" before nginx has bound its listen port.
+# Wait up to 30 seconds and show actionable logs if nginx exits early.
+READY=false
+for attempt in {1..30}; do
+  if curl -fs --max-time 2 http://127.0.0.1:18086/api/health -o "$RELEASE/smoke-health.json" 2>/dev/null; then
+    if python3 - "$RELEASE/smoke-health.json" <<'PYREADY'
+import json,sys
+try:
+    data=json.load(open(sys.argv[1],encoding="utf-8"))
+    assert data.get("ok") is True and data.get("mode")=="dashboard-only"
+except (OSError,ValueError,AssertionError):
+    sys.exit(1)
+PYREADY
+    then
+      READY=true
+      break
+    fi
+  fi
+  if [[ "$(docker inspect -f '{{.State.Running}}' market-dashboard-web 2>/dev/null || true)" != "true" ]]; then
+    echo "PUBLIC_WEB_CONTAINER_NOT_RUNNING"
+    break
+  fi
+  sleep 1
+done
+rm -f "$RELEASE/smoke-health.json"
+if [[ "$READY" != true ]]; then
+  echo "PUBLIC_WEB_NOT_READY: inspect nginx startup errors below"
+  docker ps -a --filter name=market-dashboard-web --format 'table {{.Names}}\t{{.Status}}' || true
+  docker logs --tail 65 market-dashboard-web 2>&1 || true
+  false
+fi
+
 # Validate local static UI, same-origin public API and non-exposed private paths.
 curl -fsS --max-time 8 http://127.0.0.1:18086/ -o "$RELEASE/smoke-index.html"
 grep -Fq 'href="./server-status.html"' "$RELEASE/smoke-index.html"
