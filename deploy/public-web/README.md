@@ -106,6 +106,20 @@ sudo tailscale funnel --bg --https=443 http://127.0.0.1:18084
 This rollback command must NOT be used if the inspected original port-443
 Funnel target was different.
 
+## Admin login after switching the public site
+
+The public dashboard now links to **https://heh-heh.tail39e546.ts.net:8444/**
+instead of trying to POST the credentials from the new public origin.
+The private :8444 page hosts its own same-origin ID/password/OTP login.
+
+- Connect the browser/device to the Tailscale tailnet first.
+- From the public dashboard, select **관리자** and then **Tailscale 관리자 로그인 화면 열기**.
+- The public `/admin.html` route responds 302 to the **Tailnet-only** :8444 URL.
+- Never enable Funnel for :8444 or proxy `/api/login` through this public site.
+- GitHub Pages legacy login flow remains unchanged.
+- Public web redeploy and its `/admin.html` redirect smoke check are required
+  after merging this patch. No admin console redeploy is necessary.
+
 ## Phase 4: Retire GitHub Pages dashboard AFTER live verification
 
 - Keep the distinct `heh-heh/heh-heh` profile portfolio Pages site:
