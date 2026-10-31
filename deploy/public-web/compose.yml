@@ -1,0 +1,30 @@
+name: market-dashboard-public-web
+services:
+  web:
+    image: nginxinc/nginx-unprivileged:1.29-alpine
+    container_name: market-dashboard-web
+    network_mode: host # 127.0.0.1:18084 backend is loopback-only
+    user: "101:101"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 48
+    cpus: 0.25
+    mem_limit: 128m
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /var/cache/nginx:size=16m,mode=1777
+    volumes:
+      - ${PUBLIC_SITE_ROOT:?required}:/usr/share/nginx/html:ro
+      - ${PUBLIC_SITE_CONFIG:?required}:/etc/nginx/conf.d/default.conf:ro
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:18086/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
